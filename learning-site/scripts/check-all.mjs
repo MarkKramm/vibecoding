@@ -95,6 +95,12 @@ const STEPS = [
     why: "the parser rejects an unknown block type but the renderer only reports one, so widening the vocabulary leaves lessons rendering 'Unsupported block type: ...' while the build, the shape audit and the AST character audit all stay green",
   },
   {
+    name: "component rendering",
+    cmd: "node",
+    args: [join(HERE, "test-components.mjs")],
+    why: "this is the only step that asserts on RENDERED MARKUP, and three defects reached the page while every other check stayed green because each one was correct as data and wrong on screen: global.css styled 344 classes but none of the top-level layout ones, so the site rendered unstyled; the Tools library iterated `phase.tools` off the LIGHT projection, which does not carry that field, so `|| []` turned `undefined` into the confident and entirely false '0 tools across 10 written tracks'; and 40 tool cards emitted `<a href=\"—\">` because an em-dash placeholder passed through the parser where `tool.url &&` accepted it as truthy. All three are caught by rendering the component and reading the output, which is what this step does — it also pins that a component reading a field the light projection does not carry degrades VISIBLY rather than silently claiming success, which is the shape all three share",
+  },
+  {
     name: "in-lesson search",
     cmd: "node",
     args: [join(HERE, "test-search.mjs")],
