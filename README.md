@@ -153,13 +153,27 @@ All 10 tracks are written. This is a complete first pass, not a finished product
 
 **Known gaps, stated plainly:**
 
-- Several provider URLs have moved (`platform.openai.com` → `developers.openai.com`,
-  `docs.claude.com` → `platform.claude.com`). These are stale but readable.
 - A number of volatile facts — free-tier terms, context-window sizes, model availability —
   are dated rather than continuously verified, because verifying them requires network
   access this project budgets carefully. Each is stamped with its date.
 - The browser verification suite covers a sample of phases, not all 65.
-- Some per-module unit suites are planned but not written.
+- Search, highlighting and a "Today" view have no unit tests yet. The pure search library
+  is the next target; a Today view does not exist as a page at all.
+- The rendered site has never been checked on a real mobile device — only emulated
+  viewports in a headless browser.
+
+**Fixed since this section was first written** (kept here because a gaps list that only
+shrinks silently is not honest either):
+
+- ✅ Provider URLs migrated — `platform.openai.com` 43→1 and `docs.claude.com` 21→0.
+  The one remaining OpenAI link (`…/playground`) is left stale on purpose: it is not under
+  `/docs`, so the mechanical rewrite rule does not cover it and no confirmed destination
+  exists. Three retargeted links are flagged for review in `docs/SEARCH-REQUESTS.md`.
+- ✅ Unit suites written for inline markdown rendering, quiz logic and lesson-block
+  coverage — 135 assertions, and each was proved capable of failing by deliberate mutation.
+- ✅ The site was rendering **completely unstyled** (40 layout classes with no CSS rule)
+  while every content check stayed green. Fixed, and now guarded by
+  `learning-site/scripts/audit-css.mjs`, which fails CI if any class used in JSX has no rule.
 
 `HANDOVER.md` documents the engineering history, including mistakes made and fixed. It is
 unusually frank, deliberately: a project teaching verification should be candid about its own.
