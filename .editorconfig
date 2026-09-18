@@ -1,0 +1,36 @@
+# Editor defaults for this repository.
+#
+# These are convenience settings, not enforcement. The enforced rules live in
+# .gitattributes (line endings) and scripts/audit-encoding.mjs (encoding), both
+# of which run in CI. EditorConfig only helps an editor do the right thing
+# before a mistake is saved.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.md]
+# Markdown uses trailing double-spaces for hard line breaks and aligned tables,
+# so trimming is off here. Content files are also hand-wrapped.
+trim_trailing_whitespace = false
+
+[*.{mjs,js,jsx}]
+indent_size = 2
+max_line_length = 100
+
+[*.{json,css,html,yml,yaml}]
+indent_size = 2
+
+[*.ps1]
+end_of_line = crlf
+indent_size = 4
+
+[*.{bat,cmd}]
+end_of_line = crlf
+
+[Makefile]
+indent_style = tab

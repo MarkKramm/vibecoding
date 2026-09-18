@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+learning-site/dist/
+dist/
+
+# Generated content bundles.
+#
+# These are rebuilt by `npm run build:content` from the Markdown, which is the
+# source of truth. Committing them would mean every content edit produced a
+# large generated diff, and a stale bundle could be committed by accident. CI
+# regenerates them before running any site test.
+learning-site/src/data/generated/
+
+# Logs and caches
+*.log
+npm-debug.log*
+.cache/
+.vite/
+.eslintcache
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Local scratch space. Anything here is working notes, not project content.
+scratch/
+tmp/
+*.tmp

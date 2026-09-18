@@ -1,0 +1,42 @@
+# Normalize all text files to LF in the repository.
+#
+# Every file is stored with LF line endings regardless of the authoring
+# platform. This repository is edited on Windows and read on GitHub, and a
+# stray CRLF changes a file's bytes without changing what it looks like.
+* text=auto eol=lf
+
+# Windows-native scripts are the one deliberate exception. A .bat or .cmd file
+# with LF endings can misbehave in cmd.exe, and a .ps1 with LF is legal but
+# unusual; these stay CRLF.
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# Explicit text declarations. `text=auto` usually gets these right by
+# inspection, but naming them makes the intent visible rather than inferred.
+*.md    text eol=lf
+*.mjs   text eol=lf
+*.js    text eol=lf
+*.jsx   text eol=lf
+*.json  text eol=lf
+*.css   text eol=lf
+*.html  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+
+# Binary assets must never be line-ending normalized or diffed as text.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+
+# Generated content bundles are large single-line JSON. Marking them as
+# generated keeps them out of diffs and out of GitHub's language statistics.
+learning-site/src/data/generated/** linguist-generated=true
+
+# Lockfiles are generated; a diff of one is noise.
+package-lock.json -diff linguist-generated=true
