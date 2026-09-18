@@ -215,16 +215,18 @@ Three places could have absorbed the difference, and the choice matters:
 
 It also happens to be the principle the curriculum itself teaches in its Phase 2
 material on tool results: **normalise at the edge, keep the interior in one
-shape.**
+shape.** The header of `roadmaps.js` makes the same argument in the project’s own
+words — “One function, applied once as data is loaded, keeps every ported
+component and the tested quiz module byte-for-byte identical to their originals.”
 
 Two properties of the adapter are load-bearing rather than incidental.
 `answerIndex` is the *only* source of truth for correctness — the option **text**
 is never inspected, because a phase whose distractor happened to contain the word
-"correct" would otherwise be able to mark itself right; `lib/quiz.js` reads
+“correct” would otherwise be able to mark itself right; `lib/quiz.js` reads
 `o.correct === true` strictly for the same reason. And a malformed question
 (missing or out-of-range `answerIndex`) yields options that are **all incorrect**,
 so the reader sees the explanation without being told a wrong answer was right.
-Failing toward "no answer is correct" is the safe direction: a quiz that silently
+Failing toward “no answer is correct” is the safe direction: a quiz that silently
 marks a distractor correct teaches something false.
 
 ---
@@ -233,7 +235,9 @@ marks a distractor correct teaches something false.
 
 There is no state library and no server. Every piece of reader state is a
 `localStorage` key under the `vibecoding:` namespace, owned by one hook, read
-once at mount and then held in React state.
+once at mount and then held in React state. The namespace prefix is not
+decoration — see D-005 — but its role here is simpler: it is how a reader’s data
+is told apart from anything else sharing the same origin.
 
 | Key | Owner | Content |
 | --- | --- | --- |
@@ -254,7 +258,9 @@ once at mount and then held in React state.
 key, and it is the reason the table above is not just documentation: adding a new
 storage key without adding it there means it will not be backed up. The export
 walks the list, validates every value, and refuses a payload whole if any single
-key is malformed rather than partially applying it.
+key is malformed rather than partially applying it. Four rows in that table —
+portfolio, applications, certifications and schedule — belong to hooks whose
+views were not ported; see D-008 for why they are still registered.
 
 Storage failures are absorbed rather than surfaced everywhere it makes sense —
 `useProgress` and friends catch a quota or availability error and carry on for

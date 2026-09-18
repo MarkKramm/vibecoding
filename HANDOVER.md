@@ -7,14 +7,15 @@
 
 ---
 
-## 0. READ THIS FIRST — the six things that matter most
+## 0. READ THIS FIRST — the seven things that matter most
 
-1. **Git is clean as of this session** (HEAD `8ab2b4f`, clean tree). Line endings are watched on every file written — see §7.3.
-2. **ALL GUARDS ARE GREEN.** Build (`42 phases / 6 tracks`), quiz audit, and AST audit all exit 0, with 0 minted IDs and 0 unbanded tasks. Two earlier defect classes are fixed and documented: the answer-position skew (§7.1) and the AST character gain, which is **explained and benign** (§7.2).
-3. **At most 1 subagent is permitted** (user instruction). **One was used, deliberately, in `agent/04`** as a real experiment whose transcript is now the phase's central evidence — see §6.1 note (b). The budget is now spent-appropriately, not banned; **author the remaining phases directly, by hand.** Do not reintroduce fan-out.
-4. **The plan is 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases). See §6.0.
-5. **Five tracks are complete, four remain empty.** Done: `foundations`, `model-internals`, `prompting`, `rag` (7/7), `cost` (7/7), `agents` (7/7 — completed this session). Remaining: `finetuning` (6), `vibecoding` (8), `safety-career` (5), `career` (4) = **21 phases**, plus track files, the site, tests, CI, and docs. See §6.
-6. **`web_search` is BROKEN in this environment.** It returns HTTP 404 for every query. `web_fetch` works. Only the user can fix it (Settings > Plugins). All research in `docs/research/` was done by fetching primary sources directly, and every literature citation added this session was checked against its arXiv abstract page before being written.
+1. **Git is clean as of this session.** The learning site is committed (`7d4c8bd`) and documented (`b1278d7`). Line endings are watched on every file written — see §7.3, and `learning-site/scripts/audit-encoding.mjs` now enforces it mechanically across 76 files.
+2. **ALL GUARDS ARE GREEN.** Content: build (`42 phases / 6 tracks`), quiz audit, and AST audit all exit 0, with 0 minted IDs and 0 unbanded tasks. Site: `npm test` (4 offline checks) and `npm run test:browser` (25 checks) both pass. Two earlier defect classes are fixed and documented: the answer-position skew (§7.1) and the AST character gain, which is **explained and benign** (§7.2).
+3. **⭐ THE LEARNING SITE IS DONE AND RENDERS ALL 42 PHASES.** Verified in a real browser against **both** the dev server and the production build. See §6.3. **But note the hard-won lesson there: `vite build` passing did NOT mean the app worked.** It passed while every phase page threw. There is now a 4th guard, `audit-shapes.mjs`, because no build check knows what the components expect.
+4. **At most 1 subagent is permitted** (user instruction: *"you can always use 1 sub agent to maximize our concurrency"*). Two were used this session: one to port the site's components verbatim, one to write the four site docs — both appropriate, both their reports verified at the detail level before being trusted. For **content authoring** the original advice stands: write the phases directly, by hand; do not fan out.
+5. **The plan is 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases). See §6.0.
+6. **Six of ten tracks are complete; four remain empty — 21 of 63 phases.** Done: `foundations` (8), `model-internals` (6), `prompting` (7), `rag` (7), `cost` (7), `agents` (7). Remaining: `finetuning` (6), `vibecoding` (8), `safety-career` (5), `career` (4). **Content is now the only thing between this project and "done"** — the site, its guards and its docs all exist. See §6.
+7. **`web_search` is BROKEN in this environment.** It returns HTTP 404 for every query. `web_fetch` works. Only the user can fix it (Settings > Plugins). All research in `docs/research/` was done by fetching primary sources directly, and every literature citation added this session was checked against its arXiv abstract page before being written.
 
 ---
 
@@ -68,14 +69,16 @@ Audit status:
 | Foundations | `ai-roadmaps/foundations/` | 8 | 8 | ✅ **COMPLETE** |
 | Model Internals | `ai-roadmaps/model-internals/` | 6 | 6 | ✅ **COMPLETE** |
 | Prompting | `ai-roadmaps/prompting/` | 7 | 7 | ✅ **COMPLETE** |
-| Cost & Efficiency | `ai-roadmaps/cost/` | **7** | 7 | ✅ **COMPLETE** (+freemium playbook) |
-| Retrieval & RAG | `ai-roadmaps/rag/` | **7** | 7 | ✅ **COMPLETE** |
-| Agents & Tools | `ai-roadmaps/agents/` | **0** | 7 | 🔴 NOT STARTED |
-| Finetuning & Evals | `ai-roadmaps/finetuning/` | **0** | 6 | 🔴 NOT STARTED |
-| Vibecoding Craft | `ai-roadmaps/vibecoding/` | **0** | 8 | 🔴 NOT STARTED |
-| Safety & Ethics | `ai-roadmaps/safety-career/` | **0** | 5 | 🔴 NOT STARTED |
-| **Career & Getting Hired** | `ai-roadmaps/career/` | **0** | **4** | 🔴 **NEW — NOT STARTED** |
-| | | **35** | **63** | **28 phases remain** |
+| Cost & Efficiency | `ai-roadmaps/cost/` | 7 | 7 | ✅ **COMPLETE** (+freemium playbook) |
+| Retrieval & RAG | `ai-roadmaps/rag/` | 7 | 7 | ✅ **COMPLETE** |
+| Agents & Tools | `ai-roadmaps/agents/` | **7** | 7 | ✅ **COMPLETE** |
+| Finetuning & Evals | `ai-roadmaps/finetuning/` | **0** | 6 | 🔴 NOT STARTED (folder exists, empty) |
+| Vibecoding Craft | `ai-roadmaps/vibecoding/` | **0** | 8 | 🔴 NOT STARTED (folder **missing**) |
+| Safety & Ethics | `ai-roadmaps/safety-career/` | **0** | 5 | 🔴 NOT STARTED (folder **missing**) |
+| **Career & Getting Hired** | `ai-roadmaps/career/` | **0** | **4** | 🔴 **NEW — NOT STARTED** (folder **missing**) |
+| | | **42** | **63** | **21 phases remain** |
+
+Verified by counting files on disk, not from memory: `8+6+7+7+7+7 = 42`, and `build-content.mjs` reports the same 42 across 6 tracks. **If you re-read this table, re-run the count** — this exact table was stale by 7 phases until it was checked.
 
 ### Every phase file that exists
 
@@ -434,23 +437,54 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 
 > **Consider a third shared doc:** a `free-toolkit.md` — the running list of free-tier-safe tools, local model options, and free substitutes for paid mechanisms. It would serve the freemium theme across every track. If added, register it in `SHARED_DOCS`.
 
-### 6.3 The learning site — not started
+### 6.3 ✅ COMPLETE — The learning site (commit `7d4c8bd`, docs `b1278d7`)
 
-`learning-site/` currently contains **only** `src/data/generated/`. There is no `package.json`, no Vite config, no React code.
+**The site renders all 42 authored phases across all 6 written tracks.** Verified in a real browser, not just by a successful build.
 
-Still to build: `package.json`, `vite.config.js`, `index.html`, `src/main.jsx`, `src/App.jsx`, components (lesson renderer / `LessonBlock`, dashboard, checklist, quiz, search, notes, today view, tools library), hooks, `src/lib/`, `src/styles/tokens.css` + `global.css`, `src/data/roadmaps.js`.
+| | |
+|---|---|
+| Stack | Vite 6 + React 18.3. **Two runtime dependencies.** No router, no state library, no UI kit. |
+| Entry chunk | **303 KB (85.6 KB gzipped)**, down from 1,639 KB (501 KB gz) in the first working build |
+| Views | Dashboard, PhaseDetail, ToolsLibrary, Search, Shared (5) |
+| Offline checks | `npm test` — 4 steps, all green |
+| Browser checks | `npm run test:browser` — 15 + 8 + 2 checks, all green against dev **and** production builds |
 
-### 6.4 Test suites — not started
+**The two-projection data model (the main design decision).** `build-content.mjs` now emits `index.json` (~72 KB) alongside the full per-track files (~1,304 KB total). The light index carries each phase's title, duration, goal and the **IDs** of its checklist/tasks/quiz — enough to draw the dashboard and count progress without any phase prose. Full track data and lesson bodies load lazily per track. Without this split the dashboard dragged 1.3 MB into the entry chunk.
 
-`test:smoke`, `test:data`, `test:render-inline`, `test:highlight`, `test:search`, `test:lesson-search`, `test:quiz`, `test:today`, `test:ui`, `test:browser`.
+**The quiz adapter.** Our shape is `{ options: string[], answerIndex, why }`; the ported components expect `{ options: [{text, correct}], explanation }`. Normalised **once** in `src/data/roadmaps.js` → `normaliseQuestion`, so no component and no tested `lib/` module was forked. Verified correct by `scripts/verify-quiz-correctness.mjs`, which clicks the option the **source JSON** says is right and asserts a perfect score, then clicks a wrong one and asserts it is flagged.
+
+**⚠️ THE LESSON THAT MATTERS MOST: a green build did not mean the app worked.**
+`vite build` passed, `build-content.mjs --check` passed, `audit-quiz.mjs` passed — while clicking a phase threw React error #31 and rendered nothing. Cause: `topics` is an array of `{ heading, items }` objects and `resources` is `{ name, url }`, **not** string arrays. No guard caught it because no guard knew what the components expect. Only driving a real browser found it.
+
+So a **4th guard now exists**: `learning-site/scripts/audit-shapes.mjs` asserts, per field, the element type each renderer assumes. If you change a field's shape, that is the check that will tell you.
+
+**Other real bugs found only by running it**, all fixed:
+- localStorage namespace was `cs-roadmap:*`, shared with the sibling project on the same origin. Now `vibecoding:*`.
+- Search navigated by track **code** (`found`) where a track **id** (`foundations`) was required — hits silently did not open. Fixed via `trackIdForPhase`.
+- `ToolCard` imports `costTone` from `src/data/tools.js`, which did not exist here.
+- Vite's watcher died with `EBUSY` on editor temp dirs, killing the dev server.
+- `new URL(...).pathname` yields `/C:/...` on Windows → malformed spawned script paths.
+
+**Praised limits, recorded so they are not oversold:** the quiz-correctness test covers **one phase** (the mapping is a pure function, so the evidence transfers, but it is not a per-phase guarantee); `debug-phase.mjs` and `debug-tracks.mjs` are **instruments, not gates** and must not be wired into CI.
+
+### 6.4 Test suites — 🟡 PARTIAL (offline complete, browser complete, unit suites not written)
+
+**Exists and green:** `npm test` (content build → `audit-shapes` → `test-cost-tone` → `audit-encoding`) and `npm run test:browser` (`verify-site` 15 checks, `verify-deep` 8, `verify-quiz-correctness` 2).
+
+**Still owed:** the per-module unit suites — `test:render-inline`, `test:highlight`, `test:search`, `test:lesson-search`, `test:quiz`, `test:today`, `test:ui`. The sibling project has all of these as plain Node scripts; port them the same way (no test framework, no dependency).
 
 ### 6.5 CI — not started
 
 `.github/workflows/` with **two jobs**: `content-integrity` (no install needed) and `learning-site`.
+Note: `npm test` needs no browser and can run in CI as-is. `npm run test:browser` needs a browser binary and a running server — either install Edge/Chrome in the runner or keep it as a local-only gate. Do **not** add the two `debug-*.mjs` scripts to CI.
 
 ### 6.6 Meta-docs owed
 
-`docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/CHECKPOINT.md`, `docs/WORKFLOW.md`, `docs/SETUP.md`, `docs/TROUBLESHOOTING.md`, `docs/ROADMAP.md`, `docs/DESIGN-SYSTEM.md`
+✅ **Written** (commit `b1278d7`): `learning-site/docs/ARCHITECTURE.md`, `DATA-SCHEMA.md`, `VERIFICATION.md`, `DECISIONS.md` — 1,369 lines, no placeholders.
+
+⚠️ **The numbering in `DECISIONS.md` is deliberately non-sequential** (`D-001..006, 008, 011, 016, 019..021, 044..047`). The ported source already cited `D-006`, `D-011`, `D-016`, `D-019`, `D-020`, `D-021` and `D-044` across 15 files and `global.css` with no file behind them. Those ids keep the meaning the comments give them. **Do not renumber.** Verified: zero dangling cross-references.
+
+**Still owed:** `docs/CHECKPOINT.md`, `docs/WORKFLOW.md`, `docs/SETUP.md`, `docs/TROUBLESHOOTING.md`, `docs/ROADMAP.md`, `docs/DESIGN-SYSTEM.md`.
 
 ### 6.7 Root files owed
 
@@ -692,7 +726,8 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
 12. **Write the 20 track files** (10 × `00-overview.md`, 10 × `checklist-master.md`) plus the 2 missing shared docs (and consider `free-toolkit.md`), registering new shared docs in `scripts/shared-content.mjs`.
 
-13. **Build the learning site**, then tests, then CI, then the meta-docs and root files (§6.3–6.7).
+13. ✅ **Build the learning site** — **DONE** (commit `7d4c8bd`, docs `b1278d7`), verified in a real browser against dev and production. See §6.3.
+14. **Then:** the remaining unit suites (§6.4), CI (§6.5), the six remaining meta-docs and the root files (§6.6–6.7). These are all now unblocked, because the site they describe exists.
 
 **After every phase file:** run the three commands and confirm all green before moving on.
 
@@ -790,6 +825,14 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
     ```
 15. **A subagent used as a live experiment can produce a better lesson than a summary of the literature.** The `agent/04` transcript was more valuable than the mechanism described abstractly, because the *unexpected* result — an honest child whose caveats still failed to survive compression — is a sharper and more defensible claim than the expected one. When a phase teaches a behaviour you can actually observe, spend the budget on observing it. This is also why the fabricated inputs are documented in the phase itself: a learner should know the trap was planted deliberately.
 16. **When verifying a track's remaining-work state, check the filesystem rather than trusting the handover.** I asserted in an early draft of this update that four folders existed; three did not. `Get-ChildItem ai-roadmaps -Directory` and `build-content.mjs`'s "no phase files yet" notes are the authoritative pair, and the latter is also how the missing `agents` folder was originally detected.
+17. **⭐ A GREEN BUILD DOES NOT MEAN THE APP WORKS.** This is the most expensive lesson of the session and the one most likely to repeat. `vite build` exited 0, `build-content.mjs --check` exited 0, `audit-quiz.mjs` exited 0, and `audit-lesson-ast.mjs` exited 0 — while clicking any phase threw React error #31 and rendered a blank page. The cause was two fields whose *element type* was not what I assumed: `topics` is an array of `{ heading, items }` objects and `resources` is `{ name, url }`, not string arrays. A build proves modules **resolve**; it says nothing about whether they **run**. Only a real browser found it.
+    - **The generalisation:** for every field you render, verify the shape of an ELEMENT, not just that the array exists. `Array.isArray(x)` passing tells you nothing, and neither does TypeScript-less JS.
+    - **The remedy built:** `learning-site/scripts/audit-shapes.mjs` asserts the element type per field, and three CDP-driven browser scripts actually click through the app. See §6.3.
+    - **Corollary — a passing browser check can also be a lie.** My first cross-track test reported "only 1 of 10 tracks renders". That was a **test bug**: it held element references across React re-renders, so every click after the first hit a detached node. `debug-tracks.mjs` (one step per evaluate, re-querying each time) proved all 6 written tracks render. **When a test fails, establish whether the app or the test is wrong before changing app code.**
+18. **Verify against the PRODUCTION build too, not just the dev server.** A stale `dist/` served a crash that had already been fixed in source, because I edited `PhaseDetail.jsx` *after* the last `vite build`. Both `verify-*.mjs` scripts now take `--url`, and the same suites were run green against `vite preview`. Minified, differently-chunked output is not the same artifact as dev.
+19. **Prefer an existing browser over installing a test dependency.** Edge was already on the machine, so browser verification runs over the Chrome DevTools Protocol with a `WebSocket` and `fetch` — both built into Node 24. Zero packages added. `--headless=old` was required; `--headless=new` refused with "Multiple targets are not supported".
+20. **Environment traps that cost real time, now written into `vite.config.js`:** (a) a headless-browser profile or an editor temp directory created *inside* the project makes Vite's watcher hit a locked handle and die with `EBUSY` — the config ignores `**/.*.tmpdir/**`; (b) Vite binds IPv6, so `http://localhost:5173` works and `http://127.0.0.1:5173` does **not**; (c) `new URL(x, import.meta.url).pathname` yields `/C:/...` on Windows — use `fileURLToPath`, since the regex workaround breaks on a lowercase drive letter or a UNC path.
+21. **A subagent's report is a claim, not a fact — check the specific ones that matter.** The port subagent flagged that my rename script had missed a fourth form (`transfer.js:729` had a bare `"cs-roadmap-"` string concat). It was right, and it was a genuine bug I had introduced. It also flagged the missing `src/data/tools.js`. Both confirmed by reading the files before acting. It was simultaneously wrong about one detail (it guessed `L283` came from a rule that does not match it), which is exactly why detail-level claims get verified rather than trusted wholesale.
 
 ---
 
@@ -797,12 +840,12 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
 The user's five-part objective, **as clarified mid-session**. The user later narrowed the emphasis: *"just want to really build a skill and knowledge so maybe i can get even ai job someday"* — so item 5 below is now a primary goal, not a footnote.
 
-1. **A complete curriculum** covering the full AI-era arc: foundations → LLMs → prompting → RAG/agents → fine-tuning → safety → career — **63 phases across 10 tracks** (31 done, 32 to go)
+1. **A complete curriculum** covering the full AI-era arc: foundations → LLMs → prompting → RAG/agents → fine-tuning → safety → career — **63 phases across 10 tracks** (**42 done, 21 to go**)
 2. **Deep vibecoding craft** — the 8-phase Vibecoding track
 3. **Model internals and vocabulary** — tokens, context, KV cache, attention, sampling, embeddings (largely covered by Foundations + Model Internals, both complete)
 4. **Cost and efficiency mastery** — token economics, caching, batching, routing, monitoring, local-vs-API — **plus the zero-budget freemium playbook** (`cost/07`)
 5. **Employability** — proof of skill, a portfolio that demonstrates judgement, and a concrete job-search and first-90-days plan (**the new Career track**)
-6. **A working learning site** that renders it all, with search, progress, quizzes, and a Today view
+6. ✅ **A working learning site** that renders it all, with search, progress, and quizzes — **done, and verified in a real browser against both the dev server and the production build.** (A separate "Today view" was never built; the sibling project's `lib/today.js` exists but is not wired to a page. Decide whether it is wanted before porting the page around it.)
 
 **Success criteria that must hold at the end:**
 - `node scripts/build-content.mjs --check` → exit 0
@@ -811,12 +854,15 @@ The user's five-part objective, **as clarified mid-session**. The user later nar
 - Build report shows **0 task ids minted from position**
 - Every ID authored; every paid tool row has a free alternative
 - **Every phase has a `## Free vs Paid` section that is honest about what free gives up**
-- The site builds and its test suites pass
+- `npm test` in `learning-site/` → exit 0 (4 offline checks)
+- `npm run test:browser` → all green (needs the dev server running)
 - Everything committed
+
+**Status of those criteria right now:** all content guards green; `npm test` green (4/4); browser suites green (25 checks) on dev **and** production. The remaining gap to "done" is **content**, not the site: 21 of 63 phases across 4 tracks.
 
 ---
 
-## 14. Standing design principles for the remaining 32 phases
+## 14. Standing design principles for the remaining 21 phases
 
 These emerged from the user's clarifying question and should govern everything still to be written.
 

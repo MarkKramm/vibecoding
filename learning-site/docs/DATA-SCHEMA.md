@@ -302,13 +302,18 @@ The badge tone comes from `costTone()` in `src/data/tools.js`, which classifies
 in a deliberate order — explicit zero-cost phrasing first, then freemium, then
 paid, then freemium as the default for the indeterminate — so that a string like
 `"Free to read (API calls are paid)"` reads as free, while `"Varies"` never reads
-as free. `test-cost-tone.mjs` re-derives the classification against the real
-corpus on every run, so a new cost phrase surfaces rather than silently
-mis-tiering. See VERIFICATION.md §2.
+as free. The classification is deliberately biased toward free: the reader this
+curriculum is written for has no budget, and wrongly labelling something free
+costs one wasted click, while wrongly labelling something free as paid means they
+never find the tool at all. `test-cost-tone.mjs` re-derives the classification
+against the real corpus on every run, so a new cost phrase surfaces rather than
+silently mis-tiering. See VERIFICATION.md §2.
 
 `name` is the de-duplication key for ToolsLibrary (lower-cased and trimmed), and
-each tool record also appears in that phase's light index record, so the tools
-page can be built without loading a track file.
+each tool record also appears in that phase’s light index record, so the tools
+page can be built without loading a track file — “what do I actually need to
+install, and what does it cost me?” is a question no single phase can answer, and
+this is the page that makes the zero-budget claim auditable.
 
 ---
 
@@ -331,7 +336,7 @@ through `phase.lessonPath` and caches it per path.
 `toc` entries are `{ level, text, id }` for **every heading in the lesson**, in
 document order. `Lesson.jsx` uses them for the on-this-page list and to observe
 which section is on screen, and `block.id` for a heading is the same string as
-its `toc` entry's `id`, which is what makes anchors and search-result jumps work.
+its `toc` entry’s `id`, which is what makes anchors and search-result jumps work.
 
 ### The six block types
 
@@ -444,8 +449,10 @@ which is why `LessonBlock.jsx` wraps them in a horizontal scroll container.
 **Anything else** hits the `switch` default in `LessonBlock.jsx` and renders a
 visible `Unsupported block type: <code>…</code>` paragraph. That is deliberate:
 a new type added to `scripts/lesson-ast.mjs` without a renderer here fails loudly
-on screen instead of vanishing silently. `verify-deep.mjs` asserts the string
-never appears anywhere (§3 of VERIFICATION.md).
+on screen instead of vanishing silently — “a new block type in the parser with no
+renderer here would otherwise vanish silently, which is exactly the failure this
+whole feature exists to prevent.” `verify-deep.mjs` asserts the string never
+appears anywhere (§3 of VERIFICATION.md).
 
 ---
 
@@ -552,3 +559,6 @@ bug before anything slower runs.
 If you add a field to a phase, add it to the `CONTRACT` map at the top of
 `audit-shapes.mjs` in the same commit. A field the audit does not know about is a
 field that can change shape unnoticed, which is the bug this file exists to stop.
+And remember what the audit is for: the build guard validates the Markdown, not
+the renderers, so the sentence “the data is fine, the build was green” has already
+been wrong once here.

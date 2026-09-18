@@ -155,8 +155,8 @@ package to the tree.
 - It drives **one phase of one track**. A lazy-load path that works for
   `foundations` and fails for `agents` passes this script completely. That is
   precisely why `verify-deep.mjs` exists.
-- It checks for the *presence* of things, not their correctness. "The quiz
-  section is present" is true of a quiz that marks every wrong answer right.
+- It checks for the *presence* of things, not their correctness. “The quiz
+  section is present” is true of a quiz that marks every wrong answer right.
 - It asserts against **baked-in numbers** (42 phases, 706 checklist items). Those
   are drift detectors, not invariants: they will fail the moment a track is
   authored, which is a *correct* failure but a noisy one, and they must be
@@ -180,7 +180,7 @@ package to the tree.
 
 1. the quiz rendered with options,
 2. **option 0 is not always the correct answer** — it clicks the first option of
-   every question and asserts the summary does *not* say "Every answer correct",
+   every question and asserts the summary does *not* say “Every answer correct”,
    which is what an inverted or off-by-one normalisation would produce,
 3. the dashboard has all **42** cards after navigating back,
 4. **every written track renders a full phase** — it opens the first phase of
@@ -196,7 +196,7 @@ package to the tree.
 whole journey — click a card, wait, click "All tracks", repeat — inside a single
 `evaluate` holding element references across React re-renders. After the first
 navigation those nodes were detached, every later click silently did nothing, and
-the result read as **"only 1 of 10 tracks renders"**: a test artifact that looked
+the result read as **“only 1 of 10 tracks renders”**: a test artifact that looked
 exactly like a serious app bug. The fix is one step per `evaluate`, re-querying
 the DOM every time. It is slower and it is correct, and `debug-tracks.mjs` exists
 to tell the two cases apart.
@@ -209,8 +209,8 @@ to tell the two cases apart.
   question's correct answer happened to be option 0, it would report a false
   failure. It is a smoke test for the normalisation, not a proof of it — that is
   `verify-quiz-correctness.mjs`.
-- Check 4 skips tracks with zero cards, so it proves "six tracks render", not "ten
-  tracks render". Four tracks are unwritten and this script is honest about that,
+- Check 4 skips tracks with zero cards, so it proves “six tracks render”, not “ten
+  tracks render”. Four tracks are unwritten and this script is honest about that,
   but it means the check silently narrows if a track regresses to zero phases.
 - Search is checked with a single known-good term, `attention`. It proves the
   index loads and returns *something*; it does not prove ranking quality.
@@ -246,7 +246,7 @@ prints each question's `answerIndex`, then drives the real UI:
 
 1. It resets any previously saved answers so the score is unambiguous.
 2. It clicks the option the **source** says is correct, for every question, and
-   asserts the app reports *"Every answer correct"*.
+   asserts the app reports *“Every answer correct”*.
 3. It resets, deliberately answers question 1 **wrong** (the next index after the
    correct one, modulo the option count), answers the rest correctly, and asserts
    the app does **not** claim perfection and **does** flag question 1.
@@ -282,7 +282,7 @@ the component stack says which component threw and on what.
 **`debug-tracks.mjs`** re-runs the cross-track journey **one step per evaluate,
 re-querying the DOM every time**, and prints a per-track line:
 `chars`, whether a quiz is present, how many `Unsupported block type` strings
-appeared, whether it is still loading, and the page's `h1`. If this script
+appeared, whether it is still loading, and the page’s `h1`. If this script
 succeeds where the batch test failed, the **batch test was at fault** (stale
 element references across React re-renders). If it fails too, the app is.
 
@@ -326,10 +326,12 @@ Two rules follow from it, and both are worth applying to any future guard:
   pass, break the input deliberately and confirm the guard fails. This was done
   once for `audit-quiz.mjs` and it behaved correctly; the same discipline applied
   to the build guard would have shown immediately that it had no opinion about
-  render shapes.
+  render shapes. The corollary is harsher: **a guard that has never failed may
+  never have run.** `audit-shapes.mjs` and `audit-encoding.mjs` are new enough
+  that their first real failure is still ahead of them.
 - **Never edit a guard to agree with the code.** If an audit fails, the data or
   the component is wrong. Adjusting the assertion makes the failure permanent and
-  invisible.
+  invisible — and the failure it hides is the one that reaches a reader.
 
 ---
 
@@ -370,8 +372,8 @@ write a new browser script, do the same. A profile directory inside
 
 Vite binds the dev server on IPv6. `http://localhost:5173` resolves to `::1` and
 works; `http://127.0.0.1:5173` does **not**, and the failure presents as a
-connection refused or a page that never loads — which reads as "the server is
-down" when it is running perfectly.
+connection refused or a page that never loads — which reads as “the server is
+down” when it is running perfectly.
 
 Every browser script and every default URL in this suite uses `localhost` for
 that reason. `verify-site.mjs` accepts `--url`; if you override it, override it
@@ -400,7 +402,7 @@ Two PowerShell notes that have cost time before. `build-content.mjs` writes
 track-absence notes to **stderr**, which PowerShell renders as a red
 `NativeCommandError` block — this is **not** a failure; check `$LASTEXITCODE`.
 And when a non-ASCII character looks wrong in PowerShell output, **check the raw
-bytes before "fixing" it**: the console decoding is a likely culprit and the file
+bytes before “fixing” it**: the console decoding is a likely culprit and the file
 is probably correct. That exact false alarm has already happened twice here.
 
 Encoding is checked mechanically by `learning-site/scripts/audit-encoding.mjs`,

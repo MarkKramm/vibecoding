@@ -26,7 +26,7 @@ API. Navigation funnels through one function, `openPhase(trackId, phaseId, ancho
 
 **Why.** Five views, no nested routes, and no URLs a reader needs to bookmark or
 share. A router would add a dependency, a `basename` that has to track Vite's
-`base` for GitHub Pages subdirectory hosting, and a class of "blank page on hard
+`base` for GitHub Pages subdirectory hosting, and a class of “blank page on hard
 refresh" bug that appears only once deployed — in exchange for nothing the reader
 uses. Deep-linking into a phase is the one genuinely useful thing a router would
 provide, and it is handled explicitly: dashboard cards, search results, tools
@@ -39,7 +39,6 @@ and nothing else.
 as a link. If the site ever gains accounts or sharing, this is the first thing to
 revisit — and the single navigation entry point is exactly where a router would
 be introduced.
-
 ---
 
 ## D-002 — The light index: two projections of one parse
@@ -103,12 +102,14 @@ place in the app where a silent error teaches something false.
 from `CS Roadmap`. Where the data shape differed, the **data** was adapted rather
 than the component, and where a field is identical the component is untouched.
 
-**Why.** The sibling project's architecture was already proven — the same
+**Why.** The sibling project’s architecture was already proven — the same
 Markdown → build → JSON → React pipeline, the same quiz and progress semantics,
 the same local-first storage model. Rewriting working components to suit a new
 curriculum would have meant re-finding bugs that had already been found, and every
 divergence would make copying a future upstream fix harder. Keeping components
-byte-identical is what makes `git diff` against the sibling meaningful.
+byte-identical is what makes a `git diff` against the sibling meaningful — and it
+is the whole reason the quiz adapter sits in the data layer (D-003) rather than
+inside the component that consumes it.
 
 **Cost.** The site carries real dead weight. A migration script identified four
 distinct forms of the old namespace, and something similar is true of the
@@ -119,9 +120,13 @@ ported (D-008). The same is true of `src/lib/review.js`, `today.js`,
 `pathOrder.js` and `yourWork.js`: `today.js` is still imported for its `BANDS`
 labels, but `review.js`, `pathOrder.js` and `yourWork.js` have no importers at
 all. They are kept because they are tested pure modules and because the career
-material may yet return — but "ported verbatim" means "ported including the parts
-this curriculum does not use", and a future cleanup should start by listing
-importers rather than by assuming every file in `src/lib/` is live.
+material may yet return. The honest framing is that **“ported verbatim” means
+“ported including the parts this curriculum does not use”**, so a future cleanup
+should start by listing importers rather than by assuming everything in `src/lib/`
+is live. Note also the corollary for the no-shame rules: D-019, D-020 and D-021
+are cited from `review.js`, `yourWork.js` and `global.css`, so deleting the
+unimported modules would not delete the principles — but it would delete the code
+comments that carry them into the future.
 
 ---
 
@@ -174,7 +179,7 @@ cost nothing and cannot go down.
 **Cost.** Clearing a browser profile, changing laptops or reinstalling destroys
 months of work on a curriculum that runs tens of weeks, and nothing in the UI
 would have said so. That is what D-016 exists to answer. The deeper cost is that
-"which browser did I use" becomes a real question, and there is no recovery path
+“which browser did I use” becomes a real question, and there is no recovery path
 that does not depend on the reader having exported a backup.
 
 ---
@@ -188,8 +193,9 @@ and four pure modules were still ported and remain in the tree.
 **Why.** The sibling curriculum ends in a job hunt with deadlines attached: a
 schedule to keep, applications to track, certifications to price, a portfolio to
 assemble. This curriculum has no deadline — the reader is building a skill — and
-the useful landing view is "what exists, what is finished, what is next" rather
-than "what is due". That is why the dashboard is a map (D-007 in spirit) and why
+the useful landing view is “what exists, what is finished, what is next” rather
+than “what is due”. That is why the dashboard is a map rather than a to-do list,
+and why
 `Dashboard.jsx` deliberately shows the four unwritten tracks rather than hiding
 them. Porting those six views would have added surface area that nothing in the
 content refers to. The career material lives in the Career track's own phases,
@@ -239,7 +245,7 @@ partially applied.
 
 **Why.** D-006's cost is data loss with no warning; this is the answer to it. The
 strictness is the important part: a backup is read back by a program, not a
-person, so "close enough" is a corruption. A format that silently accepts a
+person, so “close enough” is a corruption. A format that silently accepts a
 malformed file and writes it over good data is worse than no backup at all —
 especially for `vibecoding:quiz:v1`, where the value is an option **index** and an
 imported `"2"` as a string would compare against an index and quietly mark a right
@@ -278,7 +284,7 @@ every answer the moment a distractor was reworded.
 **Cost.** Two stores to keep in step, and a reader can have a ticked checklist and
 an empty answer box with no reconciliation between them. The styles are
 deliberately quiet — a note box that shouts reads as a demand — which means the
-feature is easy to miss entirely. A dashboard that showed "you have written
+feature is easy to miss entirely. A dashboard that showed “you have written
 nothing" would fix the discoverability and break the rule, so the discoverability
 problem is accepted.
 
@@ -303,7 +309,7 @@ nothing to tick, because reference material is looked up rather than completed.
 why `today.js` cannot reorder the curriculum and why `useQuizAnswers.js` stores
 the minimum needed for a revisit list — which option was picked, keyed by question
 id — and deliberately stores no ratio and no history of a phase getting better or
-worse. A future "add a score" request is a change to the product's stance, not a
+worse. A future “add a score” request is a change to the product’s stance, not a
 small feature, and should be argued as one.
 
 ---
@@ -323,7 +329,7 @@ own band because it is not a longer task — it is a weekly habit, something gat
 on time passing, or something the reader's machine may not be able to do at all.
 A slider would imply a precision nobody has.
 
-**Cost.** A reader with 45 minutes cannot ask for "tasks between 30 and 60
+**Cost.** A reader with 45 minutes cannot ask for “tasks between 30 and 60
 minutes", because that distinction was deliberately not encoded. A task that
 really takes 25 minutes sits in the same band as one that takes 29. And the bands
 are estimates that nobody re-measures: they were set once from the corpus and will
@@ -340,7 +346,7 @@ many were right, how many were answered, any ratio, and any history of a phase
 getting better or worse.
 
 **Why.** The quiz originally held its answers in `useState`, on the stated
-reasoning that "a quiz is for the moment you take it, and persisting it would turn
+reasoning that “a quiz is for the moment you take it, and persisting it would turn
 a self-check into a permanent record of how you did." That reasoning was sound and
 the outcome was still wrong. Answering a set and navigating away discarded the only
 evidence the reader had produced about what they did not yet understand — and the
@@ -354,9 +360,9 @@ objection. Persisting the picked option is enough to rebuild a revisit list, and
 the review page therefore shows *what to look at again* — a statement about a pile
 of paper — and never *how you did*, which would be the report card D-020 refuses.
 
-**Cost.** The line between "enough to build a revisit list" and "a score" is a
+**Cost.** The line between “enough to build a revisit list” and “a score” is a
 maintenance burden, not a one-time judgement. Every future addition to the quiz
-has to be checked against it: adding a per-question "times missed" counter, or a
+has to be checked against it: adding a per-question “times missed” counter, or a
 phase-level improvement indicator, would reintroduce grading through the back door
 while looking like a small UX improvement. Answers are also stored as indices, so
 a backup carrying a string index is rejected rather than coerced (D-016) — safe,
@@ -384,7 +390,7 @@ decision. A curriculum that appears to have six tracks when ten are planned
 misleads the reader about the size of what they are committing to, and showing the
 gaps makes progress visible as phases land.
 
-**Cost.** "Missing" and "empty" are now the same outcome, so a track file that
+**Cost.** “Missing” and “empty” are now the same outcome, so a track file that
 fails to be emitted because something is genuinely wrong looks exactly like a
 track that has not been written yet. The distinguishing evidence lives in the
 build log, not in the UI. There is also a silent-narrowing hazard in the tests:
@@ -393,7 +399,7 @@ zero phases, the deep pass would quietly check six tracks instead of failing.
 
 ---
 
-## D-046 — A malformed quiz question fails toward "no answer is correct"
+## D-046 — A malformed quiz question fails toward “no answer is correct”
 
 **Decision.** `normaliseQuestion` uses `answerIndex` as the only source of truth
 for correctness. A question whose `answerIndex` is missing or out of range yields
@@ -402,7 +408,7 @@ options that are **all** `correct: false`. `lib/quiz.js`'s `correctIndex` return
 inspected to guess which answer is right.
 
 **Why.** Two failure modes are being refused at once. Inspecting text is the first:
-a phase whose distractor happened to contain the word "correct" would be able to
+a phase whose distractor happened to contain the word “correct” would be able to
 mark itself right, which is why `lib/quiz.js` reads `o.correct === true` strictly.
 The second is the direction of failure. A quiz that marks a distractor correct
 teaches something false, while a quiz that marks nothing correct shows the reader
@@ -414,7 +420,7 @@ fallbacks already render sensibly.
 **Cost.** A malformed question fails **silently** in the UI. The reader sees a
 question, answers it, and is told nothing they picked was right — which looks like
 a broken quiz rather than a content defect. Nothing about the rendered page says
-"this question has no answer key". The defence is upstream and must stay there:
+“this question has no answer key”. The defence is upstream and must stay there:
 the build guard requires exactly one `[x]` per question in the Markdown, and
 `audit-shapes.mjs` independently checks that `answerIndex` is a number within
 range and that `why` is non-empty. The runtime stays tolerant because the build is
