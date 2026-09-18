@@ -255,95 +255,311 @@ The page footer carries "Last updated: Sep 18, 2026", so it is current. OpenCode
 
 ## 2. Free API access
 
-See [§6](#6-what-could-not-be-verified-and-why) for the status of this section — a dedicated research pass on free API providers was still running when this brief was written, and only the findings that were independently verified are recorded below. **This section is deliberately thin rather than padded.**
+Three providers clear the bar for a Philippine learner with no card: **Google AI Studio / Gemini API**, **Groq**, and **OpenRouter**. Cloudflare Workers AI is a smaller fourth. Everything else verified here either has no free tier, requires a card, or requires a minimum top-up.
 
-### 2.1 Google AI Studio / Gemini API — free tier, and the Philippines is supported
+| Provider | Free tier | Card needed? | Trains on your data? | PH status |
+| --- | --- | --- | --- | --- |
+| Google AI Studio / Gemini API | Yes — free models incl. Gemini 3.8 Flash | No | **Yes** (free tier) | **Explicitly listed** |
+| Groq | Yes — 1K RPD on gpt-oss-120b | No | **No, by default** | No block found |
+| OpenRouter | Yes — 50 RPD on `:free` models | No | Provider-dependent | No block found |
+| Cloudflare Workers AI | Yes — 10,000 Neurons/day | No | **No** | No block found |
+| Z.AI / GLM | Yes — Flash models free | Likely no | Not verified | Not verified |
+| Mistral | Limited-period free coding endpoint | Unverified | Unverified | Unverified |
+| Cerebras | **No permanent free tier** | **Yes** | — | — |
+| DeepSeek | **No** — requires topped-up balance | Yes | — | — |
+| Moonshot / Kimi | **No** — "recharge at least $1 to start using" | Yes | — | — |
+| Together AI | **No** free allowance documented | — | May use for product improvement | — |
+| GitHub Models | **Retired 2026-07-30** | — | — | — |
 
-Two facts a Philippine learner specifically needs:
+### 2.1 Google AI Studio / Gemini API
 
-- **The Philippines is an available region** for the Gemini API. Google's available-regions page lists it.
-  — https://ai.google.dev/gemini-api/docs/available-regions (page last updated 2026-04-28)
-- **The free tier is not the same as the paid tier for data use.** Google's own terms draw a hard line:
+**The Philippines is explicitly supported.** Google's available-regions page lists "Philippines" among available countries and territories.
+— https://ai.google.dev/gemini-api/docs/available-regions (last updated 2026-04-28)
+
+This matters because Google's terms contain a *region* restriction that could have excluded a learner: "You may use only Paid Services when making API Clients available to users in the European Economic Area, Switzerland, or the United Kingdom." The Philippines is not in that set, so building for Philippine users on the free tier is permitted.
+— https://ai.google.dev/gemini-api/terms (effective March 23, 2026)
+
+**Which models are free.** Gemini 3.8 Flash, Gemini 3.6 Flash, Gemini 3.5 Flash, Gemini 3.5 Flash-Lite, Gemini 3.1 Flash-Lite, Gemini 3 Flash Preview, Gemini 2.5 Pro, Gemini 2.5 Flash, Gemini 2.5 Flash-Lite, Gemma 4 and Gemini Embedding 2 are free of charge. Explicitly **not available** on the free tier: Gemini 3.7 Flash, Gemini 3.1 Pro Preview, Gemini 3.1 Flash Image, Gemini 3 Pro Image, Veo 3.1, Lyria and others. The free tier also has **no Grounding with Google Search**.
+— https://ai.google.dev/gemini-api/docs/pricing `as of 2026-09`
+
+Gemini 3.8 Flash is the one that matters for coding — the same pricing page describes it as "engineered for long-horizon software engineering, autonomous agents". Paid price is $0.75/$3.75 per 1M tokens **through December 31, 2026**, after which it doubles.
+
+**Exact rate limits are no longer published.** This is a change worth knowing, because third-party blogs still quote numbers that Google has withdrawn. The rate-limits page now says only: "Rate limits depend on a variety of factors (such as your usage tier) and can be viewed in Google AI Studio." It confirms the mechanics — limits are RPM / TPM(input) / RPD, applied **per project not per API key**, with RPD resetting at midnight Pacific — and that spend-based limits are "N/A" on the free tier, whose qualification is "Active project or free trial".
+— https://ai.google.dev/gemini-api/docs/rate-limits (last updated 2026-09-02 UTC)
+
+**Any specific "15 RPM / 1,500 RPD" figure you see quoted is unsourced as of 2026-09.** The numbers live behind a signed-in AI Studio page.
+
+**The free tier trains on your data, and humans can read it.** This is the cost of the free tier and it is stated bluntly:
 
 > "When you use Unpaid Services, including, for example, **Google AI Studio and the unpaid quota on Gemini API, Google uses the content you submit to the Services and any generated responses to provide, improve, and develop Google products and services and machine learning technologies** … To help with quality and improve our products, **human reviewers may read, annotate, and process your API input and output.** … **Do not submit sensitive, confidential, or personal information to the Unpaid Services.**"
 
-> "When you use Paid Services … **Google doesn't use your prompts … or responses to improve our products.**"
+The paid tier is the opposite: "When you use Paid Services … Google doesn't use your prompts … or responses to improve our products." The pricing page reduces this to one line per model: "Used to improve our products: Yes (Free Tier) / No (Paid Tier)."
+— https://ai.google.dev/gemini-api/terms and https://ai.google.dev/gemini-api/docs/pricing
 
-— https://ai.google.dev/gemini-api/terms (effective March 23, 2026)
+There is a **trap documented in the same terms** that inverts the naive reading: "Your access to Google AI Studio is a 'Paid Service' even when it is offered free of charge, as long as the account you are using to access Google AI Studio has access to a Cloud Project with an associated and active Cloud Billing account." Linking billing anywhere on the account flips the whole account to paid data treatment — better privacy, but also no longer the free quota.
 
-There is a **trap documented on that same page** that inverts the naive reading: "Your access to Google AI Studio is a 'Paid Service' even when it is offered free of charge, as long as the account you are using to access Google AI Studio has access to a Cloud Project with an associated and active Cloud Billing account." Linking billing anywhere on the account flips the whole account to paid data treatment — which cuts both ways (better privacy, but no longer the free quota).
+Two eligibility constraints, both stated in the terms: "You must be 18 years of age or older to use the APIs", and use is "for developers building with Google AI models for professional or business purposes, **not for consumer use**".
 
-Also from the same terms: the services are "for developers building with Google AI models for professional or business purposes, **not for consumer use**", and users "must be 18 years of age or older".
+**Card:** none needed for the free tier; billing is only required to reach Tier 1.
 
-**Exact free-tier rate limits for the Philippines: Unverified in this session.** The rate-limits page was not fetched. Do not quote a requests-per-day number without checking https://ai.google.dev/gemini-api/docs/rate-limits directly.
+### 2.2 Groq — the best data policy of the free tiers
 
-### 2.2 OpenRouter free models
+Groq's free plan is genuine, requires no card, and — unusually — **does not retain your data by default**:
 
-OpenRouter exposes models tagged `:free`. The `:free` catalogue is real and browsable.
-— https://openrouter.ai/models?max_price=0
+> "By default, Groq does not retain customer data for inference requests." Retention applies only to opt-in features (batch, fine-tuning) or for reliability and abuse, up to 30 days. "All customers may enable Zero Data Retention (ZDR) in Data Controls settings."
 
-A prior finding from this session's research pass records the limits as **20 requests/minute and 50 requests/day**, rising to 1,000/day once $10 of credits have been purchased all-time, with tier selection based on all-time credits purchased.
-— https://openrouter.ai/docs/api-reference/limits
+— https://console.groq.com/docs/your-data
 
-**Treat those numbers as needing a re-check before publication** — I did not personally fetch that limits page, and OpenRouter changes them. The structurally important point, which is stable: **the `:free` tier on OpenRouter trains on your data by default unless you disable it in privacy settings**, which is the standard trade for a free model. Verify the current wording at https://openrouter.ai/docs/features/privacy-and-logging before teaching it.
+Free-plan rate limits, from the published table `as of 2026-09`:
 
-### 2.3 Providers with no usable free tier for a $0 learner
+| Model | RPM | RPD | TPM | TPD |
+| --- | --- | --- | --- | --- |
+| `openai/gpt-oss-120b` | 30 | 1,000 | 8K | 200K |
+| `openai/gpt-oss-20b` | 30 | 1,000 | 8K | 200K |
+| `qwen/qwen3.8-27b` | 30 | 1,000 | 8K | 200K |
+| `groq/compound` | 30 | 250 | 70K | — |
 
-**Cerebras — no permanently free tier, and the trial needs a card.** Their rate-limits FAQ states that new accounts receive $5 in free credits **after adding a verified payment method**, expiring 30 days after they are granted, and answers the permanent-tier question directly with "No."
+— https://console.groq.com/docs/rate-limits
+
+Two notes from that page: limits "apply at the organization level, not individual users", and "Cached tokens do not count towards your rate limits."
+
+**Card:** "To upgrade from the Free tier to the Developer tier, you'll need to provide a valid payment method." The free tier itself requires none. Accepted methods when you do pay are credit cards, US bank accounts and SEPA debit accounts.
+— https://console.groq.com/docs/billing-faqs
+
+**Caveat:** Groq's public website Terms of Use explicitly **exclude** the API — "These Terms do not apply to you in connection with your use of Groq's cloud services … the Groq Services Agreement governs" — and that agreement could not be fetched. **Whether GroqCloud's customer terms contain a country-eligibility restriction is Unverified.** No Philippine block was found, but "not blocked" is not the same as "affirmatively permitted".
+— https://groq.com/terms-of-use (effective October 15, 2025)
+
+### 2.3 OpenRouter — variety, but a tight daily cap
+
+OpenRouter's free tier is real and needs no card, but the daily ceiling is low:
+
+| Credits purchased (all time) | Requests per minute | Requests per day |
+| --- | --- | --- |
+| Less than $10 | 20 | **50** |
+| At least $10 | 20 | **1,000** |
+
+— https://openrouter.ai/docs/api_reference/limits and https://openrouter.ai/docs/faq `as of 2026-09`
+
+Two constraints from the same pages: "Making additional accounts or API keys will not affect your rate limits, as we govern capacity globally", and "If your account has a negative credit balance, you may see 402 errors, including for free models."
+
+**22 `:free` models were live at the time of research**, verified by filtering the live catalogue endpoint for IDs ending in `:free`. Coding-relevant ones include `deepseek/deepseek-v4-flash-0731:free` (1,048,576 context), `z-ai/glm-5.2:free` (32,768 context, described as "suited for long-horizon agent workflows, project-level software engineering"), `qwen/qwen3.8-27b:free` (262,144 context), `cohere/north-mini-code:free`, `poolside/laguna-s-2.1:free` and `nvidia/nemotron-3-ultra-550b-a55b:free`.
+— https://openrouter.ai/api/v1/models `as of 2026-09`
+
+One model carries an explicit anti-recommendation in its own description: `liquid/lfm-2.5-2.6b` — "Liquid advises against using it for agentic coding". (same endpoint)
+
+**The training policy is provider-dependent, and that is the catch.** OpenRouter itself is clean — "OpenRouter does not store your prompts or responses, unless you opt in" — but the upstream provider may not be:
+
+> "Each provider on OpenRouter has its own data handling policies... On your account settings page, you can set whether you would like to allow routing to providers that may train on your data (according to their own policies). **There are separate settings for paid and free models.**"
+> "Providers that do log, or where we have been unable to confirm their policy, **will not be routed to unless the model training toggle is switched on** in the privacy settings tab."
+
+— https://openrouter.ai/docs/guides/privacy/provider-logging and https://openrouter.ai/docs/faq
+
+**Unverified:** the per-provider train/don't-train flag for each individual `:free` model. That table is client-rendered and was not present in the fetched HTML. **Unverified:** OpenRouter's terms-level Philippine eligibility (the terms page rendered client-side with no readable body), though no block was found.
+
+### 2.4 Cloudflare Workers AI — small, but the cleanest data terms
+
+> "Workers AI is included in both the Free and Paid Workers plans and is priced at **$0.011 per 1,000 Neurons**. Our free allocation allows anyone to use a total of **10,000 Neurons per day at no charge**... All limits reset daily at 00:00 UTC."
+
+— https://developers.cloudflare.com/workers-ai/platform/pricing/ (last updated Sep 17, 2026)
+Text generation is capped at 300 requests per minute — https://developers.cloudflare.com/workers-ai/platform/limits/ (last updated Sep 17, 2026)
+
+The data policy is the strongest of any provider found:
+
+> "Cloudflare does not use your Customer Content to (1) train any AI models made available on Workers AI or (2) improve any Cloudflare or third-party services, and would not do so unless we received your explicit consent."
+
+— https://developers.cloudflare.com/workers-ai/platform/data-usage/ (last updated Apr 21, 2026)
+
+**Important catch:** the best coding models require a paid billing method. Named explicitly as paid-only: `@cf/moonshotai/kimi-k2.6`, `@cf/moonshotai/kimi-k2.7-code`, `@cf/zai-org/glm-5.2`, `@cf/zai-org/glm-5.3`, `@cf/zai-org/glm-5.3-flash`, `@cf/deepseek-ai/deepseek-v4-flash-0731` and `@cf/deepseek-ai/deepseek-v4-pro-0813`. Free-tier-usable coding models include `@cf/qwen/qwen2.5-coder-32b-instruct` and `@cf/openai/gpt-oss-120b`.
+
+**Reality check on the size:** at 10,000 Neurons/day, `qwen2.5-coder-32b-instruct` yields roughly **160K input tokens per day**. That is a real allowance but a small one — enough for a study session, not a working day.
+
+### 2.5 Z.AI / GLM — free Flash models
+
+Z.AI's pricing page lists several models with every price column reading "Free": **GLM-4.7-Flash**, **GLM-4.5-Flash** and **GLM-4.6V-Flash** (a vision model). Everything else is paid (GLM-5.3 at $1.4/$4.4 per 1M, GLM-5.3-Flash at $0.15/$0.50).
+— https://docs.z.ai/guides/overview/pricing `as of 2026-09`
+
+Signup is documented as: "Access Z.AI Open Platform, Register or Login. Access Billing Page to top up **if needed**. Create an API Key." The "if needed" phrasing implies the free models work without payment.
+— https://docs.z.ai/guides/overview/quick-start
+
+**Unverified:** Z.AI's rate limits for the free Flash models (no rate-limit page found), whether a card is required at signup, and Philippine eligibility. The docs' own upsell copy — "Tired of limits? GLM Coding Plan — monthly access... All from just $18/month" — implies the free tiers are meaningfully rate-limited.
+
+### 2.6 Mistral — a free coding endpoint exists, but the free *plan* is unverifiable
+
+The documented "Experiment" plan URL returns **HTTP 404**; Mistral restructured its docs around Vibe / Studio / Admin, and the `laplateforme/tier` path is dead — including the `.md` variant that Mistral's own `llms.txt` still advertises.
+— https://docs.mistral.ai/deployment/laplateforme/tier/ → 404; https://docs.mistral.ai/llms.txt
+
+What *is* verified: Mistral's API pricing page carries a "Coding API endpoint" line reading "We are keeping this endpoint highly accessible for a **limited period** to gather realistic feedback and observability data to fuel the next generation of verified code models. **Free**", and marks Mistral Moderation 2 as free.
+— https://mistral.ai/pricing/api/
+
+**Unverified:** the existence, shape and limits of any "Experiment" plan, whether a card is required, the free endpoint's model name and rate limits, and PH eligibility. **Do not put numbers in a lesson.**
+
+### 2.7 Providers with no usable free tier for a $0 learner
+
+**Cerebras — no permanently free tier, and the trial needs a card.** Their rate-limits FAQ is unambiguous:
+
+> "New accounts receive **$5 in free credits after adding a verified payment method**. These credits expire 30 days after they're granted... If you skip adding a payment method at sign-up, Playground and API access remain inactive until you do."
+> "**Is there a permanently free tier? No.** ... Cerebras doesn't currently offer a no-cost tier that renews automatically or a per-model always-free allowance."
+
 — https://inference-docs.cerebras.ai/support/rate-limits
 
-**GitHub Models — retired.** It is gone, not merely rate-limited.
+This is a direct correction to the common belief that Cerebras is a generous free provider. It fails on both card and permanence.
+
+**GitHub Models — retired.** "As of **July 30, 2026**, GitHub Models has been fully retired. The playground, model catalog, inference API, and bring your own key (BYOK) are no longer available to any customer."
 — https://docs.github.com/en/github-models
 
-### 2.4 Free-model access inside the paid clients, revisited
+**DeepSeek — no free tier.** Pricing is per-token, and the docs state the cost "will be directly deducted from your topped-up balance or granted balance". A topped-up balance is required.
+— https://api-docs.deepseek.com/quick_start/pricing
 
-The cheapest genuine "free but limited" path for a learner is not a free API at all — it is one of the $0 client tiers in [§1](#1-which-tools-have-a-genuinely-usable-free-tier) whose quota is metered in *agent work* rather than tokens. Antigravity Individual and Copilot Free are the two strongest, and neither publishes a countable number, which is itself the honest answer to "how much do I get?" — **enough to learn, not enough to rely on.**
+**Moonshot / Kimi — requires a minimum top-up.** "To prevent abuse, you need to **recharge at least $1 to start using**, and when your cumulative recharge reaches $5, you will receive a $5 voucher." Rate limits are keyed to cumulative recharge.
+— https://platform.kimi.ai/docs/pricing/limits
+
+**Together AI — no documented free allowance.** "Together uses **dynamic rate limits** instead of fixed thresholds... there are **no fixed per-model limits published**." Its privacy page also notes that "By default, Together stores the prompts you send and the responses models return, and **may use them for product improvements**."
+— https://docs.together.ai/docs/serverless/rate-limits and https://docs.together.ai/docs/privacy-and-security
+
+**Not investigated:** NVIDIA NIM, Fireworks, and Alibaba Model Studio / Qwen. No official pages were fetched, so no claim is made about their free allowances or PH access.
+
+### 2.8 The practical $0 API stack
+
+The strongest verified combination is **Gemini free tier for capability, Groq free tier for privacy and volume, OpenRouter for model variety**. That covers a learner's needs without a card. The trade to teach explicitly: **Gemini's free tier is the most capable and the least private** — Google states that human reviewers may read free-tier prompts and outputs. Groq inverts that: 1,000 requests/day on gpt-oss-120b with no retention by default.
 
 ## 3. Local and open models
 
-A dedicated research pass on local models was still running when this brief was written. What follows is only what was verified directly. **This section is the largest acknowledged gap in the document.**
+**The uncomfortable headline: the best open-weight coding models in the world as of 2026-09 are datacenter-only.** GLM-5, Kimi K3 and DeepSeek V4 are all 290B–2.8T-parameter models whose minimum practical footprint is measured in hundreds of gigabytes. Their licences are genuinely open (some MIT), but "open weights" here means "downloadable by anyone with a cluster", not "runnable by anyone". **A learner on a laptop cannot run them at any quantisation.**
 
-### 3.1 What the free clients themselves recommend
+The realistic local tier is **7B–30B**, where the honest standouts are **Gemma 4 12B**, **Qwen3-Coder-30B-A3B**, **gpt-oss-20b** and **Qwen3.8-27B** — three of which are Apache-2.0, and one of which (gpt-oss-20b) has an explicit vendor memory target that fits a 16 GB laptop.
 
-Continue's own docs give the most useful short list of models that are actually runnable locally, together with an honest capability warning:
+### 3.1 Three model names that do not exist
 
-> "These models can be run on your computer if you have enough VRAM. **Their limited tool calling and reasoning capabilities will make it challenging to use agent mode.**"
+These came up as candidates and are **false as of 2026-09**. Do not let them into a lesson.
 
-The local models it names: Qwen3 Coder 30B, gpt-oss-20b, Devstral Small 27B, Qwen2.5-Coder 7B, Gemma 3 4B, Qwen2.5-Coder 1.5B.
-— https://docs.continue.dev/customize/models `as of 2026-09`
+| Commonly written | Reality |
+| --- | --- |
+| "Qwen3.5-Coder" / "Qwen3.8-Coder" | **Does not exist.** The official coder line ends at **Qwen3-Coder** (30B-A3B, 480B-A35B). The Qwen main line moved to Qwen3.8-27B / Qwen3.8-2.4T-A95B. |
+| "Llama 5" | **Does not exist.** Meta's newest open weights are still **Llama 4 Scout/Maverick (April 2025)** — roughly 17 months old. "Llama 5 leak" blog posts are not evidence. |
+| "DeepSeek-Coder-V3" | Superseded. The current release is **DeepSeek V4** (V4-Pro 1.6T / V4-Flash 290B), MIT-licensed. |
 
-That warning is the single most important quality statement in this section, and it comes from a vendor with every incentive to be optimistic. **A small local model is fine for autocomplete and single-file edits, and unreliable for multi-step agent work.**
+Verified by enumerating the Hugging Face API listings for those organisations — third-party fine-tunes with those names exist, official ones do not.
+— https://huggingface.co/api/models?author=meta-llama&sort=createdAt&direction=-1&limit=20 `as of 2026-09`
 
-Continue's role-by-role table also states the gap plainly: for agent planning it lists "Closed models are slightly better than open models", and for apply/edit it says "Closed models are better than open models".
-— same URL
+### 3.2 Frontier open-weight tier — not runnable by an individual
 
-### 3.2 Running local models, and the context-window trap
+| Model | Params (total / active) | Context | Licence | Runnable on |
+| --- | --- | --- | --- | --- |
+| GLM-5 (Z.ai) | 744B / 40B MoE | 200K | **MIT** | 8× H200/H20 minimum |
+| Kimi K3 (Moonshot) | 2.8T / 104B MoE | 1,048,576 | **Custom "Kimi K3 License"** | Datacenter |
+| DeepSeek V4-Pro | 1.6T / 49B MoE | 1M | **MIT** | ~860 GB at FP8 |
+| DeepSeek V4-Flash | 290B / 13B MoE | 1M | **MIT** | ~160 GB at FP8 |
+| Qwen3.8-2.4T-A95B | 2.4T / 95B MoE | — | `license: other` | Datacenter |
 
-Aider's Ollama documentation contains a warning that is worth teaching verbatim, because it is a silent failure rather than an error:
+The tell for GLM-5 is in its own deployment recipe: `--tensor-parallel-size 8`. A Hugging Face community analysis is blunt about the consequence — "you'll need at least 8 H200s (or H20s) for FP8 inference… It is an API model for 99% of users."
+— https://huggingface.co/zai-org/GLM-5 and https://huggingface.co/blog/mlabonne/glm-5
+
+**Do not call Kimi K3 "open source" without qualification.** Its licence is permissive for individuals, but §2 requires a separate agreement with Moonshot if you operate a "Model as a Service" business above $20M revenue over any 12 months, and §3 requires prominent UI attribution above 100M MAU or $20M monthly revenue. Irrelevant to a Filipino learner in practice; wrong as a blanket claim.
+— https://huggingface.co/moonshotai/Kimi-K3/blob/main/LICENSE
+
+DeepSeek V4's licence and parameter counts were verified directly from the Hugging Face API (`license:mit`; safetensors totals 290.9B for Flash and 1.599T for Pro; `quant_method: fp8`).
+— https://huggingface.co/api/models/deepseek-ai/DeepSeek-V4-Flash and https://huggingface.co/api/models/deepseek-ai/DeepSeek-V4-Pro
+
+### 3.3 The realistic local tier
+
+GGUF sizes marked *(measured)* come from the Hugging Face API blob listing, not from estimates.
+
+| Model | Params (total / active) | Context | Licence | Notable quants (measured sizes) |
+| --- | --- | --- | --- | --- |
+| **Gemma 4 12B-it** | 12B dense | 262,144 | **Apache-2.0** | Q4_K_M **7.12 GB**, IQ4_XS **6.38 GB**, Q8_0 12.67 GB, UD-Q2_K_XL 4.66 GB |
+| **gpt-oss-20b** (OpenAI) | 21B / 3.6B MoE | 131,072 | **Apache-2.0** | MXFP4/F16 **13.79 GB**, Q4_K_M **11.62 GB** |
+| **Qwen3-Coder-30B-A3B** | 30.5B / 3.3B MoE | 262,144 native | **Apache-2.0** | UD-Q4_K_XL **17.67 GB**, Q4_K_M **18.56 GB**, UD-IQ2_XXS 10.33 GB |
+| **Qwen3.8-27B** | 27B dense | 262,144 → 1M (YaRN) | **Apache-2.0** | Q4_0 **16.06 GB**, UD-Q4_K_M **16.46 GB**, UD-IQ2_XXS 7.27 GB |
+| **Devstral-Small-2-24B** | 24B dense | 262,144 | **Apache-2.0** | FP8 as shipped |
+| gpt-oss-120b | 117B / 5.1B MoE | 131,072 | **Apache-2.0** | 65 GB — needs an 80 GB GPU |
+| Llama 4 Scout | 109B / 17B MoE | 10M | **`license:other`** (Llama Community) | — |
+| Llama 4 Maverick | 400B / 17B MoE | 1M | **`license:other`** | — |
+
+— https://huggingface.co/api/models/unsloth/gemma-4-12b-it-GGUF?blobs=true · https://huggingface.co/openai/gpt-oss-20b · https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct · https://huggingface.co/Qwen/Qwen3.8-27B · https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512 · https://ollama.com/library/qwen3-coder:30b `as of 2026-09`
+
+**A licence flag not to soften:** **Llama 4 is `license:other`, not Apache-2.0.** It is the Llama Community Licence with its own acceptable-use and naming terms. Several "open model" round-ups list it alongside Apache-2.0 models without that distinction.
+
+### 3.4 Minimum hardware
+
+Two pieces of *official vendor* hardware guidance exist and are worth quoting verbatim:
+
+> **gpt-oss-20b:** "The models were post-trained with MXFP4 quantization of the MoE weights, making gpt-oss-120b run on a single 80GB GPU (like NVIDIA H100 or AMD MI300X) and the gpt-oss-20b model **run within 16GB of memory**."
+
+— https://huggingface.co/openai/gpt-oss-20b
+
+> **Devstral Small 2:** "with its compact size of just 24 billion parameters, Devstral is light enough to **run on a single RTX 4090 or a Mac with 32GB RAM**."
+
+— https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512
+
+Ollama's library page corroborates the mechanism: MXFP4 "enables the smaller model to run on systems with as little as 16GB memory."
+— https://ollama.com/library/gpt-oss
+
+| Machine | What realistically runs | Notes |
+| --- | --- | --- |
+| **8 GB RAM, no GPU** | Gemma 4 12B at UD-Q2_K_XL (4.66 GB) or IQ4_XS (6.38 GB), tight; ~3–4B models comfortably | **No official vendor guidance exists for 8 GB** — this row is inference from measured file sizes, not a verified claim. Expect slow CPU-only generation. |
+| **16 GB RAM, no GPU** | **gpt-oss-20b Q4_K_M (11.62 GB)** — the vendor-stated target; Gemma 4 12B Q4_K_M (7.12 GB) with room to spare | The realistic sweet spot for this brief's audience. |
+| **16 GB RAM + 8 GB VRAM** | gpt-oss-20b, Gemma 4 12B, Qwen3.8-27B at Q4 | MoE models offload experts to CPU; llama.cpp supports CPU+GPU hybrid inference. |
+| **32 GB RAM / M-series Mac** | **Devstral-Small-2-24B** (vendor-stated); Qwen3-Coder-30B at Q4 (~17.7 GB) | Qwen3-Coder is MoE with 3.3B active, so it generates fast even when memory-bound. |
+| **24 GB VRAM (RTX 4090)** | Everything above at Q4/Q5; gpt-oss-120b still needs 80 GB | |
+
+**The context-length caveat matters more than people expect.** A 262K-token context is not free. Qwen's own card warns: "If you encounter out-of-memory (OOM) issues, consider reducing the context length to a shorter value, such as 32,768."
+— https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct
+For agentic coding on a small machine, budget 16K–32K, not 256K.
+
+### 3.5 The quality gap — honestly stated
+
+**Every benchmark figure in this section is vendor-reported (self-reported). No third-party-verified SWE-bench number could be obtained**, because the SWE-bench leaderboard is JavaScript-rendered and returned no ranking rows to fetch (see [§6](#6-what-could-not-be-verified-and-why)).
+
+**At the frontier, the gap has effectively closed on paper.** GLM-5 reports **77.8** on SWE-bench Verified against Claude Opus 4.5's **80.9** — a ~3-point gap within benchmark noise — and Z.ai's own card shows GLM-5 beating Gemini 3 Pro (76.2) on several agentic suites. But none of that is available to a learner: those models need 8 GPUs.
+— https://huggingface.co/zai-org/GLM-5
+
+**At the tier you can actually run, the gap is qualitatively different, not a few points.** Devstral Small 2 (24B) reports **68.0** on SWE-bench Verified — about 13 points below Opus 4.5 — but the more revealing number is its **Terminal Bench 2 score of 22.5 against GPT-5.1 Codex Max's 60.4**. That is the real finding: **short-horizon code generation is where small models are respectable; long-horizon agentic task execution is where they fall apart.**
+— https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512
+
+Qwen reports Qwen3.8-27B at LiveCodeBench v6 = 90.3, SWE-bench Pro = 61.7 and Terminal Bench 2.1 = 73.0, against Opus 4.6 Max at 78.2 on Terminal Bench 2.1. Note Qwen ran all of these itself through the Claude Code harness.
+— https://huggingface.co/Qwen/Qwen3.8-27B
+
+**A serious caution about SWE-bench Verified as an instrument.** A Hugging Face community analysis reports that "The SWE-bench Verified verifier has been shown to accept approximately 8.5% of functionally incorrect solutions", and that on **DeepSWE**, a contamination-free benchmark across 91 repositories and 5 programming languages, DeepSeek V4-Pro scores **8% pass@1 against GPT-5.5 at 70%** — while the same model reports 80.6 on SWE-bench Verified. This is a **single unverified third-party claim**, but the 8-versus-70 spread is the strongest available signal that SWE-bench Verified has saturated and no longer separates models. Treat it as a warning against quoting SWE-bench Verified as if it settled a comparison.
+— https://huggingface.co/blog/ResterChed/deepseek-v4-ga-architecture
+
+**The translation for a learner:** a 12B–30B local model is genuinely useful for autocomplete, explaining unfamiliar code, writing self-contained functions, generating tests, and refactoring a single file. It is **not** a substitute for a frontier agent on a multi-file, multi-hour task — it loses the thread, mis-uses tools, and needs far more supervision. Continue's own docs make the same point in one sentence: open local models' "limited tool calling and reasoning capabilities will make it challenging to use agent mode."
+— https://docs.continue.dev/customize/models
+
+**Do not write a lesson claiming local models match hosted frontier models.** Nothing verified here supports it, and the vendor sources that address it say otherwise.
+
+### 3.6 Local tooling — free, and OpenAI-compatible
+
+All verified free of charge; licences read from the actual LICENSE file, not assumed.
+
+| Tool | Licence | OpenAI-compatible endpoint? |
+| --- | --- | --- |
+| **Ollama** | **MIT** | Yes — `http://localhost:11434/v1/` |
+| **llama.cpp** | **MIT** | Yes — `llama serve` |
+| **LM Studio** | **MIT** (Element Labs) | Yes — `http://localhost:1234/v1`, plus `/v1/responses` for Codex |
+| **Jan** | **Apache-2.0** (Menlo Research) | Yes |
+| **vLLM** | **Apache-2.0** | Yes — but targets GPU servers |
+
+— https://raw.githubusercontent.com/ollama/ollama/main/LICENSE · https://docs.ollama.com/api/openai-compatibility · https://raw.githubusercontent.com/ggml-org/llama.cpp/master/README.md · https://lmstudio.ai/docs/developer/openai-compat · https://raw.githubusercontent.com/janhq/jan/dev/LICENSE · https://raw.githubusercontent.com/vllm-project/vllm/main/LICENSE `as of 2026-09`
+
+For a Philippine learner the ranking is **Ollama first** (simplest install, native MXFP4 support for gpt-oss, documented `/v1` endpoint), **LM Studio second** (GUI, and the only one verified as implementing `POST /v1/responses`, which Codex needs), **llama.cpp** for maximum control and CPU-only machines. **vLLM is the wrong tool here** — it targets GPU servers.
+
+Compatibility with the coding clients is confirmed from the model cards themselves: Qwen3-Coder's card states "Agentic Coding supporting for most platform such as Qwen Code, **CLINE**", and Devstral Small 2's card lists **Cline, Kilo Code, Claude Code, OpenHands, SWE Agent** plus llama.cpp, LM Studio and Ollama.
+— https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct and https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512
+
+**A warning:** Ollama also offers a **cloud** path at `https://ollama.com/v1` with an API key, but that is a **paid hosted service**, not a $0 local option. Do not present it as free.
+
+### 3.7 The context-window trap
+
+Aider's Ollama documentation contains a warning worth teaching verbatim, because it is a silent failure rather than an error:
 
 > "Ollama uses a 2k context window by default, which is very small for working with aider. It also **silently** discards context that exceeds the window. This is especially dangerous because many users don't even realize that most of their data is being discarded by Ollama."
 
 — https://aider.chat/docs/llms/ollama.html `as of 2026-09`
 
-The workaround Aider documents is to set `OLLAMA_CONTEXT_LENGTH` or `num_ctx` explicitly. **Any lesson that installs Ollama and stops there will produce a tool that quietly throws away the learner's code.** Raise the context window as a required step, not an advanced tip.
+The workaround is to set `OLLAMA_CONTEXT_LENGTH` or `num_ctx` explicitly. **Any lesson that installs Ollama and stops there will produce a tool that quietly throws away the learner's code.** Raise the context window as a required step, not an advanced tip.
 
 Aider confirms local models are a first-class path: "Aider can work also with local models, for example using Ollama. It can also access local models that provide an Open AI compatible API."
 — https://aider.chat/docs/llms.html `as of 2026-09`
-
-### 3.3 The honest quality gap
-
-**Partially Unverified.** No current benchmark number is recorded in this brief, because the benchmark sources that were reachable were stale and the current ones were not fetched.
-
-What can be said from a verified source:
-
-- Aider's polyglot leaderboard — the classic citation for "which model is best at editing code" — has **no entry newer than 2025-08-25**. Its top score is gpt-5 (high) at 88.0%.
-  — https://aider.chat/docs/leaderboards/ `as of 2026-09`
-- Continue, a vendor, describes open models as "approaching" closed ones for some roles and worse for others, and warns explicitly about tool-calling reliability.
-  — https://docs.continue.dev/customize/models
-- The only quantified gap found anywhere in this research is for **package hallucination**, where the USENIX study measured a roughly fourfold difference between model classes — 5.2% for commercial vs 21.7% for open-source models. That is a *reliability* gap, not a capability score, but it is a real and citable one: see [§4.4](#44-package-hallucination-and-slopsquatting).
-
-**Do not write a lesson that claims local models match hosted frontier models.** Nothing verified in this session supports that, and the two vendor sources that address it say otherwise.
-
 ## 4. Security and licensing
 
 ### 4.1 You own your output — but the clauses differ more than they look
