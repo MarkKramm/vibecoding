@@ -1044,6 +1044,26 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **The generalisable rule: when a handoff must pass through a person, the artifact should require no judgement from them.** Every relay that depended on the human deciding *what* to send failed. The moment the instruction became "paste this one file verbatim" the ambiguity had nowhere to live. Note also that the review *was substantively good* — it correctly spotted that Q2 and Q3 overlapped, that the date belonged in the first sentence, and that Q12's statute half would make an assistant redo finished work. **All three fixes were adopted.** A failed relay can still carry useful content; the failure is in the packaging, not necessarily in the thinking.
 
+46. **An unexpected result from your own instrument is evidence about the instrument first, and the subject second.**
+    Three separate false alarms in one session, all the same shape. **(a)** A `node -e` one-liner crashed with *"Cannot read properties of undefined"*; I read it as a quiz question missing its `- [x]` marker and started hunting the file. The bug was mine — `pos['ABCD'][findIndex(...)]` — and decoding the six segments properly showed `options=4 xIndex=1..3` on every one. **(b)** Console output showed `â€"` and I began diagnosing mojibake in a file that had **0** occurrences of the signature byte `U+00E2` and 94 real em dashes (see lesson 44 for that console trap, which I walked into again anyway). **(c)** A browser probe set `location.hash` on every route, got an identical **20,368 characters** back, and I concluded the routes were broken — but `src/App.jsx` lines 4–15 document that routing is **deliberately** a string in `useState` with no deep-linking. Probing by **clicking** passed both new tracks immediately.
+
+    In each case the right first move was to check the instrument — decode the data properly, count the signature byte, read the source — before touching the thing being measured. **Three times in one session is a habit, not bad luck.** The tell is an *identical* or *absurd* result: 20,368 chars on every route is not a routing bug, it is a probe that never navigated.
+
+47. **⛔ `git add -A` is unsafe while a subagent is running in the same working tree.**
+    Commit `ca2d822` swept in `.dsh-sc05-check.js`, a throwaway verification script a subagent wrote to check its own work, **plus an unverified mid-flight draft** of that subagent's lesson. From inside git, a subagent's scratch output is indistinguishable from a deliverable — it is just a new file. The subagent reported this itself and correctly declined to fix it, since its brief forbade creating or committing files; the fix was mine (`git rm`).
+
+    **Two rules follow.** Stage explicitly by path when a subagent is active, or wait for subagents to settle before committing. And **put "create no other file, and no scratch check scripts — use inline `node -e`" in every subagent prompt**: when the next brief carried that constraint, `git status` showed exactly one modified file and one new lesson, with no strays.
+
+48. **⛔ A browser check reads the BUILD, not the source — verify `dist` freshness before believing a rendering failure.**
+    The site showed only 8 tracks and still said *"not yet written"* for the two new tracks, while **every content guard was green** — because the guards read the source markdown and the generated JSON, never the built assets. The real cause: `dist` was built at **17:09** and the content data regenerated at **17:40**, so nine lessons existed in `src/data/generated/` but were not in the shipped bundle at all. `npm run build` fixed it.
+
+    This is the **second** stale-build misdirection in this project (the first was `check-browser.mjs` reporting *"#root is empty / app did not mount"* when the actual cause was no preview server). **When a browser check fails, check the build and the server before reading anything into the failure.** Ordering to maintain: regenerate content → build `dist` → start or restart preview → probe. A preview server started before a rebuild serves the old bundle until restarted.
+
+49. **A subagent's self-report is not a verification result — check each claim separately, because they mix true and false.**
+    The phase-5 subagent's final report contained one claim that was **false** (that the committed `## Lesson:` heading read *"What Is Actually Scarce Now"* instead of the required *"Career in the AI Era"* — the committed heading was already correct) sitting alongside one that was **true** (that the committed quiz had an illegal `C=4` answer clustering, which I had doubted and which the recount confirmed: `A=0 B=1 C=4 D=1`). Treating the report as wholly right or wholly wrong would both have been mistakes. The same pattern appeared again when the phase-4 subagent flagged `00-overview.md` as still marking Phase 4 *"Planned"* — it was **already** fully updated, a stale read on its part.
+
+    **Verify subagent claims individually against the artefact, and never edit a correct file to satisfy an outdated report.**
+
 ---
 
 ## 13. What "done" looks like
