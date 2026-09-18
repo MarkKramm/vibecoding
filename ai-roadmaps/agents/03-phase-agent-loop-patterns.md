@@ -477,7 +477,7 @@ Three things, and the first is the one that determines whether a given loop work
 
 **What money does not buy** is the diagnosis of whether you needed any of this. The pattern choice, the six controls, the failure-signal requirement and the decision that a single call would suffice are all judgements. A frontier model inside an unnecessary reflection loop with no failure signal is an expensive way to guess — and it will guess confidently, which is worse.
 
-**Volatile, dated: as of early 2026, which models can drive a given loop reliably, what they cost per step, and what context they support all change on the order of months. Measure success rate and cost per task on your own suite rather than trusting any figure, including those in this lesson, whose percentages come from the papers' own benchmarks rather than your workload.**
+**Volatile, dated: as of 2026-09, which models can drive a given loop reliably, what they cost per step, and what context they support all change on the order of months. Measure success rate and cost per task on your own suite rather than trusting any figure, including those in this lesson, whose percentages come from the papers' own benchmarks rather than your workload.**
 
 ### When it's worth paying
 

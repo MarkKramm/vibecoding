@@ -406,7 +406,7 @@ Two things, and neither is required for this phase.
 
 **What money does not buy here** is the judgement this phase trains. Whether a task needs a loop at all, which position on the spectrum is leftmost-sufficient, and what stopping conditions to set are decisions that a stronger model does not make for you. A frontier model inside an unnecessary loop is still an unnecessary loop, now with a larger bill.
 
-**Volatile, dated: as of early 2026, which models are strong enough to run a given loop reliably, and what that costs, changes on the order of months. Check current model lists and pricing rather than any summary, including this one.**
+**Volatile, dated: as of 2026-09, which models are strong enough to run a given loop reliably, and what that costs, changes on the order of months. Check current model lists and pricing rather than any summary, including this one.**
 
 ### When it's worth paying
 

@@ -477,7 +477,7 @@ The honest limitation of the free path is the **judge's quality**. A small local
 
 Three things, and only the first is load-bearing.
 
-**A stronger judge, which improves generation-metric reliability.** This is the real one. Faithfulness and relevance judgements are the part of evaluation where model capability shows up most directly, and a weak judge produces numbers you have to discount. A paid frontier model as judge, used sparingly on a fixed suite, gives you generation metrics you can report with confidence. **Volatile, dated: as of early 2026, which models judge most reliably, and what that costs per run, changes on the order of months — check current model lists and pricing rather than any summary, including this one.**
+**A stronger judge, which improves generation-metric reliability.** This is the real one. Faithfulness and relevance judgements are the part of evaluation where model capability shows up most directly, and a weak judge produces numbers you have to discount. A paid frontier model as judge, used sparingly on a fixed suite, gives you generation metrics you can report with confidence. **Volatile, dated: as of 2026-09, which models judge most reliably, and what that costs per run, changes on the order of months — check current model lists and pricing rather than any summary, including this one.**
 
 **Volume that makes a large suite practical.** If your test set grows to thousands of cases, or you want to evaluate with several judge configurations, the per-call cost becomes real and a free tier's limits bind. This is Phase 7 of Cost's "rate limits that make a workload structurally impossible" category — the suite simply cannot run at your tier.
 

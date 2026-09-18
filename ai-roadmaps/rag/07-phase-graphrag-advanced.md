@@ -412,7 +412,7 @@ Three things, and only one is a genuine capability gain.
 
 **Managed graph and summarisation services.** Hosted offerings exist that run the pipeline for you. They buy convenience and operational history rather than capability, and everything they do is reproducible with the open-source implementation plus a budget.
 
-**Volatile, dated: as of early 2026, which models extract entities reliably, what corpus-scale indexing costs, and what the managed services charge all move on the order of months. Price the pass yourself against current rates before committing, rather than relying on any figure in this lesson.**
+**Volatile, dated: as of 2026-09, which models extract entities reliably, what corpus-scale indexing costs, and what the managed services charge all move on the order of months. Price the pass yourself against current rates before committing, rather than relying on any figure in this lesson.**
 
 **What money does not buy.** It does not buy the decision. Whether to escalate is a judgement about your question class, your corpus stability and your ability to evaluate the result, and a funded indexing budget with no way to score the output produces an expensive pipeline nobody can defend. That judgement is the deliverable, and it is free.
 

@@ -408,7 +408,7 @@ Naive cost estimation is `calls per day × average tokens × price`. That formul
 
 **Check that arithmetic yourself before you trust the conclusion** — it is the whole lesson in four numbers. Cost per successful task is cost per call divided by the success rate, which is why a model that is 2.5× dearer per call comes out *cheaper* per task. The cheap model burns $0.004 on every failed attempt, and at a 35% success rate most attempts fail.
 
-Change the cheap model's success rate by a few points and the ordering flips — at 40% the two are level, and above that the cheap model wins. **You cannot know which is cheaper without measuring success, and measuring success requires instrumenting tasks, not calls.**
+Change the cheap model's success rate by a few points and the ordering flips — **the two are level at exactly 38%**, and above that the cheap model wins. That figure is not a rule of thumb: it falls out of the two numbers above, because cost per successful task is cost per call divided by the success rate, so the cheap model breaks even where `$0.004 / r = $0.010 / 0.95`, which gives `r = 0.38`. **Recompute it for your own prices rather than reusing this one** — and notice that at 40% the cheap model is already winning by a visible margin, not sitting level. **You cannot know which is cheaper without measuring success, and measuring success requires instrumenting tasks, not calls.**
 
 So your schema needs a notion of a **task** that can succeed or fail independently of any HTTP call: a `run_id` shared by every call in one logical unit of work. Without it you can compute cost per call and nothing else.
 

@@ -498,7 +498,7 @@ Three things, and the first is the one that directly improves what this phase bu
 
 **What money does not buy** is the design. Which fields the state file needs, what to preserve through compaction, whether to keep a ruled-out list, what provenance to attach, and whether you needed a memory layer at all are judgements. A frontier model with a state file that omits ruled-out approaches will produce a beautifully written compaction that loses exactly the same information.
 
-**Volatile, dated: as of early 2026, context window sizes, summarisation quality and the state of prompt-injection defences all change on the order of months. The injection defences in particular are an active research area rather than a settled one, so check current work rather than assuming any mitigation you read about, including in this lesson, is sufficient.**
+**Volatile, dated: as of 2026-09, context window sizes, summarisation quality and the state of prompt-injection defences all change on the order of months. For calibration, frontier context windows are currently in the 200,000 to 1,000,000 token range, but check the current model list rather than trusting that figure. The injection defences in particular are an active research area rather than a settled one, so check current work rather than assuming any mitigation you read about, including in this lesson, is sufficient.**
 
 ### When it's worth paying
 

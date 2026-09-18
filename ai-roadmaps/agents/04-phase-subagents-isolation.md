@@ -458,7 +458,7 @@ Three things, and the first is the one that changes the arithmetic of the whole 
 
 **What money does not buy** is the brief. Writing goal, inputs, context, constraints, output format and done condition is authoring work, and a frontier child given "continue from before" will invent an interpretation just as confidently as a small one — more fluently, and therefore more persuasively, which is worse.
 
-**Volatile, dated: as of early 2026, which models support large child contexts, how well they follow structured briefs, and what a multi-agent run costs all change on the order of months. Measure the comparison on your own workload rather than trusting any figure, including the ratios in this lesson — the one in the demonstration was deliberately fabricated to make exactly this point.**
+**Volatile, dated: as of 2026-09, which models support large child contexts, how well they follow structured briefs, and what a multi-agent run costs all change on the order of months. Measure the comparison on your own workload rather than trusting any figure, including the ratios in this lesson — the one in the demonstration was deliberately fabricated to make exactly this point.**
 
 ### When it's worth paying
 

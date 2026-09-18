@@ -500,7 +500,7 @@ Three things, and the honest framing is that they improve the **upper** layers o
 
 **What money does not buy** is the design. Whether an action is gated by consequence or by name, whether the preview shows resolved arguments, whether egress is restricted, whether credentials sit in the tool or the environment, and what residual risk you are accepting are all engineering decisions. A frontier model with unrestricted network access and credentials in its environment is one successful injection away from a serious incident, and its fluency makes the resulting action harder to notice.
 
-**Volatile, dated: as of early 2026, prompt-injection defences, instruction-hierarchy training, and agent security benchmarks such as AgentDojo are all active research areas rather than settled ones. Check current work rather than assuming any mitigation, including those described in this lesson, is sufficient.**
+**Volatile, dated: as of 2026-09, prompt-injection defences, instruction-hierarchy training, and agent security benchmarks such as AgentDojo (arXiv:2406.13352) are all active research areas rather than settled ones. Check current work rather than assuming any mitigation, including those described in this lesson, is sufficient.**
 
 ### When it's worth paying
 

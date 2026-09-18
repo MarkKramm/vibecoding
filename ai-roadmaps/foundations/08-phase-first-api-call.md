@@ -157,7 +157,7 @@ Here is the smallest useful request body, in the generic shape:
 
 Four fields, and each one is a decision you are now making.
 
-**`model`** — which weights to run. A string identifier, and the most volatile thing in the request. Providers retire names, point old names at new models, and introduce dated snapshots so you can pin behaviour. Pin an explicit snapshot rather than a floating alias, and read the deprecation notices. **Volatile specific, dated: as of early 2026, model identifiers across the major providers change frequently and retire on announced schedules; check the current model list before hardcoding one.**
+**`model`** — which weights to run. A string identifier, and the most volatile thing in the request. Providers retire names, point old names at new models, and introduce dated snapshots so you can pin behaviour. Pin an explicit snapshot rather than a floating alias, and read the deprecation notices. **Volatile specific, dated: as of 2026-09, model identifiers across the major providers change frequently and retire on announced schedules; check the current model list before hardcoding one.**
 
 **`messages`** — this is the conversation, and it is the whole conversation.
 
@@ -730,7 +730,7 @@ The free path also happens to be the *better* path for one lesson: with no key, 
 
 Paying for API access buys four specific things, and it is worth being precise about which of them you actually need.
 
-**Higher rate limits and no per-day cap.** This is the real one for this phase. Deliberately triggering a rate limit on a free tier is easy and slightly frustrating; on a funded tier you have enough headroom to run the retry and streaming experiments at a realistic scale. **Volatile, dated: as of early 2026, free-tier limits and credit amounts differ substantially between providers and change without much notice — read the current pricing page rather than relying on any summary, including this one.**
+**Higher rate limits and no per-day cap.** This is the real one for this phase. Deliberately triggering a rate limit on a free tier is easy and slightly frustrating; on a funded tier you have enough headroom to run the retry and streaming experiments at a realistic scale. **Volatile, dated: as of 2026-09, free-tier limits and credit amounts differ substantially between providers and change without much notice — read the current pricing page rather than relying on any summary, including this one.**
 
 **Access to the stronger models.** Free tiers tend to serve smaller or older models. For the mechanics in this phase that makes no difference at all; for the retrieval, agent and evaluation tracks it starts to matter.
 

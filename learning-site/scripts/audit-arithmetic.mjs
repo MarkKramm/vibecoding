@@ -155,6 +155,83 @@ for (const file of walk(CORPUS)) {
   }
 }
 
+// ── SECOND DEFECT CLASS: the break-even claim in PROSE ───────────────────────
+//
+// The table checks above caught the original cost/05 bug (a wrong `attempts`
+// value). They do NOT catch a prose sentence that draws a WRONG CONCLUSION from a
+// correct table, and cost/05 had exactly that: the table was right, but the text
+// claimed the two models "are level at 40%" when the real crossover is 38%. A
+// learner checking the lesson against its own table would find them disagreeing.
+//
+// The relation is fully determinate, so it is checkable. For two models with
+// (callA, rateA) and (callB, rateB), the level point is:
+//
+//     callA / r = callB / rateB        =>        r = callA * rateB / callB
+//
+// Only sentences that actually STATE a crossover are checked -- the corpus
+// discusses trade-offs in prose constantly, and flagging all of it would produce
+// noise that trains the reader to ignore the guard.
+//
+// Dynamic columns are the breaking case: cost/05 says "above 40% the cheap model
+// wins", which is TRUE both before and after the fix. What was wrong was the
+// specific rate named as the level point, so that is what gets compared.
+const TOL_BREAKEVEN = 0.02; // ±2 percentage points on a stated crossover
+
+const breakevenRe = /\blevel\s+(?:at|when)\s+(\d+(?:\.\d+)?)\s*%/i;
+
+for (const file of walk(CORPUS)) {
+  const rel = relative(ROOT, file).replace(/\\/g, "/");
+  const text = readFileSync(file, "utf8");
+
+  // Only look at files that already carry a checkable two-model cost table.
+  if (!/cost per call/i.test(text) || !/success rate/i.test(text)) continue;
+
+  // Find the two columns of the cost table: their call price and success rate.
+  const pairs = [];
+  const tableRows = text.split("\n");
+  let header = null;
+  for (const line of tableRows) {
+    if (!line.trim().startsWith("|")) continue;
+    const cells = line.split("|").slice(1, -1).map((c) => c.trim());
+    if (cells.length < 2) continue;
+    const name = (cells[0] || "").toLowerCase();
+    if (/cost per call|price per call/.test(name)) {
+      header = cells.slice(1).map(num);
+    } else if (/success rate/.test(name) && header) {
+      cells.slice(1).forEach((c, i) => {
+        const r = rate(c);
+        if (r !== null && header[i] !== null) pairs.push({ call: header[i], rate: r });
+      });
+      header = null;
+    }
+  }
+  if (pairs.length < 2) continue;
+
+  for (const m of text.matchAll(new RegExp(breakevenRe, "gi"))) {
+    const stated = Number(m[1]) / 100;
+    // Which pair does the sentence intend? Use the two cheapest/most expensive
+    // distinct call prices present, which is what a two-model comparison means.
+    const sorted = [...pairs].sort((a, b) => a.call - b.call);
+    const cheap = sorted[0];
+    const dear = sorted[sorted.length - 1];
+    if (cheap.call === dear.call) continue;
+
+    const expected = (cheap.call * dear.rate) / dear.call;
+    const err = Math.abs(expected - stated);
+    if (err > TOL_BREAKEVEN) {
+      problems.push(
+        `${rel}: prose claims the two are level at ${(stated * 100).toFixed(0)}%, ` +
+          `but the table's numbers give ${(expected * 100).toFixed(1)}%\n` +
+          `      ${cheap.call} / r = ${dear.call} / ${(dear.rate * 100).toFixed(0)}%  =>  r = ${(expected * 100).toFixed(1)}%  (off ${(err * 100).toFixed(1)} points)`
+      );
+    } else {
+      checked.push(
+        `${rel}: break-even claim ${(stated * 100).toFixed(0)}% vs computed ${(expected * 100).toFixed(1)}%`
+      );
+    }
+  }
+}
+
 console.log(`scanned ${tables} table(s) across the corpus`);
 
 if (checked.length) {

@@ -493,7 +493,7 @@ Three things, and the first is the one that changes what is possible.
 
 **What money does not buy** is the design work. The description quality, the enum decisions, the validation layers, the error format, the result shaping and the narrow-versus-broad call are all authoring and engineering judgements, and a frontier model behind a vague description with an unvalidated executor will fail in exactly the ways this phase documents — more gracefully, and at a higher price.
 
-**Volatile, dated: as of early 2026, which models support tool calling reliably, how many tools they handle well, and what those calls cost all change on the order of months. Measure selection accuracy on your own suite rather than trusting any figure, including any in this lesson.**
+**Volatile, dated: as of 2026-09, which models support tool calling reliably, how many tools they handle well, and what those calls cost all change on the order of months. Measure selection accuracy on your own suite rather than trusting any figure, including any in this lesson.**
 
 ### When it's worth paying
 

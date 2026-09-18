@@ -504,7 +504,7 @@ Two things, and neither is load-bearing for the phase.
 
 **What money does not buy here** is the diagnosis itself. The procedure is a discipline, the symptoms are patterns, and the table is built from failures you actually investigated. A paid model makes one step of one test more conclusive; it does not make you a debugger, and the failure patterns in Parts 3 and 4 are free and are the part that transfers.
 
-**Volatile, dated: as of early 2026, which models are strong enough to serve as a capability control on your task changes on the order of months. Check current model lists rather than any summary, including this one.**
+**Volatile, dated: as of 2026-09, which models are strong enough to serve as a capability control on your task changes on the order of months. Check current model lists rather than any summary, including this one.**
 
 ### When it's worth paying
 
