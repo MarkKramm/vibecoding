@@ -69,13 +69,13 @@ Audit status:
 | Model Internals | `ai-roadmaps/model-internals/` | 6 | 6 | ✅ **COMPLETE** |
 | Prompting | `ai-roadmaps/prompting/` | 7 | 7 | ✅ **COMPLETE** |
 | Cost & Efficiency | `ai-roadmaps/cost/` | **7** | 7 | ✅ **COMPLETE** (+freemium playbook) |
-| Retrieval & RAG | `ai-roadmaps/rag/` | **4** | 7 | 🟡 IN PROGRESS |
+| Retrieval & RAG | `ai-roadmaps/rag/` | **7** | 7 | ✅ **COMPLETE** |
 | Agents & Tools | `ai-roadmaps/agents/` | **0** | 7 | 🔴 NOT STARTED |
 | Finetuning & Evals | `ai-roadmaps/finetuning/` | **0** | 6 | 🔴 NOT STARTED |
 | Vibecoding Craft | `ai-roadmaps/vibecoding/` | **0** | 8 | 🔴 NOT STARTED |
 | Safety & Ethics | `ai-roadmaps/safety-career/` | **0** | 5 | 🔴 NOT STARTED |
 | **Career & Getting Hired** | `ai-roadmaps/career/` | **0** | **4** | 🔴 **NEW — NOT STARTED** |
-| | | **32** | **63** | **31 phases remain** |
+| | | **35** | **63** | **28 phases remain** |
 
 ### Every phase file that exists
 
@@ -113,10 +113,13 @@ ai-roadmaps/cost/
   06-phase-local-vs-api.md
   07-phase-freemium-playbook.md             (written in Stage A — completes the track)
 ai-roadmaps/rag/
-  01-phase-why-retrieval.md                (written this session)
-  02-phase-ingestion-chunking.md           (written this session)
-  03-phase-embeddings-vector-search.md     (written this session)
-  04-phase-hybrid-search-reranking.md      (written this session)
+  01-phase-why-retrieval.md                (written in an earlier session)
+  02-phase-ingestion-chunking.md           (written in an earlier session)
+  03-phase-embeddings-vector-search.md     (written in an earlier session)
+  04-phase-hybrid-search-reranking.md      (written in an earlier session)
+  05-phase-metadata-and-evaluation.md      (written in Stage B — commit f4693cf)
+  06-phase-rag-debugging.md                (written in Stage B — commit 56f36c0)
+  07-phase-graphrag-advanced.md            (written in Stage B — commit beb01f5)
 ```
 
 ### Directory inventory
@@ -481,14 +484,25 @@ rag/04     Q1=D Q2=C Q3=B Q4=A Q5=D Q6=C Q7=B Q8=A
 
 **Corpus distribution after the fix** (291 questions):
 
-| Position | Before | After |
-|---|---|---|
-| A | 15.5% | **18.2%** |
-| B | 25.4% | 25.4% |
-| C | 33.7% | **28.2%** |
-| D | 25.4% | 28.2% |
+| Position | Before | After Stage A | After Stage B (331 qs) |
+|---|---|---|---|
+| A | 15.5% | 18.2% | **19.3%** |
+| B | 25.4% | 25.4% | 25.1% |
+| C | 33.7% | 28.2% | **28.1%** |
+| D | 25.4% | 28.2% | 27.5% |
 
-C dropped off the 35% corpus ceiling it was approaching, and A rose clear of the 15% corpus floor. **Still spread the correct answers deliberately as you author the remaining 32 phases** — the skew is much cheaper to avoid while writing (Q1 at A, Q2 at B, Q3 at C, Q4 at D) than to retrofit.
+C is now clear of the 35% corpus ceiling it was approaching, and A is clear of the 15% corpus floor. **Still spread the correct answers deliberately as you author the remaining 28 phases** — the skew is much cheaper to avoid while writing than to retrofit.
+
+**Practical technique that works** (used for `cost/07`, `rag/05`, `rag/06`, `rag/07`): write the quiz with positions already varied, then run this per-question count before committing. Every phase written in Stage B needed one rebalancing pass — a 10-question quiz naturally drifts to 4–5 in one position:
+
+```powershell
+# positions AND marker count per question; every question must show exactly one [x]
+$q=0;$opts=@();$cnt=0
+Get-Content $f | ForEach-Object {
+  if($_ -match '^### Q(\d+)\.'){ if($q -and $cnt -ne 1){"Q$q has $cnt markers"}; $q=$matches[1];$opts=@();$cnt=0 }
+  if($_ -match '^- \[x\]'){$cnt++; $opts+=1}
+}
+```
 
 **Hard rule: never edit `audit-quiz.mjs` to agree.**
 
@@ -648,9 +662,9 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
 5. **Write `cost/07` Freemium Playbook** — **✅ DONE.** `ai-roadmaps/cost/07-phase-freemium-playbook.md`, commit `289986e`. The Cost track is now 7/7 complete. Note it deliberately completes `cost/05`'s dated transition plan (the four-way sort into move-to-local / move-to-free-tier / defer / cut), so if `cost/05` is ever revised, keep that handoff intact.
 
-6. **Write `rag/05`, `rag/06`, `rag/07`** from §6.1. Keep the quiz answer positions spread.
+6. **Write `rag/05`, `rag/06`, `rag/07`** — **✅ DONE.** `f4693cf`, `56f36c0`, `beb01f5`. The RAG track is 7/7 complete. Note three corrections carried into these files and worth preserving if they are ever revised: (a) RAGAS is **reference-free first** — that is the paper's emphasis, and the IR metrics (Recall@k, MRR, nDCG) are **not** from RAGAS, they predate it; (b) GraphRAG's claim is scoped to *global sensemaking questions over datasets in the 1M token range, on comprehensiveness and diversity, versus a conventional RAG baseline* — never compress it to "GraphRAG is better"; (c) `rag/07` deliberately recommends **against** starting with GraphRAG, and its map-reduce alternative is presented as the better engineering choice at learner scale.
 
-7. **Write the Agents track (7 phases)** from §6.1.
+7. **Write the Agents track (7 phases)** from §6.1. **← RESUME HERE.**
 
 8. **Write the Finetuning track (6 phases)** from §6.1.
 
