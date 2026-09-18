@@ -525,7 +525,7 @@ Four things, and it is worth being precise about which of them you actually need
 
 **Data terms you can live with.** If you process other people's personal data, a narrower retention and training-use policy is sometimes the whole reason to pay, entirely independent of capability. Under RA 10173 this is an obligation rather than a preference, and it is the one place where the free option can be the wrong choice on grounds that have nothing to do with money.
 
-**Volatile, dated: as of early 2026, which models are frontier, what they cost, what the free tiers allow and what their terms say all change on the order of months. Check the current pages for the current tier rather than any summary, including this one.**
+**Volatile, dated: As of 2026-09, which models are frontier, what they cost, what the free tiers allow and what their terms say all change on the order of months. Check the current pages for the current tier rather than any summary, including this one.**
 
 ### When it's worth paying
 

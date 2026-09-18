@@ -995,6 +995,22 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 36. **Measure the backlog before accepting its size.**
     The task was scoped as "~107 unverified claims". The real number was **11**. The earlier figure counted **mentions of the word** "unverified" across `docs/research/`, not distinct unresolved claims — an easy and self-flattering error, because a bigger backlog justifies a bigger effort. Counting the actual list took one command and changed the plan: 11 items is a sweep, not a project.
 
+37. **⚠️ A commit message is testimony, not evidence — and a bad "correction" is worse than an open question.**
+    `agents/07` stated that **`2025-11-25` was the current stable MCP revision** and `2026-07-28` merely "modern". **The truth is the reverse:** the spec's own versioning page says in bold that *"the current protocol version is 2026-07-28"*, the site header renders **"2026-07-28 (latest)"**, and `2025-11-25` is filed under *"handshake-based protocol revisions (`2025-11-25` and earlier)"* — superseded. A learner was being told to target a **dead** revision.
+
+    **What makes this the most instructive defect in the project:** it had already been flagged once. Commit `3fd5a9b` is titled *"Correct agent/07 on MCP revisions"* — and its message **asserts the same inverted claim**. A previous session spotted a real problem, resolved it in the **wrong direction**, and wrote a confident narrative explaining the wrong conclusion. **The commit message then made the error look settled**, so the next session found a lesson that appeared to have been recently checked. When you write "corrected X", record **what the source actually said**, not just what you concluded — otherwise the correction becomes a claim with your authority behind it and no evidence underneath.
+
+    Corollary: **a fixed flag is more dangerous than an open one.** An open question invites re-checking. A closed one with a confident message suppresses it.
+
+38. **"Technically true" is not the bar. Ask what a learner would DO with the sentence.**
+    Both defects found this round were that shape. `agents/07` was not false in its *facts about each version* — the stateful/stateless comparison was accurate — but it **inverted which one to target**. And `cost/05`'s table was correct in **every cell** while the sentence beneath it drew a wrong conclusion (level at "40%" when the numbers give 38%). **The defect lives in the relationship between the data and the claim, not in either alone** — which is exactly why cell-checking guards miss it, and why `audit-arithmetic.mjs` now reads prose as well as tables.
+
+39. **Mark the gap rather than filling it with something plausible.**
+    `prompting/04` listed supported/unsupported JSON Schema keywords as though authoritative. The per-provider tables **could not be fetched** (OpenAI 403s the direct URL; Anthropic's page truncates before the section). The fix was to reframe the list as *illustrative of the kind of gap*, add the verified part, and mark the keyword detail **`**Unverified**`** — **the first such marker in the corpus**, which until now had zero despite the rule existing since the start. **A plausible list nobody can check is worse than an acknowledged hole**, because the hole is visible and the list is not.
+
+40. **Verify a formatting fix BEFORE mass-applying it, and check what it breaks.**
+    Eleven `####` headings sat jammed against the preceding paragraph with no blank line. I checked whether they still **parse** (against the generated lesson JSON, not the markdown — the artifact the site renders) and they do, so this became a **fragility** fix rather than a rendering fix: valid under CommonMark's relaxed rules and dependent on them. Worth the check, because the obvious assumption "jammed heading = broken page" would have been wrong and the fix would have looked more urgent than it was. **Then my own fix introduced 691 CRLF endings**, because `WriteAllLines` uses `Environment.NewLine`. The encoding guard caught it in seconds. **Every mechanical rewrite needs a guard run immediately after, not at the end of the session.**
+
 ---
 
 ## 13. What "done" looks like

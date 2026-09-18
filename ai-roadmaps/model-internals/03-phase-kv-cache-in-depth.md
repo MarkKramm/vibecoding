@@ -223,7 +223,7 @@ MQA   (h_kv =  1): 2 * 32 *  1 * 128 * 2 * 16,000 bytes ≈ 250 MB
 
 Same layers, same head dimension, same precision, same token count. The only moving part is `h_kv`, and the cache moves in exact proportion. That is why "which attention variant does this model use" is a cost question as much as a quality question.
 
-As of early 2026, GQA is the common default across most widely used open-weight and hosted models, with group sizes that differ by model and generation. Verify against a current model card; architectures that mix attention variants, or replace some layers entirely, change the arithmetic this comparison cannot capture.
+As of 2026-09, GQA is the common default across most widely used open-weight and hosted models, with group sizes that differ by model and generation. Verify against a current model card; architectures that mix attention variants, or replace some layers entirely, change the arithmetic this comparison cannot capture.
 
 #### Lever two: fewer bits per element
 
@@ -321,7 +321,7 @@ Three consequences follow, and each is a real decision:
 
 **Scope of the saving.** Prompt caching helps *repeated prefixes* — a narrow workload of many requests sharing a long head. It does nothing for a single long document you will never send again, because there is no second request to amortise against. If your workload is one long document per user with no reuse, prompt caching is irrelevant and the thing you care about is the engine KV cache.
 
-As of early 2026, several major providers offer prompt caching under different names, with different minimum cacheable prefix lengths, cache lifetimes, and write and read pricing multipliers. These details change frequently. Record the date you read them, and re-read before building a cost model — a pricing multiplier you memorised last quarter is a number, not a fact.
+As of 2026-09, several major providers offer prompt caching under different names, with different minimum cacheable prefix lengths, cache lifetimes, and write and read pricing multipliers. These details change frequently. Record the date you read them, and re-read before building a cost model — a pricing multiplier you memorised last quarter is a number, not a fact.
 
 **Where the distinction stops being clean.** The two caches meet exactly where prefix sharing is implemented: a provider's prompt cache is, mechanically, retained engine-side state for a prefix, kept alive past the request that created it. One is the mechanism, the other a product wrapped around it. What you must never do is reason about your bill using the mechanism's properties (automatic, free, request-scoped) or about your architecture using the product's properties (survives the request, costs money, expires). Getting the direction of the dependency right — product built on mechanism — is the whole skill.
 
@@ -508,7 +508,7 @@ You do not need a GPU. Every computation in this phase is multiplication and div
 - **A GPU or GPU rental.** Only useful if you want to *measure* cache memory during real generation instead of computing it. A free Google Colab tier with a small GPU is enough to load a tiny model and watch memory move as context grows. It is a nice confirmation and it is not required — the formula and the simulation teach the mechanism.
 - **Paid API access.** Only needed to *observe* a prompt cache hit on a real bill. Free tiers exist on several providers and change frequently. If you spend nothing, Task t07 still gives you the full conceptual picture from documentation alone; you just do not see the invoice line.
 - **A local model runner.** llama.cpp is free and open source, but running a model locally needs RAM and disk. A small quantized model on a laptop with 8 GB is usually enough to watch the context size flag change memory use. Treat this as optional and skip it if your machine is tight.
-- **A course.** As of early 2026 the free resources above — the paper, the project documentation, the model cards — cover this material better than most paid introductions, because the material is public and well documented. Pay for structure or a certificate, not for the content.
+- **A course.** As of 2026-09 the free resources above — the paper, the project documentation, the model cards — cover this material better than most paid introductions, because the material is public and well documented. Pay for structure or a certificate, not for the content.
 
 ### When paying is actually worth it
 

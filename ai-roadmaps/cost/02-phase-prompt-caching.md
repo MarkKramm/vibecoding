@@ -153,7 +153,7 @@ w = cache WRITE multiplier   (relative to normal input price; usually w > 1)
 r = cache READ multiplier    (relative to normal input price; usually r < 1)
 ```
 
-As of early 2026, across the major providers, `w` is typically greater than 1 and `r` is typically a small fraction of 1 — but the specific values differ per provider, per model, sometimes per TTL tier, and they change. Anthropic's documentation, for instance, prices different cache durations as separate columns, with longer TTLs costing more to write. **Do not carry a number from this page into your cost model.** Carry the method, and read the current table. I will give you the arithmetic in Part 5 so that you never need my numbers.
+As of 2026-09, across the major providers, `w` is typically greater than 1 and `r` is typically a small fraction of 1 — but the specific values differ per provider, per model, sometimes per TTL tier, and they change. Anthropic's documentation, for instance, prices different cache durations as separate columns, with longer TTLs costing more to write. **Do not carry a number from this page into your cost model.** Carry the method, and read the current table. I will give you the arithmetic in Part 5 so that you never need my numbers.
 
 There are two other parameters, and you must look both of them up rather than assume:
 
@@ -338,7 +338,7 @@ Now, where does prompt caching stop working?
 
 **It does not fix context bloat.** Caching makes a large fixed prefix *cheaper per request*, which can tempt you to keep material in the prompt that should be removed. A cached token is still cheaper than an uncached one and still more expensive than a token you never sent. Caching changes the price of a mistake; it does not stop it being a mistake.
 
-**It is provider-specific and moves.** Minimum lengths, granularity, TTL options, refresh behaviour, routing and retention rules, and multipliers all differ across providers and change over time. As of early 2026 the major providers all offer prefix caching and all describe it differently. Anything you read on this page about a specific provider's numbers is a snapshot. **The method transfers; the numbers do not.**
+**It is provider-specific and moves.** Minimum lengths, granularity, TTL options, refresh behaviour, routing and retention rules, and multipliers all differ across providers and change over time. As of 2026-09 the major providers all offer prefix caching and all describe it differently. Anything you read on this page about a specific provider's numbers is a snapshot. **The method transfers; the numbers do not.**
 
 **And it does not touch the KV cache.** To close the loop on the spine of this phase: the KV cache is still there, still automatic, still per-request, still unbilled. Prompt caching is the paid feature that lets one request's KV state be reused by a *later* request. When you read a provider's pricing page and see a line for cached input, that is the product. When your second chat message is cheap, that is the mechanism. They are different things, and you now know which is which.
 
@@ -494,6 +494,6 @@ Everything in this phase can be completed for **zero pesos**, and the most valua
 - **Paid API access.** Needed only to *observe* a real cache hit in a usage report or response body, as in Task t06. The mechanism is fully explainable from the documentation, and the arithmetic is fully checkable on paper. If your beta access ends before you finish, Task t06 becomes a task you defer — not one that blocks the phase.
 - **A provider's long-TTL or extended-cache tier.** Some providers sell longer cache lifetimes at a higher write price. This changes `w` in your formula and therefore raises `N*`. You do not need to buy it to understand it, and it is often the wrong purchase for low-traffic applications.
 - **A monitoring or observability service.** Useful once you are running production traffic at volume, because it is how you track hit rate over time. For this phase, the cached-token field in a raw API response and a text log are enough.
-- **A paid course on LLM cost optimisation.** As of early 2026 the provider documentation listed above is more current and more specific than any course can be, because it is the primary source and it is updated when prices change. Pay for structure or a certificate if you want them; not for the content.
+- **A paid course on LLM cost optimisation.** As of 2026-09 the provider documentation listed above is more current and more specific than any course can be, because it is the primary source and it is updated when prices change. Pay for structure or a certificate if you want them; not for the content.
 
 **The honest budget:** ₱0, about 6–9 hours, and a text editor. If you have free access through a beta, use this week to *measure* rather than to guess — record your cached-token counts, hash your prefixes, and compute `N*` for your own workload while the experiment is free. When the beta ends, the only thing that changes is that a mistake now has a price. The understanding you build this week is what keeps the price small.

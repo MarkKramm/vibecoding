@@ -136,7 +136,7 @@ When you send a request, the provider measures two quantities:
 - **Input tokens** — everything the model reads: your instructions, the conversation so far, every document you attached, every tool schema, every image, plus the structural tokens the software adds so the model knows who said what.
 - **Output tokens** — everything the model writes: the answer, any reasoning it produced along the way, any tool-call arguments it generated, and formatting tokens that never appear in the text you see.
 
-These are metered and priced separately, and **output is typically several times more expensive per token than input.** As of early 2026 that multiple commonly sits around three to five times for a given model, and it can be much larger. Do not carry a number out of this lesson — carrying a number is exactly the mistake this phase exists to break. Carry the *shape*: output costs more per token, for a mechanical reason you can derive.
+These are metered and priced separately, and **output is typically several times more expensive per token than input.** As of 2026-09 that multiple commonly sits around three to five times for a given model, and it can be much larger. Do not carry a number out of this lesson — carrying a number is exactly the mistake this phase exists to break. Carry the *shape*: output costs more per token, for a mechanical reason you can derive.
 
 #### Why the asymmetry exists
 
@@ -283,12 +283,12 @@ I am going to give you mechanisms and tell you where to look up numbers, and I a
 
 **The important asymmetry.** There are usually *two* cache prices, not one:
 
-- A **cache read** (a hit) is typically a large discount — on the order of a tenth of the normal input rate on the pages I checked, as of early 2026.
+- A **cache read** (a hit) is typically a large discount — on the order of a tenth of the normal input rate on the pages I checked, As of 2026-09.
 - A **cache write** is often a *surcharge* — you pay more than the normal input rate to store the prefix, because writing it is extra work.
 
 Read that again, because it is the opposite of most people's assumption: **you pay a premium to write, and a discount to read.**
 
-**What that lets you predict.** Caching pays off only if the prefix is read back enough times to repay the write premium. Write once and read once, and you can easily lose money. The break-even is arithmetic you can do from the two multipliers and the reuse count — Anthropic's prompt caching documentation states its multipliers plainly (5-minute writes at 1.25x, 1-hour writes at 2x, reads at 0.1x, as of early 2026), and OpenAI's documents the same shape (writes at 1.25x, reads at 0.1x). Read both *as arithmetic examples*, not as price lists.
+**What that lets you predict.** Caching pays off only if the prefix is read back enough times to repay the write premium. Write once and read once, and you can easily lose money. The break-even is arithmetic you can do from the two multipliers and the reuse count — Anthropic's prompt caching documentation states its multipliers plainly (5-minute writes at 1.25x, 1-hour writes at 2x, reads at 0.1x, As of 2026-09), and OpenAI's documents the same shape (writes at 1.25x, reads at 0.1x). Read both *as arithmetic examples*, not as price lists.
 
 **And those examples are already drifting, which is the point.** Re-checked in 2026-09, Anthropic's pricing page still carries `1.25x` / `2x` / `0.1x` — but now with an explicit carve-out: reads are **`0.025x`** on two of its newest models, a quarter of the usual read multiplier. The lesson is not the new number; it is that **a per-provider multiplier has quietly become a per-model one**, so a figure you copied from a blog post last year can be wrong for the specific model you deploy. Two consequences worth carrying: the break-even arithmetic changes with it (a `0.025x` read repays a `1.25x` write far sooner), and **you cannot assume two models from the same provider share caching economics**.
 
@@ -300,7 +300,7 @@ Clearly correct: a tool-using agent with a large fixed instruction block, called
 
 #### 2. Batch
 
-**Mechanism.** If your work does not need an answer right now, providers will run it in a queue on off-peak capacity and charge you less. OpenAI's Batch API documentation describes a 50% discount with a 24-hour completion window, as of early 2026; Anthropic's batch documentation describes a comparable discount with its own turnaround window. The discount exists because you are selling the provider your latency.
+**Mechanism.** If your work does not need an answer right now, providers will run it in a queue on off-peak capacity and charge you less. OpenAI's Batch API documentation describes a 50% discount with a 24-hour completion window, As of 2026-09; Anthropic's batch documentation describes a comparable discount with its own turnaround window. The discount exists because you are selling the provider your latency.
 
 **What that lets you predict.** Anything naturally asynchronous — overnight classification of a dataset, bulk embeddings, evaluation runs, index building — should be batched. For a large one-off job, batch often saves more than every prompt trick in this lesson combined, because it applies to the whole bill rather than to one term of it.
 

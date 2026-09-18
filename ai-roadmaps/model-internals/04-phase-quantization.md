@@ -333,7 +333,7 @@ You now know that no label, benchmark, or blog post can answer this for you. Her
 
 **Step 6 — Test at your real context length.** Not 4k because it is fast. Your actual length, with your actual prompt structure.
 
-**Step 7 — Decide, and record what you decided and when.** A dated note saying "Q4_K_M was acceptable for extraction, failed 3 of 20 on JSON schema; Q6 was clean; as of early 2026" is worth more than any general opinion about quantisation, because it is a measurement rather than a belief.
+**Step 7 — Decide, and record what you decided and when.** A dated note saying "Q4_K_M was acceptable for extraction, failed 3 of 20 on JSON schema; Q6 was clean; As of 2026-09" is worth more than any general opinion about quantisation, because it is a measurement rather than a belief.
 
 The stopping rule: if the quantised model passes your cases at the precision you can afford, use it and stop optimising. If it does not, step up one precision level and try again, because the answer is usually the next quant up rather than a different model.
 
@@ -544,7 +544,7 @@ Everything in this phase can be completed for **zero pesos**.
 
 - **Enough RAM or VRAM to actually run a quantised model.** This is the one genuinely useful thing money buys, and it is optional. The measurement tasks are much more satisfying when you run them yourself, but every prediction in this phase is derivable from paper arithmetic and published file sizes. If your machine cannot run a model, do the arithmetic and read someone else's measurements, and say so in your deliverable — that is honest work, not a shortcut.
 - **Cloud GPU rental.** Only worth it if you want to run a model larger than your hardware allows. Free notebook tiers with small GPUs exist and change frequently; check what is currently offered rather than trusting any figure written down here. Do not rent a GPU to "understand quantisation" — the understanding is in Parts 2 and 5, which need no hardware.
-- **A paid course on quantisation.** As of early 2026, the free resources above are better than most paid treatments, for a simple reason: the primary sources are public, and the field moves fast enough that any fixed curriculum is dated on arrival. Pay for structure if you want structure. Do not pay for the content.
+- **A paid course on quantisation.** As of 2026-09, the free resources above are better than most paid treatments, for a simple reason: the primary sources are public, and the field moves fast enough that any fixed curriculum is dated on arrival. Pay for structure if you want structure. Do not pay for the content.
 - **A faster internet connection.** Worth naming honestly. Downloading several quantised models to compare them is the most bandwidth-hungry part of this phase, and on a metered or slow connection it is a real cost. The fix is free: read the "Files and versions" tab, take the file sizes, and do your comparison arithmetically. You can learn everything here without downloading a single gigabyte.
 
 **The honest budget:** ₱0, roughly 8–10 hours over one week, a spreadsheet, and a browser. If you have a laptop with a few gigabytes of free memory, you can also *feel* the tradeoff by running a small quantised model — and that is the nicest version of this phase. But the reasoning, the corrections, and the memory arithmetic that make you able to predict behaviour are all free, and they are all in the pages above.
