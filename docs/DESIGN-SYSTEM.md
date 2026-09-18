@@ -19,12 +19,19 @@ id), `learning-site/docs/ARCHITECTURE.md` (how the site is put together) and
 The site is built for one beginner studying alone, on a $0 budget, building a skill over
 34–112 weeks. That reader is the reason for every rule below.
 
+### the no-shame rule
+
 **The reader is never graded.** There is no percentage of the reader’s own work, no
 streak, no “N of M”, no ordering of anything by how well a phase went. This is the
 no-shame rule, D-020. It is a constraint on features, not a tone of voice: `lib/today.js`
 cannot reorder the curriculum, `useQuizAnswers.js` stores the minimum needed to build a
 revisit list and deliberately stores no ratio and no history of improvement, and the quiz
 summary names the questions to look at again rather than a score.
+
+`useCertifications.js`, `useNotes.js` and `lib/review.js` all cite this rule by name. It is
+the reason a certification tracker has no hours-studied field and no “percentage ready”,
+the reason the notes panel counts nothing, and the reason the review queue shows the
+explanation and the reader’s own choice rather than a verdict.
 
 **Progress is never conveyed by colour alone.** A number that matters is written as
 digits somewhere on the page; colour is an accent on top of that text, never a
@@ -185,7 +192,7 @@ reading-size chips are brought to `min-height: 40px`, and the reading-size chips
 
 ---
 
-## `<EmptyState>`
+## <EmptyState>
 
 `src/components/EmptyState.jsx`. Shown when a list has nothing in it yet.
 
@@ -207,7 +214,7 @@ renders one `<div className="empty-state">`, a `<p>{message}</p>`, then `{childr
 
 ---
 
-## `<EnergyModeSelector>`
+## <EnergyModeSelector>
 
 `src/components/EnergyModeSelector.jsx`. Low / Normal / High. It changes which tasks the
 dashboard offers as the next action — a low-energy day should not be shown a three-hour
@@ -239,9 +246,9 @@ authored energy value is treated as normal rather than hidden from everyone.
 
 ---
 
-## `<PhaseCard>`
+## <PhaseCard>
 
-`src/components/PhaseCard.jsx`. The summary card for one phase on the dashboard. Clicking
+`src/components/PhaseCard.jsx`. The summary card for one phase on the dashboard; clicking
 it opens the phase.
 
 **Props.** `phase`, `done`, `total`, `onOpen(phaseId)`. The whole card is a
@@ -265,7 +272,7 @@ duration), the goal paragraph, and a `<ProgressBar>`.
 
 ---
 
-## `<ToolCard>`
+## <ToolCard>
 
 `src/components/ToolCard.jsx`. One tool from a phase’s tools table.
 
@@ -284,9 +291,9 @@ task, freeAlternative }`.
   labelling something paid means they never find it.
 - Tones are presentation only. A paid tool **still renders in full** with its purpose,
   practice task and free alternative, because a reader on a zero budget may still want to
-  know what the paid tier would add.
-- An indeterminate cost renders as `badge--freemium`, not `badge--free`: a reader who sees
-  “freemium” will check, and a reader who sees “free” will assume.
+  know what the paid tier would add. An indeterminate cost renders as `badge--freemium`,
+  not `badge--free`: a reader who sees “freemium” will check, and a reader who sees “free”
+  will assume.
 - The free alternative is a first-class field with its own paragraph, not a footnote. The
   Cost track argues that a zero-budget learner can complete the whole curriculum, and this
   card is where that claim is auditable.
@@ -430,9 +437,8 @@ and nothing else: no penalties, no projections that turn a slow week into a fail
 **No toast for success.** A thing that worked does not need an announcement in the corner
 of the screen. Results are stated where they happened: the copy button’s own label changes
 to “Copied”, the phase transfer’s message appears under the buttons that produced it, and
-the backup panel’s `role="status"` notice sits inside the panel. Transient success toasts
-are reserved for nothing; `role="alert"` is used only for the backup panel’s actual
-failures.
+the backup panel’s `role="status"` notice sits inside the panel. `role="alert"` is used
+only for the backup panel’s actual failures.
 
 **No colour-only signalling.** Covered in full under “Colour tokens” and “Accessibility”.
 The practical test the code is written against: does the distinction survive greyscale
@@ -449,15 +455,14 @@ would imply a precision nobody has. See D-021.
 measurement — nobody has timed these tasks. `TimeBudgetSelector` therefore carries a
 visible `.budget__note`: “How long you have is an estimate — nobody has timed these
 tasks.” It is not muted to the point of invisibility, because a disclaimer nobody notices
-is worse than none: it launders the guess. The selector also offers three budgets, not
-four, because `ongoing` is a band a task can have, not an amount of time a reader can
-have; it appears only in the legend, so the reader can see why some work never shows up as
-a suggestion.
+is worse than none: it launders the guess. The selector offers three budgets, not four,
+because `ongoing` is a band a task can have, not an amount of time a reader can have; it
+appears only in the legend, so the reader can see why some work never shows up as a
+suggestion.
 
-**No auto-advancing carousels.** Nothing on the site moves on its own, and nothing
-changes under the reader’s cursor. The only timed transition is the lesson toolbar’s
-progress fill at `--transition-fast`. There is no rotating banner, no auto-scrolling list,
-and no carousel at all — every list is a list, in an order the reader can see and predict.
+**No auto-advancing carousels.** Nothing on the site moves on its own, and nothing changes
+under the reader’s cursor. There is no rotating banner, no auto-scrolling list, and no
+carousel at all — every list is a list, in an order the reader can see and predict.
 
 **No fake buttons.** If it looks clickable it works and it does something; if it does
 nothing, it does not look clickable. At a track boundary the pager is present but
@@ -485,17 +490,14 @@ the rest of the site. This is a real cost — the feature is easy to miss entire
 is accepted, because the alternative is a dashboard that says “you have written nothing”.
 See D-019.
 
-**No second progress system.** The task picker infers what is already done from two facts
-that are recorded anyway (an answer exists; the phase is fully ticked) rather than adding
-a per-task tick beside the checklist. The inference is stated in the code rather than
+**No second progress system, and no reordering of the curriculum.** The task picker infers
+what is already done from two facts recorded anyway (an answer exists; the phase is fully
+ticked) rather than adding a per-task tick beside the checklist, and it walks the reader’s
+own order rather than reshuffling the plan every morning — “what should I do today” must
+not quietly become “what is the most efficient thing”. The inference is stated rather than
 hidden: an unanswered task that is nonetheless finished will be offered again, which is
 mildly annoying and not harmful — offering a task you already did is a smaller error than
 dropping one you did not.
-
-**No reordering of the curriculum.** “What should I do today” must not quietly become
-“what is the most efficient thing”. The picker walks the reader’s own order and skips what
-does not fit today; a picker that reshuffles the plan every morning is a second
-curriculum.
 
 ---
 

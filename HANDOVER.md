@@ -480,11 +480,15 @@ Note: `npm test` needs no browser and can run in CI as-is. `npm run test:browser
 
 ### 6.6 Meta-docs owed
 
-✅ **Written** (commit `b1278d7`): `learning-site/docs/ARCHITECTURE.md`, `DATA-SCHEMA.md`, `VERIFICATION.md`, `DECISIONS.md` — 1,369 lines, no placeholders.
+✅ **Written** (commit `b1278d7`, plus `bb4735a` and `598f8e7`): `learning-site/docs/ARCHITECTURE.md`, `DATA-SCHEMA.md`, `VERIFICATION.md`, `DECISIONS.md` — plus **repo-root `docs/DESIGN-SYSTEM.md`** (610 lines), which 22 comments across twelve source files and `global.css` had been citing for named sections that did not exist. All 22 citations now resolve, including `### the no-shame rule`, which is a real subheading so the `→ the no-shame rule` citations match explicitly rather than by phrase.
 
 ⚠️ **The numbering in `DECISIONS.md` is deliberately non-sequential** (`D-001..006, 008, 011, 016, 019..021, 044..047`). The ported source already cited `D-006`, `D-011`, `D-016`, `D-019`, `D-020`, `D-021` and `D-044` across 15 files and `global.css` with no file behind them. Those ids keep the meaning the comments give them. **Do not renumber.** Verified: zero dangling cross-references.
 
-**Still owed:** `docs/CHECKPOINT.md`, `docs/WORKFLOW.md`, `docs/SETUP.md`, `docs/TROUBLESHOOTING.md`, `docs/ROADMAP.md`, `docs/DESIGN-SYSTEM.md`.
+⚠️ **`docs/` is ambiguous and comments cite it both ways.** `docs/CONTENT-SCHEMA.md` and `docs/DESIGN-SYSTEM.md` mean **repo-root** `docs/`; `docs/DECISIONS.md` means **`learning-site/docs/`**. All three resolve today. ARCHITECTURE.md carries a table making this explicit; new citations should use the unambiguous form.
+
+🐛 **Four hooks are unimported dead code:** `useApplications.js`, `useCertifications.js`, `usePortfolio.js`, `useSchedule.js`. They were ported with the rest of the sibling project's `hooks/` but **nothing imports them**, because the six career-specific views they served (Schedule, Applications, Certifications, Portfolio, YourWork, PathOrder) were deliberately not ported — see D-008. They are not harmful, but four comments elsewhere cite them as live examples. Either delete them or wire them when the Career track is written; do not leave them indefinitely as evidence of a feature that does not exist.
+
+**Still owed:** `docs/CHECKPOINT.md`, `docs/WORKFLOW.md`, `docs/SETUP.md`, `docs/TROUBLESHOOTING.md`, `docs/ROADMAP.md`.
 
 ### 6.7 Root files owed
 
