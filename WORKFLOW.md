@@ -168,9 +168,29 @@ this project were documented as enforcing rules they did not enforce.
 4. State its **limits** in the file header. `audit-projections.mjs` says plainly that it checks
    field *existence*, not values, so it would not have caught the em-dash link bug.
 
+5. **If it baselines known defects, handle their DISAPPEARANCE.** See below — this is not
+   hypothetical; it happened the same day the a11y audit was written.
+
 ⚠️ **A guard's blind spot is exactly as wide as the selector it uses to find its input.** This
-has bitten three times: once from a directory list, once from an extension list, once from a
-hardcoded file list.
+has bitten four times: a directory list, an extension list, a hardcoded file list, and a
+`[tabindex]` selector that matched `tabindex="-1"` — a value *defined* as excluded from the tab
+order — so adding a correct skip-link fix made the audit report a fake reachability failure in
+all four views.
+
+### Baselines that outlive their defects
+
+An audit with a `--baseline` mode (known defects are recorded so the suite stays green) has a
+failure mode that looks like success. **When the defects get fixed, the baseline entries stop
+matching — and if "no match" is not itself reported, the suite fails with no explanation, or
+silently keeps a fixed defect listed forever.**
+
+This happened here within hours: three a11y defects were fixed, and `--baseline` began exiting 1
+with four unexplained problems. The three fixes were correct; the baseline could not express
+"this is fixed now".
+
+If you add a baseline, a stale entry must **say so loudly and be removed**, not fail obscurely
+and not linger. And when you fix something a baseline lists, **remove its entry in the same
+commit** — otherwise the next reader is told a fixed thing is still broken.
 
 ---
 
