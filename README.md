@@ -175,9 +175,16 @@ shrinks silently is not honest either):
   The one remaining OpenAI link (`…/playground`) is left stale on purpose: it is not under
   `/docs`, so the mechanical rewrite rule does not cover it and no confirmed destination
   exists. Three retargeted links are flagged for review in `docs/SEARCH-REQUESTS.md`.
-- ✅ Unit suites for inline markdown rendering, quiz logic, lesson-block coverage and
-  in-lesson search — **315 assertions**, each suite proved capable of failing by deliberate
-  mutation and then restored byte-identical.
+- ✅ Unit suites for inline markdown rendering, quiz logic, lesson-block coverage, component
+  rendering and in-lesson search — **407 assertions**, each suite proved capable of failing by
+  deliberate mutation and then restored byte-identical.
+- ✅ An automated **accessibility audit** (`audit-a11y.mjs`, the 13th check) drives a real browser
+  and asserts **44** things across all four views — contrast, accessible names, heading order,
+  landmarks, keyboard reachability, focus visibility, live regions, and the skip link. It found
+  three genuine defects on its first run: a skip link that scrolled without moving focus, and two
+  placeholders at 3.27:1 where `::placeholder` had been styled for one input and not another.
+  Making it reliable also uncovered a browser-process leak that had been making browser checks
+  hang at a line number that moved between runs.
 - ✅ The site was rendering **completely unstyled** (40 layout classes with no CSS rule)
   while every content check stayed green. Fixed, and now guarded by
   `learning-site/scripts/audit-css.mjs`, which fails CI if any class used in JSX has no rule.

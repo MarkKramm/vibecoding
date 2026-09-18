@@ -18,8 +18,11 @@ verified 14-section contract.
 **The site works and is deployed.** Live at **https://markkramm.github.io/vibecoding/**, built
 and published by GitHub Actions, with CI green.
 
-**Verification is real.** 11 offline checks, 315 unit-test assertions, plus browser checks
-through headless Edge over CDP. Every guard has been proved capable of failing.
+**Verification is real.** 13 offline checks, 451 assertions, plus an accessibility audit that
+drives headless Edge over CDP. Every guard has been proved capable of failing.
+
+**The live site has been seen rendering**, by the project owner, and that check found a serious
+defect a fully green suite had missed — see below.
 
 ---
 

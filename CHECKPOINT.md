@@ -2,7 +2,7 @@
 
 A cold-start snapshot: what this project is, where it stands, and what is true right now.
 
-**Last verified:** all 11 offline checks green, all 315 unit-test assertions passing, every
+**Last verified:** all 13 offline checks green, all 451 assertions passing, every
 GitHub Actions run green, deployment `state=success`.
 
 ---
@@ -71,9 +71,14 @@ cd learning-site
 npm run dev          # content rebuild + dev server on 5173
 npm run build        # content rebuild + bundle to dist/
 npm run preview      # serve dist/ on 4173
-npm test             # 11 offline checks
+npm test             # 13 offline checks
 npm run test:browser # needs a running server
 ```
+
+⚠️ Exactly one of the 13 — `accessibility (rendered page)` — needs `npm run preview` running on
+4173. It is the only step that opens a browser; the other twelve read data. It skips with a loud
+notice rather than failing when no server answers, because a guard that fails for an unrelated
+reason gets disabled, and a disabled guard is worse than none.
 
 ⚠️ `localhost`, not `127.0.0.1` (dev server binds IPv6 only).
 ⚠️ Never set `VITE_BASE` locally — it produces a blank page.

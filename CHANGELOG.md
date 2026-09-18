@@ -10,6 +10,39 @@ The full commit history is the authoritative record: `git log --oneline`.
 
 ## Unreleased
 
+### The first person to open the live site found what eleven green checks had missed
+
+- **325 authored items were rendering into an empty `<div>`.** The Reference view showed raw
+  Markdown, and following that to the data found that the Glossary (**254 terms** across 10
+  categories) and the Resource List (**71 links** across 14 groups) had never rendered at all.
+  `shared-content.mjs` emits three document shapes — `doc` with `blocks`, `glossary` with
+  `terms`, `resources` with `groups` — and `Shared.jsx` mapped `active.blocks` unconditionally.
+  For two of the three kinds that is `undefined`, so the component drew nothing. The tabs
+  worked, the titles appeared, and the body was blank.
+- **This is the fourth instance of one shape**, and the pattern is now unmistakable: *correct
+  source, wrong screen, and every test green*. The unstyled layout (40 CSS classes with no rule),
+  the Tools library reporting "0 tools" while 433 rows existed, 40 tool cards linking to
+  `href="—"`, and now 325 invisible items. Every check verified the **data**; the defect was
+  always in the path from data to screen. Which is why "open the site and click through all four
+  views" is now the highest-yield check in this repository, and why a component test layer and a
+  browser-driven audit were added.
+
+### An accessibility audit, and the four bugs in the audit itself
+
+- **Added `audit-a11y.mjs`** as the 13th check: 44 assertions across all four views, driving Edge
+  over raw CDP with no new dependency. It found three real defects immediately — a skip link that
+  set the hash and scrolled but left focus on `<body>`, and two placeholders at 3.27:1 because
+  `::placeholder` was styled for one input and not the other. All three fixed and measured.
+- **The harness was harder to get right than the assertions.** `[tabindex]` matched at any value,
+  so the correct `tabindex="-1"` fix made the audit report a fake failure in four views. The
+  audit leaked Edge process trees, so a later connection hung and Node blamed a line number that
+  moved between runs — 26 orphaned processes accumulated. `send()` had no deadline, so a dead
+  socket hung forever. And the skip-link probe read a CSS transition frozen at `currentTime: 0`
+  and called the link invisible; neither a 400ms sleep nor awaiting `finished` helped.
+- **A baseline that outlives its defect.** Fixing the three defects made `--baseline` exit 1 with
+  no explanation, because the recorded entries could no longer match. Replaced with `--strict`
+  now that there is nothing to baseline, and documented in `WORKFLOW.md`.
+
 ### Guards that stated a rule they did not enforce
 
 - **Quiz `energy` is now required.** A quiz heading written without `energy:` built cleanly and
