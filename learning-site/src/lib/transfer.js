@@ -351,7 +351,24 @@ export function inspect(payload) {
   return { ok: true, summary, data };
 }
 
-/** A human label for a key, for the confirmation list. */
+/**
+ * A human label for a key, for the confirmation list.
+ *
+ * WHY TWO LABELS EXIST FOR SOME KEYS
+ * Four hooks were ported from the sibling CS Roadmap project and kept, but their
+ * views were deliberately not ported (see DECISIONS.md -> D-008). Their storage
+ * keys are still registered here so an old backup round-trips losslessly, which
+ * means a reader restoring one is shown rows for features this site has no screen
+ * for. `certifications` and `schedule` are the two that are unreachable today:
+ * nothing in the app ever writes them, so they can only ever appear as empty.
+ *
+ * Telling a reader "Certifications: 0 items" invites the reasonable conclusion
+ * that the feature exists somewhere and they have simply not found it. Naming the
+ * state instead ("not used in this app") is the honest version and costs nothing.
+ * The keys are kept rather than deleted because removing them would silently drop
+ * those fields from a reader's backup the next time they restore -- see D-008's
+ * note on why that removal is deferred rather than done.
+ */
 export function labelFor(key) {
   const short = key.replace(/^vibecoding:/, "").replace(/:v\d+$/, "");
   const labels = {
@@ -359,9 +376,9 @@ export function labelFor(key) {
     "lesson-sections": "Lesson sections ticked",
     portfolio: "Portfolio entries",
     applications: "Applications",
-    certifications: "Certifications",
+    certifications: "Certifications (not used in this app)",
     quiz: "Quiz answers",
-    schedule: "Schedule start dates",
+    schedule: "Schedule start dates (not used in this app)",
     reading: "Reading position",
     "energy-mode": "Energy mode",
     "reading-size": "Reading size",

@@ -211,6 +211,20 @@ would be a bigger job than it looks (the transfer `KEYS` list, the validators, t
 tests) and would have to be redone if the career views return — so it is deferred
 rather than resolved.
 
+**Partly addressed (reader-facing half).** The confusion above is real and cheap to
+fix, so it was fixed without touching the keys. `labelFor` in `lib/transfer.js` now
+names the two unreachable keys explicitly — “Certifications (not used in this app)”
+and “Schedule start dates (not used in this app)” — so a reader restoring a backup
+is told what they are looking at instead of being invited to hunt for a screen that
+does not exist. The keys, validators and hooks are all left in place, because
+deleting a key silently drops that field from a reader’s backup on the next restore.
+
+**Correction to the count.** This entry says four corresponding hooks remain. Only
+**two** are unreferenced (`useCertifications`, `useSchedule`); `useApplications` and
+`usePortfolio` are both genuinely used, because `DataTransfer.jsx` imports them to
+describe and validate what a backup contains. The original figure was not checked
+against the code before it was written down.
+
 ---
 
 ## D-011 — Persist reading position as a heading id, not a scroll offset
