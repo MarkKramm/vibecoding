@@ -397,6 +397,39 @@ const cellValue = (raw) => {
 };
 
 /**
+ * The `url` column, which must actually contain a URL.
+ *
+ * The dash normalisation above was not enough. Two rows put PROSE in the URL
+ * column -- "in this repository" -- because the tool they name is a local file
+ * in this repo rather than a website, and that reads naturally in a hand-written
+ * table:
+ *
+ *   | `docs/research/vibecoding-tool-landscape.md` | ... | Free | in this repository | ... |
+ *
+ * Read positionally, that string lands in `url`, and `ToolCard`'s `tool.url &&`
+ * guard accepts it as truthy, so the tools library rendered a live
+ * `<a href="in this repository" target="_blank">Official site</a>` pointing at a
+ * relative path that does not exist. Same defect class as the em dash, one step
+ * less obvious, and it survived the first fix because a dash is a *pattern* while
+ * this is arbitrary prose.
+ *
+ * So the rule is positive rather than a blocklist: a URL is a string that looks
+ * like a URL. Anything else -- prose, a placeholder, a local path, a non-string --
+ * becomes empty, and the card renders no link instead of a broken one. A tool
+ * whose documentation is a file in this repository genuinely has no website, and
+ * an empty cell is the honest representation of that.
+ */
+const looksLikeUrl = (raw) => {
+  if (typeof raw !== 'string') return false;
+  return /^https?:\/\/\S+$/i.test(raw.trim());
+};
+
+const urlValue = (raw) => {
+  const s = cellValue(raw);
+  return looksLikeUrl(s) ? s : '';
+};
+
+/**
  * Parse one row of a `## Tools for This Phase` table.
  *
  * Positional, not header-driven, and that is deliberate: a header-driven parse
@@ -414,11 +447,10 @@ export function parseToolRow(cells) {
     name: cellValue(name),
     purpose: cellValue(purpose),
     cost: cellValue(cost),
-    // `url` and `freeAlternative` are the two columns where a dash means "there
-    // is none". Only these are blanked: a dash in `name` or `purpose` is a
-    // genuinely broken row and should survive to be rejected by the guard below,
-    // not be quietly emptied here.
-    url: cellValue(url),
+    // `url` is the one column where the content must be a real URL, because it
+    // becomes an href. `freeAlternative` is prose ("Google AI Studio — free tier
+    // with temperature controls"), so it only gets placeholder normalisation.
+    url: urlValue(url),
     task: cellValue(task),
     freeAlternative: cellValue(freeAlternative),
   };
