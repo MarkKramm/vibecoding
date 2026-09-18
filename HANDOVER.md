@@ -10,8 +10,8 @@
 ## 0. READ THIS FIRST — the six things that matter most
 
 1. **Git is committed as of this session** (`3f1cab4`, `b59ec96`, clean tree). Two CRLF files were found and fixed during the commit — see §7.3, and watch for this recurring.
-2. **The quiz audit is currently FAILING on 4 files, and all 4 were written this session.** I authored most correct answers in position C. This is a real defect, not a guard bug. **Never edit the guard to agree.** See §7.1. This is the only red guard; build and AST audit are green.
-3. **No subagents, no workflows.** The user explicitly instructed: *"please dont use subagents"*. Author every remaining file directly, by hand, in the main session. Two workflow runs were attempted earlier and both were cancelled. Do not reintroduce fan-out.
+2. **ALL GUARDS ARE GREEN as of Stage A.** The quiz audit previously failed on 4 files I wrote with correct answers biased to position C; that is **fixed** — every file now uses A/B/C/D at most 3× per 8 questions. The AST character gain is **explained and benign** (§7.2). Build, quiz, and AST audits all exit 0. See §7.
+3. **At most 1 subagent is permitted** (user instruction, restated 2026-09-18: *"you can only use 1 sub agent"*). The original instruction was *"please dont use subagents"* and two workflow runs were cancelled. **Author every remaining file directly, by hand, in the main session.** Do not reintroduce fan-out.
 4. **The plan was EXPANDED beyond the original 9 tracks — it is now 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases). See §6.0.
 5. **Six tracks are still empty:** `agents`, `finetuning`, `vibecoding`, `safety-career`, `career`, and `rag` is 4/7 done. See §6 for the full remaining-work list — **32 phases**, plus track files, the site, tests, CI, and docs.
 6. **`web_search` is BROKEN in this environment.** It returns HTTP 404 for every query. `web_fetch` works. Only the user can fix it (Settings > Plugins). All research in `docs/research/` was done by fetching primary sources directly.
@@ -58,8 +58,8 @@ Audit status:
 | Audit | Status |
 |---|---|
 | `build-content.mjs --check` | ✅ exit 0 |
-| `audit-lesson-ast.mjs` | ✅ exit 0 — 31 lessons, **0 character loss**, 11,104 character gain ⚠️ |
-| `audit-quiz.mjs` | ❌ **exit 1 — 4 failures** (§7.1) |
+| `audit-lesson-ast.mjs` | ✅ exit 0 — 31 lessons, **0 character loss**, 11,104 character gain (now understood — see §7.2) |
+| `audit-quiz.mjs` | ✅ **exit 0 — all positions balanced** (fixed in Stage A, §7.1) |
 
 ### Phase files on disk, by track
 
@@ -456,41 +456,66 @@ Still to build: `package.json`, `vite.config.js`, `index.html`, `src/main.jsx`, 
 
 ## 7. Known defects to fix
 
-### 7.1 ❌ Quiz answer-position skew — 4 files (BLOCKING, introduced this session)
+### 7.1 ✅ RESOLVED (Stage A, 2026-09-18) — Quiz answer-position skew
 
-`node scripts/audit-quiz.mjs` exits 1 with:
+**Was:** `audit-quiz.mjs` exited 1 on 4 files, all written with correct answers biased to position C:
 
 ```
-✖ quiz audit failed — 4 problem(s)
-
-  ai-roadmaps/cost/03-phase-batching-and-async.md      — 7 of 8 correct answers in position C (88%, ceiling 50%)
-  ai-roadmaps/rag/01-phase-why-retrieval.md            — 6 of 8 correct answers in position C (75%, ceiling 50%)
-  ai-roadmaps/rag/03-phase-embeddings-vector-search.md — 5 of 8 correct answers in position C (63%, ceiling 50%)
-  ai-roadmaps/rag/04-phase-hybrid-search-reranking.md  — 5 of 8 correct answers in position C (63%, ceiling 50%)
-
-  Rebalance the correct answers, or correct the question. Never edit this guard to agree.
+ai-roadmaps/cost/03-phase-batching-and-async.md      — 7 of 8 in C (88%)
+ai-roadmaps/rag/01-phase-why-retrieval.md            — 6 of 8 in C (75%)
+ai-roadmaps/rag/03-phase-embeddings-vector-search.md — 5 of 8 in C (63%)
+ai-roadmaps/rag/04-phase-hybrid-search-reranking.md  — 5 of 8 in C (63%)
 ```
 
-**The fix:** in each file, move the `[x]` on enough questions to a different position by **reordering the option lines** (swap the correct option with an adjacent incorrect one). Target: no position above 50%, and ideally use A, B, C, D each at least twice across 8 questions.
+**Fix applied:** reordered **whole option lines** in each file (swapping the `[x]` line with a neighbouring `[ ]` line). No question text, no `**Why:**` line, and no ID was changed. No guard was edited.
 
-**Method that worked earlier** (for `foundations/05` and `foundations/08`): read the quiz block, map each question's correct position, then apply targeted `edit` calls swapping the `[x]` line with a neighbouring `[ ]` line. Do **not** rewrite the whole quiz.
+Resulting positions (`Qn=letter`):
 
-**Corpus distribution currently** (291 questions): A 15.5%, B 25.4%, C 33.7%, D 25.4%. Corpus ceilings are **50% per position**, with a **35% corpus ceiling and 15% corpus floor**, and a **5% position-availability** check. So C at 33.7% is inside the corpus ceiling but close — **as you author the remaining 29 phases, deliberately spread the correct answers**, or C will breach.
+```
+cost/03    Q1=A Q2=B Q3=D Q4=A Q5=B Q6=B Q7=D Q8=C
+rag/01     Q1=A Q2=A Q3=B Q4=D Q5=B Q6=C Q7=D Q8=C
+rag/03     Q1=B Q2=C Q3=C Q4=A Q5=B Q6=D Q7=A Q8=D
+rag/04     Q1=D Q2=C Q3=B Q4=A Q5=D Q6=C Q7=B Q8=A
+```
 
-**Hard rule: never edit `audit-quiz.mjs` to agree.** The script itself says so, and the guard exists precisely to catch this.
+**Corpus distribution after the fix** (291 questions):
 
-### 7.2 ⚠️ AST character gain — 11,104 characters
+| Position | Before | After |
+|---|---|---|
+| A | 15.5% | **18.2%** |
+| B | 25.4% | 25.4% |
+| C | 33.7% | **28.2%** |
+| D | 25.4% | 28.2% |
+
+C dropped off the 35% corpus ceiling it was approaching, and A rose clear of the 15% corpus floor. **Still spread the correct answers deliberately as you author the remaining 32 phases** — the skew is much cheaper to avoid while writing (Q1 at A, Q2 at B, Q3 at C, Q4 at D) than to retrofit.
+
+**Hard rule: never edit `audit-quiz.mjs` to agree.**
+
+### 7.2 ✅ RESOLVED (Stage A, 2026-09-18) — AST character gain is expected synthesis, not a bug
 
 ```
 ✓ lesson AST audit: 31 lesson(s) checked
   total character loss: 0
   total character gain: 11104
-  note: the AST carries 11104 character(s) not present in the source — check for duplicated content
 ```
 
-**Loss is 0**, which is the important invariant. The gain means the AST contains characters the source does not — most likely from the parser synthesising structure (list markers, table cell separators, heading anchors) rather than genuine duplication.
+**Loss is 0 — that is the invariant and it holds.** The gain was investigated and is **benign**. Do not "fix" it.
 
-**Action:** investigate before treating it as clean. Read `scripts/audit-lesson-ast.mjs`, determine whether the gain is expected synthesis (in which case document that in `docs/CONTENT-SCHEMA.md` and consider a baseline threshold) or a real duplication bug. It was **9,818** at 26 phases and **11,104** at 31, so it scales with content — consistent with per-block synthesis, but the per-lesson rate should be checked for outliers.
+**Root cause.** The audit compares a **character multiset** (whitespace excluded). `stripMarkup` removes inline markup from the *source* side (`` `code` `` → `code`, `**bold**` → `bold`), but `astToPlainText` pushes `block.text` **verbatim** — and `scripts/lesson-ast.mjs` deliberately carries inline markup through as raw text for the site's `renderInline.jsx`. So markup is stripped from one side and retained by the other. That asymmetry is the entire gain.
+
+**Measured breakdown of the 11,104:**
+
+| Character | Count | Source |
+|---|---|---|
+| `*` | 9,128 | Emphasis markers retained in AST text |
+| `` ` `` | 1,158 | Inline-code markers retained in AST text |
+| `-`, `\|`, `#`, digits | ~800 | List markers, table pipes, heading anchors |
+
+**92% is `*` and backtick alone.** Confirmed by re-running the comparison with inline markup normalised on **both** sides: gain collapses **11,104 → 819**, leaving only structural synthesis.
+
+**Why it is not duplication:** gain is never zero across 31 lessons, is tightly bounded at **0.79%–2.48% of source (median 1.68%)**, and scales with source size with no outliers (largest single file: 606 chars, 2.3%). A duplication bug produces a bimodal spread concentrated in a few files; this is uniform.
+
+**Consequence for future work:** treat gain as a **trend indicator, not a gate**. A sudden jump above ~2.5% of source *in one lesson* is worth investigating; the raw total growing as content is authored is expected. **Only `loss > 0` fails the audit.** This is now documented in `docs/CONTENT-SCHEMA.md` under "The lesson region".
 
 ### 7.3 ✅ RESOLVED — Git commit made, and two CRLF files fixed
 
@@ -612,11 +637,11 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
 ## 9. Immediate next steps, in order
 
-1. **✅ DONE this session.** Git committed (`3f1cab4`, 52 files) and two CRLF files converted to LF. See §7.3. Generated JSON is gitignored, so a fresh clone must run `node scripts/build-content.mjs` before the site tests can run.
+1. **✅ DONE.** Git committed (`3f1cab4`, 52 files) and two CRLF files converted to LF. See §7.3. Generated JSON is gitignored, so a fresh clone must run `node scripts/build-content.mjs` before the site tests can run.
 
-2. **Fix the 4 quiz-skew files** (§7.1) by reordering options. Re-run `node scripts/audit-quiz.mjs` until it exits 0. **This is the only failing guard right now.**
+2. **✅ DONE (Stage A).** The 4 quiz-skew files are fixed; `node scripts/audit-quiz.mjs` exits **0** and the corpus distribution improved (C 33.7%→28.2%, A 15.5%→18.2%). See §7.1. **All three guards are now green.**
 
-3. **Investigate the AST character gain** (§7.2) and settle whether it is expected synthesis.
+3. **✅ DONE (Stage A).** The AST character gain is explained as expected inline-markup synthesis and documented in `docs/CONTENT-SCHEMA.md`. No code change was needed. See §7.2.
 
 4. **Create `ai-roadmaps/career/`** — the new track's folder does not exist yet (§6.0.2). Then write its 4 phases.
 
@@ -694,8 +719,8 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
 ## 12. Session lessons — mistakes made, so they are not repeated
 
-1. **I authored a systematic quiz-position bias across 4 files.** The guard caught it. Lesson: **vary the `[x]` position while writing**, not afterwards. It is much cheaper to write Q1 at A, Q2 at B, Q3 at C, Q4 at D than to retrofit.
-2. **Workflows and subagents were both attempted and both cancelled.** The user then said explicitly: *"dont use subagents"*. Write files directly.
+1. **I authored a systematic quiz-position bias across 4 files.** The guard caught it. **Fixed in Stage A (§7.1).** Lesson: **vary the `[x]` position while writing**, not afterwards. It is much cheaper to write Q1 at A, Q2 at B, Q3 at C, Q4 at D than to retrofit a whole file.
+2. **Workflows and subagents were both attempted and both cancelled.** The user said *"please dont use subagents"*, later relaxed to *"you can only use 1 sub agent"*. Write files directly.
 3. **A workflow's return value is not evidence of file creation.** Counting schema-returning agents undercounted the work; only listing files on disk was accurate. Always verify by listing files.
 4. **PowerShell multi-line `String.Replace` failed** because patterns used `` `r`n `` while files are LF-only. Use `` `n ``, or better, use the `edit` tool.
 5. **A ```` ```python ```` glued to the end of a prose sentence** broke fence pairing in `cost/05`, which silently hid every following section from the parser and produced a confusing "missing mandatory sections" error. **Fence openers go on their own line.**

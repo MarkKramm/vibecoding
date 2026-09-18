@@ -457,9 +457,9 @@ Write `portfolio/rag/04-hybrid-search-reranking.md` containing:
 ### Q1. Why should you not add a BM25 score and a cosine similarity together to rank results? <!-- id: rag-04-q01 energy: normal -->
 
 - [ ] Because BM25 is always more accurate than cosine similarity
-- [x] Because BM25 scores are unbounded and corpus-dependent while cosine is bounded, so the wider-ranged score silently dominates the ranking
 - [ ] Because cosine similarity must be used alone by definition
 - [ ] Because BM25 returns negative values that invert the ordering
+- [x] Because BM25 scores are unbounded and corpus-dependent while cosine is bounded, so the wider-ranged score silently dominates the ranking
 
 **Why:** The scales carry different meanings and no shared unit. Adding them means an accident of range decides which retriever wins, and your "hybrid" system is really one retriever with a tiebreaker. Rank-based fusion sidesteps the problem by comparing positions rather than scores.
 
@@ -483,9 +483,9 @@ Write `portfolio/rag/04-hybrid-search-reranking.md` containing:
 
 ### Q4. You add a reranker but recall at k=5 does not improve. What should you check first? <!-- id: rag-04-q04 energy: high -->
 
+- [x] Whether the answer is present in the candidate set at all — if retrieval missed it, reranking can only reorder irrelevant documents
 - [ ] Whether the reranker model is large enough
 - [ ] Whether you should rerank more candidates
-- [x] Whether the answer is present in the candidate set at all — if retrieval missed it, reranking can only reorder irrelevant documents
 - [ ] Whether the chunks are too small
 
 **Why:** Retrieval determines whether the answer is reachable; reranking determines its ordering. Measuring retrieval recall before reranking, separately from after, is what distinguishes the two. A reranker cannot recover a document that was never retrieved, and this is the most common reason reranking appears to do nothing.
@@ -494,8 +494,8 @@ Write `portfolio/rag/04-hybrid-search-reranking.md` containing:
 
 - [ ] Because cross-encoders only support a limited vocabulary
 - [ ] Because rerankers require a GPU
-- [x] Because a cross-encoder score is query-specific, so nothing can be precomputed and every document needs its own forward pass
 - [ ] Because the corpus would exceed the model's context window
+- [x] Because a cross-encoder score is query-specific, so nothing can be precomputed and every document needs its own forward pass
 
 **Why:** Bi-encoder document embeddings are computed once and reused across queries, which is what makes corpus-wide search feasible. A cross-encoder's judgement depends on the query, so covering 10,000 documents means 10,000 forward passes per query. That asymmetry is why the architecture is retrieve-many-then-rerank-few.
 
@@ -519,9 +519,9 @@ Write `portfolio/rag/04-hybrid-search-reranking.md` containing:
 
 ### Q8. You have dense retrieval with 95% Recall@5 on your corpus. What is the reasonable next step? <!-- id: rag-04-q08 energy: high -->
 
-- [ ] Add HyDE and multi-query to push recall higher
-- [ ] Add a larger reranker
 - [x] Verify the remaining failures and consider whether the retrieval half needs work at all before adding more stages
+- [ ] Add a larger reranker
+- [ ] Add HyDE and multi-query to push recall higher
 - [ ] Reduce the chunk size
 
 **Why:** High recall means retrieval is rarely the bottleneck, so query transformation adds a generation call per query for almost nothing. The remaining 5% may be chunking, or the questions may be unanswerable from the corpus. Adding stages to a system that already works is how pipelines become slow and fragile without becoming better.

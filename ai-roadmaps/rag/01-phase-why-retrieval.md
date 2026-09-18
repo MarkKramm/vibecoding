@@ -330,18 +330,18 @@ Write `portfolio/rag/01-why-retrieval.md` containing:
 
 ### Q1. A model answers questions about your company's internal wiki fluently and confidently, but the version numbers are subtly wrong. What is the most likely explanation? <!-- id: rag-01-q01 energy: normal -->
 
-- [ ] The model is deliberately obfuscating its sources
 - [x] It is producing approximate parametric recall — a blurred impression of similar text rather than the document — with no internal signal distinguishing that from accurate recall
 - [ ] The wiki is corrupted in the training data
+- [ ] The model is deliberately obfuscating its sources
 - [ ] The model's tokenizer is mangling the numbers
 
 **Why:** Parameters encode a statistical impression, not stored documents, so recall is approximately right in a way that feels exactly like being right. Subtly wrong version numbers are the classic signature. Supplying the actual document moves the fact from blurred parameters to exact context.
 
 ### Q2. Your RAG system gives a poor answer. You paste the correct source passage into the prompt by hand and the answer becomes correct. What have you learned? <!-- id: rag-01-q02 energy: normal -->
 
-- [ ] The generation prompt needs work
-- [ ] The model is too small for the task
 - [x] The problem is retrieval — the right passage was not being fetched or was buried
+- [ ] The model is too small for the task
+- [ ] The generation prompt needs work
 - [ ] The embedding model needs replacing
 
 **Why:** Injecting the known-correct chunk isolates the two halves of the pipeline. If the model succeeds with the right text in front of it, the model and prompt are adequate and the failure was upstream. If it still fails, the problem is generation. This test takes seconds and saves hours.
@@ -359,16 +359,16 @@ Write `portfolio/rag/01-why-retrieval.md` containing:
 
 - [ ] Embed the orders and retrieve the most similar rows
 - [ ] Retrieve order documents and ask the model to count them
-- [x] Generate and validate a SQL query and execute it against the database
 - [ ] Ask the model to estimate from a sample of orders
+- [x] Generate and validate a SQL query and execute it against the database
 
 **Why:** This is an exact question about structured data, so it wants an exact answer from the structure. Embedding and counting retrieved rows gives an approximate answer to a question with one correct value. The model writes the query; the database computes it; you validate before executing.
 
 ### Q5. Which problem will retrieval NOT fix? <!-- id: rag-01-q05 energy: normal -->
 
 - [ ] The model does not know about a document written last week
-- [ ] The model confuses two products with similar names
 - [x] The model has all the facts but combines them into a valid-looking but wrong multi-step argument
+- [ ] The model confuses two products with similar names
 - [ ] The model does not know your internal error codes
 
 **Why:** That is a capability failure rather than a knowledge failure. Retrieval supplies text, and retrieving facts the model already had changes nothing. The diagnostic is the same injection test: put the correct text in front of it and watch it reason badly anyway. Tools or a stronger model are the levers.
@@ -386,8 +386,8 @@ Write `portfolio/rag/01-why-retrieval.md` containing:
 
 - [ ] The retrieval is working unusually well
 - [ ] The model is robust to missing context, which is desirable
-- [x] Retrieval is not actually being used — the model is answering from parametric knowledge and the pipeline adds cost without grounding
 - [ ] The context window is too small
+- [x] Retrieval is not actually being used — the model is answering from parametric knowledge and the pipeline adds cost without grounding
 
 **Why:** If removing the retrieved text does not degrade quality, the text was not contributing. The system is paying for embeddings and retrieval while the model answers from memory. That is a silent failure, because the outputs look reasonable — they are just ungrounded, and they will drift wrong exactly where parameters are blurred.
 

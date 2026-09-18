@@ -420,9 +420,9 @@ Write `portfolio/cost/03-batching-and-async.md` containing:
 
 ### Q1. A background worker calls a model and pushes the result to the user who triggered it. Can this job be batched? <!-- id: cost-03-q01 energy: normal -->
 
-- [ ] Yes, because the request handler already returned and the user is not blocked
-- [ ] Yes, because it runs outside the request cycle
 - [x] No, because the user is still waiting for the result — the latency was relocated, not removed
+- [ ] Yes, because it runs outside the request cycle
+- [ ] Yes, because the request handler already returned and the user is not blocked
 - [ ] Only if the worker runs on a schedule rather than being triggered
 
 **Why:** The classification test is who reads the output, and when, not where the code executes. If the same user is waiting for that value before they can continue, the work is on their critical path regardless of which process performs it. Batching would turn a short wait into an hours-long one.
@@ -430,8 +430,8 @@ Write `portfolio/cost/03-batching-and-async.md` containing:
 ### Q2. Why is asynchronous work cheaper at the provider? <!-- id: cost-03-q02 energy: normal -->
 
 - [ ] Because asynchronous requests use fewer tokens for the same content
-- [ ] Because the provider is passing on a subsidy to attract batch customers
 - [x] Because you gave up the latency guarantee, so the provider can schedule the work when capacity is otherwise idle
+- [ ] Because the provider is passing on a subsidy to attract batch customers
 - [ ] Because batch requests bypass safety processing
 
 **Why:** The discount is the price of the scheduling constraint handed back. An interactive request forces the provider to hold capacity ready now; a batch request lets them queue and group. The tokens are identical — only the freedom to schedule them differs.
@@ -440,16 +440,16 @@ Write `portfolio/cost/03-batching-and-async.md` containing:
 
 - [ ] The job is corrupt and must be resubmitted from scratch
 - [ ] Those items were rejected at validation and can be ignored
-- [x] This is a normal partial outcome — reconcile and re-submit the missing ids
 - [ ] The results are still being written and will appear shortly
+- [x] This is a normal partial outcome — reconcile and re-submit the missing ids
 
 **Why:** Missing items are a routine feature of asynchronous jobs, not an exception. Reconciliation exists precisely to detect them: every submitted id must appear in exactly one of output or error, and anything in neither gets re-submitted. Ignoring them silently truncates your dataset.
 
 ### Q4. You read batch results into a list and assign them to your input rows by index. It works in testing. Why is it dangerous? <!-- id: cost-03-q04 energy: normal -->
 
-- [ ] Because list indices in most languages start at one rather than zero
-- [ ] Because the provider may return results as a dictionary instead of a list
 - [x] Because result order is not guaranteed, so correct answers can be attached to the wrong rows without any visible error
+- [ ] Because the provider may return results as a dictionary instead of a list
+- [ ] Because list indices in most languages start at one rather than zero
 - [ ] Because the output file may be truncated at an arbitrary point
 
 **Why:** There is no ordering guarantee, and small test runs often happen to preserve order. The failure is silent and produces plausible-looking data attached to the wrong records — worse than a crash, because nothing signals that it happened. Carry your own identifier through and join on that.
@@ -457,8 +457,8 @@ Write `portfolio/cost/03-batching-and-async.md` containing:
 ### Q5. You want to batch a three-step pipeline where each step uses the previous step's output. What is the correct approach? <!-- id: cost-03-q05 energy: high -->
 
 - [ ] Batch the whole pipeline as one job, since the steps are related
-- [ ] It cannot be batched; run the entire pipeline interactively
 - [x] Run three batches with collection and validation between them, sequencing in your own code
+- [ ] It cannot be batched; run the entire pipeline interactively
 - [ ] Merge the three prompts into one larger prompt and batch that
 
 **Why:** Batch requests cannot depend on each other, but that constrains a single batch rather than the pipeline. Three stages with collection between them keeps each stage fully independent, and the sequencing lives in your code where you can validate each intermediate result.
@@ -476,8 +476,8 @@ Write `portfolio/cost/03-batching-and-async.md` containing:
 
 - [ ] Failed items are skipped, since the insert raises on the first failure
 - [ ] Nothing, because failed items never produce output to insert
-- [x] Successful items that were re-submitted get inserted twice, so your data duplicates at roughly your failure rate
 - [ ] The table grows by exactly the number of retries, which is harmless
+- [x] Successful items that were re-submitted get inserted twice, so your data duplicates at roughly your failure rate
 
 **Why:** Re-submission is a normal pipeline step, not an error path, so it runs often. Non-idempotent processing turns every retry into a duplicate row. Use an upsert keyed on your own id so a repeated success overwrites rather than appends.
 

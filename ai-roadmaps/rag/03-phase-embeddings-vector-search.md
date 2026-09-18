@@ -424,9 +424,9 @@ Write `portfolio/rag/03-embeddings-vector-search.md` containing:
 
 ### Q4. A user searches for error code `ERR_CONN_4471`. Dense retrieval returns documentation for `ERR_CONN_4412`, a general connection-errors page, and a guide mentioning `ERR_CONN_4470`. What does this demonstrate? <!-- id: rag-03-q04 energy: normal -->
 
-- [ ] The embedding model is broken and should be replaced
-- [ ] The index needs more vectors per node
 - [x] Dense retrieval has no meaningful representation for rare identifiers, so it matches similar-looking strings and the true answer may sit on a page that uses entirely different vocabulary
+- [ ] The index needs more vectors per node
+- [ ] The embedding model is broken and should be replaced
 - [ ] The chunks are too small
 
 **Why:** Embeddings encode semantics, and an error code has no semantics beyond "looks like an error code". So near-identical codes match closely and the real answer — on a page about socket timeouts that never says "connection" — is missed by both mechanisms in opposite directions. This is exactly the gap lexical search fills.
@@ -444,15 +444,15 @@ Write `portfolio/rag/03-embeddings-vector-search.md` containing:
 
 - [ ] "How do I configure authentication for the API?"
 - [ ] "What are the limits on file uploads?"
-- [x] "Which of our plans do NOT include SSO?"
 - [ ] "Explain how the caching layer works"
+- [x] "Which of our plans do NOT include SSO?"
 
 **Why:** Negation barely moves an embedding vector — the question embeds close to text about SSO support generally, so it retrieves pages describing which plans do include it. The qualifier that carries the entire meaning is the one the embedding represents least. Negated queries belong in your failure probe set.
 
 ### Q7. What is the point of Matryoshka embeddings? <!-- id: rag-03-q07 energy: high -->
 
-- [ ] They increase the number of dimensions to improve accuracy
 - [x] A prefix of the vector is itself usable, so you can search cheaply with a short prefix and rescore candidates with the full vector
+- [ ] They increase the number of dimensions to improve accuracy
 - [ ] They compress text before embedding it
 - [ ] They allow a single index to serve multiple languages
 
@@ -462,8 +462,8 @@ Write `portfolio/rag/03-embeddings-vector-search.md` containing:
 
 - [ ] Tagalog text cannot be embedded
 - [ ] The index parameters need retuning for non-English text
-- [x] The model has less training data in that language, so it represents it poorly — and tokenization disparities mean the same content costs more tokens, so English benchmarks do not predict non-English retrieval
 - [ ] The chunk size must be larger for non-English text
+- [x] The model has less training data in that language, so it represents it poorly — and tokenization disparities mean the same content costs more tokens, so English benchmarks do not predict non-English retrieval
 
 **Why:** Petrov et al. measured up to a 15x token disparity across languages that persists even in multilingual tokenizers, and representation quality tracks training data volume. The fix is to measure in the actual language and switch to a genuinely multilingual model — a somewhat smaller multilingual model usually beats a larger English-centric one.
 

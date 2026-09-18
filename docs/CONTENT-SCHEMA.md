@@ -211,6 +211,26 @@ Two rules the parser keeps:
 
 `node scripts/audit-lesson-ast.mjs` verifies both across every phase by comparing the AST's characters against the source with markup stripped. It reports the exact loss count per lesson. **Run it after any change to the parser.**
 
+#### The character *gain* is expected, and is not duplication
+
+The audit reports two numbers. **Loss is the invariant that matters and must be 0.** It also reports a **gain**: characters the AST carries that the stripped source does not. At 31 phases this is **11,104** characters, and it is **expected synthesis, not a bug**. Investigated 2026-09-18; the finding:
+
+The comparison is a **character multiset** (whitespace excluded). `stripMarkup` in the audit removes inline markup from the *source* side — `` `code` `` → `code`, `**bold**` → `bold`. But `astToPlainText` pushes `block.text` **verbatim**, and per the rule above the parser deliberately carries inline markup through as raw text. So the two sides are compared with an asymmetry: markup is stripped from one and retained by the other.
+
+Measured breakdown of the 11,104 gain:
+
+| Character | Count | Source of the gain |
+|---|---|---|
+| `*` | 9,128 | Emphasis markers retained in AST text |
+| `` ` `` | 1,158 | Inline-code markers retained in AST text |
+| `-`, `\|`, `#`, digits | ~800 | List markers, table pipes, heading anchors |
+
+**92% is explained by `*` and backtick alone.** Confirmed by re-running the comparison with inline markup normalised on *both* sides: the gain collapses **11,104 → 819**, leaving only structural synthesis.
+
+The distribution also rules out duplication: gain is **never zero** across 31 lessons, is tightly bounded at **0.79%–2.48% of source (median 1.68%)**, and scales with source size with no outliers. A duplication bug would produce a bimodal spread concentrated in a few files; this does not.
+
+**Therefore:** gain is a fixed function of inline-markup density, and should be read as a **trend indicator**, not a pass/fail gate. A sudden jump well above ~2.5% of source in one lesson is worth investigating; the raw number growing as content is authored is not. Only **loss > 0** fails the audit.
+
 ## Output: generated JSON
 
 The build script emits a small index per track plus one file per lesson:
