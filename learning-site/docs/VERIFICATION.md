@@ -64,7 +64,7 @@ time. React throws `Objects are not valid as a React child` only at render.
 
 **Its limit.** It is a **shape** check, not a **semantics** check. It will happily
 pass a `resources` array whose every `url` is empty, a `quiz` whose `answerIndex`
-points at the author's intended distractor, or a `skills` array of strings that
+points at the author’s intended distractor, or a `skills` array of strings that
 say nothing. And it only knows the fields listed in its `CONTRACT` map: a phase
 field nobody added to that map can change shape unnoticed. **If you add a field to
 the build, add it to `CONTRACT` in the same commit.**
@@ -97,10 +97,10 @@ The ordering in `costTone()` is the whole design: explicit zero-cost phrasing
 wins first, so a parenthetical caveat about paid API calls cannot override a tool
 that is genuinely free for the purpose the phase lists it; freemium is settled
 before returning, because `"Freemium; paid above the free tier"` reaches the
-free branch on the word "free" and must still read as freemium; then paid; then
+free branch on the word “free” and must still read as freemium; then paid; then
 freemium as the default for the indeterminate. `"Varies"` is reported as
-**freemium**, not free: the honest badge for "it depends" is the ambiguous one,
-because a reader who sees "freemium" will check and a reader who sees "free" will
+**freemium**, not free: the honest badge for “it depends” is the ambiguous one,
+because a reader who sees “freemium” will check and a reader who sees “free” will
 assume. The bias is deliberate and stated in the source — the reader this
 curriculum is written for has no budget, and wrongly labelling something free
 costs one wasted click, while wrongly labelling something free as paid means they
@@ -122,7 +122,7 @@ number of classifications checked.
 ## 4. `verify-site.mjs` — the real browser, 15 checks
 
 **What it does.** Launches headless Edge (or Chrome) with a fresh temporary
-profile, connects over the **Chrome DevTools Protocol** using nothing but Node's
+profile, connects over the **Chrome DevTools Protocol** using nothing but Node’s
 built-in `WebSocket` and `fetch`, navigates to the dev server, walks the DOM, and
 asserts fifteen things:
 
@@ -161,8 +161,8 @@ package to the tree.
   are drift detectors, not invariants: they will fail the moment a track is
   authored, which is a *correct* failure but a noisy one, and they must be
   updated deliberately.
-- If no Edge or Chrome binary is found it exits **2**, not 1 — "could not run" is
-  a different outcome from "ran and failed", and the exit code says which.
+- If no Edge or Chrome binary is found it exits **2**, not 1 — “could not run” is
+  a different outcome from “ran and failed”, and the exit code says which.
 - It waits with fixed `sleep()` calls rather than waiting for conditions. On a
   slow machine 4000 ms may not be enough, and a timeout would read as an app
   failure.
@@ -185,15 +185,15 @@ package to the tree.
 3. the dashboard has all **42** cards after navigating back,
 4. **every written track renders a full phase** — it opens the first phase of
    each of the six written tracks and requires >3000 characters and no
-   "Loading this phase…",
+   “Loading this phase…”,
 5. **no unsupported content blocks anywhere** — the literal string
    `Unsupported block type` must not appear in any of them,
-6. **every track's phase includes a quiz**,
+6. **every track’s phase includes a quiz**,
 7. **search returns hits for `attention`**,
 8. no uncaught errors during the deep pass.
 
 **One test artifact worth preserving.** An earlier version of check 4 did the
-whole journey — click a card, wait, click "All tracks", repeat — inside a single
+whole journey — click a card, wait, click “All tracks”, repeat — inside a single
 `evaluate` holding element references across React re-renders. After the first
 navigation those nodes were detached, every later click silently did nothing, and
 the result read as **“only 1 of 10 tracks renders”**: a test artifact that looked
@@ -206,7 +206,7 @@ to tell the two cases apart.
 - It checks **the first phase of each track**, not all 42. A single broken phase
   in the middle of a track passes.
 - Check 2 is a **one-question-position** heuristic: if by coincidence every
-  question's correct answer happened to be option 0, it would report a false
+  question’s correct answer happened to be option 0, it would report a false
   failure. It is a smoke test for the normalisation, not a proof of it — that is
   `verify-quiz-correctness.mjs`.
 - Check 4 skips tracks with zero cards, so it proves “six tracks render”, not “ten
@@ -242,7 +242,7 @@ distractor is the right answer. That is the worst possible failure for a learnin
 site and it is **invisible to a smoke test**.
 
 **The method.** It reads the source of truth directly from `foundations.json`,
-prints each question's `answerIndex`, then drives the real UI:
+prints each question’s `answerIndex`, then drives the real UI:
 
 1. It resets any previously saved answers so the score is unambiguous.
 2. It clicks the option the **source** says is correct, for every question, and
@@ -254,7 +254,7 @@ prints each question's `answerIndex`, then drives the real UI:
 **Its limits.**
 
 - It verifies **one phase** — `foundations.json` phase 1. It proves the mapping
-  is correct for that phase's questions; the mapping is a single pure function, so
+  is correct for that phase’s questions; the mapping is a single pure function, so
   the evidence transfers, but it is not a per-phase guarantee.
 - It depends on the DOM structure of `Quiz.jsx` (`ol`/`ul` groups containing
   buttons, and a reset control matching `/start over|reset|try again/i`). A
@@ -342,8 +342,8 @@ will recur on any Windows machine.
 
 ### (a) `EBUSY` kills the dev server when a temp directory appears inside the project
 
-Vite's watcher follows directories. When a headless browser profile, or an
-editor's atomic-save temp directory, is created **inside the project tree**, the
+Vite’s watcher follows directories. When a headless browser profile, or an
+editor’s atomic-save temp directory, is created **inside the project tree**, the
 watcher picks it up and then hits a locked or already-renamed handle — and the
 whole dev server dies with `EBUSY`. Windows editors make this worse by writing
 `.<Name>.<pid>.<uuid>.tmpdir/` and renaming it into place; if the rename lands
@@ -379,7 +379,7 @@ Every browser script and every default URL in this suite uses `localhost` for
 that reason. `verify-site.mjs` accepts `--url`; if you override it, override it
 with a `localhost` URL.
 
-Note the asymmetry: the **CDP endpoint** is a different matter. The browser's
+Note the asymmetry: the **CDP endpoint** is a different matter. The browser’s
 debugging port is queried at `http://127.0.0.1:9222/json/list`, and that is
 correct — the browser is listening on IPv4 there. Two servers, two address
 families, and mixing them up produces a confusing failure in either direction.

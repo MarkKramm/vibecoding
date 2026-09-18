@@ -118,10 +118,10 @@ page build without loading a single track file.
 react-router, no hash routing, and no history API.
 
 The app has five views and no nested routes. A router would add a dependency, a
-`basename` that has to be kept in step with Vite's `base` for GitHub Pages
-subdirectory hosting, and a class of "blank page on hard refresh" bug that only
+`basename` that has to be kept in step with Vite’s `base` for GitHub Pages
+subdirectory hosting, and a class of “blank page on hard refresh” bug that only
 appears once deployed — in exchange for something no reader needs, because there
-are no URLs to bookmark or share.
+are no URLs a reader would ever want to bookmark or share.
 
 The one genuinely useful thing a router would provide is deep-linking into a
 phase. That is handled explicitly instead: `openPhase` in `App.jsx` is the single
@@ -145,7 +145,7 @@ Five components in `src/pages/`, selected by the `view` state in `App.jsx`.
 Four of them appear in the top navigation; `phase` is reached by opening a card.
 
 **Dashboard** (`Dashboard.jsx`) is a map, not a to-do list. It shows the corpus
-totals counted from the light index, an "in progress" section when the reader has
+totals counted from the light index, an “in progress” section when the reader has
 ticked anything, and all ten track sections — including the four that are still
 being authored, rendered as `not yet written` rather than hidden. A curriculum
 that appears to have six tracks when ten are planned misleads the reader about
@@ -166,7 +166,7 @@ curriculum; this page is where that claim is auditable.
 
 **Search** (`Search.jsx`) is the interface over `search.json` and
 `src/hooks/useSearch.js`. Results are attributed to a **heading**, not a line,
-and carry the heading's anchor so `PhaseDetail` can scroll straight to it. Two
+and carry the heading’s anchor so `PhaseDetail` can scroll straight to it. Two
 behaviours exist specifically so search cannot lie: terms too common to narrow
 anything are reported as ignored rather than silently dropped, and terms with no
 postings at all are reported as missing rather than quietly discarded.
@@ -267,7 +267,7 @@ Storage failures are absorbed rather than surfaced everywhere it makes sense —
 the session — because losing persistence is annoying, while a thrown error on
 every keystroke would make the site unusable. The two exceptions are the import
 path (a malformed backup is *rejected loudly*, because it is about to overwrite
-the reader's work) and the phase loader (a failed load is *shown*, because a
+the reader’s work) and the phase loader (a failed load is *shown*, because a
 phase page that silently renders nothing is indistinguishable from a phase that
 has no content).
 
@@ -279,14 +279,14 @@ The reader owns everything they have produced, and it lives only in one browser
 profile. `DataTransfer.jsx` is the modal over `lib/transfer.js`: one JSON
 document covering every registered key, with two import modes that are
 deliberately not symmetrical. **Merge** unions what the reader finished and keeps
-this machine's reading position and preferences; **Replace** overwrites every
+this machine’s reading position and preferences; **Replace** overwrites every
 registered key and is the restore-onto-a-clean-machine action. The panel lists
-the file's contents key by key before it will apply anything, because import is
+the file’s contents key by key before it will apply anything, because import is
 the only action in the site that can destroy work.
 
 The page reloads after an import. Every hook read its key once at mount and then
 owns it in React state; an import writes `localStorage` underneath those live
-copies. Threading a "re-read now" signal through twelve hooks would be twelve
+copies. Threading a “re-read now” signal through twelve hooks would be twelve
 chances to get it wrong, and a reload is one line that cannot be partially
 correct.
 

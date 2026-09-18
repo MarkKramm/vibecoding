@@ -9,7 +9,7 @@ generated files on disk, not recalled. Where a field is stated as an **array of
 objects**, that is a correction worth reading section 12 about: getting it wrong
 has already crashed the site once.
 
-Throughout, "one element of the array" is what is being described. `skills` is an
+Throughout, “one element of the array” is what is being described. `skills` is an
 array of strings; `topics` is an array of **objects**, and the distinction is the
 whole point.
 
@@ -57,7 +57,7 @@ There is deliberately **no `tools`, `tasks`, `checklist` or `quiz` array** on a
 light record — only the three ID lists. That is the entire point of the
 projection: the dashboard renders every track at once, and a phase card shows a
 title, a duration, a goal and a count. Including the tool records here would pull
-most of the full projection's weight back into the entry bundle and undo the
+most of the full projection’s weight back into the entry bundle and undo the
 split.
 
 The three `…Ids` arrays exist so the dashboard and the top bar can count progress
@@ -143,7 +143,7 @@ handles.
 ]
 ```
 
-**Not strings.** Each element is a group: the author's name for a cluster of
+**Not strings.** Each element is a group: the author’s name for a cluster of
 ideas, plus the bullets under it. `PhaseDetail.jsx` renders `topic.heading` as an
 `h4` inside a `div.topicgroup` and `topic.items` as a nested `<ul class="plainlist">`.
 It tolerates a plain string element as a fallback, rendering it as a one-item
@@ -195,15 +195,16 @@ not objects — there is nothing to link and nothing to group.
 `src/lib/today.js` with their rank order and human labels. `ongoing` has no rank
 and is never offered by a time budget, because it is not a single sitting.
 
-`energy` is one of `low | normal | high`, matching `useEnergyMode`'s valid set.
+`energy` is one of `low | normal | high`, matching the valid set in
+`useEnergyMode`.
 
-`id` is the stable progress key. The build **mints** an id from the task's
+`id` is the stable progress key. The build **mints** an id from the task’s
 position when the Markdown carries no explicit `<!-- id: … -->` comment, and
 prints a warning for every minted id — a minted id can move to a different task
 when one is inserted above it. Progress is stored against these ids, never
-against task text, so rewording a task does not lose the reader's tick.
+against task text, so rewording a task does not lose the reader’s tick.
 
-`text` is the authoring prose for the task. The reader's own typed answer is not
+`text` is the authoring prose for the task. The reader’s own typed answer is not
 in the JSON at all; it lives in `vibecoding:notes:v1` keyed by task id.
 
 ---
@@ -220,7 +221,7 @@ in the JSON at all; it lives in `vibecoding:notes:v1` keyed by task id.
 
 No `band`. Checklist items are confirmations, not sittings, so the time-budget
 machinery does not apply to them. `id` is the key written into
-`vibecoding:progress:v1`, and the same id appears in the light index's
+`vibecoding:progress:v1`, and the same id appears in the light index’s
 `checklistIds`.
 
 ---
@@ -283,7 +284,7 @@ in range and that `why` is non-empty.
 
 `cost` is a **free-form string**, not an enum. The corpus currently carries
 **24 distinct cost strings across 324 tool rows**, and most of them are
-sentences, because the point of the Cost track is that "free" is rarely one word:
+sentences, because the point of the Cost track is that “free” is rarely one word:
 
 ```
 [102x] Free/open-source
@@ -367,7 +368,7 @@ title maps to `h2` and the page keeps exactly one `h1` — the same renderer, tw
 origins, no second component.
 
 `id` is a slug derived from the heading text. It is what the TOC, the section
-tick store and a search result's anchor all agree on.
+tick store and a search result’s anchor all agree on.
 
 **`para`**
 
@@ -385,7 +386,7 @@ text — `**bold**`, `` `code` ``, `*italic*` — and interpreted at render time
 { "type": "code", "lang": "text", "text": "The capital of France is" }
 ```
 
-`lang` is the fence's info string and may be the empty string — 14 of the 219
+`lang` is the fence’s info string and may be the empty string — 14 of the 219
 code blocks carry `""`, which is why `LessonBlock.jsx` writes
 `data-lang={block.lang || undefined}` rather than the attribute unconditionally.
 Distinct values in the corpus: `text` (129), `python` (64), `""` (14), `json` (6),
@@ -417,7 +418,7 @@ A quote holds **paragraphs**, not one text run. `paras` is `string[]`, and
 Each item is an **object**, not a string: `{ text, children }`. `ordered` picks
 `<ol>` versus `<ul>`. `children` is an array that may hold nested `list` blocks
 (`{ type: "list", ordered, items }`, the same shape recursively); the recursion is
-bounded in `LessonBlock.jsx`'s `List` component and up to depth 8 in
+bounded in the `List` component of `LessonBlock.jsx` and up to depth 8 in
 `lib/lessonSearch.js`. Nested bullets matter — they are where the curriculum puts
 its concrete examples — so a schema change that flattens them would hide the most
 specific material from both the renderer and the in-lesson search.
@@ -471,7 +472,7 @@ segments.
 ```
 
 Two things the consumer must know. Postings are **delta-encoded in base36**, so
-`useSearch.js` accumulates them back to absolute segment ids. And the segment's
+`useSearch.js` accumulates them back to absolute segment ids. And the segment’s
 `p` is a **phase id**, not a track code — the index deliberately carries no track
 code, because the codes it used to carry (`found`, `intern`) are not track ids
 (`foundations`, `model-internals`) and passing one straight to a navigation
@@ -509,8 +510,8 @@ The cross-track reference documents, from `ai-roadmaps/shared/`.
 `blocks` is the same AST a lesson uses, which is what lets `Shared.jsx` reuse
 `LessonBlock` unchanged. Two documents exist today (`study-rules`,
 `weekly-tracker-template`); `resource-list.md` and `glossary.md` are registered in
-the build's `SHARED_DOCS` but have not been authored, so they do not appear.
-`Shared.jsx` renders an honest "nothing written yet" state when `docs` is empty
+the build’s `SHARED_DOCS` but have not been authored, so they do not appear.
+`Shared.jsx` renders an honest “nothing written yet” state when `docs` is empty
 and lets the build log a note rather than failing.
 
 ---

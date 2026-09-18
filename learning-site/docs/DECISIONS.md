@@ -25,9 +25,9 @@ switches between five components. No react-router, no hash routing, no history
 API. Navigation funnels through one function, `openPhase(trackId, phaseId, anchor)`.
 
 **Why.** Five views, no nested routes, and no URLs a reader needs to bookmark or
-share. A router would add a dependency, a `basename` that has to track Vite's
+share. A router would add a dependency, a `basename` that has to track Vite’s
 `base` for GitHub Pages subdirectory hosting, and a class of “blank page on hard
-refresh" bug that appears only once deployed — in exchange for nothing the reader
+refresh” bug that appears only once deployed — in exchange for nothing the reader
 uses. Deep-linking into a phase is the one genuinely useful thing a router would
 provide, and it is handled explicitly: dashboard cards, search results, tools
 provenance links and prev/next controls all call `openPhase`, so none of them can
@@ -96,7 +96,7 @@ place in the app where a silent error teaches something false.
 
 ---
 
-## D-004 — Reuse the sibling project's components verbatim
+## D-004 — Reuse the sibling project’s components verbatim
 
 **Decision.** The React components, hooks and styles were ported almost unchanged
 from `CS Roadmap`. Where the data shape differed, the **data** was adapted rather
@@ -171,8 +171,8 @@ the old file should say why rather than reporting generic malformed JSON.
 network call anywhere in the application.
 
 **Why.** The site is written for one reader on a $0 budget. A backend would mean
-hosting costs, authentication, a privacy surface for the reader's personal notes
-and job applications, and an availability dependency — all to sync one person's
+hosting costs, authentication, a privacy surface for the reader’s personal notes
+and job applications, and an availability dependency — all to sync one person’s
 own data between browsers they mostly do not use. Static files on GitHub Pages
 cost nothing and cannot go down.
 
@@ -184,7 +184,7 @@ that does not depend on the reader having exported a backup.
 
 ---
 
-## D-008 — The sibling's six career-specific views are not ported
+## D-008 — The sibling’s six career-specific views are not ported
 
 **Decision.** `Schedule`, `Applications`, `Certifications`, `Portfolio`,
 `YourWork` and `PathOrder` are not views in this site. Four corresponding hooks
@@ -198,7 +198,7 @@ than “what is due”. That is why the dashboard is a map rather than a to-do l
 and why
 `Dashboard.jsx` deliberately shows the four unwritten tracks rather than hiding
 them. Porting those six views would have added surface area that nothing in the
-content refers to. The career material lives in the Career track's own phases,
+content refers to. The career material lives in the Career track’s own phases,
 which is where it belongs.
 
 **Cost.** The site carries hooks, storage keys, transfer registrations and three
@@ -238,12 +238,13 @@ to store something that does not move.
 
 **Decision.** `src/lib/transfer.js` reads every registered key into one JSON
 document, and can read that document back. Import has two modes: **Merge** (union
-what was finished, keep this machine's reading position and preferences) and
+what was finished, keep this machine’s reading position and preferences) and
 **Replace** (overwrite every key). Every key is validated before anything is
 written, and a payload with one bad key is rejected **whole** rather than
 partially applied.
 
-**Why.** D-006's cost is data loss with no warning; this is the answer to it. The
+**Why.** The cost described in D-006 is data loss with no warning; this is the
+answer to it. The
 strictness is the important part: a backup is read back by a program, not a
 person, so “close enough” is a corruption. A format that silently accepts a
 malformed file and writes it over good data is worse than no backup at all —
@@ -263,9 +264,9 @@ click this — they are on a settings errand.
 
 ---
 
-## D-019 — The reader's own writing is stored, never scored, and keyed by id
+## D-019 — The reader’s own writing is stored, never scored, and keyed by id
 
-**Decision.** `vibecoding:notes:v1` holds the reader's notes and task answers,
+**Decision.** `vibecoding:notes:v1` holds the reader’s notes and task answers,
 keyed by phase id and authored task id. The notes are not counted, not surfaced on
 the dashboard, not compared, and not included in any progress figure. Checklist
 and task progress are keyed by **id**, never by position or text.
@@ -273,7 +274,7 @@ and task progress are keyed by **id**, never by position or text.
 **Why.** Ticking a box and writing an answer are different acts, and neither
 should be able to imply the other — that is why notes are a separate store with a
 separate key rather than a field on progress. The id keying is what makes an edit
-safe: inserting a task above another must not move a reader's answer onto a
+safe: inserting a task above another must not move a reader’s answer onto a
 different task, and rewording a checklist item must not lose a tick. This is why
 the build mints `taskIds` and warns loudly when it has to mint one from position —
 a minted id can move. The `TaskList` answers and the `Quiz.jsx` answers follow the
@@ -285,22 +286,22 @@ every answer the moment a distractor was reworded.
 an empty answer box with no reconciliation between them. The styles are
 deliberately quiet — a note box that shouts reads as a demand — which means the
 feature is easy to miss entirely. A dashboard that showed “you have written
-nothing" would fix the discoverability and break the rule, so the discoverability
+nothing” would fix the discoverability and break the rule, so the discoverability
 problem is accepted.
 
 ---
 
 ## D-020 — The site does not grade the reader (the no-shame rule)
 
-**Decision.** There is no percentage, no streak, no "N of M" for the reader's own
+**Decision.** There is no percentage, no streak, no “N of M” for the reader’s own
 work, and no ordering of anything by how well a phase went. The quiz summary names
 the questions to revisit rather than a score. The review surface is a list of
 *questions to look at again*, not a mark out of ten — a reader who got one
 question wrong and a reader who got ten wrong see the same shape of page.
 
 **Why.** The reader is a beginner studying alone, and the surrounding product is
-free of completion language. A quiz that announces "3 out of 10" would be the one
-place in the site that grades them. "Two to look at again" is actionable; "80%" is
+free of completion language. A quiz that announces “3 out of 10” would be the one
+place in the site that grades them. “Two to look at again” is actionable; “80%” is
 not. The same reasoning shapes `Shared.jsx` and the reference documents, which are
 deliberately flatter than a lesson page: no reading bar, no per-section controls,
 nothing to tick, because reference material is looked up rather than completed.
@@ -317,7 +318,7 @@ small feature, and should be argued as one.
 ## D-021 — Time is a coarse band, not minutes
 
 **Decision.** Practice tasks carry a `band` of `quick | focused | deep | ongoing`
-with human labels ("Under 30 minutes", "30–90 minutes", "90 minutes or more"), not
+with human labels (“Under 30 minutes”, “30–90 minutes”, “90 minutes or more”), not
 an estimated duration in minutes. Matching is rank-order: a task of rank R fits a
 budget of rank B when R ≤ B. `ongoing` has no rank and is never offered by time.
 
@@ -326,11 +327,11 @@ distribution rather than picked round: the practice tasks cluster in the middle 
 the range, so any precise cut inside that cluster is arbitrary, and only the two
 outer edges separate structurally different kinds of work. `ongoing` exists as its
 own band because it is not a longer task — it is a weekly habit, something gated
-on time passing, or something the reader's machine may not be able to do at all.
+on time passing, or something the reader’s machine may not be able to do at all.
 A slider would imply a precision nobody has.
 
 **Cost.** A reader with 45 minutes cannot ask for “tasks between 30 and 60
-minutes", because that distinction was deliberately not encoded. A task that
+minutes”, because that distinction was deliberately not encoded. A task that
 really takes 25 minutes sits in the same band as one that takes 29. And the bands
 are estimates that nobody re-measures: they were set once from the corpus and will
 drift as phases are authored, so the UI says they are estimates rather than
@@ -340,14 +341,14 @@ implying otherwise.
 
 ## D-044 — Quiz answers are persisted; the result still is not
 
-**Decision.** The reader's chosen options are stored in `vibecoding:quiz:v1`,
+**Decision.** The reader’s chosen options are stored in `vibecoding:quiz:v1`,
 keyed by question id. What is **not** stored: whether each answer was right, how
 many were right, how many were answered, any ratio, and any history of a phase
 getting better or worse.
 
 **Why.** The quiz originally held its answers in `useState`, on the stated
 reasoning that “a quiz is for the moment you take it, and persisting it would turn
-a self-check into a permanent record of how you did." That reasoning was sound and
+a self-check into a permanent record of how you did.” That reasoning was sound and
 the outcome was still wrong. Answering a set and navigating away discarded the only
 evidence the reader had produced about what they did not yet understand — and the
 most useful line the curriculum writes about a missed question is the `**Why:**`
@@ -366,7 +367,8 @@ has to be checked against it: adding a per-question “times missed” counter, 
 phase-level improvement indicator, would reintroduce grading through the back door
 while looking like a small UX improvement. Answers are also stored as indices, so
 a backup carrying a string index is rejected rather than coerced (D-016) — safe,
-but it means the storage format is coupled to `isCorrect`'s numeric comparison.
+but it means the storage format is coupled to the numeric comparison inside
+`isCorrect`.
 
 ---
 
@@ -403,7 +405,8 @@ zero phases, the deep pass would quietly check six tracks instead of failing.
 
 **Decision.** `normaliseQuestion` uses `answerIndex` as the only source of truth
 for correctness. A question whose `answerIndex` is missing or out of range yields
-options that are **all** `correct: false`. `lib/quiz.js`'s `correctIndex` returns
+options that are **all** `correct: false`. The `correctIndex` helper in
+`lib/quiz.js` returns
 `-1` for a malformed question for the same reason. The option **text** is never
 inspected to guess which answer is right.
 
