@@ -1,6 +1,6 @@
 # Career & Getting Hired — Track Overview
 
-> **Status: not started.** None of this track's four phases are written yet. This overview describes what the track **will** contain, based on the agreed plan. There is no phase content to read today.
+> **Status: complete.** All four phases are written and available now.
 
 ## What this track is for
 
@@ -33,10 +33,10 @@ Nothing here costs money. Portfolio hosting, publishing and open-source contribu
 
 | # | Phase | Status | What it will establish |
 |---|---|---|---|
-| 1 | What Employers Actually Want | Planned | What changed now that generation is cheap, the roles that exist and their real barriers, the junior-accessibility ranking, remote work from the Philippines, and how to read a job post honestly |
-| 2 | A Portfolio That Proves Something | Planned | What makes a project legible, the writeup template, making it runnable, what to leave out, and the "could I defend this in an interview?" test |
-| 3 | Proof of Skill Without a Job | Planned | Open-source contribution, writing in public, building for a real user, reproducing a paper, and why evidence of judgement is scarce and therefore valuable |
-| 4 | Interviewing and Your First 90 Days | Planned | What AI-role interviews actually test, using AI tools in a take-home without hiding it, and a concrete dated plan for your first three months |
+| 1 | What Employers Actually Want | Written | What changed now that generation is cheap, the roles that exist and their real barriers, the junior-accessibility ranking, remote work from the Philippines, and how to read a job post honestly |
+| 2 | A Portfolio That Proves Something | Written | What makes a project legible, the writeup template, making it runnable, what to leave out, and the "could I defend this in an interview?" test |
+| 3 | Proof of Skill Without a Job | Written | Open-source contribution, writing in public, building for a real user, reproducing a paper, and why evidence of judgement is scarce and therefore valuable |
+| 4 | Interviewing and Your First 90 Days | Written | What AI-role interviews actually test, using AI tools in a take-home without hiding it, and a concrete dated plan for your first three months |
 
 **Read them in order.** Phase 1 tells you what is being asked for, Phase 2 builds the artifact, Phase 3 builds the evidence when nobody has hired you, and Phase 4 is the practical end — the interview and the plan for after it.
 
@@ -58,7 +58,7 @@ Nothing here costs money. Portfolio hosting, publishing and open-source contribu
 
 ## Roughly how long it takes
 
-**4 phases, about 4–5 weeks at five sessions a week** once the phases are written — **but the portfolio work runs alongside everything else**, and that is the point.
+**4 phases, about 4–5 weeks at five sessions a week** — **but the portfolio work runs alongside everything else**, and that is the point.
 
 Read the track in four or five weeks. Act on Phase 2 across the whole curriculum. If you are job-hunting now, the job-search material in Phases 1 and 4 is actionable immediately.
 
@@ -95,9 +95,9 @@ The durable content — that judgement is what became scarce, that one measured 
 
 ## Start here
 
-1. If you are job-hunting now, read Phase 1 as soon as it is available, and start Phase 2's discipline immediately regardless.
+1. If you are job-hunting now, read [Phase 1](01-phase-what-employers-actually-want.md) first, and start [Phase 2](02-phase-a-portfolio-that-proves-something.md)'s discipline immediately regardless.
 2. Track your progress in [`checklist-master.md`](checklist-master.md).
 3. Read [`../shared/study-rules.md`](../shared/study-rules.md) rule 10 again — comparison is not information, and it matters more in a job hunt than anywhere else.
-4. Watch this folder for phase files as they are written.
+4. Then read [Phase 3](03-phase-proof-of-skill-without-a-job.md) and [Phase 4](04-phase-interviewing-and-your-first-90-days.md).
 
-> **The one thing to do before the phases land.** Start a `README.md` for your best project today, and write down the problem, one decision you made, one thing you measured, and one limitation. That single paragraph is the shape of everything Phase 2 teaches, and starting it now means you are accumulating evidence rather than reconstructing it.
+> **The one thing to do right now, before reading anything.** Start a `README.md` for your best project, and write down the problem, one decision you made, one thing you measured, and one limitation. That single paragraph is the shape of everything Phase 2 teaches, and starting it now means you are accumulating evidence rather than reconstructing it.
