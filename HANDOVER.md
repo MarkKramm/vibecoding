@@ -68,14 +68,14 @@ Audit status:
 | Foundations | `ai-roadmaps/foundations/` | 8 | 8 | ✅ **COMPLETE** |
 | Model Internals | `ai-roadmaps/model-internals/` | 6 | 6 | ✅ **COMPLETE** |
 | Prompting | `ai-roadmaps/prompting/` | 7 | 7 | ✅ **COMPLETE** |
-| Cost & Efficiency | `ai-roadmaps/cost/` | 6 | **7** (+freemium playbook) | 🟡 6 of 7 |
+| Cost & Efficiency | `ai-roadmaps/cost/` | **7** | 7 | ✅ **COMPLETE** (+freemium playbook) |
 | Retrieval & RAG | `ai-roadmaps/rag/` | **4** | 7 | 🟡 IN PROGRESS |
 | Agents & Tools | `ai-roadmaps/agents/` | **0** | 7 | 🔴 NOT STARTED |
 | Finetuning & Evals | `ai-roadmaps/finetuning/` | **0** | 6 | 🔴 NOT STARTED |
 | Vibecoding Craft | `ai-roadmaps/vibecoding/` | **0** | 8 | 🔴 NOT STARTED |
 | Safety & Ethics | `ai-roadmaps/safety-career/` | **0** | 5 | 🔴 NOT STARTED |
 | **Career & Getting Hired** | `ai-roadmaps/career/` | **0** | **4** | 🔴 **NEW — NOT STARTED** |
-| | | **31** | **63** | **32 phases remain** |
+| | | **32** | **63** | **31 phases remain** |
 
 ### Every phase file that exists
 
@@ -107,10 +107,11 @@ ai-roadmaps/prompting/
 ai-roadmaps/cost/
   01-phase-token-economics.md
   02-phase-prompt-caching.md
-  03-phase-batching-and-async.md           (written this session)
+  03-phase-batching-and-async.md
   04-phase-model-routing.md
   05-phase-monitoring-and-caps.md
   06-phase-local-vs-api.md
+  07-phase-freemium-playbook.md             (written in Stage A — completes the track)
 ai-roadmaps/rag/
   01-phase-why-retrieval.md                (written this session)
   02-phase-ingestion-chunking.md           (written this session)
@@ -645,7 +646,7 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
 4. **Create `ai-roadmaps/career/`** — the new track's folder does not exist yet (§6.0.2). Then write its 4 phases.
 
-5. **Write `cost/07` Freemium Playbook** (§6.0.1) — the phase the user's question asked for.
+5. **Write `cost/07` Freemium Playbook** — **✅ DONE.** `ai-roadmaps/cost/07-phase-freemium-playbook.md`, commit `289986e`. The Cost track is now 7/7 complete. Note it deliberately completes `cost/05`'s dated transition plan (the four-way sort into move-to-local / move-to-free-tier / defer / cut), so if `cost/05` is ever revised, keep that handoff intact.
 
 6. **Write `rag/05`, `rag/06`, `rag/07`** from §6.1. Keep the quiz answer positions spread.
 
@@ -728,6 +729,19 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 7. **`build-content.mjs` writes notes to stderr**, which PowerShell shows as a red error block. **Not a failure** — check `$LASTEXITCODE`.
 8. **Two files silently acquired CRLF line endings.** Only git's commit warning surfaced it; the build and audits both passed happily, because neither checks line endings. Found and fixed in §7.3. **Scan for CRLF after authoring** — the project's LF rule is a hard rule but nothing enforces it automatically yet, and adding that check to CI would be worthwhile.
 9. **Apparent mojibake was a console artifact, not corruption** (§7.5). Check raw bytes before "fixing" a non-ASCII character that looks wrong in PowerShell.
+10. **Reordering quiz options by hand is easy to get wrong — I dropped an `[x]` entirely while rebalancing `cost/07`.** The edit that was supposed to move the correct answer to position B removed the marker and left four `[ ]` options. The build guard caught it with a precise message (`quiz cost-07-...-q01 has no correct option — mark exactly one option with [x]`), but **the audit was green when I made the mistake and green again when I re-ran it later**, because I had already "fixed" it by accident of which lines I replaced. Lesson: **after any option reorder, count the `[x]` per question explicitly** — do not infer correctness from a passing audit:
+
+    ```powershell
+    # per-question [x] count; must be exactly 1 for every question
+    $q=0;$cnt=0
+    Get-Content $f | ForEach-Object {
+      if($_ -match '^### Q(\d+)\.'){ if($q -and $cnt -ne 1){"Q$q has $cnt"}; $q=$matches[1]; $cnt=0 }
+      if($_ -match '^- \[x\]'){$cnt++}
+    }
+    ```
+
+11. **A green guard is not proof the guard checks that thing.** I deliberately broke a quiz question to confirm `audit-quiz.mjs` would catch it, and it did. This is worth repeating whenever you are tempted to trust a pass: **test the guard against a known-bad input** before treating it as evidence. The handover's own rule — never edit a guard to agree — exists because the opposite mistake is worse.
+12. **PowerShell backup/restore of a file invalidates the `edit` tool's read-state.** Copying a file to `.bak`, mutating it, and restoring it makes the next `edit` fail with "file changed since it was read". Re-read the file after any out-of-band write.
 
 ---
 
