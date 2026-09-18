@@ -7,13 +7,14 @@
 
 ---
 
-## 0. READ THIS FIRST — the five things that matter most
+## 0. READ THIS FIRST — the six things that matter most
 
-1. **Git is committed as of this session** (`3f1cab4`, 52 files, clean tree). Two CRLF files were found and fixed during the commit — see §7.3, and watch for this recurring.
+1. **Git is committed as of this session** (`3f1cab4`, `b59ec96`, clean tree). Two CRLF files were found and fixed during the commit — see §7.3, and watch for this recurring.
 2. **The quiz audit is currently FAILING on 4 files, and all 4 were written this session.** I authored most correct answers in position C. This is a real defect, not a guard bug. **Never edit the guard to agree.** See §7.1. This is the only red guard; build and AST audit are green.
 3. **No subagents, no workflows.** The user explicitly instructed: *"please dont use subagents"*. Author every remaining file directly, by hand, in the main session. Two workflow runs were attempted earlier and both were cancelled. Do not reintroduce fan-out.
-4. **Five tracks are still empty:** `agents`, `finetuning`, `vibecoding`, `safety-career`, and `rag` is 4/7 done. See §6 for the full remaining-work list — 29 phases, plus track files, the site, tests, CI, and docs.
-5. **`web_search` is BROKEN in this environment.** It returns HTTP 404 for every query. `web_fetch` works. Only the user can fix it (Settings > Plugins). All research in `docs/research/` was done by fetching primary sources directly.
+4. **The plan was EXPANDED beyond the original 9 tracks — it is now 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases). See §6.0.
+5. **Six tracks are still empty:** `agents`, `finetuning`, `vibecoding`, `safety-career`, `career`, and `rag` is 4/7 done. See §6 for the full remaining-work list — **32 phases**, plus track files, the site, tests, CI, and docs.
+6. **`web_search` is BROKEN in this environment.** It returns HTTP 404 for every query. `web_fetch` works. Only the user can fix it (Settings > Plugins). All research in `docs/research/` was done by fetching primary sources directly.
 
 ---
 
@@ -67,13 +68,14 @@ Audit status:
 | Foundations | `ai-roadmaps/foundations/` | 8 | 8 | ✅ **COMPLETE** |
 | Model Internals | `ai-roadmaps/model-internals/` | 6 | 6 | ✅ **COMPLETE** |
 | Prompting | `ai-roadmaps/prompting/` | 7 | 7 | ✅ **COMPLETE** |
-| Cost & Efficiency | `ai-roadmaps/cost/` | 6 | 6 | ✅ **COMPLETE** |
+| Cost & Efficiency | `ai-roadmaps/cost/` | 6 | **7** (+freemium playbook) | 🟡 6 of 7 |
 | Retrieval & RAG | `ai-roadmaps/rag/` | **4** | 7 | 🟡 IN PROGRESS |
 | Agents & Tools | `ai-roadmaps/agents/` | **0** | 7 | 🔴 NOT STARTED |
 | Finetuning & Evals | `ai-roadmaps/finetuning/` | **0** | 6 | 🔴 NOT STARTED |
 | Vibecoding Craft | `ai-roadmaps/vibecoding/` | **0** | 8 | 🔴 NOT STARTED |
-| Safety & Career | `ai-roadmaps/safety-career/` | **0** | 5 | 🔴 NOT STARTED |
-| | | **31** | **60** | **29 phases remain** |
+| Safety & Ethics | `ai-roadmaps/safety-career/` | **0** | 5 | 🔴 NOT STARTED |
+| **Career & Getting Hired** | `ai-roadmaps/career/` | **0** | **4** | 🔴 **NEW — NOT STARTED** |
+| | | **31** | **63** | **32 phases remain** |
 
 ### Every phase file that exists
 
@@ -126,7 +128,7 @@ Vibecoding/
 ├── .gitignore                  ✅
 ├── .research/                  ⚠️ EMPTY — delete or use
 ├── ai-roadmaps/
-│   ├── README.md               ✅ strategy doc: 9 tracks, 60 phases, dep graph
+│   ├── README.md               ✅ strategy doc: 10 tracks, 63 phases, dep graph
 │   ├── shared/
 │   │   ├── study-rules.md              ✅ (10 anti-burnout rules)
 │   │   └── weekly-tracker-template.md  ✅
@@ -145,7 +147,7 @@ Vibecoding/
 │       └── fact-check-embeddings-vector-search-quantization.md (56.9 KB)
 ├── learning-site/
 │   └── src/data/generated/     ⚠️ ONLY generated JSON — no React app yet
-│       ├── tracks.json         (1.8 KB, 9 tracks)
+│       ├── tracks.json         (1.8 KB, 10 tracks)
 │       ├── shared.json         (24.9 KB)
 │       ├── search.json         (235.8 KB)
 │       ├── foundations.json / model-internals.json / prompting.json
@@ -293,7 +295,75 @@ The provider landscape **has already moved past the original brief** (live docs 
 
 ## 6. Remaining work
 
-### 6.1 Content — 29 phase files
+### 6.0 ⭐ SCOPE EXPANSION — added after the user clarified their goal
+
+**Why this section exists.** Partway through, the user asked:
+
+> "does our plan app explains everything about vibecoding and even as a freemium user? since most frontier model is expensive and i dont have any money yet. just want to really build a skill and knowledge so maybe i can get even ai job someday"
+
+An audit of the authored 31 phases found the freemium spine was **already strong** (every phase has a `## Free vs Paid` section; 199 free-tier mentions; the Cost track is explicitly written around the user's expiring free beta), but two real gaps existed:
+
+**Gap 1 — no single freemium *playbook*.** Free options were mentioned everywhere but never assembled into one place that answers "I have ₱0. What is my actual workflow, today, end to end?"
+**Gap 2 — no job-readiness spine.** "Portfolio" appeared 2–5 times per phase as a deliverable reminder, but nothing *taught* how to convert skill into work. MCP appeared once in the whole corpus; DSPy and distillation twice each.
+
+**Decision:** expand the plan rather than bolt this on at the end.
+
+| Addition | Where | Phases | Rationale |
+|---|---|---|---|
+| Freemium playbook | `cost/07` | 1 | The practical synthesis of the Cost track, aimed exactly at the user's situation |
+| Career & Getting Hired | **new track** `career` | 4 | Career became a primary user goal, so it earned its own track rather than one phase at the end of Safety |
+| MCP depth | folded into `agents/07` | (0 new) | Already briefed; ensure it is properly covered, not mentioned |
+| DSPy | folded into `ft/04` | (0 new) | Keep the "the metric is the point" framing |
+
+**Revised totals: 10 tracks, 63 phases.** (Was 9 tracks / 60 phases.)
+**Authored: 31. Remaining: 32.**
+
+**Plan changes already applied to the code:**
+- `scripts/build-content.mjs` `KNOWN_TRACKS` now contains a `career` entry (`short: 'career'`, `folder: 'career'`).
+- The `safety-career` track was **relabelled** to `Safety & Ethics` (blurb: "Alignment, misuse, privacy, and using these tools honestly.") because career content moved out into its own track. Its `id`, `short` and `folder` are **unchanged** — do not rename them, as existing IDs depend on them.
+- Verified: build still passes, `tracks.json` now emits **10 tracks**.
+
+> ⚠️ **The `career` folder does not exist yet.** Create `ai-roadmaps/career/` before writing its phases.
+
+---
+
+### 6.0.1 New phase — `cost/07` Freemium Playbook
+
+**File:** `ai-roadmaps/cost/07-phase-freemium-playbook.md` · **id:** `cost-07-freemium-playbook` · **order:** 70
+
+**Must teach.** This is the phase the user's question asked for: a single end-to-end workflow for someone with no budget.
+
+- **The tier ladder, honestly.** What each tier actually costs you: local models (cost = your hardware and time), free hosted tiers (cost = rate limits, and often **different data-retention and training-use terms than paid**), trial credits (cost = expiry), and paid (cost = money). Name the real constraint at each rung.
+- **The decision procedure**, not a product list: *try local first → free tier if the task exceeds local capability → paid only for the experiment that changes a decision.*
+- **What you actually give up by being free:** breadth of model comparison, and access to mechanisms (some providers gate caching, batching, reasoning-effort settings on paid tiers). Be honest that this narrows *experiments*, not *understanding* — the mechanism is learnable from docs plus a local reproduction.
+- **Substitutes for paid-only mechanisms.** Can't observe a real cache write on your tier? Reproduce prefix-reuse behaviour locally and reason about the asymmetry. Can't batch? Simulate the submit/poll/reconcile lifecycle with a local queue. The point is that **the concept is separable from the vendor implementation.**
+- **Where free is genuinely enough** (most of this curriculum) **versus where it isn't** (large-scale embedding, long-context experiments, high-volume evals).
+- **The first-peso decision.** When you eventually spend, spend on the experiment that changes a decision, not on convenience. Cross-reference `cost/06`'s threshold and `cost/05`'s caps discipline.
+- **The expiring-free-access transition**, tied directly to `cost/05`'s dated transition plan deliverable — this phase should reference that plan and complete it.
+- **The skills that survive losing free access:** everything mechanism-level. This is the phase's closing argument and it should be explicit — *free access was never the skill; it was the practice environment.*
+
+**Deliverable:** a written zero-budget workflow for one real project — the ladder, the decision rules, what you gave up, and your first-peso trigger.
+
+---
+
+### 6.0.2 New track — Career & Getting Hired (4 phases)
+
+**Track id:** `career` · **folder:** `ai-roadmaps/career/` · **short prefix:** `career` · **label:** `Career & Getting Hired`
+
+> Create the folder first. Use prefix `career-NN`.
+
+| # | Slug | Title | Must teach |
+|---|---|---|---|
+| 1 | `what-employers-want` | What Employers Actually Want | Read the landscape honestly. **What changed:** generation is cheap, so the premium moved to **judgement** (telling plausible from correct), verification, systems thinking, specification, and domain knowledge. **The roles that exist around these systems** — AI/LLM engineering, data and evaluation work, prompt/solutions engineering, integration and support, domain expert + AI. For each: what the day looks like, what a junior can realistically enter with, and what the actual barrier is. **The junior-accessibility ranking** (evaluation and data work are the most accessible entry points; research and frontier training are not). Remote work from the Philippines: what's realistic, timezone reality, contractor vs employee, payment and tax basics at a high level. **The honest caveat:** the field is noisy and title inflation is real — teach the user to read a job post for what it actually requires. Also: what NOT to chase (leaderboard trivia, framework-of-the-month). |
+| 2 | `portfolio-that-proves` | A Portfolio That Proves Something | The core claim: **one deep project with an eval suite beats five demos.** Cover: what makes a project legible to a hiring manager (a problem stated, a decision made, a measurement taken, a limitation admitted); why the phase deliverables in this curriculum already form the portfolio and how to assemble them; **the writeup template** — problem, approach, what broke, how I knew it worked, what I'd do differently; showing your **reasoning** not just your result; making it runnable (a README that works on a clean machine, pinned dependencies, no secrets); publishing (GitHub basics, a simple writeup, honest commit history); what to leave out (tutorial clones, unmodified course projects, anything you can't explain). Include the **"could I defend this in an interview" test** applied to each project. |
+| 3 | `proof-of-skill-without-a-job` | Proof of Skill Without a Job | How to build evidence when nobody has hired you. **Open-source contribution** — reading unfamiliar code, small honest contributions, how to find approachable issues; **writing in public** (a technical post explaining one mechanism you learned, and why explaining is the fastest way to find your own gaps); **building for a real user**, even one — a local business, a student org, a personal workflow; **reproducing and extending a paper or benchmark**; **teaching** (writing the explanation IS the study method); participating in communities without spamming. Emphasise: **evidence of judgement is scarce and therefore valuable** — a public writeup of a bug you found in your own work is worth more than another polished demo. Also cover the ethics of not overstating what you built, tying back to `using-ai-honestly`. |
+| 4 | `interviewing-and-90-days` | Interviewing and Your First 90 Days | The practical end of the curriculum. **What AI-role interviews actually test:** system design for an LLM feature ("design a support assistant" — retrieval? evals? cost? failure handling?), debugging a broken prompt or pipeline, explaining a mechanism precisely, cost reasoning, and **honesty about limits** ("I don't know, here's how I'd find out"). **Take-homes and live coding with AI allowed** — how to use tools without hiding it and without leaning on them fatally. **Explaining your own past projects** under questioning. **Behavioural framing** for a career-changer. Then **the first 90 days**: what to learn on the job, how to ask for help, shipping small, building trust, keeping a work log, continuing to evaluate. Finish with **a concrete dated 90-day plan that starts the day the curriculum ends** — which was already `safety-career/05`'s closing deliverable, so **decide the boundary and cross-reference rather than duplicating it**. Recommended split: `safety-career/05` ends the *learning* phase and hands off; `career/04` owns the *job-search and first-90-days* plan. |
+
+**Authoring note.** This track must stay **honest and specific** — no motivational filler. The user is a beginner in the Philippines with no money; every claim about the job market should be a **procedure** ("read the post for X", "ask this question in an interview") rather than a statistic, because job-market numbers are volatile under the volatility rule.
+
+---
+
+### 6.1 Content — 32 remaining phase files
 
 **RAG track (3 remaining, target 7):**
 
@@ -339,7 +409,7 @@ The provider landscape **has already moved past the original brief** (live docs 
 | 7 | `working-with-agents` | Working With Coding Agents | Practical craft for agentic tools (Claude Code-style, IDE agents). Cover: giving a bounded task with a verifiable end state; letting it explore vs pinning the approach; reviewing diffs rather than trusting summaries — **the agent's report is a claim, the diff is the evidence**; committing before an agent run so you can revert; small increments over one big run; when a task is too big (decompose) or too ambiguous (specify); watching for scope creep in the diff; the "did it actually run the tests" check. Ties to Agents track heavily. |
 | 8 | `responsible-vibecoding` | Shipping What You Build | Turning vibecoded work into something defensible. Cover: security review for generated code (**the top real risks**: hardcoded secrets, missing authz, injection, dependency supply chain, unsafe deserialization); dependency hygiene (models suggest abandoned or malicious packages — verify); licences of generated code and of dependencies; **disclosure norms** (ties to `using-ai-honestly`); maintainability — will you understand this in six months; writing the README and the honest writeup; the portfolio argument: **one deep project with tests and an eval suite beats five demos**. Finish by connecting to the Safety track. |
 
-**Safety & Career track (5, target 5) — ALL TO WRITE.** Prefix `safe-`. Folder `ai-roadmaps/safety-career/`:
+**Safety & Ethics track (5, target 5) — ALL TO WRITE.** Prefix `safe-`. Folder `ai-roadmaps/safety-career/`. **Note the track was relabelled to "Safety & Ethics" but its id/short/folder are unchanged** — see §6.0.
 
 | # | Slug | Title | Must teach |
 |---|---|---|---|
@@ -347,16 +417,18 @@ The provider landscape **has already moved past the original brief** (live docs 
 | 2 | `security-and-privacy` | Security, Privacy and Data | **Indirect prompt injection (Greshake et al., arXiv:2302.12173)** taken seriously: processed data can carry instructions; demonstrated data theft and worming. **Instruction hierarchy (Wallace et al., arXiv:2404.13208)** — a mitigation, not a guarantee. Defence in depth. Data handling: what leaves your machine, provider retention and training-use terms, **why free tiers often have different data terms than paid**. **Philippine Data Privacy Act of 2012 (RA 10173)** as a REAL compliance obligation — purpose limitation, consent, security, breach notification. Secrets management (never commit keys; env vars; rotate on exposure; **git history keeps what you deleted**). Finish with a builder's checklist. |
 | 3 | `alignment-and-limits` | Alignment, Capability and Honest Limits | Sober, no hype in either direction. What alignment means technically (systems doing what operators and users intend, including when those conflict). **RLHF (arXiv:2203.02155)** and why the **KL penalty exists**; **Constitutional AI / RLAIF (arXiv:2212.08073)**; where sycophancy comes from as a side effect of preference optimisation. **Reward hacking / specification gaming** — optimising a proxy diverges from the goal — with concrete small examples. The honest capability/risk debate **without resolving it**: the positions, the uncertainty, why a builder should care about direction-of-travel rather than predictions. Conceptual evaluation of dangerous capabilities and why claims must be measurable. **Most importantly: a section on NOT over-claiming** — distinguishing measured results from extrapolation in your own writing and portfolio, because credibility is built by being right about small things. |
 | 4 | `using-ai-honestly` | Using AI Honestly | Practical, not preachy. Attribution and disclosure (when to say you used AI; norms still forming). **What is actually cheating in learning vs efficient use** — clear framework: using AI to *skip the struggle* vs using it to *check understanding after struggling*. The difference between AI-assisted work you can defend and work you cannot — the test: **"could I explain, debug, and extend this myself?"** Plagiarism vs generation. **Skill atrophy** — which competences weaken if you never do the work (reading unfamiliar code, debugging without hints, writing from a blank page, estimating difficulty). Honesty in the other direction too: not claiming credit you didn't earn, not hiding permitted tool use. Finish with a **personal policy template** the reader writes for themselves. |
-| 5 | `career-in-ai-era` | A Career in the AI Era | Turning the curriculum into legible capability. What differentiates people now that generation is cheap: **JUDGEMENT** (telling plausible from correct), verification skill, systems thinking, specification ability, domain knowledge. The durable-vs-volatile distinction applies to **skills** too. Portfolio: ship real things, write up what you built and what broke and how you knew it worked; **one deep project with an eval suite beats five demos**; the deliverable folders in this curriculum **ARE** the portfolio. Writing about your work honestly (measured claims, dated specifics, admitted gaps). Job landscape in **the Philippines and remote**: roles around these systems (AI engineering, data work, evaluation, solutions, support, integration), which are accessible junior, how to present AI skills without overselling. Staying current without drowning: few high-signal sources, follow mechanisms not leaderboards, re-check volatile specifics when used, **monthly cadence not daily**. Finish with a concrete 90-day plan. |
+| 5 | `career-in-ai-era` | Career in the AI Era | ⚠️ **BOUNDARY CHANGED — see §6.0.2.** This phase now owns **the transition out of learning**: what differentiates people now that generation is cheap (**JUDGEMENT**, verification, systems thinking, specification, domain knowledge); the durable-vs-volatile distinction applied to **skills**; **how to keep learning without drowning** (few high-signal sources, follow mechanisms not leaderboards, re-check volatile specifics, **monthly cadence not daily**); and an honest self-assessment of where the reader actually stands. It should **hand off to the Career track** for portfolio construction, job search, and the 90-day plan — cross-reference rather than duplicate. Recommended split: **this phase ends the learning phase and states the reader is ready; `career/01–04` own everything about getting hired.** |
 
 ### 6.2 Track-level files still owed
 
-- **9 × `00-overview.md`** — one per track
-- **9 × `checklist-master.md`** — one per track
+- **10 × `00-overview.md`** — one per track (10 tracks now, including `career`)
+- **10 × `checklist-master.md`** — one per track
 - **`ai-roadmaps/shared/resource-list.md`** — registered in `SHARED_DOCS`, currently missing
 - **`ai-roadmaps/shared/glossary.md`** — registered in `SHARED_DOCS`, currently missing
 
 > Both shared docs are in the `SHARED_DOCS` registry in `scripts/shared-content.mjs`. The build currently reports `shared docs: 2` (the two that exist). It **fails on unregistered `.md` files**, so add the file *and* register it.
+
+> **Consider a third shared doc:** a `free-toolkit.md` — the running list of free-tier-safe tools, local model options, and free substitutes for paid mechanisms. It would serve the freemium theme across every track. If added, register it in `SHARED_DOCS`.
 
 ### 6.3 The learning site — not started
 
@@ -546,19 +618,25 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
 3. **Investigate the AST character gain** (§7.2) and settle whether it is expected synthesis.
 
-4. **Write `rag/05`, `rag/06`, `rag/07`** from §6.1. Keep the quiz answer positions spread.
+4. **Create `ai-roadmaps/career/`** — the new track's folder does not exist yet (§6.0.2). Then write its 4 phases.
 
-5. **Write the Agents track (7 phases)** from §6.1.
+5. **Write `cost/07` Freemium Playbook** (§6.0.1) — the phase the user's question asked for.
 
-6. **Write the Finetuning track (6 phases)** from §6.1.
+6. **Write `rag/05`, `rag/06`, `rag/07`** from §6.1. Keep the quiz answer positions spread.
 
-7. **Write the Vibecoding track (8 phases)** from §6.1.
+7. **Write the Agents track (7 phases)** from §6.1.
 
-8. **Write the Safety & Career track (5 phases)** from §6.1.
+8. **Write the Finetuning track (6 phases)** from §6.1.
 
-9. **Write the 18 track files** (9 × `00-overview.md`, 9 × `checklist-master.md`) plus the 2 missing shared docs, registering new shared docs in `scripts/shared-content.mjs`.
+9. **Write the Vibecoding track (8 phases)** from §6.1.
 
-10. **Build the learning site**, then tests, then CI, then the meta-docs and root files (§6.3–6.7).
+10. **Write the Safety & Ethics track (5 phases)** from §6.1.
+
+11. **Write the Career track (4 phases)** from §6.0.2.
+
+12. **Write the 20 track files** (10 × `00-overview.md`, 10 × `checklist-master.md`) plus the 2 missing shared docs (and consider `free-toolkit.md`), registering new shared docs in `scripts/shared-content.mjs`.
+
+13. **Build the learning site**, then tests, then CI, then the meta-docs and root files (§6.3–6.7).
 
 **After every phase file:** run the three commands and confirm all green before moving on.
 
@@ -630,13 +708,14 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
 ## 13. What "done" looks like
 
-The user's five-part objective:
+The user's five-part objective, **as clarified mid-session**. The user later narrowed the emphasis: *"just want to really build a skill and knowledge so maybe i can get even ai job someday"* — so item 5 below is now a primary goal, not a footnote.
 
-1. **A complete curriculum** covering the full AI-era arc: foundations → LLMs → prompting → RAG/agents → fine-tuning → safety → career — **60 phases across 9 tracks** (31 done, 29 to go)
+1. **A complete curriculum** covering the full AI-era arc: foundations → LLMs → prompting → RAG/agents → fine-tuning → safety → career — **63 phases across 10 tracks** (31 done, 32 to go)
 2. **Deep vibecoding craft** — the 8-phase Vibecoding track
 3. **Model internals and vocabulary** — tokens, context, KV cache, attention, sampling, embeddings (largely covered by Foundations + Model Internals, both complete)
-4. **Cost and efficiency mastery** — token economics, caching, batching, provider strategy (Cost track complete)
-5. **A working learning site** that renders it all, with search, progress, quizzes, and a Today view
+4. **Cost and efficiency mastery** — token economics, caching, batching, routing, monitoring, local-vs-API — **plus the zero-budget freemium playbook** (`cost/07`)
+5. **Employability** — proof of skill, a portfolio that demonstrates judgement, and a concrete job-search and first-90-days plan (**the new Career track**)
+6. **A working learning site** that renders it all, with search, progress, quizzes, and a Today view
 
 **Success criteria that must hold at the end:**
 - `node scripts/build-content.mjs --check` → exit 0
@@ -644,5 +723,22 @@ The user's five-part objective:
 - `node scripts/audit-lesson-ast.mjs` → exit 0 with **0 character loss**
 - Build report shows **0 task ids minted from position**
 - Every ID authored; every paid tool row has a free alternative
+- **Every phase has a `## Free vs Paid` section that is honest about what free gives up**
 - The site builds and its test suites pass
 - Everything committed
+
+---
+
+## 14. Standing design principles for the remaining 32 phases
+
+These emerged from the user's clarifying question and should govern everything still to be written.
+
+**1. The freemium constraint is a design input, not a disclaimer.** Every phase must be completable on ₱0. Where a paid mechanism is genuinely unavailable on free tiers, teach the **mechanism** and give a **local or simulated substitute** — the concept is separable from the vendor implementation. Never let a task be impossible without money.
+
+**2. Teach mechanisms, not vendor features.** The volatility rule (§5) exists for this. A learner who understands prefix-reuse can reason about any provider's caching product, including ones that do not exist yet. A learner who memorised one provider's cache API cannot.
+
+**3. Judgement is the thing being trained.** Generation is cheap now. What is scarce — and what the Career track will sell — is telling plausible from correct, verifying claims, and specifying precisely. Every phase should leave the reader better at *evaluating* output, not just producing it.
+
+**4. Honesty over encouragement.** Where something is hard, say so. Where a free tier gives up something real, name it. Where the job market is noisy, admit it. The user is making a life decision on this material and flattery would be a disservice.
+
+**5. Evidence over assertion.** Every measurement the curriculum asks for is written down in a deliverable. The portfolio is built from those deliverables. This is why the deliverable sections are mandatory rather than optional.

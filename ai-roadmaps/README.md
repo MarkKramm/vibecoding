@@ -20,9 +20,11 @@ That second half is not a soft skill. With AI assistance, producing plausible ou
 
 ---
 
-## The nine tracks
+## The ten tracks
 
-Nine tracks, **60 phases** in total. They are numbered in reading order, but you do not have to walk them strictly in sequence — see [How to use these tracks](#how-to-use-these-tracks) below.
+Ten tracks, **63 phases** in total. They are numbered in reading order, but you do not have to walk them strictly in sequence — see [How to use these tracks](#how-to-use-these-tracks) below.
+
+Every phase in every track is completable **without spending money**. Where a paid mechanism is genuinely unavailable on a free tier, the phase teaches the mechanism and gives you a local or simulated substitute — see [`cost/07`](cost/) for the full zero-budget playbook.
 
 | # | Track | Folder | What it is for | Phases |
 |---|---|---|---|---|
@@ -32,10 +34,13 @@ Nine tracks, **60 phases** in total. They are numbered in reading order, but you
 | 4 | **Retrieval & RAG** | [`rag/`](rag/) | Giving a model knowledge it was not trained on: chunking, embeddings, vector search, hybrid retrieval, reranking, evaluation | 7 |
 | 5 | **Agents & Tools** | [`agents/`](agents/) | Models that act: function calling, the agent loop, multi-agent systems, MCP, sandboxing, agent evaluation | 7 |
 | 6 | **Finetuning & Evals** | [`finetuning/`](finetuning/) | Changing the model versus changing the prompt, and measuring whether either helped: LoRA, datasets, LLM-as-judge, regression suites | 6 |
-| 7 | **Cost & Efficiency** | [`cost/`](cost/) | Maximising capability per peso: token economics, prompt caching, batching, model routing, provider strategy, local models | 6 |
+| 7 | **Cost & Efficiency** | [`cost/`](cost/) | Maximising capability per peso: token economics, prompt caching, batching, model routing, provider strategy, local models, **and the zero-budget playbook** | 7 |
 | 8 | **Vibecoding Craft** | [`vibecoding/`](vibecoding/) | Building real software with AI agents: context management, verification, review, debugging AI-written code, shipping | 8 |
-| 9 | **Safety & Career** | [`safety-career/`](safety-career/) | The wider frame: alignment, misuse, bias, privacy, provenance, and how to stay current in a field that changes monthly | 5 |
+| 9 | **Safety & Ethics** | [`safety-career/`](safety-career/) | Alignment, misuse, bias, privacy, security, and using these tools honestly | 5 |
+| 10 | **Career & Getting Hired** | [`career/`](career/) | Turning the skill into work: what employers actually want, a portfolio that proves judgement, evidence without a job, interviewing and your first 90 days | 4 |
 | | **Shared** | [`shared/`](shared/) | Cross-cutting documents: study rules, free resource list, weekly tracker, glossary | — |
+
+> **On the two newest tracks.** `cost/07` exists because free access is the constraint most learners actually face, and it deserves one place that answers "I have nothing to spend — what is my workflow?" The **Career** track exists because skill and employability are not the same thing: the rest of the curriculum builds the capability, and these four phases build the *evidence* of it. The Career track is the intended finish line.
 
 ---
 
@@ -85,24 +90,50 @@ Nine tracks, **60 phases** in total. They are numbered in reading order, but you
                              └───────────┬──────────┘
                                          │
                              ┌───────────▼──────────┐
-                             │ 9. SAFETY & CAREER   │
+                             │ 9. SAFETY & ETHICS   │
                              │ (5) the wider frame  │
+                             └───────────┬──────────┘
+                                         │
+                             ┌───────────▼──────────┐
+                             │ 10. CAREER & HIRING  │
+                             │ (4) turn skill into  │
+                             │     evidence and work│
                              └──────────────────────┘
 ```
 
 **Read the diagram as a dependency graph, not a schedule.** Tracks 2, 3 and 7 can be taken in any order once Foundations is done — they answer three different questions about the same machinery. Tracks 4, 5 and 6 build on Prompting. Track 8 is the one that needs several of the others behind it. Track 9 can be read at any time, including first.
 
+**Track 10 is the finish line but not a gate.** Career & Hiring reads best last, because it asks you to assemble evidence from the deliverables you have already built — but if you are job-hunting now rather than in six months, read it early and treat it as a set of instructions for what to build next.
+
 ---
 
 ## How to use these tracks
 
+### If you have no money to spend
+
+**Read [`cost/07` — the Freemium Playbook](cost/) first, or at least early.** It is a single phase that answers the question the rest of the curriculum assumes away: *what is my actual workflow when I cannot pay for anything?*
+
+The short version, so you know what you are getting into:
+
+- **Everything here is completable on ₱0.** No phase requires a paid tier.
+- **Run models locally** (Ollama, llama.cpp, or LM Studio) for volume work. The cost is your hardware and your time, not money.
+- **Use free hosted tiers** for tasks that genuinely exceed what your hardware can do — but know that free tiers often have **different data-retention and training-use terms than paid ones**, so do not put other people's private data through them. See the Safety & Ethics track.
+- **Where a paid mechanism is unavailable to you** — prompt caching, batch APIs, reasoning-effort settings — the phase teaches the *mechanism* and gives you a local or simulated substitute. **The concept is separable from the vendor implementation**, and that separation is the whole point.
+- **When you eventually do spend,** spend on the experiment that changes a decision, not on convenience. `cost/05` and `cost/06` tell you how to find that moment.
+
+Being free narrows the *breadth of experiments* you can run. It does not narrow what you can *understand*, and understanding is what survives the free tier ending. Foundations, Model Internals, and Prompting are effectively full-strength on zero budget.
+
 ### If you have 1 hour a day
 
-Follow the **critical path**: Foundations → Prompting → RAG → Agents → Vibecoding Craft. That is the shortest route to being genuinely useful at building with these tools. Add Cost & Efficiency early if you are paying anything per token — it pays for itself fastest.
+Follow the **critical path**: Foundations → Prompting → RAG → Agents → Vibecoding Craft. That is the shortest route to being genuinely useful at building with these tools. Add Cost & Efficiency early if you are paying anything per token — it pays for itself fastest, and `cost/07` in particular assumes you are not.
 
 ### If you have 3 hours a day
 
 Run the critical path, and pull Cost & Efficiency and Model Internals in alongside it. Internals is slower reading but it is what turns the rest from recipe into reasoning.
+
+### If your goal is a job
+
+Work the critical path **plus the Career track**, and start the Career track's portfolio discipline *immediately* rather than at the end — its phases tell you what evidence to accumulate while you learn, which is much cheaper than reconstructing it afterwards. The Finetuning & Evals track matters more than its size suggests here: **evaluation is the skill that most distinguishes people who can build from people who can only demo**, and it is the most accessible junior entry point in the field.
 
 ### If you already know some of this
 
@@ -154,9 +185,10 @@ The rhythm assumes **5 days, not 7**. A plan that requires every day is a plan t
     ├── rag/                   # 00-overview + 7 phases + checklist
     ├── agents/                # 00-overview + 7 phases + checklist
     ├── finetuning/            # 00-overview + 6 phases + checklist
-    ├── cost/                  # 00-overview + 6 phases + checklist
+    ├── cost/                  # 00-overview + 7 phases + checklist
     ├── vibecoding/            # 00-overview + 8 phases + checklist
     ├── safety-career/         # 00-overview + 5 phases + checklist
+    ├── career/                # 00-overview + 4 phases + checklist
     └── shared/                # Study rules, free resources, weekly tracker, glossary
 ```
 

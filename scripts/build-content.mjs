@@ -89,10 +89,16 @@ export const KNOWN_TRACKS = {
     blurb: 'Building real software with AI agents without being fooled.',
   },
   'safety-career': {
-    label: 'Safety & Career',
+    label: 'Safety & Ethics',
     short: 'safe',
     folder: 'safety-career',
-    blurb: 'Alignment, misuse, privacy, and staying current.',
+    blurb: 'Alignment, misuse, privacy, and using these tools honestly.',
+  },
+  career: {
+    label: 'Career & Getting Hired',
+    short: 'career',
+    folder: 'career',
+    blurb: 'Turning the skill into work: proof, portfolio, and the job hunt.',
   },
 };
 
