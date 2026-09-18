@@ -1,5 +1,3 @@
-# Research request — please search the web and cite sources
-
 I am writing a technical curriculum about building software with AI coding tools, and I
 need answers accurate as of **September 2026**. **Please use web search.**
 

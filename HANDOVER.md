@@ -1036,6 +1036,14 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **The rule, now stated twice in this file and still violated: never use `WriteAllLines`/`WriteAllText` without checking line endings, and run the encoding guard immediately after any mechanical rewrite.** The safe path in PowerShell is `[System.IO.File]::WriteAllText($p, $text, (New-Object System.Text.UTF8Encoding $false))` with `\n` already in the string.
 
+45. **⭐ A relay carries ONE artifact, and a document ABOUT the artifact is not the artifact.** The fourth relay failure, and the most instructive. After fixing the audience problem (lesson 43) I asked the user to paste `RELAY-PASTE.md`. What reached the search assistant was **not that file** — it was a *review of* that file: a message describing what the paste contained, assessing its strengths, and proposing three edits. The assistant did the only sensible thing with a document that reviews a research request: **it reviewed the research request**, and again asked which of (a)/(b)/(c) was wanted. **Zero answers for the fourth time.**
+
+    The cause this time was not the document's contents but **the relay itself**. A file passed through a human can arrive as the file, as a summary of the file, as a critique of the file, or as a conversation about the file — and from the receiving end there is no way to tell which was intended. Three separate audiences now existed: the search assistant (wants questions), the human (wants a thing to paste), and the agent (wants protocol).
+
+    **The fix is to remove the human's judgement from the loop.** `PASTE-THIS.txt` lives at the **repo root**, is plain text, opens with the literal instruction *"Please search the web and answer the 12 questions at the bottom of this message"*, and is **generated from `RELAY-PASTE.md` by dropping only the markdown title line** — so the two cannot drift. Verified to contain **zero** occurrences of `web_fetch`, `402`, `grep`, `DeepSeek`, `subagent`, "Do not call" or `SEARCH-REQUESTS`. The human's entire task is now "open this file, select all, paste" — no interpretation, no summarising, no choosing.
+
+    **The generalisable rule: when a handoff must pass through a person, the artifact should require no judgement from them.** Every relay that depended on the human deciding *what* to send failed. The moment the instruction became "paste this one file verbatim" the ambiguity had nowhere to live. Note also that the review *was substantively good* — it correctly spotted that Q2 and Q3 overlapped, that the date belonged in the first sentence, and that Q12's statute half would make an assistant redo finished work. **All three fixes were adopted.** A failed relay can still carry useful content; the failure is in the packaging, not necessarily in the thinking.
+
 ---
 
 ## 13. What "done" looks like
