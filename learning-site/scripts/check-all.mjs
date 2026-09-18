@@ -185,6 +185,12 @@ const STEPS = [
     why: "the Practice view samples questions across phases and tracks, which no other check touches — and its first version crashed on render with React error #31 because it read the GENERATED question shape while the app is handed the NORMALISED one (options as {text, correct}, why renamed to explanation). The unit tests all passed, because they read the same JSON files the bug did: the tests agreed with the bug. This suite now builds its pool through the app's own shape and asserts the normaliser's source still matches, so the two cannot drift apart silently again",
   },
   {
+    name: "section exams (scoring and pass marks)",
+    cmd: "node",
+    args: [join(HERE, "test-exam.mjs")],
+    why: "this is the only code in the project that produces a number a reader is judged by, so it is tested harder than anything else here. The dangerous failure is not a crash — it is a WRONG SCORE that still looks plausible: shuffle the options without carrying the answer index and every question is marked against the wrong option, producing a believable mark and a confident, incorrect verdict. Also asserted: score arithmetic for every possible count, the exact pass boundary, that unanswered counts as wrong rather than being excluded, and that a backup restore does not silently discard a pass",
+  },
+  {
     name: "reachability (nothing is dead)",
     cmd: "node",
     args: [join(HERE, "check-reachability.mjs")],

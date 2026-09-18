@@ -85,7 +85,7 @@ const bad = (m) => { failures.push(m); console.log(`  \u2716 ${m}`); };
 const note = (m) => { notes.push(m); console.log(`  \u2022 ${m}`); };
 
 // The four topbar views, matched by button TEXT because there is no route.
-const VIEWS = ["Curriculum", "Practice", "Tools", "Reference", "Search"];
+const VIEWS = ["Curriculum", "Practice", "Exams", "Tools", "Reference", "Search"];
 
 // --- precondition: is a preview server actually serving? -------------------
 //

@@ -4552,3 +4552,204 @@ p em {
     width: 100%;
   }
 }
+/* ---------------------------------------------------------------------------
+   Exams — the one graded surface. See pages/Exam.jsx for why it is the exception
+   to D-020 and why the pass mark is stated up front.
+   --------------------------------------------------------------------------- */
+
+.exam__tally {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.exam__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.exam__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.exam__card h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.exam__card-meta {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.exam__result {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Pass and fail are distinguished by TEXT first ("Passed" / "Not passed") and by
+   colour second, so the state survives a monochrome screen or a colour-blind reader.
+   Both colours are checked by audit-a11y for contrast against the card. */
+.exam__result.is-pass,
+.exam__verdict.is-pass h1 {
+  color: var(--success);
+}
+
+.exam__result.is-fail,
+.exam__verdict.is-fail h1 {
+  color: var(--warning);
+}
+
+.exam__card .btn {
+  margin-top: auto;
+  align-self: start;
+}
+
+.exam__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.exam__bar-title {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.exam__bar-meta {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+}
+
+.exam__clock {
+  margin: 0;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.exam__clock.is-low strong {
+  color: var(--warning);
+}
+
+.exam__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.exam__jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+}
+
+.exam__jump-btn {
+  min-width: 2.1rem;
+  min-height: 2.1rem;
+  padding: 0.25rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.exam__jump-btn.is-answered {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.exam__jump-btn.is-current {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.exam__jump-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.exam__score {
+  font-size: 1.5rem;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.exam__score strong {
+  font-size: 2rem;
+}
+
+.exam__verdict-text {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.exam__weak {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.exam__review {
+  margin: 0.75rem 0 0;
+  padding-left: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* A left border carries the right/wrong state without relying on the text colour
+   alone, which matters for the same reason as above. */
+.exam__review-item {
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--border);
+}
+
+.exam__review-item.is-right {
+  border-left-color: var(--success);
+}
+
+.exam__review-item.is-wrong {
+  border-left-color: var(--warning);
+}
+
+.exam__review-q {
+  margin: 0 0 0.4rem;
+  font-weight: 600;
+}
+
+.exam__review-line {
+  margin: 0.2rem 0;
+  font-size: 0.95rem;
+}
+
+.exam__review-item .quiz__why {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .exam__bar {
+    position: static;
+  }
+
+  .exam__grid {
+    grid-template-columns: 1fr;
+  }
+}

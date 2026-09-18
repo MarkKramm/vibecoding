@@ -386,6 +386,58 @@ small feature, and should be argued as one.
 
 ---
 
+## D-020a — Section exams ARE graded (the documented exception)
+
+**Decision.** The rule above still holds for the phase quiz and the Practice view.
+It does **not** hold for section exams, which are scored, timed, and carry a pass
+mark. There is one exam per track, covering every question that track teaches.
+
+**Why the request was granted, and why it is not a repeal.** The paragraph above says
+a score request "should be argued as one" — so here is the argument.
+
+The rule exists to protect a beginner from being graded while they are *learning*.
+But the two surfaces answer different questions:
+
+- The **phase quiz** and **Practice** answer *"what should I study next?"* A score
+  would turn practice into a performance, and a reader who is struggling would start
+  avoiding the thing that helps. They keep reporting what to revisit.
+- An **exam** answers *"do I actually know this track?"* — and that question cannot be
+  answered without a threshold. "12 to revisit" tells you what to study. It does not,
+  and cannot, tell you whether you know it. A certificate everyone receives is not a
+  certificate.
+
+So the rule is **scope-limited, not repealed**, and the boundary is made visible
+rather than left to be inferred: the exam index states the pass mark before you
+start, and the ungraded surfaces still say nothing of the kind. **A reader should
+never be surprised by being graded.**
+
+**What was kept from D-020 anyway.** The parts of the rule that were protecting the
+reader rather than limiting the feature survive intact:
+
+- **Best result only.** A later, worse attempt never overwrites a pass — otherwise
+  retaking to practise could *cost* the reader their pass, punishing exactly the
+  behaviour the site wants to encourage.
+- **Answer positions are shuffled per attempt**, so a retake cannot be passed on
+  position recall rather than knowledge.
+- **The pass mark is stated up front**, on the card, before the first question.
+- **Unanswered counts as wrong, not as absent.** Scoring only what was attempted would
+  let a reader pass by answering two questions and leaving the rest blank, which is
+  the opposite of an assessment.
+- **The result leads with the next action.** "Not passed — 33%. 12 more correct
+  answers would do it" gives a target. A bare number does not, and for a reader who
+  failed, the next action matters more than the mark.
+- **`useQuizAnswers` is untouched.** Exam answers live in memory for the duration and
+  are never stored, so the "no ratio, no history" property of that key still holds.
+  Only the *result* is persisted, under its own key (`vibecoding:exams:v1`).
+
+**Cost, stated honestly.** This is the one place in the product that can tell a reader
+they were not good enough. That is a real risk to a beginner studying alone, and the
+mitigations above reduce it rather than remove it. The alternative — no way to find
+out whether you know something — was judged worse for someone whose goal is to be
+employable, which does involve being assessed by strangers.
+
+---
+
 ## D-021 — Time is a coarse band, not minutes
 
 **Decision.** Practice tasks carry a `band` of `quick | focused | deep | ongoing`

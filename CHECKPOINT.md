@@ -2,7 +2,7 @@
 
 A cold-start snapshot: what this project is, where it stands, and what is true right now.
 
-**Last verified:** all 16 offline checks green, all 570 assertions passing (518 offline + 52 in
+**Last verified:** all 17 offline checks green, all 759 assertions passing (699 offline + 60 in
 the accessibility audit), local and remote `main` identical at `a570682`, working tree clean.
 
 ⚠️ **GitHub Pages was unreachable at the time of this checkpoint** — `*.github.io` timed out
@@ -60,8 +60,8 @@ checklistIds, taskIds, quizIds` — **no tools, resources or prose**. Full data 
 | Tool rows | 433 (237 after de-duplication) |
 | Glossary terms | 254 across 10 categories |
 | Catalogued resources | 71 across 14 groups |
-| Offline checks | 16 |
-| Test assertions | 570 (518 offline + 52 accessibility) |
+| Offline checks | 17 |
+| Test assertions | 759 (699 offline + 60 accessibility) |
 | Guards proved to fail | all of them |
 | `src/` modules | 43 — **every one reachable from `main.jsx`** |
 
@@ -77,7 +77,7 @@ cd learning-site
 npm run dev          # content rebuild + dev server on 5173
 npm run build        # content rebuild + bundle to dist/
 npm run preview      # serve dist/ on 4173
-npm test             # 16 offline checks
+npm test             # 17 offline checks
 npm run test:browser # needs a running server
 ```
 
@@ -103,7 +103,7 @@ disabled guard is worse than none.
 - Inline markdown, lesson-block coverage, search (all against the real corpus)
 - Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (205 files)
 - CSS wiring — every JSX class has a rule, every token is defined
-- **Accessibility** — 52 assertions across 5 views: contrast, accessible names, focus visibility,
+- **Accessibility** — 60 assertions across 6 views: contrast, accessible names, focus visibility,
   and keyboard reachability by control *kind*
 - **Every one of the 65 phases renders** — opened in a real browser, not sampled
 - **Mixed practice sets** — sampling, filtering, the no-score contract, and the question

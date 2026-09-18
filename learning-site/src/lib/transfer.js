@@ -87,6 +87,27 @@ export const KEYS = [
     check: isQuizAnswers,
   },
   {
+    key: "vibecoding:exams:v1",
+    kind: "map of trackId -> { best, attempts }",
+    // Each entry must carry a `best` object with a numeric percent and a `passed`
+    // flag, because that pair is what every screen reads. A record missing them
+    // would render as a pass the reader never earned, or crash the results list —
+    // and a backup is exactly where a half-written record would arrive from.
+    check: (v) =>
+      isPlainObject(v) &&
+      Object.values(v).every(
+        (e) =>
+          isPlainObject(e) &&
+          isPlainObject(e.best) &&
+          typeof e.best.percent === "number" &&
+          e.best.percent >= 0 &&
+          e.best.percent <= 100 &&
+          typeof e.best.passed === "boolean" &&
+          typeof e.attempts === "number" &&
+          e.attempts >= 1
+      ),
+  },
+  {
     key: "vibecoding:certifications:v1",
     kind: "array of certification entries",
     // Only `id` and `name` are required, matching the hook: a reader who has just
@@ -378,6 +399,7 @@ export function labelFor(key) {
     applications: "Applications",
     certifications: "Certifications (not used in this app)",
     quiz: "Quiz answers",
+    exams: "Exam results",
     schedule: "Schedule start dates (not used in this app)",
     reading: "Reading position",
     "energy-mode": "Energy mode",
@@ -429,6 +451,42 @@ export function mergeValue(key, current, incoming) {
   if (isDateMap(current) && isDateMap(incoming)) {
     // One start date per track. Existing wins per track.
     return { ...incoming, ...current };
+  }
+
+  // Exam results are accomplishments — a pass is something the reader EARNED — so
+  // they union rather than being treated as this-machine state.
+  //
+  // Without this branch they would hit the `return current` default and a restore
+  // would silently discard every pass recorded on the other machine. That is the
+  // worst possible failure for this key: the reader would import a backup, see their
+  // results unchanged, and conclude the backup was empty.
+  //
+  // Per track, the HIGHER score wins and the earlier date wins a tie — the same rule
+  // `applyAttempt` uses, so importing the same file twice changes nothing. Attempt
+  // counts ADD, because they are a count of events across both machines rather than
+  // a value belonging to either.
+  if (kind.startsWith("map of trackId")) {
+    const merged = { ...incoming };
+    for (const [trackId, entry] of Object.entries(current || {})) {
+      const other = merged[trackId];
+      if (!other) {
+        merged[trackId] = entry;
+        continue;
+      }
+      const a = entry && entry.best;
+      const b = other && other.best;
+      let best = a || b;
+      if (a && b) {
+        if (a.percent > b.percent) best = a;
+        else if (b.percent > a.percent) best = b;
+        else best = String(a.at || "") <= String(b.at || "") ? a : b;
+      }
+      merged[trackId] = {
+        best,
+        attempts: ((entry && entry.attempts) || 0) + ((other && other.attempts) || 0),
+      };
+    }
+    return merged;
   }
 
   // Notes are writing, and writing unions the same way accomplishments do —

@@ -40,6 +40,7 @@ import ToolsLibrary from "./pages/ToolsLibrary.jsx";
 import Search from "./pages/Search.jsx";
 import Shared from "./pages/Shared.jsx";
 import Practice from "./pages/Practice.jsx";
+import Exam from "./pages/Exam.jsx";
 import ShortcutHelp from "./components/ShortcutHelp.jsx";
 import DataTransfer from "./components/DataTransfer.jsx";
 
@@ -48,6 +49,11 @@ const VIEWS = [
   // Practice sits beside the curriculum rather than inside it: it draws from every
   // phase, so it belongs at the top level where it can be reached from anywhere.
   { id: "practice", label: "Practice" },
+  // The exam is graded, which makes it the one exception to D-020 — see the note at
+  // the top of pages/Exam.jsx. It sits next to Practice because the two are the same
+  // kind of activity at different stakes, and a reader should be able to see the
+  // difference before starting rather than discover it in the result.
+  { id: "exams", label: "Exams" },
   { id: "tools", label: "Tools" },
   { id: "reference", label: "Reference" },
   { id: "search", label: "Search" },
@@ -309,6 +315,8 @@ export default function App() {
         {view === "reference" && <Shared />}
 
         {view === "practice" && <Practice onOpenPhase={openPhase} />}
+
+        {view === "exams" && <Exam onOpenPhase={openPhase} />}
 
         {view === "search" && (
           <Search

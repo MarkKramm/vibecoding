@@ -182,6 +182,12 @@ const FULL_DATA_PHASES = new Map([
       "questions), so a light record could not build a practice set at all. Fed by " +
       "pages/Practice.jsx -> loadTrackPhases() -> the FULL track file",
   ],
+  [
+    "lib/exam.js",
+    "takes the pooled questions from lib/practice.js, which are FULL-data — an " +
+      "exam needs the question text, the options and the answer, none of which the " +
+      "light projection carries. Fed by pages/Exam.jsx -> loadTrackPhases()",
+  ],
   // The ported sibling-project modules. They are dead code today (see
   // DEAD_EXPECTED), and they read `phase.checklist` / `phase.tasks` / `phase.quiz`
   // — full-only names — so if they were ever wired to the light index this guard
