@@ -46,6 +46,15 @@ A guard checks ordering positionally, so a misspelled or reordered heading fails
 Note `## Tools for This Phase` (capital T) and the three ASCII dots — both have been broken
 before.
 
+**All 14 are now enforced** (order *and* spelling), but the enforcement was added late and
+the history is worth knowing: until recently nothing compared section **order** to anything,
+and `## Specific topics to learn` and `## Common Pitfalls` were in no guard list at all, so
+renaming one to `## CommonPitfalls` passed every check. An unrecognised `##` heading is not
+an error to the parser — it is silently absorbed as body text, so the file looks correct in
+an editor while the content stops rendering in the right place. If you add or rename a
+section, add it to `SECTION_ORDER` in `scripts/build-content.mjs` or the guard will not see
+it.
+
 ---
 
 ## Authored IDs
@@ -149,7 +158,16 @@ node learning-site/scripts/audit-arithmetic.mjs
 node learning-site/scripts/audit-encoding.mjs
 ```
 
-`build-content.mjs` writes notes to **stderr**, so check the exit code as well as output.
+### Check the exit code, not the output
+
+`build-content.mjs --check` prints its one-line summary to **stdout**, and a genuine
+contract failure goes to **stderr** with a non-zero exit. That split means `| tail` can
+show the pass line from a run that failed, so **always check `$LASTEXITCODE` / `$?`** as
+well as what you see:
+
+```bash
+node scripts/build-content.mjs --check; echo "exit=$?"
+```
 
 ---
 
