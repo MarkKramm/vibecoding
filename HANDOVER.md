@@ -9,12 +9,12 @@
 
 ## 0. READ THIS FIRST — the six things that matter most
 
-1. **Git is committed as of this session** (`3f1cab4`, `b59ec96`, clean tree). Two CRLF files were found and fixed during the commit — see §7.3, and watch for this recurring.
-2. **ALL GUARDS ARE GREEN as of Stage A.** The quiz audit previously failed on 4 files I wrote with correct answers biased to position C; that is **fixed** — every file now uses A/B/C/D at most 3× per 8 questions. The AST character gain is **explained and benign** (§7.2). Build, quiz, and AST audits all exit 0. See §7.
-3. **At most 1 subagent is permitted** (user instruction, restated 2026-09-18: *"you can only use 1 sub agent"*). The original instruction was *"please dont use subagents"* and two workflow runs were cancelled. **Author every remaining file directly, by hand, in the main session.** Do not reintroduce fan-out.
-4. **The plan was EXPANDED beyond the original 9 tracks — it is now 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases). See §6.0.
-5. **Six tracks are still empty:** `agents`, `finetuning`, `vibecoding`, `safety-career`, `career`, and `rag` is 4/7 done. See §6 for the full remaining-work list — **32 phases**, plus track files, the site, tests, CI, and docs.
-6. **`web_search` is BROKEN in this environment.** It returns HTTP 404 for every query. `web_fetch` works. Only the user can fix it (Settings > Plugins). All research in `docs/research/` was done by fetching primary sources directly.
+1. **Git is clean as of this session** (HEAD `8ab2b4f`, clean tree). Line endings are watched on every file written — see §7.3.
+2. **ALL GUARDS ARE GREEN.** Build (`42 phases / 6 tracks`), quiz audit, and AST audit all exit 0, with 0 minted IDs and 0 unbanded tasks. Two earlier defect classes are fixed and documented: the answer-position skew (§7.1) and the AST character gain, which is **explained and benign** (§7.2).
+3. **At most 1 subagent is permitted** (user instruction). **One was used, deliberately, in `agent/04`** as a real experiment whose transcript is now the phase's central evidence — see §6.1 note (b). The budget is now spent-appropriately, not banned; **author the remaining phases directly, by hand.** Do not reintroduce fan-out.
+4. **The plan is 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases). See §6.0.
+5. **Five tracks are complete, four remain empty.** Done: `foundations`, `model-internals`, `prompting`, `rag` (7/7), `cost` (7/7), `agents` (7/7 — completed this session). Remaining: `finetuning` (6), `vibecoding` (8), `safety-career` (5), `career` (4) = **21 phases**, plus track files, the site, tests, CI, and docs. See §6.
+6. **`web_search` is BROKEN in this environment.** It returns HTTP 404 for every query. `web_fetch` works. Only the user can fix it (Settings > Plugins). All research in `docs/research/` was done by fetching primary sources directly, and every literature citation added this session was checked against its arXiv abstract page before being written.
 
 ---
 
@@ -377,7 +377,7 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 | 6 | `rag-debugging` | Diagnosing RAG Failures | Symptom → cause → diagnostic → fix table: retrieval miss, wrong-source citation (verify citations **in code**, number chunks, require chunk IDs), model contradicting the doc, correct-for-wrong-reason (memorisation — remove context, re-ask), irrelevant chunks, duplicated chunks, good retrieval but bad answer, facts split across chunks. Plus a concrete ordered walkthrough of one bad answer. |
 | 7 | `graphrag-advanced` | When RAG Is Not Enough | Global/thematic questions no single chunk answers. **GraphRAG (Edge et al., arXiv:2404.16130)** — entity graph, community detection, pre-generated summaries, map-reduce at query time — with an **honest assessment: expensive, targets only global questions, do NOT start here.** Multi-hop retrieval. Cheaper map-reduce-summarize-top-k alternative. Decision framework for escalating from plain RAG. |
 
-**Agents track (7, target 7) — ALL TO WRITE.** Prefix `agent-`. Folder `ai-roadmaps/agents/`:
+**Agents track (7, target 7) — ✅ COMPLETE.** Prefix `agent-`. Folder `ai-roadmaps/agents/`. Commits `c7b3204`, `204289f`, `9828e4b`, `46e1f37`, `229c1db`, `fced416`, `8ab2b4f`:
 
 | # | Slug | Title | Must teach |
 |---|---|---|---|
@@ -664,9 +664,25 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
 6. **Write `rag/05`, `rag/06`, `rag/07`** — **✅ DONE.** `f4693cf`, `56f36c0`, `beb01f5`. The RAG track is 7/7 complete. Note three corrections carried into these files and worth preserving if they are ever revised: (a) RAGAS is **reference-free first** — that is the paper's emphasis, and the IR metrics (Recall@k, MRR, nDCG) are **not** from RAGAS, they predate it; (b) GraphRAG's claim is scoped to *global sensemaking questions over datasets in the 1M token range, on comprehensiveness and diversity, versus a conventional RAG baseline* — never compress it to "GraphRAG is better"; (c) `rag/07` deliberately recommends **against** starting with GraphRAG, and its map-reduce alternative is presented as the better engineering choice at learner scale.
 
-7. **Write the Agents track (7 phases)** from §6.1. **← RESUME HERE.**
+7. **Write the Agents track (7 phases)** from §6.1 — **✅ DONE.** Commits `c7b3204`, `204289f`, `9828e4b`, `46e1f37`, `229c1db`, `fced416`, `8ab2b4f`. The Agents track is 7/7. Corrections carried into these files and worth preserving if they are ever revised:
 
-8. **Write the Finetuning track (6 phases)** from §6.1.
+   (a) **ReAct's 34% / 10% figures are the ALFWorld and WebShop interactive-benchmark results**, against imitation and RL baselines with one or two in-context examples — **not** the HotpotQA/Fever results, whose reported benefit is overcoming hallucination and error propagation by interacting with an API. Never attach the percentages to the QA tasks. Quizzes in `agent/01`, `agent/03` and `agent/06` test this scoping.
+
+   (b) **`agent/04` carries a real, observed experiment**, not a hypothetical: a subagent was given a brief containing two deliberate fabrications (an invented "200:1" exploration-to-return ratio, and the overstatement that isolation is "the primary reason" multi-agent beats single-agent) marked as verified facts. The child did **not** blindly repeat them — it flagged both accurately in a trailing confidence section. But both still appear in the **body as plain assertions**, and the caveats live only in an appendix that further compression drops. So the finding is sharper than "subagents are confidently wrong": **a caveat does not survive a compression boundary, even when the source is honest.** Preserve that distinction if this phase is revised; the weaker lesson is a different and less useful claim.
+
+   (c) **`agent/06` states the instruction-hierarchy result accurately**: Wallace et al. (arXiv:2404.13208) identify that LLMs treat system prompts as the same priority as untrusted user/third-party text, and their method drastically increased robustness even against unseen attack types with minimal capability degradation — applied to **GPT-3.5**. It is framed throughout as a **mitigation, not an enforcement mechanism**. The injection paper's own conclusion (arXiv:2302.12173) that **effective mitigations are currently lacking** is quoted as the honest framing. Do not let a future edit upgrade either into "solved".
+
+   (d) **`agent/07` frames MCP as versioned** (the spec revision fetched was dated `2026-07-28`) and explicitly separates `pass@k` from `pass^k`. The MCP "USB-C" analogy is pushed on deliberately: it standardises the **connector, not the device** — no better tools, no safety, no evaluation, no capability upgrade.
+
+8. **Write the Finetuning track (6 phases)** from §6.1. **← RESUME HERE.** Folder `ai-roadmaps/finetuning/` already exists and is empty.
+
+   Four tracks remain after Agents, and their folder state was verified at the time of writing:
+   - `finetuning` — folder **exists**, empty (6 phases)
+   - `vibecoding` — folder **MISSING**, must be created (8 phases)
+   - `safety-career` — folder **MISSING**, must be created (5 phases) — this is the Safety & Ethics track; its track key is `safety-career`
+   - `career` — folder **MISSING**, must be created (4 phases)
+
+   As of the Agents completion, `node scripts/build-content.mjs` reports "no phase files yet" for exactly `finetuning`, `vibecoding`, `safety-career` and `career`. If a note names a track you believe is finished, that is the signal a folder went missing — the same defect that was present for `agents` at the start of the Agents track.
 
 9. **Write the Vibecoding track (8 phases)** from §6.1.
 
@@ -756,6 +772,24 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
 11. **A green guard is not proof the guard checks that thing.** I deliberately broke a quiz question to confirm `audit-quiz.mjs` would catch it, and it did. This is worth repeating whenever you are tempted to trust a pass: **test the guard against a known-bad input** before treating it as evidence. The handover's own rule — never edit a guard to agree — exists because the opposite mistake is worse.
 12. **PowerShell backup/restore of a file invalidates the `edit` tool's read-state.** Copying a file to `.bak`, mutating it, and restoring it makes the next `edit` fail with "file changed since it was read". Re-read the file after any out-of-band write.
+
+### Added during the Agents track (session ending `8ab2b4f`)
+
+13. **The quiz-position skew is not occasional — it happened in all 7 Agents phases, and it is systematic.** Every single one needed a rebalancing pass. The drift is consistently toward a **4–5 concentration in one position**, and the position varies (`agent/01` C=5, `agent/02` A=5, `agent/03` A=4, `agent/04` C=5, `agent/05` A=5, `agent/06` C=5, `agent/07` A=5). The workaround is cheap and the earlier advice stands: **vary the position while writing** rather than retrofitting. A practical trick that works: draft the ten correct answers first, assign them a deliberate A/B/C/D pattern (e.g. A B C D A B C D A B), and then write distractors around each. Retrofitting costs three or four careful edits per file.
+14. **I made two real errors while rebalancing `agent/03`, and both are worth naming.** First I *added* a fifth option instead of reordering (caught immediately by the 4-option count check). Then I moved the `[x]` to a **distractor** — marking "chain-of-thought uses more tokens" as correct in a question whose real answer was about environmental correction. Neither was caught by any guard, because both left exactly one `[x]` in a 4-option question. **The only defence is to read the option text you just moved, not just its position.** The structural check that catches the added-option case is now worth running every time:
+
+    ```powershell
+    # every question must have exactly 4 options
+    $qq=0;$n=0; $c=@()
+    foreach($l in Get-Content $f){
+      if($l -match '^### Q(\d+)\.'){ if($qq){$c+="Q${qq}:$n"}; $qq=$matches[1]; $n=0 }
+      if($l -match '^- \[[ x]\]'){$n++}
+    }
+    if($qq){$c+="Q${qq}:$n"}
+    $c -join '  '   # all must end :4
+    ```
+15. **A subagent used as a live experiment can produce a better lesson than a summary of the literature.** The `agent/04` transcript was more valuable than the mechanism described abstractly, because the *unexpected* result — an honest child whose caveats still failed to survive compression — is a sharper and more defensible claim than the expected one. When a phase teaches a behaviour you can actually observe, spend the budget on observing it. This is also why the fabricated inputs are documented in the phase itself: a learner should know the trap was planted deliberately.
+16. **When verifying a track's remaining-work state, check the filesystem rather than trusting the handover.** I asserted in an early draft of this update that four folders existed; three did not. `Get-ChildItem ai-roadmaps -Directory` and `build-content.mjs`'s "no phase files yet" notes are the authoritative pair, and the latter is also how the missing `agents` folder was originally detected.
 
 ---
 
