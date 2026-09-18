@@ -18,7 +18,7 @@ verified 14-section contract.
 **The site works and is deployed.** Live at **https://markkramm.github.io/vibecoding/**, built
 and published by GitHub Actions, with CI green.
 
-**Verification is real.** 15 offline checks, 451 assertions, driving headless Edge over CDP for
+**Verification is real.** 16 offline checks, 570 assertions, driving headless Edge over CDP for
 the accessibility audit and for a sweep of **all 65 phases**. Every guard has been proved
 capable of failing.
 
@@ -184,15 +184,27 @@ the dead set cannot silently regrow. `audit-projections.mjs` now distinguishes a
 which is the opposite of what a deletion is, and would have made this cleanup fail the build it
 was supposed to enable.
 
-### A "Today" view
+### ✅ Mixed practice sets — DONE
+
+A Practice view samples questions across a whole track or across all 549, shuffles them, and
+reports which to revisit — no score, per the no-shame rule. It is the one arrangement a per-phase
+quiz structurally cannot offer, and for a reader studying alone it is the only way to tell *"I
+know this"* from *"I just read this"*.
+
+This covers the useful part of the "Today" idea below without the part that made it fragile: a
+reader with twenty minutes and low energy picks that scope from a dropdown and gets a real set,
+rather than needing a view that guesses their schedule.
+
+### A "Today" view — largely superseded by Practice
 
 `lib/today.js` was deleted with the rest of D-008 rather than kept as a starting point: the
 logic was ported for a career surface this curriculum does not have, and its `bandInfo` export
 was reachable only through `TimeBudgetSelector.jsx`, which was itself unreachable. Keeping
-unrunnable code as scaffolding for a future feature is how 1,740 lines accumulated. If the view
-is built, it should be written against this curriculum's actual data — the `band`/`energy`
+unrunnable code as scaffolding for a future feature is how 1,740 lines accumulated. If a fuller
+view is built, it should be written against this curriculum's actual data — the `band`/`energy`
 vocabulary is the part worth carrying forward, and that lives in the phase contract, not in
-`today.js`.
+`today.js`. **The "what can I do in the time I have" question is now answered by Practice**,
+which needs no schedule to do it.
 
 ### Progress that survives a device
 

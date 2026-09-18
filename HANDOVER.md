@@ -704,6 +704,68 @@ is outside a documentation task.
 
 ## 7. Known defects to fix
 
+### 7.0a ✅ RESOLVED — the Practice view crashed because the tests agreed with the bug
+
+**Was:** the new Practice view (mixed question sets) threw React error #31 on first render —
+*"objects are not valid as a React child"*. A blank page.
+
+**Cause — two question shapes, and the wrong one assumed.** `generated/<track>.json` stores a
+question as:
+
+```js
+{ id, question, options: ["a", "b", "c", "d"], answerIndex, why, energy }
+```
+
+`normaliseQuestion` in `data/roadmaps.js` rewrites it before any component sees it:
+
+```js
+{ id, question, energy, options: [{ text, correct }], explanation }
+```
+
+The answer moves from one index onto each option, and `why` is renamed `explanation`. `practice.js`
+read the raw shape, so `q.options` held strings where the view expected... objects, and `q.why` was
+`undefined` where the view read `q.why` expecting the explanation text.
+
+> **All 91 unit tests passed, because they read the same JSON files the bug did. The tests agreed
+> with the bug.**
+
+**This is the sixth instance of the project's core pattern**, and the second time the *fix* was to
+assert what the app receives rather than what the file contains:
+
+| # | Instance | Correct source | Wrong screen |
+|---|---|---|---|
+| 1 | Unstyled layout | 40 CSS classes | no rules |
+| 2 | "0 tools" | 433 rows | nothing drawn |
+| 3 | `href="—"` | 40 rows | dead links |
+| 4 | 325 invisible items | 254 terms, 71 links | empty `<div>` |
+| 5 | Previous/Next inert | correct data | handler ran, page did not change |
+| 6 | Practice crash | 549 valid questions | wrong shape assumed |
+
+**Fixed in three parts**, and the middle one generalises:
+
+1. `poolFrom` accepts **either** shape and normalises it.
+2. The corpus-wide test builds its pool **through the app's own normaliser**.
+3. That normaliser cannot be imported under Node — `roadmaps.js` imports JSON, which needs an
+   import attribute Vite does not require — so it is **mirrored, and its source is read and
+   asserted** to still do what the mirror assumes. Change `normaliseQuestion` and the test fails
+   pointing at itself.
+
+**Two more real defects the same suite found:**
+
+- `normaliseQuestionShape` used `findIndex` for the correct option, so a question carrying **two**
+  correct answers would have been silently marked against the first, telling the reader a
+  defensible answer was wrong. It now counts and drops the question unless exactly one is correct.
+- An assertion demanded a 30-question draw span all 10 tracks at least 50% of the time. The true
+  figure is ~44%, and that is correct arithmetic, not a biased shuffle: with 549 questions and
+  safety-career holding 30 and career 24, those two are missed 18% and 25% of the time
+  respectively, so *"all ten present"* cannot exceed ~48%. Confirmed independently with a
+  log-space hypergeometric calculation — **47.8% theoretical vs 43.8% observed over 2000 seeds.**
+  The assertion now tests spread (decidable) plus an exact all-tracks check at 200 questions.
+
+⚠️ **The generalisable rule: a test that reads the SOURCE FILE proves the source file is fine. It
+says nothing about the object the component is handed.** When a pipeline normalises data on the
+way in, the test must go through the same normaliser, or it is testing a different program.
+
 ### 7.0 ✅ RESOLVED (2026-09-18) — Previous/Next phase buttons did nothing
 
 **Was:** the Previous and Next buttons on every phase page had **no effect at all**. Fifty-nine

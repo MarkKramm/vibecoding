@@ -2,7 +2,7 @@
 
 A cold-start snapshot: what this project is, where it stands, and what is true right now.
 
-**Last verified:** all 15 offline checks green, all 451 assertions passing (407 offline + 44 in
+**Last verified:** all 16 offline checks green, all 570 assertions passing (518 offline + 52 in
 the accessibility audit), local and remote `main` identical at `a570682`, working tree clean.
 
 ⚠️ **GitHub Pages was unreachable at the time of this checkpoint** — `*.github.io` timed out
@@ -60,8 +60,8 @@ checklistIds, taskIds, quizIds` — **no tools, resources or prose**. Full data 
 | Tool rows | 433 (237 after de-duplication) |
 | Glossary terms | 254 across 10 categories |
 | Catalogued resources | 71 across 14 groups |
-| Offline checks | 15 |
-| Test assertions | 451 (407 offline + 44 accessibility) |
+| Offline checks | 16 |
+| Test assertions | 570 (518 offline + 52 accessibility) |
 | Guards proved to fail | all of them |
 | `src/` modules | 43 — **every one reachable from `main.jsx`** |
 
@@ -77,7 +77,7 @@ cd learning-site
 npm run dev          # content rebuild + dev server on 5173
 npm run build        # content rebuild + bundle to dist/
 npm run preview      # serve dist/ on 4173
-npm test             # 15 offline checks
+npm test             # 16 offline checks
 npm run test:browser # needs a running server
 ```
 
@@ -103,9 +103,11 @@ disabled guard is worse than none.
 - Inline markdown, lesson-block coverage, search (all against the real corpus)
 - Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (205 files)
 - CSS wiring — every JSX class has a rule, every token is defined
-- **Accessibility** — 44 assertions across 4 views: contrast, accessible names, focus visibility,
+- **Accessibility** — 52 assertions across 5 views: contrast, accessible names, focus visibility,
   and keyboard reachability by control *kind*
 - **Every one of the 65 phases renders** — opened in a real browser, not sampled
+- **Mixed practice sets** — sampling, filtering, the no-score contract, and the question
+  shape the *app* sees rather than the one the file stores
 - **Reachability** — every module under `src/` is reachable from `main.jsx`
 - Guards themselves — each was broken deliberately and shown to fail
 
@@ -177,6 +179,41 @@ headless had **no viewport**, putting the button at y=18,865px so clicks never l
 six phases for the word "undefined" that was legitimate **quiz prose** ("Cosine similarity is
 undefined for out-of-vocabulary words"); and it counted checklist items with **two wrong selectors
 in a row**, because `ChecklistItem` renders a `label.check`, not an `li`.
+
+---
+
+## The sixth instance — and the one where the tests agreed with the bug
+
+The Practice view (mixed question sets) crashed on its first render with React error #31,
+*"objects are not valid as a React child"*.
+
+There are **two question shapes**. `generated/<track>.json` stores
+`options: ["a","b","c","d"], answerIndex, why`. `normaliseQuestion` transforms it to
+`options: [{text, correct}], explanation` before any component sees it. `practice.js` read the
+raw shape; the view was handed the normalised one.
+
+> **All 91 unit tests passed. They agreed with the bug, because they read the same JSON files
+> the bug did.**
+
+This is the same failure as the 325 glossary and resource items that rendered into an empty
+`<div>`: **correct data, wrong assumption about its shape, every check green.** A test that reads
+the *source file* proves the source file is fine — it says nothing about what the app receives.
+
+The fix has three parts, and the middle one is the generalisable bit:
+
+1. `poolFrom` now accepts **either** shape and normalises.
+2. The corpus-wide test builds its pool **through the app's own normaliser**, so it cannot agree
+   with a shape mismatch again.
+3. That normaliser cannot be imported under Node (`roadmaps.js` imports JSON, which needs an
+   import attribute Vite does not require), so it is **mirrored and its source read and
+   asserted** to still do what the mirror assumes. Change `normaliseQuestion` and the test fails
+   pointing at itself.
+
+Two more real finds from the same suite: `normaliseQuestionShape` took the *first* correct option
+via `findIndex`, so a two-answer question would be silently marked against one of them; and an
+assertion demanded a 30-question draw span all 10 tracks 50% of the time when the true figure is
+~44% (the two smallest tracks are missed 18% and 25% of the time) — confirmed against a log-space
+hypergeometric calculation, 47.8% theoretical vs 43.8% observed.
 
 ---
 
