@@ -124,7 +124,7 @@ You can do almost all of this phase with no API key at all if you follow the fre
 - **Anthropic — Prompt caching** — https://docs.claude.com/en/docs/build-with-claude/prompt-caching
 - **Anthropic — Use examples (multishot prompting)** — https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/multishot-prompting
 - **Google — Gemini API prompt design strategies** — https://ai.google.dev/gemini-api/docs/prompting-strategies
-- **OpenAI — Token counting endpoint (`POST /v1/responses/input_tokens`)** — https://platform.openai.com/docs/api-reference/responses/input-tokens
+- **OpenAI — Token counting endpoint (`POST /v1/responses/input_tokens`)** — https://developers.openai.com/api/docs/guides/token-counting
 - **Hugging Face — Open LLM Leaderboard, for reading what is actually measured** — https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard
 
 ## Lesson: Examples Are Evidence, Not Instruction
@@ -367,7 +367,7 @@ Three honest caveats before you build on this.
 
 **The retrieval decision is a cost decision, not just a quality one.** The right comparison is not "retrieved examples versus fixed examples" on accuracy alone. It is "the accuracy gain from relevance" against "the caching discount you just gave up, plus the latency of the retrieval step". Measure both sides. Task 6 is exactly this measurement.
 
-**Caching is a hosted-provider feature with volatile terms.** Minimum prefix lengths, cache lifetimes, whether writes carry a premium, whether caching is automatic or opt-in, and how it is reported in the usage object all differ between providers and all change. As of early 2026 these terms vary substantially across the major providers — read the current documentation for your provider rather than any summary here, including this one.
+**Caching is a hosted-provider feature with volatile terms.** Minimum prefix lengths, cache lifetimes, whether writes carry a premium, whether caching is automatic or opt-in, and how it is reported in the usage object all differ between providers and all change. As of 2026-09 these terms vary substantially across the major providers — read the current documentation for your provider rather than any summary here, including this one.
 
 **The ordering fix has its own cost.** Retrieved examples placed after the instruction rather than immediately before the question are further from the question, and the recency effect from Part 4 says the nearest evidence weighs most. You are trading a little evidence salience for a lot of cache. On most workloads that trade is clearly worth it; on a short prompt with expensive examples and a small caching discount, it may not be. No universal answer, only a measurement.
 

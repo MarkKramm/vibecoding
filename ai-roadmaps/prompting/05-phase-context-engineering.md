@@ -116,7 +116,7 @@ Nothing here needs a paid account. A free tier of any chat interface plus, if yo
 | `transformers` tokenizers | Count tokens for open-weight models you may actually run | Free/open-source | https://huggingface.co/docs/transformers | t02 | tiktoken, or a rough words-times-1.3 estimate for English |
 | Ollama | Run a small local model with no per-token cost, so experiments are free | Free/open-source | https://ollama.com/ | t03, t04, t06 | llama.cpp directly, or a free chat interface |
 | LiteLLM | One Python interface to many providers, useful for comparing cost across models | Free/open-source | https://github.com/BerriAI/litellm | t05 | Each provider's own SDK, or plain `requests` |
-| Provider token-counting endpoint | Count tokens for a request exactly, server-side, without generating | Free to call | https://platform.openai.com/docs/api-reference/responses/input_tokens | t05 | tiktoken locally; the endpoint is free but the local count avoids network use |
+| Provider token-counting endpoint | Count tokens for a request exactly, server-side, without generating | Free to call | https://developers.openai.com/api/docs/guides/token-counting | t05 | tiktoken locally; the endpoint is free but the local count avoids network use |
 | JSON Schema | Describe the shape of your extracted state so it can be validated | Free/open-source | https://json-schema.org/ | t06 | A plain Python function that checks required keys |
 | A text editor and a terminal | Keep your block inventory, handoff notes and cost log | Free | https://code.visualstudio.com/ | Every task | Notepad and PowerShell; both are already on your machine |
 
@@ -189,7 +189,7 @@ That is much stronger than the popular version. It is not "you lose some accurac
 
 **Do not let anyone reduce it to a percentage drop.** "Lost in the Middle shows a 20% accuracy drop" is neither the paper's framing nor its number. The anchor is the closed-book comparison and the setup used 10/20/30 documents. The incorrect version is so widespread that repeating it marks you as someone who read a summary.
 
-**What has changed, and what has not.** The *exact curve* has improved substantially since 2023. Current models are markedly better at using the middle of a long context than the models tested in that paper, and several vendors report near-uniform performance across position for their long-context models as of early 2026. The qualitative lesson has not changed: **the middle is the least reliable place to put something, positional reliability is model- and task-dependent, and you should verify the curve for the model you actually use rather than assuming either the 2023 result or a vendor's best-case chart describes your workload.**
+**What has changed, and what has not.** The *exact curve* has improved substantially since 2023. Current models are markedly better at using the middle of a long context than the models tested in that paper, and several vendors report near-uniform performance across position for their long-context models as of 2026-09. The qualitative lesson has not changed: **the middle is the least reliable place to put something, positional reliability is model- and task-dependent, and you should verify the curve for the model you actually use rather than assuming either the 2023 result or a vendor's best-case chart describes your workload.**
 
 Now the tactics, all free:
 
@@ -458,7 +458,7 @@ Second, **context rot is real and the curve is empirical.** The window is a hard
 
 **Reducing Lost in the Middle to "a 20% drop".** That is not the paper's framing and not its number. The anchor is that middle-position accuracy fell *below* the model's closed-book accuracy, with 56.1% as the closed-book reference and 10/20/30 documents in the setup. Cite it correctly.
 
-**Assuming the Lost in the Middle curve is still accurate as published.** The exact curve has improved substantially in modern models as of early 2026. The qualitative lesson — the middle is the least reliable position and you should verify your own curve — has held. Do not quote the 2023 numbers as if they describe today's model.
+**Assuming the Lost in the Middle curve is still accurate as published.** The exact curve has improved substantially in modern models as of 2026-09. The qualitative lesson — the middle is the least reliable position and you should verify your own curve — has held. Do not quote the 2023 numbers as if they describe today's model.
 
 **Restating every instruction at top and bottom.** Repetition competes with itself. Restate the one or two constraints that matter most; a second full block of instructions creates ambiguity about whether it is a duplicate or an addition.
 

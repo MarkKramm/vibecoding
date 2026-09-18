@@ -224,6 +224,7 @@ MQA   (h_kv =  1): 2 * 32 *  1 * 128 * 2 * 16,000 bytes ≈ 250 MB
 Same layers, same head dimension, same precision, same token count. The only moving part is `h_kv`, and the cache moves in exact proportion. That is why "which attention variant does this model use" is a cost question as much as a quality question.
 
 As of early 2026, GQA is the common default across most widely used open-weight and hosted models, with group sizes that differ by model and generation. Verify against a current model card; architectures that mix attention variants, or replace some layers entirely, change the arithmetic this comparison cannot capture.
+
 #### Lever two: fewer bits per element
 
 `bytes_per_element` is the only factor you can change on a model that is already trained. Storing the cache in 8 bits instead of 16 halves it; 4 bits roughly quarters it.
@@ -255,6 +256,7 @@ A naive serving engine asks, per request, for one contiguous block of GPU memory
 **Internal fragmentation — reserving for a length you never reach.** You must allocate for the worst case, because the cache grows as tokens are generated and cannot be moved once allocated. Reserve 2,048 tokens, end the conversation after 200, and 90% of that reservation was never used — yet it was unavailable to anyone else for the entire lifetime of the request. Reserving for 128k tokens to answer a question that used 3k leaves almost all of it dead weight.
 
 **External fragmentation — holes between allocations.** Because the reservations are contiguous and of varying sizes, free memory fragments. You might have 8 GB free in total and still be unable to satisfy a request needing a contiguous 2 GB. Operating systems solved this decades ago: stop requiring contiguity.
+
 #### The paging solution
 
 **PagedAttention** applies virtual memory ideas to the KV cache. The paper is Kwon et al., SOSP 2023, and the implementation is vLLM. The mechanism, in four moves:
@@ -289,6 +291,7 @@ A second, subtler drift: throughput claims travel further than their conditions.
 > **Where the analogy breaks:** a warehouse report is a snapshot nobody acts on. This utilisation figure is the *problem statement* motivating an entire serving architecture, so misquoting it inverts the argument: the paper says "existing systems are inefficient, here is a fix", while the misquote says "this memory is inherently wasteful" — pointing the reader at the wrong solution, shrinking the cache, when the finding was about packing it.
 
 The transferable lesson: when you meet a dramatic figure — a percentage, a multiplier, an X-fold speedup — ask first *what is the denominator*, then *what were the baselines*. Both are usually recoverable from the paper in two minutes, and both are almost always missing from the retelling.
+
 ### Part 6 — The KV cache is not prompt caching, and Track 7 depends on it
 
 You now know what the KV cache is. Here is what will confuse you on a pricing page if nobody tells you: **there are two different caches in an LLM API, and only one of them is a product.**

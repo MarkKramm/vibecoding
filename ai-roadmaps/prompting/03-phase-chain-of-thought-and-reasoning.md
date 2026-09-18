@@ -289,7 +289,7 @@ Two things determine whether this works, and only one of them is in your control
 
 ### Part 5 — Reasoning models changed the default, and here is the mechanism
 
-Everything above assumes you must elicit reasoning from a model that will not do it otherwise. Models that reason internally before answering — the "thinking" class, as of early 2026 — change that assumption.
+Everything above assumes you must elicit reasoning from a model that will not do it otherwise. Models that reason internally before answering — the "thinking" class, as of 2026-09 — change that assumption.
 
 **What is different.** These models are trained to produce a long internal reasoning span before committing to an answer, and they are trained on tasks where that helps. The number of serial steps spent before the answer is a learned behaviour, and some providers let you control it with a parameter that trades latency and cost against depth.
 
@@ -305,7 +305,7 @@ Two things that remain true and useful on these models:
 
 **Structure still helps. Steps do not.** If you need the answer in a particular shape, ask for the shape. Specifying your output format is not telling the model how to think.
 
-**Date this guidance and re-check it.** The position on this has moved more than once and is provider-specific. As of early 2026, the practical habit is: check your provider's current prompt-engineering documentation before adding reasoning instructions to a reasoning model, and record the date you checked. Task 10 makes you do exactly that rather than take my word for it.
+**Date this guidance and re-check it.** The position on this has moved more than once and is provider-specific. As of 2026-09, the practical habit is: check your provider's current prompt-engineering documentation before adding reasoning instructions to a reasoning model, and record the date you checked. Task 10 makes you do exactly that rather than take my word for it.
 
 #### Which technique, for which task and model class
 
@@ -409,7 +409,7 @@ The honest summary of this whole phase: chain-of-thought gives the model more se
 
 **Running reflexion with no error signal.** "Try again, that was wrong" gives the model nothing new to condition on, and self-critique with no ground truth rewrites good answers into different ones. Reflection is worth exactly what your feedback carries.
 
-**Telling a reasoning model how to think.** As of early 2026, several providers advise against prescribing reasoning steps for models that already reason internally. Ask for the output format you need and let the model choose its own process. Check current guidance, and date your check.
+**Telling a reasoning model how to think.** As of 2026-09, several providers advise against prescribing reasoning steps for models that already reason internally. Ask for the output format you need and let the model choose its own process. Check current guidance, and date your check.
 
 **Treating a well-formatted chain as evidence for a regulation or an audit.** You are publishing generated text. It may summarise the answer usefully; it is not a decision record. Say so plainly to anyone who asks for one.
 
@@ -520,7 +520,7 @@ Write `portfolio/prompting/03-chain-of-thought-and-reasoning.md` containing:
 
 **Why:** The chain is generated text from the same next-token process as any other continuation, not a readout of the internal computation. A correct answer produced alongside a wrong step is direct evidence that the two come apart, and that reading the reasoning is not the same as verifying the answer. The correct response is to verify externally, not to trust or to discard on the basis of the prose.
 
-### Q9. As of early 2026, what is the defensible approach to a prompt for a model that already reasons internally before answering? <!-- id: prompt-03-chain-of-thought-and-reasoning-q09 energy: normal -->
+### Q9. As of 2026-09, what is the defensible approach to a prompt for a model that already reasons internally before answering? <!-- id: prompt-03-chain-of-thought-and-reasoning-q09 energy: normal -->
 
 - [ ] Always prepend the zero-shot elicitation phrase, since it is free
 - [ ] Never request reasoning steps, because reasoning models ignore instructions entirely

@@ -298,6 +298,7 @@ Four more mechanisms: recognise them and know what each is for.
 **Data parallelism** is the one to keep separate: N complete copies of the model, with requests routed to them. It does not make any single request faster; it multiplies capacity. "One request is too slow" is not a data-parallelism problem; "we are out of room for concurrent users" is — provided you handle prefix-aware routing.
 
 Real engines combine these, and providers rarely publish which. What matters is the symptom-to-mechanism mapping: *single request too slow* → tensor parallelism or a smaller model. *Throughput ceiling too low* → batching and continuous batching. *First token takes too long* → queueing and chunked prefill. *Out of memory* → quantization, GQA, paged KV, or fewer concurrent sequences.
+
 ### Part 8 — Why two providers of the same model feel different
 
 Now the payoff. Same weights, same tokenizer, different latency. Ranked list of explanations, with what each looks like in your measurements:

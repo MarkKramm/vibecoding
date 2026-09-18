@@ -290,6 +290,8 @@ Read that again, because it is the opposite of most people's assumption: **you p
 
 **What that lets you predict.** Caching pays off only if the prefix is read back enough times to repay the write premium. Write once and read once, and you can easily lose money. The break-even is arithmetic you can do from the two multipliers and the reuse count — Anthropic's prompt caching documentation states its multipliers plainly (5-minute writes at 1.25x, 1-hour writes at 2x, reads at 0.1x, as of early 2026), and OpenAI's documents the same shape (writes at 1.25x, reads at 0.1x). Read both *as arithmetic examples*, not as price lists.
 
+**And those examples are already drifting, which is the point.** Re-checked in 2026-09, Anthropic's pricing page still carries `1.25x` / `2x` / `0.1x` — but now with an explicit carve-out: reads are **`0.025x`** on two of its newest models, a quarter of the usual read multiplier. The lesson is not the new number; it is that **a per-provider multiplier has quietly become a per-model one**, so a figure you copied from a blog post last year can be wrong for the specific model you deploy. Two consequences worth carrying: the break-even arithmetic changes with it (a `0.025x` read repays a `1.25x` write far sooner), and **you cannot assume two models from the same provider share caching economics**.
+
 **Where it stops working.** A cache hit requires the prefix to match **exactly**, from the very beginning. One changed character near the start — a timestamp, a reshuffled tool list, a reordered JSON schema — invalidates everything after it. Applications that put a dynamic value at the top of their prompt get a 0% hit rate and never understand why. There is also a minimum prefix length below which nothing is cached, and a time-to-live after which the entry expires (minutes, not days, on the pages I checked). So the predictor is:
 
 > **Caching rewards a long, stable, frequently re-read prefix. It punishes dynamic content at the front, short prefixes, and one-off calls.**
@@ -303,6 +305,7 @@ Clearly correct: a tool-using agent with a large fixed instruction block, called
 **What that lets you predict.** Anything naturally asynchronous — overnight classification of a dataset, bulk embeddings, evaluation runs, index building — should be batched. For a large one-off job, batch often saves more than every prompt trick in this lesson combined, because it applies to the whole bill rather than to one term of it.
 
 **Where it stops working.** It stops working the moment a human is waiting. Discounts *stack* rather than replace each other — Anthropic's caching documentation notes that its cache multipliers combine with the Batch API discount — but whether any two discounts combine is a per-provider question. And a failed batch job is one you discover later, so batch suits work you have finished iterating on.
+
 #### 3. Reasoning and thinking tokens
 
 **Mechanism.** On reasoning models, the model generates internal deliberation before its answer. Those tokens are generated, so they are metered as **output** tokens on the providers I checked — billed at the expensive rate, not the cheap one.

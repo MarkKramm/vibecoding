@@ -120,7 +120,7 @@ You want to know two things before you send anything to a model: *will it fit*, 
 So people develop a habit: "a token is about four characters" or "a token is about three-quarters of a word". Both are true on average, for English prose, and both will mislead you badly the moment your text stops being English prose. The average is not the mechanism. This part gives you the mechanism, so you can predict when the average fails instead of being surprised by it.
 
 **A token is a chunk of text that the model treats as one unit.** The model's first layer does one job: it converts your text into a sequence of integers, each an index into a fixed list called the **vocabulary**. Everything downstream — every attention operation, every cost calculation, every context limit — operates on that sequence. The model never sees your characters. It sees numbers, and those numbers are tokens.
-**The vocabulary size is fixed when the model is built**, commonly 50,000 to 200,000 entries. As of early 2026 that range covers essentially all the models you are likely to use, but it has drifted upward over time and will keep drifting — check rather than assume.
+**The vocabulary size is fixed when the model is built**, commonly 50,000 to 200,000 entries. As of 2026-09 that range covers essentially all the models you are likely to use, but it has drifted upward over time and will keep drifting — check rather than assume.
 
 Now the important part. **Which chunks become tokens is not decided by meaning, or by grammar, or by anything a human would choose.** It is decided by frequency, by an algorithm called byte-pair encoding.
 
@@ -180,7 +180,7 @@ Now you can predict things.
 
 **Prediction 3: rare words shatter.** A long technical term, a surname, a place name the tokenizer rarely saw, a made-up product name — these break into fragments. A fifteen-character unfamiliar word might be five or six tokens; a fifteen-character common word might be two.
 
-**Prediction 4: the count depends on the tokenizer, not the text alone.** Two models can tokenize the same sentence into different numbers of tokens. If you are estimating cost across providers, use each provider's own tokenizer. As of early 2026, essentially every major provider publishes or ships a tokenizer you can run locally — but tool names and availability change, so check rather than assume.
+**Prediction 4: the count depends on the tokenizer, not the text alone.** Two models can tokenize the same sentence into different numbers of tokens. If you are estimating cost across providers, use each provider's own tokenizer. As of 2026-09, essentially every major provider publishes or ships a tokenizer you can run locally — but tool names and availability change, so check rather than assume.
 
 **One more category: tokens you never type.** Tokenizers also reserve **special tokens** — entries that carry structural meaning rather than text, marking where a system instruction ends, where a user turn begins, where a document boundary sits, or where the model should stop. They are inserted by the software around the model, not by you, and they consume budget like anything else. This is a large part of why the fixed overhead from Part 4 exists, and it is why "my text was only 500 tokens" and "the request reported 900 tokens" are both true.
 
@@ -263,7 +263,7 @@ A model with a context window of N tokens, handling one request:
 
 This produces a failure mode that looks mysterious until you have the model of it: you paste a huge document, ask a question, and the answer is abruptly truncated mid-sentence. The model did not "decide" to stop. It ran out of the shared budget.
 
-Every provider exposes this differently, and the specifics are volatile. As of early 2026, common behaviours include: rejecting the request with an error if the input alone exceeds the window; accepting it but capping generation at a smaller max-output setting; or silently truncating the oldest part of your input. **Which you get depends on the provider and the endpoint, and it has changed repeatedly — test it rather than assuming, because silent truncation is the dangerous one.** If history is dropped without telling you, your prompt appears to work and quietly answers a different question than the one you asked.
+Every provider exposes this differently, and the specifics are volatile. As of 2026-09, common behaviours include: rejecting the request with an error if the input alone exceeds the window; accepting it but capping generation at a smaller max-output setting; or silently truncating the oldest part of your input. **Which you get depends on the provider and the endpoint, and it has changed repeatedly — test it rather than assuming, because silent truncation is the dangerous one.** If history is dropped without telling you, your prompt appears to work and quietly answers a different question than the one you asked.
 
 #### The conversation growth trap
 
@@ -306,7 +306,7 @@ This is the part that separates people who have read about context windows from 
 This became known as **"lost in the middle"**. I am describing it as a *finding from a study on the models available at that time* — not as a law of nature. Two honest caveats:
 
 1. **It is empirical, not architectural.** Nothing in the design of a transformer requires the middle to be worse. It is an observed behaviour of trained models on a benchmark task.
-2. **It has been partially mitigated and it varies.** Later models and training methods have improved at long-context use, and different models show the effect to different degrees. As of early 2026, the effect is weaker and less universal than in the original study, but it has not disappeared, and **the magnitude reported for any current model will be out of date by the time you read this.** Do not memorise a number. Test your own model on your own task.
+2. **It has been partially mitigated and it varies.** Later models and training methods have improved at long-context use, and different models show the effect to different degrees. As of 2026-09, the effect is weaker and less universal than in the original study, but it has not disappeared, and **the magnitude reported for any current model will be out of date by the time you read this.** Do not memorise a number. Test your own model on your own task.
 
 The lesson's point survives all of that, because the point is not the number:
 

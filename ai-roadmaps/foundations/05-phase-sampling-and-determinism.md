@@ -118,7 +118,7 @@ Roughly 5–8 hours total. The conceptual material is about two hours of genuine
 
 Open a chat assistant and ask it to complete "The capital of France is". Do it ten times. You will get `Paris` ten times, almost certainly. Now ask for "a name for a small coffee shop in Cebu City". Ask ten times. You will get ten different names, and none is obviously more correct than the others. Both requests went through the same machinery; the difference is the *shape* of the distribution the model produced, and what the sampler did with it.
 
-Recall from Phase 1: at every step, the model's final layer produces a score for every token in the vocabulary — commonly in the range of 50,000 to 200,000 tokens, depending on the model (as of early 2026; this changes between releases, so check your own model). Those scores pass through a softmax function, which converts arbitrary numbers into positive numbers that sum to 1. That is a probability distribution.
+Recall from Phase 1: at every step, the model's final layer produces a score for every token in the vocabulary — commonly in the range of 50,000 to 200,000 tokens, depending on the model (as of 2026-09; this changes between releases, so check your own model). Those scores pass through a softmax function, which converts arbitrary numbers into positive numbers that sum to 1. That is a probability distribution.
 
 **A probability distribution is not a decision.** It describes how much the model favours each option; something still has to pick one. That something is the sampler — a genuinely separate component, often separate code in a serving stack, configured per request. The model does not know or care what it is set to.
 
@@ -164,7 +164,7 @@ For open-ended chat and writing, beam search mostly lost, for three reasons you 
 2. **It is expensive.** A beam of 5 means five times the generation work per step.
 3. **A high-probability sequence is not a good one.** Beam search optimises the model's own score, and Part 5 explains why that score is a poor proxy for quality on open-ended tasks.
 
-Almost every chat API does not expose beam search (as of early 2026; check your provider's parameters before assuming). You will meet it in local inference tools and older machine-translation code, and you do not need to tune it. You do need to know it exists, because "just search harder for the best answer" sounds like it should be the right approach, and understanding why it isn't tells you something real about what these models can be asked to optimise.
+Almost every chat API does not expose beam search (as of 2026-09; check your provider's parameters before assuming). You will meet it in local inference tools and older machine-translation code, and you do not need to tune it. You do need to know it exists, because "just search harder for the best answer" sounds like it should be the right approach, and understanding why it isn't tells you something real about what these models can be asked to optimise.
 
 ### Part 2 — Temperature: dividing inside the exponent
 
@@ -237,7 +237,7 @@ Typical defaults sit around `p = 0.9` to `0.95`. Setting `p = 1.0` disables trun
 
 It is defined relative to the leader, so it also adapts. Its behaviour differs from top-p in one interesting case: when the model is extremely confident (top token at 0.95), a top-p nucleus of 0.9 keeps only that one token, while min-p with a small threshold still keeps a handful of alternatives — avoiding the degenerate case where a confident model becomes effectively greedy, which some people prefer for creative work.
 
-Min-p is not universally supported, and implementations differ in the exact rule (as of early 2026; check your tool's documentation rather than assuming). Treat it as a third option to experiment with, not a default.
+Min-p is not universally supported, and implementations differ in the exact rule (as of 2026-09; check your tool's documentation rather than assuming). Treat it as a third option to experiment with, not a default.
 
 If your output is incoherent you have two knobs: cool it down (lose variety everywhere) or tighten the pool (lose only the tail). Tightening is more surgical, because it targets the actual failure — tail tokens — rather than globally shrinking every choice. **Try top-p before temperature.** You can combine truncation methods, since they chain and the pool only shrinks, but combining is usually unnecessary and makes settings harder to reason about. Pick one and adjust.
 
@@ -300,7 +300,7 @@ You do not need to compute logarithms. These reference points are enough:
 | about −2.3 | about 0.10 | The model is choosing among roughly ten options |
 | −4.0 or lower | under 0.02 | The model is guessing or has no idea |
 
-Hold on to this: **a logprob is the model's number before the sampler touched it.** Depending on the provider, the logprobs you receive may be reported after temperature is applied — so they are most interpretable at the default temperature, where they reflect the distribution the model actually produced (as of early 2026; check your provider's documentation, because this varies and has changed).
+Hold on to this: **a logprob is the model's number before the sampler touched it.** Depending on the provider, the logprobs you receive may be reported after temperature is applied — so they are most interpretable at the default temperature, where they reflect the distribution the model actually produced (as of 2026-09; check your provider's documentation, because this varies and has changed).
 
 #### Reading a table
 
@@ -341,9 +341,10 @@ This part is mandatory, and it is where most writing on the topic goes quiet.
 - **Low logprob is not the same as wrong.** A model can be genuinely uncertain and correct — consider a question with two defensible answers. High logprob is not the same as right either: a model can be confidently, fluently wrong, and the confidence that makes a wrong answer dangerous is exactly what makes its logprobs look reassuring. **Logprobs measure internal confidence, not accuracy.**
 - **They are not calibrated.** A logprob of −0.1 does not mean "90% likely to be correct". Models are overconfident on some task types and underconfident on others. Using logprobs as probabilities means calibrating them against labelled examples *for your task*, and the calibration is task-specific and can break when the model updates.
 - **Per-token is not per-answer.** A reasoning chain that wanders may have high per-token confidence throughout and still reach a wrong conclusion, because each step was locally plausible. Averaging logprobs over a long output measures fluency, not correctness.
-- **Not every model or endpoint returns them**, and the fields differ between providers (as of early 2026; read your provider's reference rather than assuming a shape). A technique you cannot rely on across models is a technique for one pipeline.
+- **Not every model or endpoint returns them**, and the fields differ between providers (as of 2026-09; read your provider's reference rather than assuming a shape). A technique you cannot rely on across models is a technique for one pipeline.
 - **They are affected by everything in Part 4.** Logprobs shift with floating-point reduction order, quantisation, and model version. Do not build a threshold at 0.05 precision and expect it to survive an update.
 - **They tell you nothing about whether the content is true.** A model with no knowledge of your subject has a flat distribution over plausible-sounding fabrications; logprobs faithfully report that flatness, and a flat distribution over wrong answers is still wrong.
+
 ### Part 6 — Practical settings, and the problems settings cannot fix
 
 #### Settings by task
@@ -423,7 +424,7 @@ Sampling settings are a small, cheap, real lever on *style and variety* — not 
 
 **Assuming another provider's temperature scale matches.** Temperature is a divisor, and different models are trained and tuned with different logit scales. Temperature 0.7 on one model is not temperature 0.7 on another, in any meaningful sense. Re-tune per model rather than copying a number across.
 
-**Reading settings advice as permanent fact.** Default values, supported parameters and even whether a provider returns logprobs all change between releases. Every number in this lesson that could shift is marked as of early 2026 for that reason.
+**Reading settings advice as permanent fact.** Default values, supported parameters and even whether a provider returns logprobs all change between releases. Every number in this lesson that could shift is marked as of 2026-09 for that reason.
 
 ## Deliverable / proof of work
 
@@ -588,7 +589,7 @@ A paid chat subscription adds neither of these directly — it gives you a bette
 
 ### When it's worth paying
 
-**Not for this phase, unless logprobs are the specific thing blocking you.** Most providers' pay-as-you-go APIs have no monthly minimum, and the experiments here use short prompts in small quantities. A few dozen short calls typically costs well under a dollar (as of early 2026; check current pricing, which changes often and varies by model). If you can put a small credit on an account with logprobs support, it directly buys the practice task 7 and task 8 measurements, and those are the two exercises that connect this phase to the Prompting and Cost tracks.
+**Not for this phase, unless logprobs are the specific thing blocking you.** Most providers' pay-as-you-go APIs have no monthly minimum, and the experiments here use short prompts in small quantities. A few dozen short calls typically costs well under a dollar (as of 2026-09; check current pricing, which changes often and varies by model). If you can put a small credit on an account with logprobs support, it directly buys the practice task 7 and task 8 measurements, and those are the two exercises that connect this phase to the Prompting and Cost tracks.
 
 The honest threshold: pay when a specific technique requires a specific capability you cannot otherwise reach. Logprob access qualifies, because it is a measurement rather than a stronger model. A better model does not qualify — it will make your outputs nicer and teach you nothing new about the sampler.
 

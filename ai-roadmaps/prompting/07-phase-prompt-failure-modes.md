@@ -218,6 +218,7 @@ An exact-match sentinel is also checkable in code. Every mitigation here should 
 **Over-refusal, the cost of being strict.** Make the sentinel mandatory and you will get it when the answer was present but awkwardly phrased — trading a fabrication for a false abstention.
 
 > Push hallucination down and you do not reach zero. You reach a different mix: fewer confident fabrications, more abstentions, and a residue of confidently cited wrong inferences no prompt removes.
+
 ### Part 2 — Sycophancy: the model was trained to agree with you
 
 You write: *I think the bug is in the retry logic — is that right?* The answer comes back warm: yes, a strong candidate, here are three ways it could fail. You feel confirmed, spend an afternoon there, and the bug was elsewhere.
@@ -309,6 +310,7 @@ A requirement can be present in the context and still lose to the material aroun
 - Resolve conflicts *before* generation — by filtering, ranking, or a pre-pass that selects a version.
 
 **Where this stops working.** Pruning can be overdone: delete the chunk containing the exception to the rule and you have built a system that answers confidently and wrongly. And length alone is not the disease — a long context of *relevant, non-contradictory* material behaves far better than a short one with two conflicting policies in it.
+
 ### Part 5 — Format drift, and why the schema belongs at the end
 
 You ask for a structured report with five sections. It starts perfectly. By section four the headings have changed style, one is missing, and the last has become a prose paragraph that happens to contain the right words.
@@ -333,7 +335,7 @@ with no other headings and no prose between them:
 1. **Restate the format right before generation**, using the exact headings or field names.
 2. **Split long output into sections**, one call per section with its own short restatement.
 3. **Validate and repair in code.** Parse, find the missing structure, issue a narrow repair request naming what is absent. Never re-ask for the whole document if one section is wrong — you will get a new document with new errors.
-4. **Use the provider's structured-output mechanism if it has one.** A constrained decode that can only emit schema-valid tokens is enforcement, not instruction. It still constrains shape, not truth. Check what your provider currently supports and date your check — as of early 2026, several offer this under different names.
+4. **Use the provider's structured-output mechanism if it has one.** A constrained decode that can only emit schema-valid tokens is enforcement, not instruction. It still constrains shape, not truth. Check what your provider currently supports and date your check — as of 2026-09, several offer this under different names.
 
 **Where this stops working.** Re-statement does not repair an under-specified format. If a field's purpose was never explained, the model will fill it anyway, plausibly. And a format that is internally inconsistent — optional fields the narrative requires, a "summary" that duplicates "evidence" — will drift no matter where you restate it.
 
@@ -372,11 +374,13 @@ If your system retrieves a web page, reads an email, or summarises a PDF a stran
 - **Worming.** Injected text instructs the system to include the injection in its own output, so that when that output is stored and retrieved by another session, the payload propagates.
 
 Data theft means the *output channel* is an attack surface; worming means the *corpus* is one. Neither is fixed by a more careful instruction.
+
 #### The instruction hierarchy, and what it is not
 
 The natural response is to want a privileged channel: system instructions outranking user text, which outranks tool and retrieved content. That idea is real — the **instruction hierarchy** (Wallace et al., arXiv:2404.13208) — and models are trained toward it.
 
 It is a **trained tendency**, not a boundary. Training and placing constraints in the highest-privilege position both improve compliance substantially, but you cannot make it a hard rule: the mechanism is attention over one token stream and nothing in it enforces rank. Anyone claiming a delimiter, XML tag, or polite phrasing makes injected content inert is describing a probabilistic tilt as a wall. Nor does it help when injected text is *indistinguishable in position* from legitimate content — if your retrieved chunk and your instruction sit at the same privilege level, there is nothing to arbitrate with.
+
 #### Defence in depth, or: the model is not the enforcement point
 
 **Assume retrieved content is hostile.** Then build a stack whose load-bearing parts are outside the model, because the model cannot be the enforcement point for its own inputs.
@@ -441,6 +445,7 @@ One warning on the judge. It is genuinely useful and carries documented biases �
 The library is not the point. The idea is: **a prompt is an artefact to be optimised against a measurement, not prose you perfect by feel.** That is this whole phase in one sentence.
 
 Which is why you should not start there. DSPy requires what you do not have yet: a metric you trust, a set of examples, and cheap trials. Without those it searches over a target you never defined. The metric is the hard part, and it is a human judgement about what "good output" means. Build ten cases and a scoring rule first; then you have the part that matters, whether or not you ever compile anything.
+
 ## Hands-on practice tasks
 
 1. Reproduce hallucination by asking for a citation on a narrow topic where you are the expert. Record the exact quoted citation, then open it. <!-- id: prompt-07-prompt-failure-modes-t01 band: quick energy: low -->
@@ -673,7 +678,7 @@ The evaluation work is where the $0 budget bites hardest, and it is worth being 
 
 Rate limits are the first real difference. Running the same prompt across many variations and scoring each one is exactly the workload that trips a free tier's daily cap, and an API key removes that friction. It also makes the loop scriptable, which matters more than it sounds: an eval you have to run by hand is an eval you run once, and an eval you run once has told you almost nothing about whether the fix generalises.
 
-Paid tiers also give access to the strongest models, and several of them expose structured-output or constrained-decoding features. For format drift this is a genuine upgrade, because enforcement in the decoder is categorically stronger than instruction in the prompt — the difference between asking for a shape and being unable to emit anything else. Check what your provider currently offers and when you checked: this area has moved quickly, and the feature names differ between vendors. As of early 2026, several providers ship some form of it; treat the specific name you find as a temporary label on a durable idea.
+Paid tiers also give access to the strongest models, and several of them expose structured-output or constrained-decoding features. For format drift this is a genuine upgrade, because enforcement in the decoder is categorically stronger than instruction in the prompt — the difference between asking for a shape and being unable to emit anything else. Check what your provider currently offers and when you checked: this area has moved quickly, and the feature names differ between vendors. As of 2026-09, several providers ship some form of it; treat the specific name you find as a temporary label on a durable idea.
 
 Longer context windows are a paid feature in most places, and they interact with this phase in a way worth naming: buying a bigger context without buying better placement discipline is how you get more context dilution, not less. The paper's finding is about competition inside the window, and a larger window is more room for competing material.
 

@@ -192,7 +192,7 @@ If your whole knowledge base is small enough to paste into the prompt, do that i
 
 Anthropic's Contextual Retrieval guidance puts a concrete boundary on this: **if your knowledge base is under roughly 200,000 tokens — on the order of 500 pages — you can often include the whole thing rather than building RAG**, especially where prompt caching makes the cost and latency acceptable. That is a practitioner recommendation from a major provider, and it is worth taking seriously precisely because it argues against building the thing the same document is about to teach you to build.
 
-As of early 2026 that threshold is approximate and moves with context windows and caching behaviour, so check current limits rather than treating 200k as a law. The principle is durable even as the number moves: **retrieval is a solution to a scale problem, and below that scale it is pure overhead.**
+As of 2026-09 that threshold is approximate and moves with context windows and caching behaviour, so check current limits rather than treating 200k as a law. The principle is durable even as the number moves: **retrieval is a solution to a scale problem, and below that scale it is pure overhead.**
 
 The worked comparison:
 
