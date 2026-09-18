@@ -165,7 +165,7 @@ The analogy is a good one and it repays being pushed on, because it tells you pr
 | Upgrade capability | It is the same tool code, in an agreed shape |
 | Remove the need to read specs | The protocol is **versioned** and has changed between revisions |
 
-**That last row deserves emphasis.** MCP is a versioned specification, and the versions are not cosmetic. As of this writing the documentation carries revisions including `2024-11-05` (deprecated), `2025-06-18`, `2025-11-25` (**the current stable release**) and `2026-07-28` (**the modern, stateless revision**). Knowing that a protocol is versioned is worth less than knowing *what changed* — so here is the difference that matters.
+**That last row deserves emphasis.** MCP is a versioned specification, and the versions are not cosmetic. As of 2026-09 the documentation carries revisions including `2024-11-05` (deprecated), `2025-06-18`, `2025-11-25` (stateful, superseded) and `2026-07-28` (**the current protocol version**). Knowing that a protocol is versioned is worth less than knowing *what changed* — so here is the difference that matters.
 
 **`2025-11-25` is stateful. `2026-07-28` is stateless, and that is a rewrite rather than an iteration.**
 
@@ -589,7 +589,7 @@ Three things, and the first changes your headline number directly.
 
 **What money does not buy** is the evaluation itself. Whether your checks assert on state or on the agent's report, whether your task set is versioned, whether you have a held-out set, whether you included impossible tasks, and whether you verified your checks can fail are all practices. A frontier model evaluated with self-reported success and no held-out set gives you an impressive number that means nothing — and it will be more convincing, which makes it more dangerous.
 
-**Volatile, dated: as of early 2026, the MCP specification is versioned and actively developing — `2025-11-25` is the current stable, stateful revision and `2026-07-28` is a modern stateless revision that removes the handshake and sessions entirely. Agent evaluation benchmarks are an active research area, and model reliability on agentic tasks changes on the order of months. Your own suite is the only number that describes your own system, so measure rather than cite.**
+**Volatile, dated: as of 2026-09, the MCP specification is versioned and actively developing — `2026-07-28` is the current protocol version and is stateless, having removed the `initialize` handshake and protocol-level sessions; `2025-11-25` is the previous, stateful revision. Agent evaluation benchmarks are an active research area, and model reliability on agentic tasks changes on the order of months. Your own suite is the only number that describes your own system, so measure rather than cite.**
 
 ### When it's worth paying
 
