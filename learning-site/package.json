@@ -10,7 +10,7 @@
     "build": "npm run build:content && vite build",
     "preview": "vite preview",
     "test": "node scripts/check-all.mjs",
-    "test:browser": "node scripts/verify-site.mjs && node scripts/verify-deep.mjs && node scripts/verify-quiz-correctness.mjs",
+    "test:browser": "node scripts/verify-site.mjs && node scripts/verify-deep.mjs && node scripts/verify-quiz-correctness.mjs && node scripts/check-browser.mjs",
     "check": "node ../scripts/build-content.mjs --check && node ../scripts/audit-quiz.mjs && node ../scripts/audit-lesson-ast.mjs"
   },
   "dependencies": {

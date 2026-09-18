@@ -20,10 +20,10 @@ Do these five things and you will know everything that matters. Do not skip step
    node scripts/audit-lesson-ast.mjs 2>$null; Write-Host "ast: $LASTEXITCODE"
    cd learning-site; npm test; cd ..
    ```
-   Expect `42 phase(s) across 6 track(s)` and exit 0 three times, then `all 5 offline checks passed`.
+   Expect `48 phase(s) across 7 track(s)` and exit 0 three times, then `all 5 offline checks passed`.
    **A fresh clone needs `node scripts/build-content.mjs` first** — the generated JSON is gitignored.
-   **Verified baseline, measured 2026-09-18:** 42 phases / 6 tracks · 161,080 lesson words · 706 checklist items · 401 quiz questions · 533 practice tasks · 533 banded, 0 unbanded · 0 minted IDs · 7,150 search terms across 434 segments · quiz positions A 20.0% / B 24.9% / C 28.2% / D 26.9% (all inside the ceilings). If your run differs, something changed — find out what before you continue.
-3. **Read §9, and start at step 8a**, not step 8. The order changed: re-auditing the written 42 phases now precedes writing the remaining 21.
+   **Verified baseline, measured 2026-09-18 after the Finetuning track landed:** 48 phases / 7 tracks · 630 authored practice-task IDs · 0 minted from position · quiz positions A 20.1% / B 25.2% / C 27.9% / D 26.7% (all inside the ceilings) · `shared docs: 4`. **The pre-Finetuning baseline was 42 phases / 6 tracks with 533 banded tasks, 706 checklist items and 401 quiz questions.** If your run differs, something changed — find out what before you continue.
+3. **Read §9, and start at step 8a**, not step 8. The order changed: re-auditing the written phases now precedes writing more. **Step 8 is done** — the Finetuning track (6 phases) is complete as of this session.
 4. **Check `git log --oneline -8`** and `git status` so you know what the last session actually left behind.
 5. **Only then** read §4 (the content contract — the build fails without it) and §10 (the per-file authoring checklist) before writing any phase.
 
@@ -55,7 +55,9 @@ Do these five things and you will know everything that matters. Do not skip step
 5. **⭐ THE LEARNING SITE IS DONE AND RENDERS ALL 42 PHASES.** Verified in a real browser against **both** the dev server and the production build. See §6.3. **But note the hard-won lesson there: `vite build` passing did NOT mean the app worked.** It passed while every phase page threw. There is now a 4th guard, `audit-shapes.mjs`, because no build check knows what the components expect.
 6. **At most 1 subagent is permitted** (user instruction: *"you can always use 1 sub agent to maximize our concurrency"*, reaffirmed as *"you can use 1 subagent rn if you need"*). Used well, a subagent is a real concurrency win — but **verify its report at the detail level before trusting it.** Last session one subagent caught a genuine bug in my rename script while being wrong about another claim. For **content authoring** the standing advice is: write the phases directly, by hand; do not fan out.
 7. **The plan is 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases).
-8. **Six of ten tracks are complete; four remain empty — 21 of 63 phases.** Done: `foundations` (8), `model-internals` (6), `prompting` (7), `rag` (7), `cost` (7), `agents` (7). Remaining: `finetuning` (6), `vibecoding` (8), `safety-career` (5), `career` (4). **Content is now the only thing between this project and "done"** — the site, its guards and its docs all exist. See §6.
+8. **⭐ SEVEN of ten tracks are complete; three remain empty — 15 of 63 phases.** Done: `foundations` (8), `model-internals` (6), `prompting` (7), `rag` (7), `cost` (7), `agents` (7), **`finetuning` (6 — completed this session)**. Remaining: `vibecoding` (8), `safety-career` (5), `career` (4). **Content is now the only thing between this project and "done"** — the site, its guards and its docs all exist. See §6.
+   - **All 20 track files and both shared docs are also written** (`00-overview.md` and `checklist-master.md` × 10, `resource-list.md`, `glossary.md`) — **but they are invisible to the build and the site. That is a real defect, and it is the most important thing in §6.2.**
+   - **The three remaining tracks are the ones this project was really named for.** `vibecoding` (8) is the flagship and the largest remaining block; `safety-career` (5) and `career` (4) close the job-readiness spine the user explicitly asked for. **Order suggestion: `vibecoding` next**, because the user's stated goal is skill and employability rather than more theory.
 
 ---
 
@@ -257,7 +259,7 @@ exit_criteria: >
 ---
 ```
 
-### 4.2 The 11 mandatory `## ` sections, in this order
+### 4.2 The 14 mandatory `## ` sections, in this order
 
 ```
 ## Goal of this phase
@@ -275,6 +277,12 @@ exit_criteria: >
 ## You're ready to move on when...
 ## Free vs Paid
 ```
+
+> **Count check: there are 14 structural sections, and `## Specific topics to learn` and `## Common Pitfalls` are the two an earlier note called "optional".** In practice the whole corpus includes both, so treat 14 as the target for the **required** set.
+>
+> ⚠️ **But do NOT assert "exactly 14 `## ` headings" — that check is WRONG and it produced a false alarm this session.** `ai-roadmaps/prompting/07-phase-prompt-failure-modes.md` has **19** `## ` headings and is perfectly valid: all 14 required sections are present and in order, and the 5 extras (`Summary`, `Evidence`, `Risks`, `Recommendation`, `Open questions`) sit *inside* the lesson as its own content. Verified directly against the generated output — all 5 appear in the lazily-loaded lesson body, with `lessonBlockCount: 97` and `lessonHeadingCount: 19`. **So an un-fenced `## ` inside the lesson is tolerated, not fatal.** The rule that actually matters is the one below (mid-lesson `## ` headings *should* be fenced), and the one that actually fails the build is a missing or out-of-order **required** section.
+>
+> The right check is therefore: **are all 14 required headings present, and in the right order?** — not what the total count is.
 
 > ⚠️ **Mid-lesson `## ` headings MUST be inside a fence**, or the parser reads them as phase structure and validation fails.
 
@@ -434,7 +442,7 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 | 6 | `safety-human-in-loop` | Agent Safety and Human Approval | **The most reliable safety mechanism is a human gate, not a prompt instruction.** Approval required for: irreversible actions, money/production/external accounts, outbound network, broad-scope ops, uncertain actions. Show the **EXACT action** not a summary; default deny/read-only; make low-risk approval cheap and high-risk mandatory (else users click yes reflexively and the gate is theatre); batch-approve a plan; log approvals; dry-run mode. Sandboxing: process/FS isolation (containers), FS scoping **enforced in code**, network egress allowlist (classic exfil = markdown image links), no ambient credentials, resource/token caps, tool least privilege, **assume ingested content is hostile**, never auto-merge agent code to prod. **Indirect prompt injection (Greshake arXiv:2302.12173)**; **instruction hierarchy (Wallace arXiv:2404.13208)**. Defensive framing. |
 | 7 | `mcp-and-evaluation` | MCP and Evaluating Agents | **MCP (Model Context Protocol, modelcontextprotocol.io)** — open-source integration standard, "USB-C for AI apps", turns M×N into M+N; server exposes tools/resources/prompts; **not a model, not a framework, a standard**. Writing a small MCP server = portfolio-worthy $0 project. Security: expands capability → expands attack surface; only trusted servers; server tool descriptions are injected into the prompt. **Agent evaluation:** end-to-end task success rate on a fixed suite; efficiency (steps/cost); a **failure taxonomy** (wrong tool, bad args, hallucinated success, gave up, wrong plan, context overflow — the distribution tells you what to fix); trajectory quality; **the impossible-task test** (does it honestly report the blocker or fabricate success?); variance — run each task multiple times, report **pass^k not pass@1**; **check success BY CODE** (tests, state), not by the agent's self-report. |
 
-**Finetuning track (6, target 6) — ALL TO WRITE.** Prefix `ft-`. Folder `ai-roadmaps/finetuning/`:
+**Finetuning track (6, target 6) — ✅ COMPLETE (this session).** Prefix `ft-`. Folder `ai-roadmaps/finetuning/`. Commits `1b3d917`, `0e53d16`, `9bc15e4`, `4ec6fa3`, `a4aa919`, `4016417`. **2,442 lines across 6 phases.** All six briefs below were followed exactly; the "must teach" column is the *original* plan and is kept for reference.
 
 | # | Slug | Title | Must teach |
 |---|---|---|---|
@@ -468,16 +476,18 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 | 4 | `using-ai-honestly` | Using AI Honestly | Practical, not preachy. Attribution and disclosure (when to say you used AI; norms still forming). **What is actually cheating in learning vs efficient use** — clear framework: using AI to *skip the struggle* vs using it to *check understanding after struggling*. The difference between AI-assisted work you can defend and work you cannot — the test: **"could I explain, debug, and extend this myself?"** Plagiarism vs generation. **Skill atrophy** — which competences weaken if you never do the work (reading unfamiliar code, debugging without hints, writing from a blank page, estimating difficulty). Honesty in the other direction too: not claiming credit you didn't earn, not hiding permitted tool use. Finish with a **personal policy template** the reader writes for themselves. |
 | 5 | `career-in-ai-era` | Career in the AI Era | ⚠️ **BOUNDARY CHANGED — see §6.0.2.** This phase now owns **the transition out of learning**: what differentiates people now that generation is cheap (**JUDGEMENT**, verification, systems thinking, specification, domain knowledge); the durable-vs-volatile distinction applied to **skills**; **how to keep learning without drowning** (few high-signal sources, follow mechanisms not leaderboards, re-check volatile specifics, **monthly cadence not daily**); and an honest self-assessment of where the reader actually stands. It should **hand off to the Career track** for portfolio construction, job search, and the 90-day plan — cross-reference rather than duplicate. Recommended split: **this phase ends the learning phase and states the reader is ready; `career/01–04` own everything about getting hired.** |
 
-### 6.2 Track-level files still owed
+### 6.2 Track-level files — ✅ WRITTEN, but ⚠️ NOT RENDERED (new defect found this session)
 
-- **10 × `00-overview.md`** — one per track (10 tracks now, including `career`)
-- **10 × `checklist-master.md`** — one per track
-- **`ai-roadmaps/shared/resource-list.md`** — registered in `SHARED_DOCS`, currently missing
-- **`ai-roadmaps/shared/glossary.md`** — registered in `SHARED_DOCS`, currently missing
+**All 22 files are now written** (committed in `22547b4` and the finetuning commits): 10 × `00-overview.md`, 10 × `checklist-master.md`, `shared/resource-list.md` (156 lines, 71 resources in 14 groups) and `shared/glossary.md` (295 lines, 254 terms across exactly 10 track categories). The `vibecoding/`, `safety-career/` and `career/` folders were created. The build now reports `shared docs: 4`.
 
-> Both shared docs are in the `SHARED_DOCS` registry in `scripts/shared-content.mjs`. The build currently reports `shared docs: 2` (the two that exist). It **fails on unregistered `.md` files**, so add the file *and* register it.
+- **⚠️ THE REAL FINDING: `findExtraDocs()` at `scripts/build-content.mjs:849` is DEAD CODE — it is never called.** `main()` calls only `findPhaseFiles()` (L877), whose glob is `/^\d+-phase-.*\.md$/`. Verified directly: the only two hits for the identifier in the whole build are the definition itself.
+- **Consequence: all 20 track files are invisible to the build, the guards and the site.** They cannot break the build, cannot be positionally minted, and **cannot be rendered** — nothing in `learning-site/src` (57 files) mentions `overview` or `checklist-master` at all. So `ai-roadmaps/README.md` L195–199, which documents both files as part of every track folder, **is currently false**.
+- **This was invisible until now** because §6.2 tracked *writing* these files and nothing tracked *surfacing* them. It took a subagent reading the parser to notice, which is the argument for having one read the code rather than trusting the plan.
+- **To fix, two things are needed, and the second is why it was not rushed into this session:** (a) call `findExtraDocs` in `main()` and emit the docs into the track JSON and `index.json`; (b) add a view to the React app that renders them, with the browser check this project requires for anything in the site. That touches the build pipeline and the component tree, so it wants its own session with real verification rather than a patch bolted onto the end of a large authoring run.
 
-> **Consider a third shared doc:** a `free-toolkit.md` — the running list of free-tier-safe tools, local model options, and free substitutes for paid mechanisms. It would serve the freemium theme across every track. If added, register it in `SHARED_DOCS`.
+> The two shared docs are in the `SHARED_DOCS` registry in `scripts/shared-content.mjs`. **That parser hard-fails** on unregistered `.md` files, unlike phase build notes. Three quirks were found empirically and cost 7 real failures before they were fixed — see §12 lesson 26. **The phase-side parse is the opposite: it silently ignores what it does not recognise**, which is exactly how the dead-code gap stayed hidden.
+
+> **A third shared doc was suggested and not written:** a `free-toolkit.md` — the running list of free-tier-safe tools, local model options, and free substitutes for paid mechanisms. It would serve the freemium theme across every track. If added, register it in `SHARED_DOCS`.
 
 ### 6.3 ✅ COMPLETE — The learning site (commit `7d4c8bd`, docs `b1278d7`)
 
@@ -763,23 +773,18 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
     - **Re-verify the `**Unverified**` markers** in `docs/research/*.md` — those were items that *could not* be checked without search. Some can now be resolved; others may now be checkable and wrong.
     - Consider adding a standing **research/verification pass** as its own step in the workflow, since nothing in the guard suite can detect semantic drift (§12.22–23).
 
-8. **Write the Finetuning track (6 phases)** from §6.1. Folder `ai-roadmaps/finetuning/` already exists and is empty. (Was the resume point; step 8a now comes first.)
+8. **✅ DONE THIS SESSION — the Finetuning track (6 phases) is complete.** Commits `1b3d917`, `0e53d16`, `9bc15e4`, `4ec6fa3`, `a4aa919`, `4016417`. 2,442 lines. Written in parallel with a subagent that produced the 22 track files, which is the pattern to repeat (§12.28).
 
-   Four tracks remain after Agents, and their folder state was verified at the time of writing:
-   - `finetuning` — folder **exists**, empty (6 phases)
-   - `vibecoding` — folder **MISSING**, must be created (8 phases)
-   - `safety-career` — folder **MISSING**, must be created (5 phases) — this is the Safety & Ethics track; its track key is `safety-career`
-   - `career` — folder **MISSING**, must be created (4 phases)
+   **The next writer should start here. Three tracks remain, and their folder state is now:**
+   - `vibecoding` — folder **EXISTS** (created by the track-files subagent), empty, needs **8 phases**. **This is the recommended next task** — it is the flagship the project is named for and the user's stated goal is skill and employability.
+   - `safety-career` — folder **EXISTS**, empty, needs **5 phases** — this is the Safety & Ethics track; its track key is `safety-career` (not `safety`)
+   - `career` — folder **EXISTS**, empty, needs **4 phases**
 
-   As of the Agents completion, `node scripts/build-content.mjs` reports "no phase files yet" for exactly `finetuning`, `vibecoding`, `safety-career` and `career`. If a note names a track you believe is finished, that is the signal a folder went missing — the same defect that was present for `agents` at the start of the Agents track.
+   ⚠️ **The folder-state line above changed this session.** The three `MISSING` folders were created as a side effect of the track-files work, so a note saying "no phase files yet" now means *empty* rather than *absent*. Verified: `node scripts/build-content.mjs` reports exactly those three.
 
-   **The 21 phases still to write, in order:**
-   - `finetuning` (6): folder exists, empty
-   - `vibecoding` (8): folder must be created
-   - `safety-career` (5): folder must be created — this is the **Safety & Ethics** track; its track key is `safety-career` (not `safety`)
-   - `career` (4): folder must be created
+   **While writing them, verify volatile claims as you author them** rather than accumulating debt. `web_fetch` works and is the tool — **`web_search` does not work on this setup and never will (§0.1)**. The difference shows: every arXiv id and every protocol version cited in the Finetuning track was checked against the primary source *before* the sentence was written, so that track carries **no verification debt at all** — unlike the 42 phases before it.
 
-   **While writing them, `web_search` is available from the start** — so every volatile claim can be dated and checked as it is authored, rather than accumulated as debt. That is the difference between these 21 phases and the 42 that came before.
+   **The authoring loop that worked, per phase:** write → `build-content.mjs --check` → `audit-quiz.mjs` → `audit-lesson-ast.mjs` → `audit-encoding.mjs` → commit. **Expect the quiz guard to fail on your first draft** — it caught a real answer-position skew in 2 of the 6 Finetuning phases (§12.27). Fix the skew, never the guard.
 
 ### 9a. The verification debt, quantified (so it is not hand-waved)
 
@@ -927,6 +932,28 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
     - **Protocol-incompatible, and not fixable by config at all:** the only shipped search provider requires an Anthropic-style `/v1/messages` endpoint with **server-side** search. The available endpoint serves `/v1/chat/completions`. No setting bridges that.
 
     The generalisable rule: **read what the error actually says and test the layer beneath it** (the endpoint probe — `401` means exists, `404` means does not — took seconds and settled it). And when the honest answer is "this cannot work here", say so plainly rather than building a shim that converts a real capability into a convincing fake. A proxy that forward-ports the request would have produced **model answers from memory with no sources** — output that looks like search and is not, which under this project's "nothing invented, ever" rule is worse than having no search at all.
+
+26. **⭐ THE SHARED-DOC PARSER HARD-FAILS; THE PHASE PARSER SILENTLY IGNORES. THAT ASYMMETRY IS HOW A DEFECT HID FOR A WHOLE SESSION.** Both facts matter and they point in opposite directions.
+
+    **The hard-failing one is the good citizen.** `scripts/shared-content.mjs` treats every bullet under a `##` heading as a catalogue entry and *must* find a URL in it. Three quirks had to be discovered empirically, each costing a real build failure: the `# H1` is mandatory (without it the title silently falls back to the id); resource bullets must be plain `Name — URL`, because `**bold**` and `[md](links)` corrupt the extracted name; and the bullet regex is `/^\s*[-*+]/` with **no trailing-whitespace requirement**, so it matches `**bold` and `---`. That last one produced two failures from horizontal rules, which strip to `--` and read as a bullet. **Seven failures before the file was acceptable — and every one was reported with a file and line number.**
+
+    **The silently-ignoring one is how the real bug survived.** `findExtraDocs()` at `build-content.mjs:849` is **dead code — never called.** `main()` calls only `findPhaseFiles()`, whose glob is `/^\d+-phase-.*\.md$/`. So the 20 track files that this project had been *tracking as owed work for several sessions* were built into nothing, validated by nothing, and rendered by nothing — and **no guard said a word**, because the phase-side parse simply ignores files it does not recognise. `ai-roadmaps/README.md` L195–199 documents both files as part of every track folder and **is currently false**.
+
+    **The lesson is about what a guard can and cannot notice.** A strict parser protects you from malformed input and is loud. A permissive one protects nothing and is silent — and silence is indistinguishable from success. This is the same shape as lesson 23 (a true statement that misleads) and lesson 24 (a crashing guard that looks like a passing one): **the dangerous failures are the ones that produce no signal at all.** When you write a file that a build is *supposed* to consume, prove it is consumed — grep for the identifier that reads it, or change a word and see whether the output changes. **"The build passed" only means the build ran.**
+
+27. **THE QUIZ-POSITION GUARD EARNED ITS KEEP TWICE IN ONE SESSION, ON CONTENT I HAD JUST WRITTEN.** The answer-position check caught real skews in my own new phases: `ft/01` had **4 of 7 correct answers in position C (57%, ceiling 50%)**, and `ft/06` was worse at **7 of 8 in position B (88%)**. Both are genuine defects — a reader who always picks one position scores well without reading, which corrupts the quiz's entire purpose.
+
+    Two things worth keeping. **First, the skew is invisible while you write.** Nobody drafting questions notices they are placing answers in the same slot; the pattern emerges only in aggregate, which is exactly what a guard is for. It also recurred *after* I had already fixed it once, which says the cause is a drafting habit rather than one careless phase.
+
+    **Second, an overcorrection is also a failure.** My first fix for `ft/06` moved too many answers to position A and produced **5 of 8 (63%)** — still over the ceiling, in the opposite direction. The fix is to aim for an even distribution deliberately (2 per position across 8 questions) rather than to push answers away from wherever they were. **Never edit this guard to agree** — it was right both times.
+
+28. **⭐ THE PARALLEL PATTERN THAT WORKED: 1 SUBAGENT ON INDEPENDENT ARTIFACTS, WHILE THE MAIN AGENT WRITES THE HARD PART.** Six phases (~2,442 lines) and 22 track files (~2,140 lines) landed in one session because the two halves genuinely did not overlap: the subagent owned every file matching `00-overview.md`, `checklist-master.md` and `shared/*`, and the main agent owned `finetuning/NN-phase-*.md`. **No file was written by both, which is why merging was a non-event.**
+
+    **What made it work, and is worth repeating:** the subagent was told to *read the build script and infer the format* rather than being given a format I had guessed, and — critically — **to report what it could not verify**. That instruction is what produced the `findExtraDocs` finding (§6.2), which was invisible from the plan and would otherwise have shipped as a silent defect. **A subagent that reports only success is worth much less than one that reports the boundary of its own knowledge.**
+
+    **What to watch.** The subagent's files were initially rejected by the **shared-doc** parser (7 hard failures), and its report was correct that `audit-encoding.mjs` **scans only `learning-site/` and does not cover `ai-roadmaps/`** — so it verified its own files byte-by-byte separately. Two lessons: give a subagent the *command* to check itself with, not just the goal, and **expect its output to need a format fix even when its content is right.**
+
+    **Do not parallelise across one phase.** Two writers on the same file, or on two phases whose IDs must stay in sequence, will collide. **Parallelise across artifact *types*.**
 
 ---
 
