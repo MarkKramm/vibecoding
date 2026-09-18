@@ -1,9 +1,33 @@
 # HANDOVER — Vibecoding / AI Era Learning Site
 
-**Written:** end of session, 2026-09-18
+**Written:** end of session, 2026-09-18 — **updated 2026-09-18 (later session: `web_search` restored)**
 **Purpose:** Everything a fresh session needs to resume this project without re-deriving anything.
 **Repo root:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`
 **Sibling project (source of the proven architecture):** `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`
+
+---
+
+## HOW TO START A NEW SESSION — read in this order
+
+Do these five things and you will know everything that matters. Do not skip step 1.
+
+1. **Read §0 below.** Eight items; items 1 and 2 tell you what changed most recently and what to hunt.
+2. **Run the guards before touching anything**, so you know the baseline is green rather than assuming it:
+   ```powershell
+   cd C:\Users\zaman\Desktop\CSKramm\Vibecoding
+   node scripts/build-content.mjs --check 2>$null; Write-Host "build: $LASTEXITCODE"
+   node scripts/audit-quiz.mjs 2>$null; Write-Host "quiz: $LASTEXITCODE"
+   node scripts/audit-lesson-ast.mjs 2>$null; Write-Host "ast: $LASTEXITCODE"
+   cd learning-site; npm test; cd ..
+   ```
+   Expect `42 phase(s) across 6 track(s)` and exit 0 three times, then `all 4 offline checks passed`.
+   **A fresh clone needs `node scripts/build-content.mjs` first** — the generated JSON is gitignored.
+   **Verified baseline, measured 2026-09-18:** 42 phases / 6 tracks · 161,080 lesson words · 706 checklist items · 401 quiz questions · 533 practice tasks · 533 banded, 0 unbanded · 0 minted IDs · 7,150 search terms across 434 segments · quiz positions A 20.0% / B 24.9% / C 28.2% / D 26.9% (all inside the ceilings). If your run differs, something changed — find out what before you continue.
+3. **Read §9, and start at step 8a**, not step 8. The order changed: re-auditing the written 42 phases now precedes writing the remaining 21.
+4. **Check `git log --oneline -8`** and `git status` so you know what the last session actually left behind.
+5. **Only then** read §4 (the content contract — the build fails without it) and §10 (the per-file authoring checklist) before writing any phase.
+
+**Two things that will cost you real time if you miss them:** the research tools are **hourly quota-limited and share one budget** (§0.1), and **a green build does not mean the app works** (§0.5). Both are lessons this project paid for.
 
 ---
 
