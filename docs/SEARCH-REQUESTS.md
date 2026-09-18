@@ -1,11 +1,30 @@
 # SEARCH REQUESTS — for the human to relay
 
-**Why this file exists.** `web_search` cannot work on this machine: the only search
-provider DSH ships (`dsh-web-search-deepseek`) requires an Anthropic-compatible
-`/v1/messages` endpoint that runs **server-side** search. This setup runs the
-Singularity beta, which serves `/v1/chat/completions` instead — `/v1/messages`
-returns 404. `web_fetch` works and is used instead, but it needs a URL to fetch.
-This file is for questions that need *finding* a URL, not fetching one.
+**Why this file exists.** `web_search` is currently **off** on this machine — but, a
+correction to what this file previously claimed, it is **not impossible**. It is a
+configuration problem with a known fix.
+
+The shipped provider (`dsh-web-search-deepseek`) is purpose-built for **DeepSeek's own
+search**: its built-in default endpoint is `https://api.deepseek.com/anthropic/v1`, and
+DeepSeek's Anthropic-compatible API supports the server-side `web_search` tool. What
+breaks it is that `settings.yaml` → `web-search-deepseek.baseURL` points at the
+Singularity beta instead, which does not serve `/v1/messages`.
+
+**To turn it on**, two steps, both the user's:
+
+1. Put a **valid** DeepSeek key in the credential store as `DEEPSEEK_API_KEY`.
+2. Set `settings.yaml` → `web-search-deepseek.baseURL` to
+   `https://api.deepseek.com/anthropic/v1`, then run one search. A **404** means the
+   URL is wrong; a **401** means the key is.
+
+Cost is roughly **$0.001 per search** — about 3k input and 1k output tokens on
+`deepseek-flash` at off-peak rates — so a few dollars covers years at this project's
+usage rate.
+
+**Meanwhile `web_fetch` works, and it is the better default anyway:** an arXiv abstract
+page or an official pricing page is authoritative where a search snippet is not. Use
+this file only for what `web_fetch` genuinely cannot reach — questions where you do not
+already know which URL holds the answer.
 
 **How to use it.** The agent writes questions under "OPEN REQUESTS". The human
 pastes the whole block into DeepSeek chat (or any assistant with live search),
