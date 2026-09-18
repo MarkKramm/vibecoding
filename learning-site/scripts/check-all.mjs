@@ -11,6 +11,10 @@
 //      browser run is ~30 seconds; failing fast keeps the loop tight.
 //   3. cost-tone depends on the generated cost strings, so it also runs after
 //      the build.
+//   4. audit-arithmetic also reads the corpus rather than the generated JSON, and
+//      is cheap, so it sits next to the other corpus-reading checks.
+//   5. encoding runs last because it is the cheapest of all and enforces rules no
+//      other step can see.
 //
 // A shell `&&` chain expresses the order but not the reason, and on Windows it
 // also buries which step failed behind exit-code noise. This script reports each
@@ -56,6 +60,12 @@ const STEPS = [
     cmd: "node",
     args: [join(HERE, "test-cost-tone.mjs")],
     why: "costTone is derived from the corpus, so it is re-checked against it",
+  },
+  {
+    name: "worked-example arithmetic",
+    cmd: "node",
+    args: [join(HERE, "audit-arithmetic.mjs")],
+    why: "cost/05 shipped a table whose stated numbers contradicted its own prose, and no other check could see it",
   },
   {
     name: "encoding and line endings",

@@ -764,14 +764,20 @@ def log_call(model: str, input_tokens: int, output_tokens: int, cached_tokens: i
         f.write(json.dumps(record) + "\n")
 
 def measure_eval_set(size: int, interactive_cost_per_call: float, batch_discount: float = 0.5) -> dict:
-    """Compare cost of running an eval set interactively vs via batch."""
+    """Compare cost of running an eval set interactively vs via batch.
+
+    batch_discount is the DISCOUNT RATE, not the payable fraction: 0.5 means
+    "half price", so we multiply by (1 - batch_discount). Multiplying by
+    batch_discount itself would coincidentally be right at exactly 0.5 and wrong
+    everywhere else -- at 0.3 it would under-report batch cost by 70%.
+    """
     interactive_total = size * interactive_cost_per_call
-    batch_total = size * interactive_cost_per_call * batch_discount
+    batch_total = interactive_total * (1 - batch_discount)
     return {
         "interactive_cost": interactive_total,
         "batch_cost": batch_total,
         "savings": interactive_total - batch_total,
-        "savings_pct": (1 - batch_discount) * 100,
+        "savings_pct": batch_discount * 100,
     }
 
 # Example usage

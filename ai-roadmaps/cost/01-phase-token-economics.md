@@ -189,7 +189,7 @@ So the first predictive rule of this phase:
 
 #### "Think step by step" is a purchase
 
-Techniques that ask a model to reason before answering are real and they work. Chain-of-thought prompting (Wei et al., arXiv:2202.11903) showed that eliciting intermediate reasoning steps improves performance on tasks requiring multi-step arithmetic, logic, and symbolic manipulation. Later work — zero-shot CoT (Kojima et al., arXiv:2205.11916), least-to-most prompting (Zhou et al., arXiv:2205.10625), self-consistency (Wang et al., arXiv:2203.11171), tree of thoughts (Yao et al., arXiv:2305.10601), plan-and-solve (Wang et al., arXiv:2305.04091) — extended the idea.
+Techniques that ask a model to reason before answering are real and they work. Chain-of-thought prompting (Wei et al., arXiv:2201.11903) showed that eliciting intermediate reasoning steps improves performance on tasks requiring multi-step arithmetic, logic, and symbolic manipulation. Later work — zero-shot CoT (Kojima et al., arXiv:2205.11916), least-to-most prompting (Zhou et al., arXiv:2205.10625), self-consistency (Wang et al., arXiv:2203.11171), tree of thoughts (Yao et al., arXiv:2305.10601), plan-and-solve (Wang et al., arXiv:2305.04091) — extended the idea.
 
 None of it is free here. **Every reasoning token is an output token.** Your prompt "let's think step by step" is a few input tokens — negligible. What it *causes* is the purchase: hundreds or thousands of output tokens of intermediate work, billed at the output rate. On a reasoning model that work frequently happens whether you ask or not, because thinking tokens are generated tokens; a higher reasoning-effort setting literally means "spend more output tokens before answering."
 
