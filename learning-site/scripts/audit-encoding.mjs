@@ -35,6 +35,14 @@ const REPO = join(SITE, "..");
 // most likely to carry a mis-encoded character and the ones where a stray
 // character is most damaging (it lands in rendered lesson text). The curriculum
 // is the reason this project exists; the guard should cover it.
+//
+// The ROOT FILES and the WORKFLOWS were added after a SECOND instance of the same
+// gap: coverage was decided by extension, so `.gitignore` (no extension),
+// `.editorconfig` and `.github/workflows/*.yml` were never opened. A stray CR
+// landed in `.gitignore` and git itself warned about it on push -- the guard had
+// reported "all clean" because it had never looked. Anything checked into the repo
+// is fair game for a bad line ending, so the guard now names these explicitly
+// rather than relying on a suffix.
 const SCAN = [
   join(SITE, "src"),
   join(SITE, "scripts"),
@@ -45,10 +53,28 @@ const SCAN = [
   join(REPO, "ai-roadmaps"),
   join(REPO, "docs"),
   join(REPO, "scripts"),
+  join(REPO, ".github"),
   join(REPO, "HANDOVER.md"),
+  join(REPO, "README.md"),
+  join(REPO, "AGENTS.md"),
+  join(REPO, "CONTRIBUTING.md"),
+  join(REPO, "LICENSE"),
+  join(REPO, "PASTE-THIS.txt"),
+  join(REPO, ".gitignore"),
+  join(REPO, ".gitattributes"),
+  join(REPO, ".editorconfig"),
 ];
 
-const EXTS = new Set([".js", ".jsx", ".mjs", ".css", ".html", ".json", ".md"]);
+// EXTENSIONLESS files that must still be checked. `extname()` returns "" for these,
+// so they need to be allowed through the extension filter below.
+const EXTENSIONLESS = new Set([
+  join(REPO, ".gitignore"),
+  join(REPO, ".gitattributes"),
+  join(REPO, ".editorconfig"),
+  join(REPO, "LICENSE"),
+]);
+
+const EXTS = new Set([".js", ".jsx", ".mjs", ".css", ".html", ".json", ".md", ".yml", ".yaml", ".txt", ".toml"]);
 const SKIP_DIRS = new Set(["node_modules", "dist", ".git", "generated"]);
 
 const problems = [];
@@ -62,7 +88,7 @@ function walk(p) {
     return;
   }
   if (st.isFile()) {
-    if (!EXTS.has(extname(p))) return;
+    if (!EXTS.has(extname(p)) && !EXTENSIONLESS.has(p)) return;
     check(p);
     return;
   }
@@ -70,8 +96,9 @@ function walk(p) {
     if (e.isDirectory()) {
       if (SKIP_DIRS.has(e.name)) continue;
       walk(join(p, e.name));
-    } else if (EXTS.has(extname(e.name))) {
-      check(join(p, e.name));
+    } else {
+      const child = join(p, e.name);
+      if (EXTS.has(extname(e.name)) || EXTENSIONLESS.has(child)) check(child);
     }
   }
 }
