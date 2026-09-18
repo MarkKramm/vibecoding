@@ -1,6 +1,6 @@
 # Finetuning & Evals — Track Overview
 
-> **Status: in progress.** One of this track's six phases is written and the remaining five are being authored now. This overview describes what the track **will** contain, based on the agreed plan, so you can decide whether to start it. Phase content is not yet available for the phases that are unwritten — do not expect to read them today.
+> **Status: in progress.** Five of this track's six phases are written; the last is being authored now. The phase table below marks exactly which are ready to read. This overview describes the whole track, including the phase that is not yet available.
 
 ## What this track is for
 
@@ -37,13 +37,13 @@ No paid compute is required. Every training phase is designed around free GPU se
 | # | Phase | Length | Status | What it will establish |
 |---|---|---|---|---|
 | 1 | When to Fine-Tune, and When Not To | 1 week | **Written** | The decision framework: better prompt, then retrieval, then a tool, and only then fine-tuning. What fine-tuning changes versus what it cannot. The five underestimated costs |
-| 2 | LoRA, QLoRA and PEFT | — | Planned | Full fine-tuning's memory cost and catastrophic forgetting; LoRA as a low-rank update that is mergeable; QLoRA making it fit on modest hardware; always comparing against the untuned baseline |
-| 3 | Datasets and Running a Fine-Tune | — | Planned | The 80% of the work that is data: real inputs, verified outputs, the exact chat template, splitting by source, and why quality beats quantity |
-| 4 | Evaluation Fundamentals | — | Planned | Golden datasets, objective pass criteria, LLM-as-judge with its biases and mitigations, and why benchmarks mislead |
-| 5 | Distillation and Small Models | — | Planned | Training a small model on a larger one's outputs, the filtering step where quality is won, and the licence question |
-| 6 | Running Evals in Practice | — | Planned | A minimal harness in about a hundred lines, cost control, failure classification, and the habit of regression testing |
+| 2 | LoRA, QLoRA and PEFT | 1 week | **Written** | Full fine-tuning's memory cost and catastrophic forgetting; LoRA as a low-rank update that is mergeable; QLoRA making it fit on modest hardware; always comparing against the untuned baseline |
+| 3 | Datasets and Running a Fine-Tune | 2 weeks | **Written** | The 80% of the work that is data: real inputs, verified outputs, the exact chat template, splitting by source, and why quality beats quantity |
+| 4 | Evaluation Fundamentals | 2 weeks | **Written** | Golden datasets, objective pass criteria, LLM-as-judge with its biases and mitigations, and why benchmarks mislead |
+| 5 | Distillation and Small Models | 1 week | **Written** | Training a small model on a larger one's outputs, the filtering step where quality is won, and the licence question |
+| 6 | Running Evals in Practice | — | In progress | A minimal harness in about a hundred lines, cost control, failure classification, and the habit of regression testing |
 
-**Read Phase 1 first regardless of the others.** It is written, it is the decision framework, and its honest answer — usually "don't" — will save you weeks.
+**Read Phase 1 first regardless of the others.** It is the decision framework, and its honest answer — usually "don't" — will save you weeks.
 
 **Do not start with Phase 2 if your actual goal is evaluation.** Phases 4 and 6 are the transferable ones. A learner who can build an evaluation suite but never trains a model is far more employable than one who has trained a model and cannot measure whether it helped.
 
