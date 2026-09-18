@@ -102,7 +102,47 @@ export const KNOWN_TRACKS = {
   },
 };
 
-/** Sections that must exist in every phase file, in this order. */
+/**
+ * The FULL phase contract: 14 `##` sections, in this order.
+ *
+ * WHY THIS LIST IS SEPARATE FROM MANDATORY_SECTIONS
+ * The two lists answer different questions and were previously conflated.
+ * MANDATORY_SECTIONS is the subset whose ABSENCE must stop the build, and it is
+ * deliberately short. SECTION_ORDER is the complete documented contract, used to
+ * check ORDER.
+ *
+ * Two real gaps were found by testing the contract instead of trusting it:
+ *   1. `Specific topics to learn` and `Common Pitfalls` were in neither list, so
+ *      misspelling either one (`## CommonPitfalls`) passed every check. Both are
+ *      sections the parser relies on: an unrecognised heading silently becomes
+ *      body text rather than an error.
+ *   2. Nothing compared section ORDER to anything. The docstring above said "in
+ *      this order", `splitSections` collected the order, and no code ever looked
+ *      at it -- so swapping `## Goal of this phase` with `## Estimated time`
+ *      built cleanly. AGENTS.md told authors a reordered heading fails the
+ *      build. It did not.
+ *
+ * `Lesson` is matched by prefix because its title is authored, so it appears here
+ * as a prefix rather than a literal heading.
+ */
+const SECTION_ORDER = [
+  'Goal of this phase',
+  'Estimated time',
+  "Skills you'll gain",
+  'Specific topics to learn',
+  'Tools for This Phase',
+  'Free/cheap resources',
+  'Lesson', // prefix: the real heading is "## Lesson: <authored title>"
+  'Hands-on practice tasks',
+  'Common Pitfalls',
+  'Deliverable / proof of work',
+  'Checklist',
+  'Quiz',
+  "You're ready to move on when...",
+  'Free vs Paid',
+];
+
+/** Sections that must exist in every phase file. */
 const MANDATORY_SECTIONS = [
   'Goal of this phase',
   'Estimated time',
@@ -724,11 +764,79 @@ export function buildPhase(filePath, trackId, seenPhaseIds, seenItemIds, errors)
   const { sections, fenceError } = splitSections(body, bodyStart);
   if (fenceError) errors.add(rel, fenceError.line, fenceError.detail);
 
-  // Missing mandatory sections, reported for every one rather than the first,
-  // so a new phase file is fixed in one pass instead of eleven.
-  for (const name of MANDATORY_SECTIONS) {
-    if (!sections.has(name)) {
-      errors.add(rel, 1, `missing mandatory section "## ${name}"`);
+  // NOTE: the presence check for mandatory sections now lives inside the
+  // SECTION_ORDER block below, because a missing heading and a MISSPELLED heading
+  // need different messages and only the nearby check can tell them apart. The
+  // MANDATORY_SECTIONS list is still the authority on which absences are fatal.
+
+  // Section ORDER, against the full 14-section contract.
+  //
+  // This runs on the headings actually present, so it reports an out-of-order
+  // section without also complaining about every section that is missing. A file
+  // with five sections in the wrong order gets one line about the order, not nine
+  // about absence.
+  {
+    // Index of each expected section's heading, or -1 when absent.
+    const idx = SECTION_ORDER.map((name) => {
+      if (name === 'Lesson') {
+        for (const [title, section] of sections) {
+          if (/^Lesson\b/.test(title)) return section.start;
+        }
+        return -1;
+      }
+      const s = sections.get(name);
+      return s ? s.start : -1;
+    });
+
+    // ORDER first, so a reordered section is reported as reordered rather than as
+    // whatever it displaced.
+    let previousName = null;
+    let previousAt = -1;
+    for (let i = 0; i < SECTION_ORDER.length; i++) {
+      if (idx[i] === -1) continue; // absent: handled below
+      if (idx[i] < previousAt) {
+        errors.add(
+          rel,
+          idx[i],
+          `section "## ${SECTION_ORDER[i]}" appears BEFORE "## ${previousName}", but the contract fixes the order as ${SECTION_ORDER.map((s) => `"${s}"`).join(', ')}`
+        );
+      }
+      previousName = SECTION_ORDER[i];
+      previousAt = idx[i];
+    }
+
+    // A heading that is CLOSE to a required one but not exact is almost always a
+    // misspelling, and it is the failure this contract exists to prevent: an
+    // unrecognised `##` heading is not an error to the parser, it is silently
+    // absorbed as body text or dropped. `## CommonPitfalls` looked fine in an
+    // editor and passed every check.
+    //
+    // Compared on a normalised form (lowercased, every non-alphanumeric removed)
+    // so it catches spacing, punctuation and case changes without needing a
+    // spellchecker. Reported separately from "missing" because the fix differs:
+    // this is a typo, not an omission.
+    const normaliseHeading = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const present = new Map();
+    for (const [title] of sections) present.set(normaliseHeading(title), title);
+
+    for (const name of SECTION_ORDER) {
+      if (name === 'Lesson') continue; // prefix-matched, never exact
+      if (sections.has(name)) continue;
+      const near = present.get(normaliseHeading(name));
+      if (near) {
+        // A near-miss is always fatal: the heading exists but under a name the
+        // parser does not recognise, so its content is being misread.
+        errors.add(
+          rel,
+          (sections.get(near) && sections.get(near).start) || 1,
+          `section is spelled "## ${near}" but the contract requires "## ${name}" — headings are matched exactly, so this one was not recognised`
+        );
+      } else if (MANDATORY_SECTIONS.includes(name)) {
+        // Genuinely absent. Only the mandatory subset is fatal, so a phase that
+        // legitimately omits an optional section (e.g. a short phase with no
+        // "Specific topics to learn") is not failed for it.
+        errors.add(rel, 1, `missing mandatory section "## ${name}"`);
+      }
     }
   }
 
