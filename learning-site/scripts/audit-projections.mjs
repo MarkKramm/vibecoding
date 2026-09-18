@@ -688,7 +688,20 @@ for (const file of [...lightModules].sort()) {
 // A DEAD_NOTE_ONLY module that is no longer dead is a failure, not a note: the
 // moment something imports it, its `phase.checklist` becomes a live read and the
 // excuse for not failing evaporates.
+//
+// DELETED IS A THIRD STATE, and this guard used to confuse it with REVIVED.
+// `dead` is computed by walking reachability over the files that EXIST; once the
+// ported-but-unreachable modules were deleted outright (D-008, resolved), they
+// stopped appearing in `dead` — and this loop reported every one of them as
+// "reachable again", which is the opposite of what happened. The check below asks
+// whether the file is still on disk first, so a deletion reads as a deletion.
+//
+// The distinction is worth keeping rather than dropping the loop: an import of one
+// of these files reappearing is a real event that must fail the build, and that can
+// only happen if the file exists.
 for (const file of [...DEAD_NOTE_ONLY].sort()) {
+  const onDisk = existsSync(join(SRC, file));
+  if (!onDisk) continue; // deleted outright — nothing to excuse and nothing to read.
   if (!dead.includes(file)) {
     problems.push(
       `${file}: listed in DEAD_NOTE_ONLY but is now reachable. ` +

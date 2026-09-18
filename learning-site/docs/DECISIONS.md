@@ -132,6 +132,24 @@ rules: D-019, D-020 and D-021 are cited from `review.js`, `yourWork.js` and
 `global.css`, so deleting the unimported modules would not delete the principles —
 but it would delete the code comments that carry them into the future.
 
+**⚠️ Correction, and the reason this entry was finally resolved.** The sentence
+above saying “they are kept because they are **tested pure modules**” was **false**.
+Nothing tested them. Checked by reading the import graph of every `scripts/test-*.mjs`:
+none of the six test files imported any of the fourteen modules. The claim had
+survived because it was never mechanically checkable — `audit-projections.mjs` walks
+the tree and therefore *mentioned* all fourteen, which reads like coverage in a grep
+and is not coverage at all. **A mention is not a test**, and a justification written
+in prose is the one kind of claim no guard here can falsify.
+
+**Resolution (see the D-008 entry for the full decision).** All fourteen modules were
+deleted — 1,740 lines, 71 KB. Every principle they cited survives elsewhere
+(D-019 in seven other files, D-020 in four, D-021 in two), so nothing was lost but
+the duplication. Reachability from `main.jsx` is now asserted by
+`scripts/check-reachability.mjs`, so the dead set cannot silently grow back, and
+`audit-projections.mjs` now distinguishes a module that was **deleted** from one that
+was **revived** — it previously treated both as “reachable again”, which is the
+opposite of what a deletion is.
+
 ---
 
 ## D-005 — Rename the `cs-roadmap` localStorage namespace to `vibecoding`

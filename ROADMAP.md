@@ -35,10 +35,21 @@ a real phone. Emulated viewports do not reproduce real touch targets, real font 
 real scroll behaviour, or iOS Safari's specific quirks. If you have a phone, open the site on
 it.
 
-### The browser suite samples, it does not sweep
+### ✅ The browser suite samples, it does not sweep — DONE
 
-Browser verification walks a sample of phases, not all 65. It would not catch a defect unique
-to phase 61.
+**Resolved.** `scripts/sweep-phases.mjs` (check 14) opens **all 65 phases across all 10 tracks**
+in a real browser, clicking dashboard → track → phase → next phase the way a reader does, and
+asserts per phase: the `h1` is the *right* phase's title, all six section labels rendered, the
+checklist has items **and** tappable controls, four quiz options render, *answering* a question
+produces a `.quiz__why` explanation, no placeholder marker appears, and no runtime exception
+fired. Runs in about three minutes.
+
+**It found the defect it was built for on its first run**, and it was not one of the 65 — it was
+in the navigation between them. See "The Previous/Next buttons did nothing" below.
+
+The lesson held exactly: a sample of six phases in one track was enough to miss a bug that
+affected all 65, and the bug was invisible to every one of the fourteen checks because the data
+was correct and the buttons looked correct.
 
 ---
 
@@ -132,22 +143,54 @@ thing that can break silently. Not worth it unless the site moves.
 
 ## P2 — larger ideas
 
-### Resolve D-008 properly
+### ✅ Resolve D-008 properly — DONE
 
-Several modules and hooks are ported from a sibling project and are unreachable here
-(`lib/highlight.js`, `lib/pace.js`, `lib/pathOrder.js`, `lib/review.js`, `lib/yourWork.js`,
-and four hooks). They are documented and annotated rather than deleted, because D-008 explains
-that deleting touches the transfer `KEYS` list, the validators and the tests, and would have
-to be redone if the career views return.
+**Resolved by deletion.** All fourteen unreachable modules were removed: 1,740 lines, 71 KB.
+`lib/highlight.js`, `lib/pace.js`, `lib/pathOrder.js`, `lib/review.js`, `lib/today.js`,
+`lib/yourWork.js`, `components/EmptyState.jsx`, `EnergyModeSelector.jsx`, `ReviewQueue.jsx`,
+`TimeBudgetSelector.jsx`, and the four hooks `useApplications`, `useCertifications`,
+`usePortfolio`, `useSchedule`.
 
-**One of them is a latent crash** — `lib/pace.js` calls `.every()` on a value that is always
-`undefined`. Either make it defensive or delete it.
+**The concern in the paragraph above turned out not to apply.** Deletion did not touch the
+transfer `KEYS` list, the validators or the tests, because none of them referenced these
+modules — the estimate came from the same assumption (that a `src/` module is probably wired
+to something) that let the dead set grow in the first place. It was checked before deleting
+rather than after.
+
+Two things were verified first, because both are the kind of claim that is easy to assert and
+cheap to falsify:
+
+- **Every design principle survives.** D-019 was cited from seven other files, D-020 from four,
+  D-021 from two. Deleting did not remove a single no-shame rule, only the duplication of them.
+- **The build is byte-identical.** Total `dist/` output was 3,910 KB before and 3,910 KB after —
+  a 0 KB delta, which is the direct evidence that these modules were never in the bundle.
+
+`lib/pace.js`'s latent crash (`.every()` on an always-`undefined` value) is gone with it. That
+crash could never fire, because no caller passed it a projection — which is exactly why it
+survived fourteen checks: **code that never runs cannot fail a test.**
+
+**And the documentation was wrong about why it was kept.** D-008 claimed these were "tested
+pure modules". They were tested by nothing. `audit-projections.mjs` walks the tree and so
+*mentions* all fourteen, which reads like coverage in a grep and is not coverage. Corrected in
+D-008, where the false claim is preserved alongside its correction rather than quietly edited
+away — the claim surviving unchallenged for this long is the more useful lesson.
+
+**Two guards now prevent a repeat.** `scripts/check-reachability.mjs` (check 15) walks
+reachability from `src/main.jsx` and **fails the build** if any module becomes unreachable, so
+the dead set cannot silently regrow. `audit-projections.mjs` now distinguishes a module that was
+**deleted** from one that was **revived**; it previously reported both as "reachable again",
+which is the opposite of what a deletion is, and would have made this cleanup fail the build it
+was supposed to enable.
 
 ### A "Today" view
 
-`lib/today.js` exists and `TimeBudgetSelector` uses part of it, but there is no page that says
-*"here is what to do in the 40 minutes you have right now."* That is arguably the single most
-useful thing the site could do for its actual audience, and most of the logic exists.
+`lib/today.js` was deleted with the rest of D-008 rather than kept as a starting point: the
+logic was ported for a career surface this curriculum does not have, and its `bandInfo` export
+was reachable only through `TimeBudgetSelector.jsx`, which was itself unreachable. Keeping
+unrunnable code as scaffolding for a future feature is how 1,740 lines accumulated. If the view
+is built, it should be written against this curriculum's actual data — the `band`/`energy`
+vocabulary is the part worth carrying forward, and that lives in the phase contract, not in
+`today.js`.
 
 ### Progress that survives a device
 

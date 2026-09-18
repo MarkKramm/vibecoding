@@ -176,7 +176,13 @@ const STEPS = [
     name: "every phase renders (browser, all 65)",
     cmd: "node",
     args: [join(HERE, "sweep-phases.mjs"), "http://localhost:4173"],
-    why: "the other browser step checks FOUR views and the other twelve read data, so nothing has ever opened a phase page except the six in one track. This walks all 65 across all 10 tracks, clicking through them the way a reader does, and asserts each one renders its title, all six sections, a tappable checklist and a working quiz explanation. It found the Previous/Next buttons silently doing nothing — a defect no data check can see, because the data was right and the buttons looked right. Without it, a page can break for one phase out of 65 and every other check stays green",
+    why: "the other browser step checks FOUR views and the other thirteen read data, so nothing has ever opened a phase page except the six in one track. This walks all 65 across all 10 tracks, clicking through them the way a reader does, and asserts each one renders its title, all six sections, a tappable checklist and a working quiz explanation. It found the Previous/Next buttons silently doing nothing — a defect no data check can see, because the data was right and the buttons looked right. Without it, a page can break for one phase out of 65 and every other check stays green",
+  },
+  {
+    name: "reachability (nothing is dead)",
+    cmd: "node",
+    args: [join(HERE, "check-reachability.mjs")],
+    why: "fourteen modules once sat in src/ with no path from main.jsx — 1,740 lines, 71 KB — and every other check read them happily, because audit-projections walks the tree and therefore MENTIONS them, which looks like coverage in a grep. The documentation justified keeping them by calling them 'tested pure modules', which was false: no test file imported any of them, and no guard could falsify the claim because nothing tested them. This walks reachability from the entry point and fails if anything becomes unreachable, so the dead set cannot silently grow back. A module nothing can reach is either a mistake or a feature nobody finished, and both deserve to stop the build",
   },
 ];
 
