@@ -378,10 +378,10 @@ The inventory in item 7 is the artefact that matters most, and the `Unverified` 
 
 ### Q2. What makes injection worse in an agent than in a chat? <!-- id: sc-02-security-privacy-and-data-q02 -->
 
-- [x] An agent is an actor with tools and permissions, so injected text produces an action rather than only a wrong answer
 - [ ] Agents use larger models with weaker safety training
 - [ ] Agents read more content, so there is simply more attack surface
 - [ ] Agents cannot be given a system prompt
+- [x] An agent is an actor with tools and permissions, so injected text produces an action rather than only a wrong answer
 
 **Why:** More content does mean more surface, but that is a difference of degree. The difference in kind is that the agent can *do* things — read files, call APIs, push commits — using permissions you granted for legitimate reasons, so the injected sentence does not stop at the output. Agents are given system prompts like any other system, and model size is not the mechanism.
 
@@ -396,9 +396,9 @@ The inventory in item 7 is the artefact that matters most, and the `Unverified` 
 
 ### Q4. Which mitigation layer actually holds against an adaptive attacker? <!-- id: sc-02-security-privacy-and-data-q04 -->
 
-- [x] Least privilege and egress restriction, so a successful injection reaches nothing worth taking
 - [ ] A system-prompt instruction telling the model to ignore commands in documents
 - [ ] A blocklist of suspicious phrases like "ignore previous instructions"
+- [x] Least privilege and egress restriction, so a successful injection reaches nothing worth taking
 - [ ] Asking the model to classify its own inputs as safe before acting
 
 **Why:** The SK survey found attack success rates above 85% against state-of-the-art defences under adaptive strategies, with most of 18 reviewed defences achieving under 50% mitigation. Text-level layers — prompt instructions, blocklists, self-classification — are all defeated by paraphrase, encoding or a politer sentence, and self-classification is a model judgement made from the same tokens being judged. Permission-level controls do not stop the injection; they make its success uninteresting, which is the achievable goal.
