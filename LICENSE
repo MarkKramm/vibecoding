@@ -1,0 +1,65 @@
+MIT License
+
+Copyright (c) 2026 MarkKramm
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+SCOPE AND A NOTE ON THE CURRICULUM TEXT
+================================================================================
+
+The MIT license above covers the SOFTWARE in this repository: the build scripts,
+the audit and verification guards, the React site under `learning-site/`, the
+CI workflows, and the configuration.
+
+The CURRICULUM TEXT -- the Markdown under `ai-roadmaps/`, the research notes
+under `docs/research/`, and the explanatory prose in `HANDOVER.md` -- is
+additionally offered under the terms of the Creative Commons Attribution 4.0
+International License (CC BY 4.0):
+
+    https://creativecommons.org/licenses/by/4.0/
+
+You are free to share and adapt that material for any purpose, including
+commercially, provided you give appropriate credit, link to the license, and
+indicate whether changes were made.
+
+WHY THE SPLIT: code and prose have different needs. The tooling is more useful to
+others under a permissive software license with no attribution friction. The
+written curriculum is more useful if people can reuse and adapt it for their own
+teaching, which is what CC BY 4.0 permits, while the attribution requirement
+keeps a record of where the material came from.
+
+================================================================================
+THIRD-PARTY MATERIAL AND FACTUAL CLAIMS
+================================================================================
+
+This repository cites and links to third-party sources -- papers, vendor
+documentation, and blog posts. Those works remain under their own licenses and
+copyright; the citation of them here grants no rights to them.
+
+Nothing in this license grants any right to the trademarks, product names, or
+brands of any company referenced in the curriculum.
+
+IMPORTANT -- NO WARRANTY OF ACCURACY. This is educational material about rapidly
+changing technology. Much of it is time-sensitive: free-tier terms, pricing,
+model availability, context-window sizes and provider policies change frequently,
+and each such claim in the curriculum is dated rather than continuously verified.
+The material is provided for learning, not as professional, legal, security, or
+financial advice. Verify anything you intend to rely on, and check primary
+sources before acting on it.

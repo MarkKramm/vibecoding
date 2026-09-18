@@ -211,6 +211,89 @@ honest boundary this file exists to record.
 
 ## ANSWERS
 
+**Relay round 2 — 2026-09-19 (second paste, same day).** Closed Q1, Q3, Q4, Q5, Q7, Q8, Q9
+with sources; Q11 partially (one vendor write-up, one unverified claim); **Q2, Q6, Q10 and
+parts of Q9 and Q12 remain "could not verify"**.
+
+**⚠️ Verification status of this round: UNVERIFIED. Nothing below is a fact yet.** The relay
+itself warned: *"Nothing here should be recorded as RESOLVED without checking the source URLs
+directly."* That warning is correct and is this project's own standing rule — **an answer is
+not a fact until its source is checked**, which round 1 proved when a bare ID resolved to a
+real but differently-titled paper. Round 2 arrived **without URLs attached** for most items,
+so the claims below are recorded as **LEADS**, not citations. Phase files must not cite them
+until each is fetched and its title/claim matched.
+
+**What round 2 changed materially, and is safe to act on:**
+
+- **Q8 (indemnity) — CONFIRMS the existing Phase 8 finding independently.** Copilot IP
+  indemnity is Business/Enterprise only; Google indemnification is Vertex AI (Enterprise);
+  OpenAI Copyright Shield is Enterprise + API but not free or Plus. **The relay's own
+  summary names the pattern: "free tiers are excluded" — which matches Anthropic's "paid use"
+  wording already cited.** This is the one item where round 2 *corroborates* a verified claim
+  rather than adding an unverified one.
+- **Q9 (training on free-tier code) — closes a gap the corpus already half-documented.**
+  Copilot Free trains by default since **2026-04-24** (opt-out via Settings → Privacy;
+  Business/Enterprise unaffected); Gemini API free tier trains, paid does not; **Cursor Hobby
+  trains if Privacy Mode is off, and whether Hobby defaults it on is UNVERIFIED**; Codex free
+  may train with opt-out via the privacy portal. The Copilot date matches what is already in
+  the corpus. **The Cursor default is the actionable unknown** and must not be written as
+  either on or off.
+- **Q1 (context windows) — received a second time, still UNPUBLISHABLE.** Round 1 gave figures
+  with no URLs; round 2 repeats them with no URLs, and adds Codex (372k → 272k, with users
+  reporting a 272k CLI cap) and Claude Code (1M on paid plans for named models). Antigravity
+  1,048,576 with compaction ~135k recurs consistently across both rounds. **Two independent
+  passes agreeing is weak corroboration, not verification** — and the Codex 1M-vs-272k
+  discrepancy is exactly the kind of self-contradiction that should keep this out of a phase
+  file. Cursor and Devin Desktop: **could not verify, twice.**
+- **Q7 (insecure AI code) — several NEW sources, all unverified.** A 2026 IEEE paper (40.8% of
+  185 samples vulnerable; CVE-based prompts 76%; complex access control fails 45%), Veracode
+  2025 (45%), Apiiro 2025 (322% more privilege-escalation paths, 153% more design flaws).
+  **Caution: these are percentages from unnamed or unlinked sources.** The corpus already
+  cites the verified **arXiv:2211.03622** (Perry et al., CCS '23) and **arXiv:2107.03374**, so
+  Q7 is not blocking. **Do not add the 322% or 40.8% figures without a fetch.**
+- **Q4 — round 1 was better.** Round 2 gives a list of CVE IDs; round 1's verified
+  **arXiv:2601.17548** remains the source of record. The CVE IDs are a useful cross-check but
+  each is unverified here.
+- **Q3 (sandboxing) — new and specific for Codex and Claude Code.** Codex sandboxes by default
+  with a writable root and network off; Claude Code has a Bash sandbox on macOS/Linux/WSL2 and
+  a classifier in "auto" mode; Copilot Neovim has `approve-reads` vs `autopilot`. **The
+  Copilot Neovim detail is a client-specific behaviour and must not be generalised to Copilot
+  agent mode.** Cursor, Devin Desktop, Antigravity: could not verify.
+- **Q5 (git as safety net) — a real find.** Espressif developer documentation recommends
+  committing before an agent run and reviewing diffs rather than summaries. **This is vendor
+  documentation for an embedded toolchain, not an authoritative AI-safety source** — usable as
+  an example of the practice, not as the rule.
+- **Q6 (agent self-reports) — flagged by the relay as a lead, and the relay is right.** An
+  **8.3% over-claim rate** from a self-published GitHub write-up, explicitly not
+  peer-reviewed. **Do not cite the number.** The *qualitative* pattern — agents reporting work
+  they did not do, empty git logs behind "done" claims — is independently observable in this
+  repo's own handover (lessons about subagent self-reports mixing true and false claims).
+- **Q11 — one new lead, one claim that must NOT be published.** The Kiro incident (Dec 2025)
+  has a Docker write-up: an agent operating with the launching user's full identity, at
+  machine speed, against live AWS. **The Gemini incident is an unverified developer claim**
+  (340 files changed, 28,745 lines deleted, 33 minutes of 404s, then recovery notes
+  overstating its role) and **Google has not confirmed it.** The relay says so explicitly.
+  **The Hugging Face July 2026 intrusion from round 1 remains the only fully verified
+  incident and stays the source of record for Q11.**
+- **Q12 (Philippines availability) — half-closed.** **Antigravity is explicitly listed in the
+  official FAQ's Asia availability list**, which is the strongest single item in this round.
+  Copilot Free region restrictions and Gemini API geographic availability: could not verify.
+  Groq has a genuinely free developer tier with no card, rate-limit gated; Philippine
+  availability implied but not confirmed. **Note this contradicts nothing in the corpus, which
+  already records Cerebras as having no permanently free tier and GitHub Models as retired
+  2026-07-30.**
+- **Q2 (unattended default behaviour) — could not verify, twice.** Still open.
+- **Q10 (disclosure norms) — could not verify.** The relay found no emerging standard. **This
+  is itself a finding and should be recorded as one**: the honest position for Phase 4 is that
+  no norm exists yet, which strengthens that phase's existing argument that the risk is
+  undisclosed use you cannot defend rather than use itself.
+
+**Round 2 verdict: 0 items newly RESOLVED.** It corroborates Q8, partially closes Q9 and Q12,
+adds unverified leads for Q1/Q3/Q5/Q6/Q7/Q11, and leaves Q2 and Q10 open. **The corpus is not
+blocked by any of it** — every phase already stands on sources verified in earlier sessions.
+
+---
+
 **Relay round 1 — 2026-09-19.** The search returned a **partial** result set: real answers for
 Q1, Q3, Q4, Q5, and nothing for Q2, Q6–Q12. Recorded below with verification status, because
 **an answer is not a fact until its source is checked** — and one of the four needed

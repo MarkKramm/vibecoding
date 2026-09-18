@@ -1,0 +1,86 @@
+# Content and site integrity on every push and pull request.
+#
+# WHY THIS IS SEPARATE FROM pages.yml
+# -----------------------------------
+# pages.yml only runs on pushes that touch content or site paths, and only on
+# the default branches. This workflow runs on every push and every pull request,
+# so a contributor finds out their phase file violates the contract before it
+# reaches a deploy job. The two overlap on purpose: pages.yml must not depend on
+# a deploy succeeding to tell you the content is wrong.
+
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  content-integrity:
+    name: Content integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # No install step. Every check below runs on a bare checkout with only
+      # Node, because the content contract must be verifiable without the site
+      # toolchain -- that is what keeps these checks fast and trustworthy.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      # The 14 mandatory sections in order, authored IDs, band/energy
+      # vocabularies, quiz structure and answer-position balance.
+      - name: Content build check
+        run: node scripts/build-content.mjs --check
+
+      - name: Quiz audit
+        run: node scripts/audit-quiz.mjs
+
+      - name: Lesson AST audit
+        run: node scripts/audit-lesson-ast.mjs
+
+      - name: Arithmetic audit
+        run: node learning-site/scripts/audit-arithmetic.mjs
+
+      # Encoding is checked last and deliberately fails loudly on CRLF, BOM,
+      # tabs or mojibake. This project has corrupted content files three separate
+      # times with PowerShell write APIs, so the guard runs in CI as well as
+      # locally.
+      - name: Encoding audit
+        run: node learning-site/scripts/audit-encoding.mjs
+
+  learning-site:
+    name: Learning site
+    runs-on: ubuntu-latest
+    needs: content-integrity
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: learning-site/package-lock.json
+
+      - name: Install dependencies
+        working-directory: learning-site
+        run: npm ci
+
+      # `npm run build` regenerates the content bundle from Markdown first, so a
+      # stale committed bundle can never mask a content error.
+      - name: Build
+        working-directory: learning-site
+        run: npm run build
+
+      - name: Offline checks
+        working-directory: learning-site
+        run: npm test

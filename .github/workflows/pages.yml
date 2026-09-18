@@ -1,0 +1,121 @@
+# Build the learning site and publish it to GitHub Pages.
+#
+# WHY THIS FILE EXISTS, AND WHY IT IS LATE
+# ----------------------------------------
+# learning-site/vite.config.js already reads `VITE_BASE` and documents that "the
+# Pages workflow sets VITE_BASE to /vibecoding/". That workflow did not exist
+# until now -- the config was written in anticipation of it. The consequence was
+# silent: a build made without VITE_BASE emits absolute asset URLs (/assets/...)
+# which 404 when Pages serves the site from /vibecoding/, giving a blank page
+# and no build error. This file closes that gap.
+#
+# The base path and the repository name must agree. If the repository is renamed,
+# change VITE_BASE here to match, or the assets will 404 again.
+
+name: Deploy learning site to Pages
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "ai-roadmaps/**"
+      - "learning-site/**"
+      - "scripts/**"
+      - "docs/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+# Least privilege: the deploy job needs to write a Pages deployment and mint an
+# OIDC token. Nothing else in this workflow needs write access to the repository.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time. `cancel-in-progress: false` because cancelling a deploy
+# midway can leave Pages serving a half-published artifact; queuing is safer than
+# racing.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: learning-site/package-lock.json
+
+      # ---------------------------------------------------------------------
+      # CONTENT INTEGRITY GATE
+      #
+      # Runs BEFORE the site build, and before any install. These scripts read
+      # the Markdown in ai-roadmaps/ and assert the content contract: the 14
+      # mandatory sections in order, authored IDs, band/energy vocabularies,
+      # quiz structure, and encoding. They have no dependencies, so they run on
+      # a bare checkout.
+      #
+      # This gate is the point of the workflow. Without it, a broken phase file
+      # deploys successfully and the failure shows up as a rendering bug that
+      # looks like a site fault rather than a content fault.
+      # ---------------------------------------------------------------------
+      - name: Content integrity (contract, quiz, encoding)
+        working-directory: .
+        run: |
+          node scripts/build-content.mjs --check
+          node scripts/audit-quiz.mjs
+          node scripts/audit-lesson-ast.mjs
+          node learning-site/scripts/audit-arithmetic.mjs
+          node learning-site/scripts/audit-encoding.mjs
+
+      - name: Install dependencies
+        working-directory: learning-site
+        run: npm ci
+
+      # `npm run build` runs build:content first, so the generated JSON the site
+      # reads is always produced from the Markdown in this same job. Those files
+      # are gitignored by design, so a checkout never contains a stale bundle.
+      - name: Build site
+        working-directory: learning-site
+        env:
+          # Must match the repository name. See the note at the top of this file.
+          VITE_BASE: /vibecoding/
+        run: npm run build
+
+      # Offline checks run against the freshly generated JSON and the built
+      # output, so this is the last point where a content or shape regression can
+      # stop a deploy.
+      - name: Offline site checks
+        working-directory: learning-site
+        run: npm test
+
+      # Pages serves static files only. The site is a single-page app with no
+      # client-side router (routing is state, per App.jsx), so a 404 fallback to
+      # index.html is not strictly required -- but direct requests to a stale
+      # deep link should not show a GitHub 404 page.
+      - name: Add 404 fallback
+        working-directory: learning-site
+        run: cp dist/index.html dist/404.html
+
+      - name: Disable Jekyll
+        working-directory: learning-site
+        run: touch dist/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: learning-site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
