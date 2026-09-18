@@ -381,7 +381,7 @@ Z.AI’s pricing page lists several models with every price column reading “Fr
 Signup is documented as: “Access Z.AI Open Platform, Register or Login. Access Billing Page to top up **if needed**. Create an API Key.” The “if needed” phrasing implies the free models work without payment.
 — https://docs.z.ai/guides/overview/quick-start
 
-**Unverified:** Z.AI’s rate limits for the free Flash models (no rate-limit page found), whether a card is required at signup, and Philippine eligibility. The docs' own upsell copy — “Tired of limits? GLM Coding Plan — monthly access... All from just $18/month” — implies the free tiers are meaningfully rate-limited.
+**Unverified:** Z.AI’s rate limits for the free Flash models (no rate-limit page found), whether a card is required at signup, and Philippine eligibility. The docs’ own upsell copy — “Tired of limits? GLM Coding Plan — monthly access... All from just $18/month” — implies the free tiers are meaningfully rate-limited.
 
 ### 2.6 Mistral — a free coding endpoint exists, but the free *plan* is unverifiable
 
@@ -522,7 +522,7 @@ Qwen reports Qwen3.8-27B at LiveCodeBench v6 = 90.3, SWE-bench Pro = 61.7 and Te
 **A serious caution about SWE-bench Verified as an instrument.** A Hugging Face community analysis reports that “The SWE-bench Verified verifier has been shown to accept approximately 8.5% of functionally incorrect solutions”, and that on **DeepSWE**, a contamination-free benchmark across 91 repositories and 5 programming languages, DeepSeek V4-Pro scores **8% pass@1 against GPT-5.5 at 70%** — while the same model reports 80.6 on SWE-bench Verified. This is a **single unverified third-party claim**, but the 8-versus-70 spread is the strongest available signal that SWE-bench Verified has saturated and no longer separates models. Treat it as a warning against quoting SWE-bench Verified as if it settled a comparison.
 — https://huggingface.co/blog/ResterChed/deepseek-v4-ga-architecture
 
-**The translation for a learner:** a 12B–30B local model is genuinely useful for autocomplete, explaining unfamiliar code, writing self-contained functions, generating tests, and refactoring a single file. It is **not** a substitute for a frontier agent on a multi-file, multi-hour task — it loses the thread, mis-uses tools, and needs far more supervision. Continue’s own docs make the same point in one sentence: open local models' “limited tool calling and reasoning capabilities will make it challenging to use agent mode.”
+**The translation for a learner:** a 12B–30B local model is genuinely useful for autocomplete, explaining unfamiliar code, writing self-contained functions, generating tests, and refactoring a single file. It is **not** a substitute for a frontier agent on a multi-file, multi-hour task — it loses the thread, mis-uses tools, and needs far more supervision. Continue’s own docs make the same point in one sentence: open local models’ “limited tool calling and reasoning capabilities will make it challenging to use agent mode.”
 — https://docs.continue.dev/customize/models
 
 **Do not write a lesson claiming local models match hosted frontier models.** Nothing verified here supports it, and the vendor sources that address it say otherwise.
@@ -687,7 +687,7 @@ The underlying vendor page (https://www.aikido.dev/blog/slopsquatting-ai-package
 
 ### 4.5 Documented attacks on coding agents
 
-**“Comment and Control” (April 2026) — credential theft from three vendors' CI agents.** Researchers Aonan Guan, with Johns Hopkins University’s Zhengyu Liu and Gavin Zhong, demonstrated prompt injection against three widely deployed GitHub Actions coding agents, exfiltrating each host repository’s own CI secrets using GitHub itself as the command-and-control channel.
+**“Comment and Control” (April 2026) — credential theft from three vendors’ CI agents.** Researchers Aonan Guan, with Johns Hopkins University’s Zhengyu Liu and Gavin Zhong, demonstrated prompt injection against three widely deployed GitHub Actions coding agents, exfiltrating each host repository’s own CI secrets using GitHub itself as the command-and-control channel.
 
 | Agent | Injection surface | Credentials leaked | Exfil channel |
 | --- | --- | --- | --- |
@@ -713,7 +713,7 @@ A conflict to record: CSA frames the Anthropic bounty as $1,337 paid, while the 
 
 Two vendor responses worth quoting, because they define the user’s actual exposure:
 
-- **Cursor** replied on 2025-03-06 that “this risk falls under the users' responsibility” and maintained that position.
+- **Cursor** replied on 2025-03-06 that “this risk falls under the users’ responsibility” and maintained that position.
 - **GitHub** replied on 2025-03-12 that “users are responsible for reviewing and accepting suggestions.” GitHub later shipped a hidden-Unicode warning on github.com on 2025-05-01.
 
 **The generalisable rule for a learner:** treat a repository’s instruction files, issue text, PR titles and README content as **untrusted input to your agent**, because that is what they are.
