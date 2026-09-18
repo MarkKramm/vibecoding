@@ -127,9 +127,7 @@ That leads to an expectation list rather than a topic list. Expect some form of 
 
 **Estimating something.** Order-of-magnitude reasoning about cost, latency, storage or volume. The purpose is not the number. It is whether you can decompose an unfamiliar problem into quantities you can reason about, and whether you notice when an answer is obviously implausible.
 
-**How you would evaluate it.** This is the one that has become decisive, for a structural reason rather than a fashionable one. Generation became cheap; verification did not. Every organisation shipping a model-based system has the same problem: output is fluent whether or not it is correct. **"How would you know it works?"** is the question that separates candidates now, because it is the question the employer cannot answer for themselves and the one most candidates have never been asked.
-
-Note the shape of that list: four of the five items cannot be answered well from memorised knowledge, and the fifth — estimation — rewards a habit rather than a fact. **Interview preparation for this field is therefore mostly the work of understanding your own projects rather than acquiring facts about the field.**
+**How you would evaluate it.** This is the one that has become decisive, for a structural reason rather than a fashionable one. Generation became cheap; verification did not. Every organisation shipping a model-based system has the same problem: output is fluent whether or not it is correct. **"How would you know it works?"** is the question that separates candidates now, because it is the question the employer cannot answer for themselves and the one most candidates have never been asked. Note the shape of that list: four of the five items cannot be answered well from memorised knowledge, and the fifth — estimation — rewards a habit rather than a fact. **Interview preparation for this field is therefore mostly the work of understanding your own projects rather than acquiring facts about the field.**
 
 One honest framing note. This describes what the interview is *for*, derived from what the employer is buying, and is not a measured claim about what any particular company asks. Processes vary widely, some are badly designed, and some are mostly a culture fit conversation. **Unverified** as an empirical claim about the distribution of interview formats. It is sound as reasoning: if the risk being priced is trust with a system, then reasoning under uncertainty is what a competent interviewer would try to observe.
 
@@ -145,9 +143,7 @@ These are Phase 2's defence questions, and this phase's job is to turn them from
 
 **4. What does your project do badly?** The limitation, stated without hedging. "It works on PDFs with a text layer; I did not handle scanned documents." Note what that sentence demonstrates: it proves you tested the boundary of your own claim. A candidate who cannot name a limitation has either not tested or is unwilling to say, and both are worse answers than a small honest one.
 
-**Why one project rather than five.** Five vague answers are five chances to be caught, and they share one defect: none is deep enough to survive a follow-up. One project with four specific answers survives several layers of questioning, because the specifics connect to each other and to real events. If the interviewer moves to a second project, answer as far as you honestly can and then say where the edge of your knowledge is. That is not a weakness in the interview; it is the behaviour being screened for.
-
-**Prepare these aloud, not on paper.** Write them first, then say them without reading, then have someone interrupt you mid-answer with "why?" The written and spoken versions are different skills, and the interview tests the second.
+**Why one project rather than five.** Five vague answers are five chances to be caught, and they share one defect: none is deep enough to survive a follow-up. One project with four specific answers survives several layers of questioning, because the specifics connect to each other and to real events. If the interviewer moves to a second project, answer as far as you honestly can and then say where the edge of your knowledge is. That is not a weakness in the interview; it is the behaviour being screened for. Prepare these aloud rather than on paper: say them without reading, with someone interrupting mid-answer, because the written and spoken versions are different skills and the interview tests the second.
 
 ### Part 3 — Debugging out loud
 
@@ -163,15 +159,11 @@ Interviewers frequently care more about the process than the answer, and this is
 
 **The strong version of not knowing.** "I do not know, and here is how I would find out" demonstrates three things at once: that you can recognise the edge of your knowledge, that you have a method for extending it, and that you will not invent an answer in front of a person who will later depend on you. Those are the three most relevant signals available in one sentence.
 
-**The failure mode is pretending to know.** A confident wrong answer is detectable, and once detected it contaminates everything else you said, including the parts you got right — because the interviewer can no longer tell which statements are checked and which are performance. An honest gap costs you one question; a bluff costs you your credibility for the rest of the interview. Practise the four beats aloud on three scenarios before the interview, because the room is where the habit either exists or does not.
-
-**Practice this aloud.** Take a system you built, describe a plausible failure in it, and narrate your way through the four beats while someone listens. Do it three times on three scenarios. It is uncomfortable and it works.
+**The failure mode is pretending to know.** A confident wrong answer is detectable, and once detected it contaminates everything else you said, including the parts you got right — because the interviewer can no longer tell which statements are checked and which are performance. An honest gap costs you one question; a bluff costs you your credibility for the rest of the interview. Practise the four beats aloud on three scenarios beforehand, because the room is where the habit either exists or does not.
 
 ### Part 4 — Using AI tools in a take-home without hiding it
 
-**The position, stated plainly.** Using AI tools in a take-home is generally fine unless you have been told otherwise, and the actual risk is not the use. **The risk is undisclosed use that you cannot defend.** If you submit work you cannot explain, the interview exposes it, and the exposure is worse than never having submitted — it converts a neutral candidate into one who misrepresented their work.
-
-**Why the tool itself is not the problem.** The scarce thing in this field is judgement and verification, not generation. An employer who understands that cares about what you decided and how you checked it, not about whether a model produced the first draft. What they cannot accept is a submission where nobody made the decisions — because then the artefact is not evidence about you, and the take-home has tested nothing.
+**The position, stated plainly.** Using AI tools in a take-home is generally fine unless you have been told otherwise, and the actual risk is not the use. **The risk is undisclosed use that you cannot defend.** If you submit work you cannot explain, the interview exposes it, and the exposure is worse than never having submitted — it converts a neutral candidate into one who misrepresented their work. And note why the tool itself is not the problem: the scarce thing in this field is judgement and verification, not generation. An employer who understands that cares about what you decided and how you checked it, not about whether a model produced the first draft.
 
 **Disclose the use.** Say what you used it for, briefly and without ceremony, in the README or the covering note. "I used an assistant to draft the initial structure and the test scaffolding; the retrieval design and the evaluation are mine, and I can walk through any part of it." One sentence removes the entire risk category.
 
@@ -199,9 +191,7 @@ Everyone who has built something knows what they would change. Answer with the s
 
 **"How does the team use AI tools in its work?"** Ask this neutrally rather than as a position statement. The answer tells you the actual norms, which as a new employee you will be expected to follow rather than set.
 
-**Weak questions, and why.** Anything answerable from the website — what the company does, how big it is, what the culture is — wastes the one chance you have to learn something unpublished. Anything about perks before an offer exists signals the wrong priority, and you can obtain that later. A question asked to appear interested rather than because you want the answer is usually detectable, which costs more than silence.
-
-**Two practical notes.** Write the list before the interview and take it in with you; asking from a written list is normal and reads as prepared. When they answer, ask one follow-up about the answer rather than moving to your next question. The follow-up is where the interview becomes a conversation, which is what a competent interviewer is trying to have.
+**Weak questions, and why.** Anything answerable from the website — what the company does, how big it is, what the culture is — wastes the one chance you have to learn something unpublished. Anything about perks before an offer exists signals the wrong priority, and you can obtain that later. A question asked to appear interested rather than because you want the answer is usually detectable, which costs more than silence. Write the list before the interview and take it in with you; when they answer, ask one follow-up about the answer rather than moving to your next question.
 
 ### Part 6 — Salary, negotiation, and rejection
 
@@ -213,9 +203,7 @@ Everyone who has built something knows what they would change. Answer with the s
 
 **Mark the market figures unverified, because they are.** This curriculum does not print salary numbers. **Unverified** for any specific figure you encounter, including one from a survey — read who published it, what they sell, and what population they sampled. What this phase gives you is the procedure: research your own market, avoid naming a number first, compare total compensation rather than base, and treat any published number as a hypothesis to be tested.
 
-**Most rejections carry no information.** They are the result of a comparison you cannot see, a budget change, an internal candidate, a role already filled, or a hiring manager's arbitrary preference on a Tuesday. Treating an uninformative rejection as feedback is a category error, and it is the mechanism by which a job search damages people who are perfectly competent.
-
-**A specific rejection is valuable, and you should recognise it.** "We needed someone with more production deployment experience" is information. It names a gap, and a named gap has a response: get that experience on a real project, or aim at roles where it is not the bar. Most rejections do not contain this, so when one does, write it down and act on it.
+**Most rejections carry no information, and a specific one is valuable.** Uninformative rejections are the result of a comparison you cannot see, a budget change, an internal candidate, a role already filled, or a hiring manager's arbitrary preference on a Tuesday; treating one as feedback is a category error, and it is the mechanism by which a job search damages people who are perfectly competent. "We needed someone with more production deployment experience" is different: it names a gap, and a named gap has a response — get that experience on a real project, or aim at roles where it is not the bar. Most rejections do not contain this, so when one does, write it down and act on it.
 
 **The correct response to silence is volume plus iteration, not self-assessment.** Silence is the default outcome of most applications and is not data about you. What moves a search is applying to more roles and changing the thing that is not working — the framing of the project, the roles targeted, the answers in the interview. Self-assessment without information produces only the decision to stop, the one change that cannot help. Response rates vary enormously by market, role and time, and **Unverified** as to any specific figure; the practical implication does not depend on it, because you control volume and quality rather than the rate.
 
@@ -274,12 +262,11 @@ The interview gets you the job. The first three months decide whether it was a g
 12. Research the salary range for one target role properly — same seniority, same engagement type, same market — and write the range with your sources and their limitations. <!-- id: cr-04-interviewing-and-your-first-90-days-t12 band: focused energy: normal -->
 13. Write the exact sentence you would use to avoid naming a number first, and the range you would give if pressed. <!-- id: cr-04-interviewing-and-your-first-90-days-t13 band: quick energy: low -->
 14. Write one paragraph on how you will handle rejection: what you will do with an uninformative one, what you will do with a specific one, and what your response to silence will be. <!-- id: cr-04-interviewing-and-your-first-90-days-t14 band: focused energy: normal -->
-15. Write the dated ninety-day plan: three periods, each with named artefacts, and the specific things you will learn in the first two weeks. <!-- id: cr-04-interviewing-and-your-first-90-days-t15 band: deep energy: high -->
-16. Write the list of questions you would expect to have in your first week, before you have a job. You will be surprised how many you can already predict. <!-- id: cr-04-interviewing-and-your-first-90-days-t16 band: focused energy: normal -->
-17. Identify the one claim in your portfolio that is furthest ahead of your actual ability, and write the plan for closing it in your first month. <!-- id: cr-04-interviewing-and-your-first-90-days-t17 band: deep energy: high -->
-18. Write three statements about your own best project in the measured, inferred and believed form, and check that each is labelled honestly. <!-- id: cr-04-interviewing-and-your-first-90-days-t18 band: focused energy: normal -->
-19. Write the sentence you would use to ask a new team what AI tool use is permitted, phrased as a practical question rather than a position. <!-- id: cr-04-interviewing-and-your-first-90-days-t19 band: quick energy: low -->
-20. Set a reminder to append to the first-month capture file every working day for the first four weeks of any new job, starting the day you are hired. <!-- id: cr-04-interviewing-and-your-first-90-days-t20 band: ongoing energy: low -->
+15. Write the dated ninety-day plan: three periods, each with named artefacts, the specific things you will learn in the first two weeks, and the questions you expect to have in week one. <!-- id: cr-04-interviewing-and-your-first-90-days-t15 band: deep energy: high -->
+16. Identify the one claim in your portfolio that is furthest ahead of your actual ability, and write the plan for closing it in your first month. <!-- id: cr-04-interviewing-and-your-first-90-days-t16 band: deep energy: high -->
+17. Write three statements about your own best project in the measured, inferred and believed form, and check that each is labelled honestly. <!-- id: cr-04-interviewing-and-your-first-90-days-t17 band: focused energy: normal -->
+18. Write the sentence you would use to ask a new team what AI tool use is permitted, phrased as a practical question rather than a position. <!-- id: cr-04-interviewing-and-your-first-90-days-t18 band: quick energy: low -->
+19. Set a reminder to append to the first-month capture file every working day for the first four weeks of any new job, starting the day you are hired. <!-- id: cr-04-interviewing-and-your-first-90-days-t19 band: ongoing energy: low -->
 
 ## Common Pitfalls
 
@@ -322,9 +309,9 @@ Create `portfolio/career/04-interviewing-and-your-first-90-days.md` containing:
 5. **The AI disclosure paragraph** for a take-home, and the list of parts you marked as unexplainable and either learned or removed (tasks 10, 11).
 6. **The salary position** — your researched range with its sources and their limitations, and the sentence you would use to avoid naming a number first (tasks 12, 13).
 7. **The rejection response** — one paragraph covering the uninformative case, the specific case, and silence (task 14).
-8. **The dated ninety-day plan** — three periods with named artefacts, the first-two-weeks learning list, and the first-month capture habit written as an instruction to yourself (tasks 15, 16, 20).
-9. **The over-claiming plan** — the one claim furthest ahead of your ability, and how you close it in the first month (task 17).
-10. **Three statements about your own work in measured, inferred and believed form** (task 18).
+8. **The dated ninety-day plan** — three periods with named artefacts, the first-two-weeks learning list, and the first-month capture habit written as an instruction to yourself (tasks 15, 19).
+9. **The over-claiming plan** — the one claim furthest ahead of your ability, and how you close it in the first month (task 16).
+10. **Three statements about your own work in measured, inferred and believed form** (task 17).
 
 Point 1 is the core and point 3 is the one people skip. The debugging script feels unnecessary when you read it and indispensable in the room, because the room is where the habit either exists or does not.
 
@@ -370,7 +357,7 @@ Point 1 is the core and point 3 is the one people skip. The debugging script fee
 - [x] Say you do not know, then describe how you would find out and what you would expect to see
 - [ ] Redirect to a topic you know well
 
-**Why:** Admitting the gap demonstrates that you can recognise the edge of your knowledge, which is the precondition for anyone trusting your confident statements. Describing how you would find out demonstrates method, and naming what you would expect demonstrates that the method is specific rather than a gesture. Bluffing is the expensive option: once one confident wrong answer is detected, the interviewer can no longer tell which of your other answers were checked.
+**Why:** Admitting the gap demonstrates that you can recognise the edge of your knowledge, which is the precondition for anyone trusting your confident statements. Describing how you would find out demonstrates method, and naming what you would expect shows the method is specific rather than a gesture. Bluffing is the expensive option: once one confident wrong answer is detected, the interviewer can no longer tell which of your other answers were checked.
 
 ### Q3. What makes a debugging-out-loud scenario go well? <!-- id: cr-04-interviewing-and-your-first-90-days-q03 energy: normal -->
 
