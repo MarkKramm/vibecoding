@@ -379,8 +379,8 @@ Point 4 is the one that cannot be faked, and point 7 is the one that will matter
 ### Q3. Why does most online AI content teach volatile skills? <!-- id: sc-05-career-in-the-ai-era-q03 energy: low -->
 
 - [ ] Because durable skills are largely unknown to the people writing it
-- [ ] Because readers specifically demand tool-specific material and ignore everything else
 - [x] Because volatile material is faster to produce, more searchable and reads as more current, so the market overproduces it
+- [ ] Because readers specifically demand tool-specific material and ignore everything else
 - [ ] Because durable skills cannot be taught in written form
 
 **Why:** This is a structural incentive rather than a conspiracy. Content about a new tool can be written the week it ships, is found by people searching the tool's name, and goes stale on a schedule that generates demand for the next piece. Durable material is harder to produce, does not trend and has no release date, so it is systematically underproduced even though it is what lasts.
@@ -396,18 +396,18 @@ Point 4 is the one that cannot be faked, and point 7 is the one that will matter
 
 ### Q5. Your portfolio describes a retrieval system you built by following a tutorial and could not debug. What is the actual risk? <!-- id: sc-05-career-in-the-ai-era-q05 energy: high -->
 
+- [x] The claim is inferred rather than measured, and an interviewer's follow-up exposes capability you do not have
 - [ ] It is not a risk, because the system works and working systems are what matters
 - [ ] The risk is that the tutorial's licence terms may prohibit portfolio use
-- [x] The claim is inferred rather than measured, and an interviewer's follow-up exposes capability you do not have
 - [ ] The risk is mainly that the project will break in front of the interviewer
 
 **Why:** The over-claim is not in the project but in the register of the description — a capability written as though it were established. The interview is where it surfaces, because probing questions have no generated answer: they ask for your reasoning in your specific situation. An interview failure is recoverable; a reputation for over-claiming in a small field is slower to repair.
 
 ### Q6. What does this phase deliberately not cover? <!-- id: sc-05-career-in-the-ai-era-q06 energy: normal -->
 
+- [x] Portfolio construction, finding roles, the job search, the first 90 days and interviewing, which the Career track owns
 - [ ] Technical skill, which the earlier tracks in this curriculum already covered
 - [ ] AI safety and ethics, which belong in a different track entirely
-- [x] Portfolio construction, finding roles, the job search, the first 90 days and interviewing, which the Career track owns
 - [ ] Nothing — it is the final phase and covers the whole path from learning to employment
 
 **Why:** The boundary is stated on purpose, because the most common way a learner stalls here is by treating a finished safety track as readiness to be hired, which this curriculum has never claimed. Read the Career track now rather than later: its portfolio phase tells you what evidence to accumulate while you are still learning, and evidence gathered in the ordinary course of work costs far less than evidence reconstructed afterwards.
