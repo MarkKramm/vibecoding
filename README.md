@@ -1,5 +1,7 @@
 # Vibecoding — a free curriculum for the AI/LLM era
 
+**▶ [Read it live at markkramm.github.io/vibecoding](https://markkramm.github.io/vibecoding/)**
+
 A structured, self-paced curriculum for learning how modern AI systems actually work, how to
 build with them without shipping things you cannot verify, and how to get hired doing it.
 
