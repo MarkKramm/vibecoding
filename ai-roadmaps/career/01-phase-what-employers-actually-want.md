@@ -285,7 +285,7 @@ Point 1 is the one that cannot be faked, because it is derived from posts rather
 
 - [ ] The role genuinely requires all twelve
 - [ ] The company is not serious about hiring
-- [x] The requirements were assembled carelessly and the list is largely aspirational <!-- id: cr-01-what-employers-actually-want-q01-opt -->
+- [x] The requirements were assembled carelessly and the list is largely aspirational
 - [ ] You are unqualified and should not apply
 
 **Why:** Job posts are frequently written by copying the previous one, and they lag what the team actually needs. A three-year requirement for a two-year-old framework is arithmetic proof that nobody filtered the list. The useful reading is to find the two or three real requirements and treat the rest as a signal about the writing rather than about you.
@@ -295,7 +295,7 @@ Point 1 is the one that cannot be faked, because it is derived from posts rather
 - [ ] Because it requires no technical skill
 - [ ] Because it pays less than other roles
 - [ ] Because the work is easy to automate
-- [x] Because errors are caught quickly by a team, which lowers the cost of being wrong about you <!-- id: cr-01-what-employers-actually-want-q02-opt -->
+- [x] Because errors are caught quickly by a team, which lowers the cost of being wrong about you
 
 **Why:** The ranking in Part 3 is ordered by the cost of a bad hire, not by prestige or difficulty. Evaluation produces checkable output, so a mistake surfaces fast and cheaply, which makes organisations more willing to take a chance. The same reasoning explains why frontier research roles are the least accessible: a mistake there takes a long time to surface.
 

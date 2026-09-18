@@ -103,7 +103,7 @@ This is the single most important consequence in the phase, so state it plainly:
 
 ### Part 3 — Calibration, and the impossibility of asking
 
-A well-calibrated system says "70% likely" and is right 70% of the time. Models are, broadly, **poorly calibrated on their own uncertainty**, and there is a specific reason this is hard to fix.
+A well-calibrated system says "70% likely" and is right 70% of the time. Models are, broadly, **poorly calibrated on their own uncertainty** — this is widely reported and matches most practitioners' experience, though it varies by model, task and how confidence is elicited, so treat the strength of the claim as **Unverified** and test it on whatever model you actually use. There is a specific reason it is hard to fix.
 
 The post-training that makes a model helpful — being trained on examples where the assistant answers the question rather than refusing, and being preferred by human raters when it gives a confident, complete reply — **rewards answering.** A model trained this way learns that hedging is less preferred than confident assertion. It learns to sound sure.
 
