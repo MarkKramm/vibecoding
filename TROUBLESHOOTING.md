@@ -362,6 +362,56 @@ All three have caused this exact message.
 
 ---
 
+## A browser-driven check hangs, or dies with "unsettled top-level await"
+
+**Symptom.** A script driving Edge over CDP stops partway through and Node prints:
+
+```
+Warning: Detected unsettled top-level await at .../audit-a11y.mjs:987
+    await evalJs(HELPERS);
+    ^
+exit code 13
+```
+
+The line number moves between runs, and it may pass on a retry. It looks like flakiness. **It
+is not.** It is a leaked browser process holding the debug port.
+
+**Diagnose it — do this before touching any assertion:**
+
+```powershell
+Get-NetTCPConnection -State Listen |
+  Where-Object { $_.LocalPort -ge 9400 -and $_.LocalPort -le 9410 } |
+  ForEach-Object { "port $($_.LocalPort) held by pid $($_.OwningProcess)" }
+
+(Get-Process msedge -ErrorAction SilentlyContinue | Measure-Object).Count
+```
+
+A port still held after a run that has exited is proof. Twenty-six orphaned `msedge`
+processes accumulated here in a single afternoon.
+
+**Why it happens.** `proc.kill()` kills the process you spawned, not the tree Edge creates
+underneath it, so children survive and keep the port. If the script only reaps at its very
+end, then **anything that throws or opens a second connection leaks a browser**, the next bind
+fails, and the failure surfaces as a hang at a random later line.
+
+**Fix it, then fix the script:**
+
+```powershell
+Get-Process msedge -ErrorAction SilentlyContinue | Stop-Process -Force
+```
+
+and make the check reap its browser in a `try/finally` plus a `process.on('exit')` handler,
+killing the **tree** (`taskkill /PID <pid> /T /F` on Windows). A check that hangs when it
+cannot connect is worse than one that fails: a hang is indistinguishable from a slow page and
+gets dismissed as flakiness for months.
+
+⚠️ **The lesson generalises.** When a browser check reports something implausible — a hang, a
+stale count, an element that is definitely there reported missing — **suspect the harness before
+the page**. This has now happened eight times in this project. An unexpected result is evidence
+about your query first.
+
+---
+
 ## Where to look next
 
 | Symptom | Read |
