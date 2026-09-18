@@ -170,7 +170,15 @@ Four questions, and they have different answers:
 
 **2. Is your code used for training?** This is the one that surprises people, and it differs sharply by tier. **The verified brief in this repository records that Copilot Free uses free-tier code for training by default since 2026-04-24, including suggestions, and that Google Antigravity's free tier also trains on free-tier content.** Both offer controls, and the default is not the private one. If your repository contains anything you would not want indexed, this is a decision to make before you point a tool at it.
 
-**3. Is there an indemnity, and does it cover you?** Some vendors offer legal protection against copyright claims on generated output. Two things to check rather than assume: **whether it applies to your tier** — indemnities are frequently tied to paid plans, which means a $0-budget user may have none — and **what conditions attach**, since indemnities commonly require you to have used the tool's filters or to not have modified the output in certain ways.
+**3. Is there an indemnity, and does it cover you?** Some vendors offer legal protection against copyright claims on generated output. Two things to check rather than assume: **whether it applies to your tier** — indemnities are frequently tied to paid plans, which means a $0-budget user may have none — and **what conditions attach**.
+
+**This is no longer a hypothetical, and it is worth being concrete because it was verified.** Anthropic's Commercial Terms of Service (effective 2025-06-17, fetched in full from [anthropic.com/legal/commercial-terms](https://www.anthropic.com/legal/commercial-terms)) say the indemnity covers *"Customer's **paid** use of the Services"*. **The tier restriction is written into the clause itself** — the word "paid" is the exclusion, so a free-tier user is not covered by that clause. And §K.3 then removes the indemnity where a claim arises from *"(a) modifications made by Customer to the Services or Outputs"*.
+
+**That second exclusion is worth pausing on, because it cuts against this entire track.** Every phase here teaches you to **modify** what a model produces — reviewing it, correcting it, adapting it is the whole discipline, and Phase 8 asks you to write tests around it and rework it for shipping. Under those terms, modifying the output is one of the stated ways to lose the indemnity. The practical reading is not "never modify generated code" — that would be absurd and would defeat the point of the track — but that **the indemnity, where it exists at all, is narrower than it sounds, and on a free tier it very likely is not there.**
+
+The same section excludes claims arising from *"(b) the combination of the Services or Outputs with technology or content not provided by"* the vendor and *"(c) Inputs or other data provided by"* you. So the protection, even when purchased, does not extend to the parts you wrote or the things you combined it with.
+
+**⚠️ This is Anthropic's commercial terms only, and it must not be generalised.** GitHub's documentation pages return HTTP 200 with the navigation but truncate the article body when fetched, so **GitHub's, Google's and OpenAI's positions could not be verified this way** — OpenAI's terms pages returned HTTP 403 during earlier research and Windsurf/Devin's returns 404. The mechanism to take from this is the **shape** of the answer: look for the tier word ("paid"), then find the exclusions list, and read §K.3-style carve-outs before assuming you are covered.
 
 **4. What about the input?** If you paste third-party code into a tool, what happens to it? Privacy terms govern this, and they differ by tier in the same way.
 
@@ -201,6 +209,32 @@ against it. Architecture and the API design are mine.
 Notice what that does. It says which parts were generated — useful to a maintainer. It states the verification that was actually performed — which is the part that matters, because "AI-assisted" alone tells a colleague nothing about whether to trust it. And it does not editorialise. **The disclosure that helps is the one that reports your verification, not your tooling.**
 
 **What over-disclosure costs.** Announcing AI use where it is irrelevant invites a judgement about method in place of a judgement about the work, and it can obscure the thing a reviewer needs — which is whether this is correct and maintained. Disclose where it is material; do not perform it.
+
+### Part 5b — If you handle personal data, there is a law
+
+This section exists because the track's reader is in the Philippines and the material is specific, actionable, and — unusually for this phase — **verified from the statute text itself** rather than from a summary.
+
+**Republic Act No. 10173, the Data Privacy Act of 2012**, applies to *"the processing of all types of personal information"* and explicitly reaches entities outside the Philippines that process information about Philippine citizens or residents (§6). Full text: [lawphil.net](https://lawphil.net/statutes/repacts/ra2012/ra_10173_2012.html).
+
+**"Personal information" is broader than you think** (§3(g)): anything from which an individual's identity *"is apparent or can be reasonably and directly ascertained"*, or which combined with other information *"would directly and certainly identify an individual"*. A name and email in your database is personal information. So is an IP address in a log.
+
+Four obligations that bind a small app:
+
+**1. You need a lawful basis (§12).** One of six: consent, contract, legal obligation, vital interests, public order, or legitimate interests. Consent must be *"freely given, specific, informed"* (§3(b)) — a pre-ticked box is not consent.
+
+**2. Sensitive personal information is PROHIBITED unless an exception applies (§13).** This is the one people miss. "Sensitive" includes race, ethnic origin, marital status, age, colour, religious or political affiliation, health, education, genetic or sexual life, legal proceedings, and **government-issued identifiers including social security numbers and tax returns** (§3(l)). Consent must be *"specific to the purpose prior to the processing"*. If your app collects a birthdate or a health field, you are in this section.
+
+**3. Breach notification is mandatory (§20(f)).** If personal information is *"reasonably believed to have been acquired by an unauthorized person"* and likely to cause *"a real risk of serious harm"*, you must **promptly notify the Commission and the affected people**, describing the nature of the breach, what was involved, and what you did. Delay is permitted only to determine scope, prevent further disclosure, or restore integrity.
+
+**4. Concealing a breach is a separate crime (§30)** — 1 year 6 months to 5 years and a fine of Php500,000–1,000,000 for anyone who, knowing of a breach and of the §20(f) duty, *"intentionally or by omission conceals"* it.
+
+**The penalties scale with negligence and volume, and they attach to individuals.** §26 penalises access *"due to negligence"* — 1–3 years for personal information, and **3–6 years and up to Php4,000,000 for sensitive information**. §35 imposes the maximum when **at least 100 persons** are affected. And §34 puts liability on the *"responsible officers"* of a company who participated or *"by their gross negligence, allowed"* it — **which is what makes this a personal risk rather than only a corporate one.**
+
+**How this connects to the rest of the phase, concretely.** §20(c) requires *"reasonable and appropriate"* organisational, physical and technical measures, and §20(d) extends that duty to **third parties processing data on your behalf**. So: if your app sends user data to a model provider's API, that provider is a third party processing personal information for you, and **you remain accountable for it under §21** — *"including information that have been transferred to a third party for processing"*, using *"contractual or other reasonable means to provide a comparable level of protection"*.
+
+Which is where this phase's earlier sections stop being abstract. **The training default on a free tier is a data-protection question, not only a privacy preference.** If free-tier code may be used for training, then sending it personal data is a processing decision with a lawful-basis requirement attached. That is the concrete link between Part 4's terms review and this section, and it is the reason to read both before pointing a tool at anything real.
+
+**⚠️ This is not legal advice, and I am not a lawyer.** It is a reading of the statute text, verified from LawPhil, provided so you know which sections apply. For anything with real risk — health data, financial data, children's data — consult someone qualified.
 
 ### Part 6 — What you will not ship
 
@@ -261,6 +295,11 @@ That last line is the one that makes the checklist trustworthy, and it is the di
 13. Compare your tool's terms against the verified table in `docs/research/vibecoding-tool-landscape.md`. Note where the brief says Unverified and check whether your own reading fills the gap — and if it does, **add the source URL to the brief**. <!-- id: vb-08-shipping-what-you-build-t13 band: focused energy: normal -->
 14. Write your disclosure statement using the Part 5 shape: which parts were generated, what verification you performed, and what is yours. Keep it under four lines. Then decide, explicitly, who needs to see it. <!-- id: vb-08-shipping-what-you-build-t14 band: focused energy: normal -->
 15. Write your "will not ship" list. At least three items with reasons. An empty list means the question has not been considered, and this is the last cheap moment to consider it. <!-- id: vb-08-shipping-what-you-build-t15 band: focused energy: normal -->
+15b. **Inventory what personal data your project actually holds**, using the RA 10173 definition — anything that identifies a person alone or in combination. Include logs, caches and analytics, not only your database. Then classify each field as personal or **sensitive** under §3(l), because the sensitive list is where the strict consent requirement and the heavier penalties apply. <!-- id: vb-08-shipping-what-you-build-t19 band: deep energy: high -->
+15c. **Identify your lawful basis** under §12 for each purpose you process data for, and write it down. "Consent" requires it to be freely given, specific and informed — check whether anything you collected would actually qualify, rather than assuming a checkbox did the job. <!-- id: vb-08-shipping-what-you-build-t20 band: focused energy: high -->
+15d. Determine whether any third party receives personal data on your behalf — your model provider's API counts, and so does your hosting or analytics. Under §21 you remain accountable for it and §20(d) requires they apply equivalent measures. Check whether a data processing agreement exists and what it says. <!-- id: vb-08-shipping-what-you-build-t21 band: focused energy: high -->
+15e. Write your breach-notification plan now, before you need it: under §20(f) you must promptly notify the Commission and affected people, describing the nature of the breach and the measures taken. Note in writing that **§30 makes concealment a separate crime**, which is the single strongest argument for logging and disclosure rather than silence. <!-- id: vb-08-shipping-what-you-build-t22 band: focused energy: normal -->
+15f. **Re-read the indemnity clause for your tool** (Part 4, question 3) and check the exclusions list. Anthropic's commercial terms remove the indemnity for *"modifications made by Customer"* — and modifying generated code is what this entire track teaches. Write down what you would be relying on, and whether it survives your own workflow. <!-- id: vb-08-shipping-what-you-build-t23 band: focused energy: high -->
 16. Complete the full pre-ship checklist for your project and write it up as `portfolio/vibecoding/08-shipping-what-you-build.md`. **Every item you could not confirm goes in an explicit unconfirmed list with the reason.** A checklist with three honest gaps is more credible than one with everything ticked, and the gaps are what a reviewer actually needs. <!-- id: vb-08-shipping-what-you-build-t16 band: deep energy: high -->
 17. Do a final read of the code you are shipping, using Phase 3's three questions on the two or three most critical functions. If you cannot answer question two — what happens when it fails — for anything touching data or money, that is a finding. <!-- id: vb-08-shipping-what-you-build-t17 band: deep energy: high -->
 18. Write the README a stranger needs: what it does, how to run it, what it assumes, what it does not do. This is the handoff obligation from Phase 1, and it is the last artefact of the track. <!-- id: vb-08-shipping-what-you-build-t18 band: focused energy: normal -->
@@ -319,6 +358,11 @@ That last line is the one that makes the checklist trustworthy, and it is the di
 - [ ] I have a written "will not ship" list with at least three items <!-- id: vb-08-shipping-what-you-build-c11 energy: normal -->
 - [ ] My pre-ship checklist records what I could not confirm, and why <!-- id: vb-08-shipping-what-you-build-c12 energy: normal -->
 - [ ] I have written the README a stranger needs <!-- id: vb-08-shipping-what-you-build-c13 energy: low -->
+- [ ] If I handle personal data, I know what counts as personal and what counts as sensitive under RA 10173 <!-- id: vb-08-shipping-what-you-build-c14 energy: normal -->
+- [ ] I can name my lawful basis for processing, and it is not a pre-ticked box <!-- id: vb-08-shipping-what-you-build-c15 energy: normal -->
+- [ ] I know which third parties receive personal data, and that I remain accountable for them <!-- id: vb-08-shipping-what-you-build-c16 energy: normal -->
+- [ ] I have a breach-notification plan, and I know that concealing a breach is itself a crime <!-- id: vb-08-shipping-what-you-build-c17 energy: normal -->
+- [ ] I have read the indemnity exclusions for my tool, not just the headline coverage <!-- id: vb-08-shipping-what-you-build-c18 energy: normal -->
 
 ## Quiz
 
