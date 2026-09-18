@@ -130,6 +130,38 @@ const STEPS = [
     args: [join(HERE, "audit-css.mjs")],
     why: "the site once shipped with 40 layout classes that no stylesheet defined, and every content check stayed green while the page rendered unstyled",
   },
+  {
+    // ⚠️ THIS STEP IS DIFFERENT FROM EVERY OTHER ONE ABOVE, AND THE DIFFERENCE
+    // IS THE POINT.
+    //
+    // It needs a BROWSER and a PREVIEW SERVER, which is why the browser checks
+    // normally live in `npm run test:browser` instead of here. It is in this
+    // list anyway because accessibility is the one category where a source-level
+    // check is structurally incapable of telling the truth: `role="status"` in
+    // Search.jsx does not prove the count is announced after a query runs,
+    // `.skip` in App.jsx does not prove the skip link moves focus, and
+    // `:focus-visible` in global.css does not prove any given element gets a
+    // visible ring. Only a rendered page answers those.
+    //
+    // The precondition is handled by the script itself: if no preview server
+    // answers, it reports that it could not run and exits 0 with a loud notice,
+    // rather than failing the suite for a missing server. A step that fails for
+    // an unrelated reason gets disabled, and a disabled guard is worse than none.
+    //
+    // It runs in --strict mode: every failure exits non-zero. The three defects
+    // found on the day this check was written (two placeholder contrast failures
+    // at 3.27:1, and a skip link that moved the hash but not focus) are FIXED, so
+    // there is nothing to baseline. The counts are recorded here only so the next
+    // reader knows what a regression would look like.
+    //
+    // Note the mode is deliberately the strict one: a baseline records defects
+    // that are the site's to fix, and leaving entries in place after the fix
+    // makes the audit claim a fixed thing is still broken.
+    name: "accessibility (rendered page)",
+    cmd: "node",
+    args: [join(HERE, "audit-a11y.mjs"), "http://localhost:4173", "--strict"],
+    why: "every a11y claim in this project was hand-checked, and a hand-check of accessibility has one specific failure mode: the attribute is in the SOURCE and the rendered page does something else. Eleven other steps read data; this is the only one that asks a browser what a keyboard-only or screen-reader user actually gets. It catches the class nothing else can see — a skip link that scrolls without moving focus (shipped), placeholder text at 3.27:1 because ::placeholder was styled for one input and not another (shipped), an icon control with no accessible name, a heading level skipped, or a control that takes focus with no visible indicator. Without it, all of those reach the reader silently, and the suite stays green",
+  },
 ];
 
 let failed = 0;
