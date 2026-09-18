@@ -108,7 +108,7 @@ Budget an extra session if you have never used a spreadsheet or a SQL query. The
 
 | Tool | Purpose | Cost | Link | Task | Free alternative |
 |---|---|---|---|---|---|
-| Provider usage dashboard | See what you have already spent, per model and per day | Free with any account, terms and retention vary — check yours | https://platform.openai.com/docs/guides/rate-limits | Record your last seven days of usage as a baseline | Anthropic, Google, and others publish equivalent consoles on their free tiers |
+| Provider usage dashboard | See what you have already spent, per model and per day | Free with any account, terms and retention vary — check yours | https://developers.openai.com/api/docs/guides/rate-limits | Record your last seven days of usage as a baseline | Anthropic, Google, and others publish equivalent consoles on their free tiers |
 | Python 3 | Write the logging wrapper and the budget guard | Free | https://www.python.org/downloads/ | Build the cost-tracking wrapper you use for the rest of the track | Any language; the arithmetic is identical |
 | SQLite | Store one row per call and query it later | Free | https://www.sqlite.org/index.html | Store your call log and answer "which caller cost the most last week" | A CSV file plus a spreadsheet |
 | `tiktoken` | Estimate tokens before you send, for the budget check | Free | https://github.com/openai/tiktoken | Compare your estimate against the provider's reported count | Provider token-count endpoint; see the OpenAI docs for `POST /v1/responses/input_tokens` |
@@ -121,10 +121,10 @@ Budget an extra session if you have never used a spreadsheet or a SQL query. The
 
 ## Free/cheap resources
 
-- **OpenAI — Rate limits guide** — https://platform.openai.com/docs/guides/rate-limits
-- **OpenAI — API usage and cost endpoints** — https://platform.openai.com/docs/api-reference/usage
-- **Anthropic — Rate limits** — https://docs.claude.com/en/api/rate-limits
-- **Anthropic — Usage and cost API** — https://docs.claude.com/en/api/usage-cost-api
+- **OpenAI — Rate limits guide** — https://developers.openai.com/api/docs/guides/rate-limits
+- **OpenAI — API usage and cost endpoints** — https://developers.openai.com/api/docs/api-reference/usage
+- **Anthropic — Rate limits** — https://platform.claude.com/docs/en/api/rate-limits
+- **Anthropic — Usage and cost API** — https://platform.claude.com/docs/en/api/usage-cost-api
 - **Google — Gemini API rate limits** — https://ai.google.dev/gemini-api/docs/rate-limits
 - **Google Cloud — Budgets and alerting** — https://cloud.google.com/billing/docs/how-to/budgets
 - **MDN — HTTP 429 Too Many Requests** — https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429

@@ -95,7 +95,7 @@ The reading here is short compared to the measurement work. The whole phase turn
 | Python + the OpenAI Python library | Script the sample-and-vote loop and the faithfulness experiment reproducibly | Free, open source | https://github.com/openai/openai-python | Run tasks 4 and 9 — the voting script and the shuffled-example faithfulness test | Any HTTP client; the API is a plain POST |
 | tiktoken | Measure the token cost multiplier of each technique so the cost claims are yours, not mine | Free, open source | https://github.com/openai/tiktoken | Run task 7 — count tokens for direct, CoT, and 10-sample self-consistency | Hugging Face `transformers` tokenizers |
 | LibreOffice Calc | Tabulate the six-technique comparison and compute vote agreement | Free, open source | https://www.libreoffice.org/ | Run task 3 — the comparison matrix from tasks 1 and 2 | Google Sheets in any browser |
-| Anthropic prompt engineering docs | See a current provider's position on reasoning models and when not to add CoT instruction | Free to read | https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview | Run task 10 — find and summarise the current guidance, with the date you read it | The current prompt-guide docs of any provider you have access to |
+| Anthropic prompt engineering docs | See a current provider's position on reasoning models and when not to add CoT instruction | Free to read | https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview | Run task 10 — find and summarise the current guidance, with the date you read it | The current prompt-guide docs of any provider you have access to |
 
 ## Free/cheap resources
 
@@ -108,7 +108,7 @@ The reading here is short compared to the measurement work. The whole phase turn
 - **Google AI Studio** — https://aistudio.google.com/
 - **Ollama** — https://ollama.com/
 - **tiktoken repository (open-source tokenizer)** — https://github.com/openai/tiktoken
-- **Anthropic — Prompt engineering overview** — https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview
+- **Anthropic — Prompt engineering overview** — https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview
 
 ## Lesson: Reasoning You Can Elicit, and Reasoning You Cannot Trust
 

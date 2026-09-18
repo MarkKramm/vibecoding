@@ -112,10 +112,10 @@ The reading is short. The counting is where the understanding lands — this pha
 - **OpenAI — Counting tokens (the input token count endpoint)** — https://developers.openai.com/api/docs/guides/token-counting
 - **OpenAI — Prompt caching (cache writes, reads, TTL, and the break-even arithmetic)** — https://developers.openai.com/api/docs/guides/prompt-caching
 - **OpenAI — Batch API (the discount and the turnaround window)** — https://developers.openai.com/api/docs/guides/batch
-- **Anthropic — Prompt caching (the 1.25x / 2x write and 0.1x read multipliers, spelled out)** — https://docs.claude.com/en/docs/build-with-claude/prompt-caching
+- **Anthropic — Prompt caching (the 1.25x / 2x write and 0.1x read multipliers, spelled out)** — https://platform.claude.com/docs/en/build-with-claude/prompt-caching
 - **Anthropic — Pricing (a page that exposes the multipliers as a table)** — https://platform.claude.com/docs/en/about-claude/pricing
-- **Anthropic — Batch processing** — https://docs.claude.com/en/docs/build-with-claude/batch-processing
-- **Anthropic — Token counting** — https://docs.claude.com/en/docs/build-with-claude/token-counting
+- **Anthropic — Batch processing** — https://platform.claude.com/docs/en/build-with-claude/batch-processing
+- **Anthropic — Token counting** — https://platform.claude.com/docs/en/build-with-claude/token-counting
 - **Google — Gemini API pricing (shows how per-modality pricing is presented)** — https://ai.google.dev/gemini-api/docs/pricing
 - **Google — Gemini API token counting** — https://ai.google.dev/gemini-api/docs/tokens
 - **Hugging Face — Summary of the tokenizers** — https://huggingface.co/docs/transformers/tokenizer_summary

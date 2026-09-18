@@ -130,8 +130,8 @@ If you only have three hours this week, do tasks 1, 3, 5 and 9. Those four produ
 - **Anthropic — pricing** — https://www.anthropic.com/pricing
 - **Google — Gemini API pricing** — https://ai.google.dev/gemini-api/docs/pricing
 - **Google — Gemini API rate limits** — https://ai.google.dev/gemini-api/docs/rate-limits
-- **OpenAI — rate limits guide** — https://platform.openai.com/docs/guides/rate-limits
-- **OpenAI — data usage and retention policies** — https://platform.openai.com/docs/guides/your-data
+- **OpenAI — rate limits guide** — https://developers.openai.com/api/docs/guides/rate-limits
+- **OpenAI — data usage and retention policies** — https://developers.openai.com/api/docs/guides/your-data
 - **Anthropic — privacy and data retention** — https://privacy.anthropic.com/
 - **Model Context Protocol — specification** — https://modelcontextprotocol.io/
 - **Philippine Statistics Authority — Data Privacy Act of 2012 (Republic Act No. 10173) full text** — https://privacy.gov.ph/data-privacy-act/

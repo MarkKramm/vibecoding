@@ -99,7 +99,7 @@ There is one task in here that will eat a whole evening if you let it: getting a
 |---|---|---|---|---|---|
 | Pydantic (Python) | Define the target shape once, validate parsed output, and generate the JSON Schema you send to the model | Free, open source | https://docs.pydantic.dev/latest/ | Tasks 2, 6 | `jsonschema` for validation, and hand-written dataclasses with your own checks |
 | jsonschema (Python) | Validate a parsed dict against a JSON Schema document independently of any framework | Free, open source | https://python-jsonschema.readthedocs.io/ | Tasks 6, 7 | `pydantic` for the same job, or `ajv` if you prefer JavaScript |
-| OpenAI Structured Outputs docs | The reference for the hosted schema-constrained rung, including the supported and unsupported JSON Schema keywords | Free to read (API calls are paid) | https://platform.openai.com/docs/guides/structured-outputs | Tasks 4, 5 | Gemini or Mistral schema-constrained modes, or the local path below at zero cost per token |
+| OpenAI Structured Outputs docs | The reference for the hosted schema-constrained rung, including the supported and unsupported JSON Schema keywords | Free to read (API calls are paid) | https://developers.openai.com/api/docs/guides/structured-outputs | Tasks 4, 5 | Gemini or Mistral schema-constrained modes, or the local path below at zero cost per token |
 | outlines | Grammar- and regex-constrained generation for open-weight models, in Python | Free, open source | https://github.com/dottxt-ai/outlines | Task 10 | llama.cpp GBNF grammars, or vLLM guided decoding |
 | llama.cpp | Run a small open-weight model locally and constrain it with a GBNF grammar you write by hand | Free, open source | https://github.com/ggml-org/llama.cpp | Task 11 | `outlines` with a transformer backend, or Ollama with a model that supports format constraints |
 | vLLM guided decoding | Server-side constrained decoding at throughput, with JSON Schema, regex, choice, and grammar backends | Free, open source | https://docs.vllm.ai/en/latest/features/structured_outputs.html | Task 12 | llama.cpp server, which exposes the same idea over an OpenAI-compatible endpoint |
@@ -109,8 +109,8 @@ There is one task in here that will eat a whole evening if you let it: getting a
 
 - **Pydantic documentation** — https://docs.pydantic.dev/latest/
 - **JSON Schema, the specification and understanding docs** — https://json-schema.org/understanding-json-schema
-- **OpenAI Structured Outputs guide** — https://platform.openai.com/docs/guides/structured-outputs
-- **OpenAI function calling guide** — https://platform.openai.com/docs/guides/function-calling
+- **OpenAI Structured Outputs guide** — https://developers.openai.com/api/docs/guides/structured-outputs
+- **OpenAI function calling guide** — https://developers.openai.com/api/docs/guides/function-calling
 - **outlines documentation** — https://dottxt-ai.github.io/outlines/latest/
 - **llama.cpp GBNF grammar README** — https://github.com/ggml-org/llama.cpp/blob/master/grammars/README.md
 - **vLLM structured outputs documentation** — https://docs.vllm.ai/en/latest/features/structured_outputs.html

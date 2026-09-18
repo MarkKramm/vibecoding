@@ -89,7 +89,7 @@ If you only have two hours this week, do tasks 1, 3 and 11. Those give you the l
 | Google Colab | Free GPU to feel what training is like before committing to it | Freemium | https://colab.research.google.com/ | Task t09 — a tiny LoRA run so the cost is concrete | Kaggle Notebooks (also free GPU, usually a longer weekly quota) |
 | Kaggle Notebooks | Alternative free GPU with a generous weekly quota | Freemium | https://www.kaggle.com/code | Task t09 — use whichever gives you more hours this week | Colab free tier |
 | Hugging Face Hub | Find open-weight models and their licences | Free/open-source | https://huggingface.co/models | Task t10 — check the licence of a model you might train | Model cards on the provider's own site |
-| The base model's own documentation | Confirm what a provider's fine-tuning service actually supports | Freemium | https://platform.openai.com/docs/guides/fine-tuning | Task t07 — read the vendor's own guidance before believing a blog post | Open-weight model documentation |
+| The base model's own documentation | Confirm what a provider's fine-tuning service actually supports | Freemium | https://developers.openai.com/api/docs/guides/fine-tuning | Task t07 — read the vendor's own guidance before believing a blog post | Open-weight model documentation |
 
 ## Free/cheap resources
 

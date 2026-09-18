@@ -90,7 +90,7 @@ Resist the urge to add features on day 1. The harness you run beats the framewor
 | `pytest` | Optional runner if you prefer assertions | Free/open-source | https://docs.pytest.org/ | Task t05 — or skip it entirely | A plain script that exits non-zero |
 | Promptfoo | Comparative runs across models without writing the loop | Free/open-source | https://www.promptfoo.dev/ | Task t12 — the migration drill | Your own harness, which is the point of the phase |
 | Weights & Biases | Store runs so deltas survive across sessions | Freemium | https://wandb.ai/ | Task t06 — tracking the baseline | A JSON file committed to git |
-| Batch API | Run a large suite at a reduced rate | Freemium | https://platform.openai.com/docs/guides/batch | Task t08 — measuring the saving | Your provider's equivalent, or spread runs across days |
+| Batch API | Run a large suite at a reduced rate | Freemium | https://developers.openai.com/api/docs/guides/batch | Task t08 — measuring the saving | Your provider's equivalent, or spread runs across days |
 | SQLite | Record every run so stability comes from data | Free/open-source | https://sqlite.org/ | Task t11 — one row per run per case | JSONL appended to a file |
 
 ## Free/cheap resources

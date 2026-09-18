@@ -159,8 +159,8 @@ Wednesday is the important day and it is not reading. You cannot recognise a fai
 - **OWASP GenAI Security Project** — https://genai.owasp.org/
 - **Gandalf (prompt injection demo by Lakera)** — https://gandalf.lakera.ai/
 - **Model Context Protocol** — https://modelcontextprotocol.io/
-- **Anthropic — Reduce hallucinations** — https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-hallucinations
-- **OpenAI — Prompt engineering guide** — https://platform.openai.com/docs/guides/prompt-engineering
+- **Anthropic — Reduce hallucinations** — https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations
+- **OpenAI — Prompt engineering guide** — https://developers.openai.com/api/docs/guides/prompt-engineering
 - **Google — Prompt design strategies (Gemini API docs)** — https://ai.google.dev/gemini-api/docs/prompting-strategies
 - **NIST AI Risk Management Framework** — https://www.nist.gov/itl/ai-risk-management-framework
 

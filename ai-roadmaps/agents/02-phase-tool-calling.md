@@ -113,7 +113,7 @@ Most of the work is in the execution layer, and it is ordinary software engineer
 - **JSON Schema — the specification your parameter schemas follow** — https://json-schema.org/
 - **Anthropic — Building effective agents** — https://www.anthropic.com/engineering/building-effective-agents
 - **Anthropic — Writing tools for agents** — https://www.anthropic.com/engineering/writing-tools-for-agents
-- **OpenAI — Function calling guide** — https://platform.openai.com/docs/guides/function-calling
+- **OpenAI — Function calling guide** — https://developers.openai.com/api/docs/guides/function-calling
 
 ## Lesson: Your Code Executes, Not the Model
 

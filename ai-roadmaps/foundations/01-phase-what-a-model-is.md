@@ -87,8 +87,8 @@ This is the shortest phase in the curriculum and one of the most important. Do n
 - **Andrej Karpathy — Deep Dive into LLMs** — https://www.youtube.com/watch?v=7xTGNNLPyMI
 - **The Illustrated Transformer, Jay Alammar** — https://jalammar.github.io/illustrated-transformer/
 - **3Blue1Brown — But what is a GPT?** — https://www.youtube.com/watch?v=wjZofJX0v4M
-- **Anthropic — Intro to Claude (concepts)** — https://docs.claude.com/en/docs/intro-to-claude
-- **OpenAI — Prompt Engineering Guide** — https://platform.openai.com/docs/guides/prompt-engineering
+- **Anthropic — Intro to Claude (concepts)** — https://platform.claude.com/docs/en/intro-to-claude
+- **OpenAI — Prompt Engineering Guide** — https://developers.openai.com/api/docs/guides/prompt-engineering
 
 ## Lesson: The Machine That Guesses the Next Word
 

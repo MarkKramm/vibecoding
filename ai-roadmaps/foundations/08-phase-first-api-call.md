@@ -107,17 +107,17 @@ Budget an extra hour if you have never installed a package or set an environment
 
 ## Free/cheap resources
 
-- **OpenAI — API reference** — https://platform.openai.com/docs/api-reference
-- **OpenAI — Text generation guide** — https://platform.openai.com/docs/guides/text
-- **Anthropic — Messages API reference** — https://docs.claude.com/en/api/messages
-- **Anthropic — Streaming messages** — https://docs.claude.com/en/docs/build-with-claude/streaming
+- **OpenAI — API reference** — https://developers.openai.com/api/docs/api-reference
+- **OpenAI — Text generation guide** — https://developers.openai.com/api/docs/guides/text
+- **Anthropic — Messages API reference** — https://platform.claude.com/docs/en/api/messages
+- **Anthropic — Streaming messages** — https://platform.claude.com/docs/en/build-with-claude/streaming
 - **Google — Gemini API quickstart** — https://ai.google.dev/gemini-api/docs/quickstart
 - **Microsoft — Azure OpenAI REST quickstart** — https://learn.microsoft.com/en-us/azure/ai-services/openai/quickstart
 - **Ollama — OpenAI compatibility layer** — https://github.com/ollama/ollama/blob/main/docs/openai.md
 - **MDN — Using server-sent events** — https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
 - **Python — `os.environ` and environment variables** — https://docs.python.org/3/library/os.html#os.environ
 - **GitHub — Removing sensitive data from a repository** — https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository
-- **OpenAI — Rate limits guide** — https://platform.openai.com/docs/guides/rate-limits
+- **OpenAI — Rate limits guide** — https://developers.openai.com/api/docs/guides/rate-limits
 
 ## Lesson: The Request Is the Program
 

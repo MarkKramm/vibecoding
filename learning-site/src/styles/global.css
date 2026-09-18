@@ -3632,3 +3632,700 @@ p em {
     margin: 18mm 16mm;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   App shell — the top-level frame
+   ---------------------------------------------------------------------------
+   App.jsx renders a column: a skip link, a top bar, the scrolling main region,
+   and a footer. The sidebar/`.content` pair that `.app-shell` styles belongs to
+   a different shell and is not this one, so the frame is built here from the
+   classes App.jsx actually uses. `min-height: 100%` plus a column direction
+   keeps the footer at the bottom of a short page without pinning it there on a
+   long one.
+   --------------------------------------------------------------------------- */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding: var(--space-6);
+}
+
+/* --- Skip link ---
+   Visually hidden until it takes focus, which is the only moment it is useful.
+   It cannot use `.sr-only`: that sets `clip` and `overflow: hidden`, and a
+   clipped element cannot be revealed by `:focus`. It is positioned off the top
+   of the viewport instead, and slides down when focused, so the first Tab on
+   every page lands somewhere visible rather than on nothing. */
+.skip {
+  position: absolute;
+  top: 0;
+  left: var(--space-3);
+  z-index: 60;
+  transform: translateY(-200%);
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+  border-radius: 0 0 var(--space-1) var(--space-1);
+  transition: transform var(--transition-fast);
+}
+
+.skip:focus {
+  transform: translateY(0);
+  color: var(--text-on-accent);
+  text-decoration: none;
+}
+
+/* --- Topbar ---
+   Brand on the left, view tabs in the middle, progress and icon controls on the
+   right. `flex-wrap` is what keeps this from overflowing on a phone: below the
+   narrow breakpoint the nav drops to its own full-width row instead of pushing
+   the controls off the edge. */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-3) var(--space-6);
+}
+
+/* The brand is a <button> so it can be a real navigation control; it is styled
+   as text, because a site title that looks like a button reads as a control the
+   reader does not yet understand. */
+.topbar__brand {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* The controls are pushed to the right edge and never shrink below their
+   content; the nav is the row that gives before they do. */
+.topbar__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  font-size: var(--text-sm);
+}
+
+/* A square control whose visible label is a single glyph. The accessible name
+   comes from `aria-label` in App.jsx, so this only has to be big enough to hit
+   and quiet enough to sit beside the nav. */
+.iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 34px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--text-base);
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.iconbtn:hover {
+  background: var(--bg-subtle);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* --- Footer ---
+   Two muted paragraphs, so most of the work is removing the trailing margin and
+   stopping the measure running the full width of a wide screen. */
+.footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  padding: var(--space-5) var(--space-6);
+  margin-top: auto;
+}
+
+.footer p {
+  margin: 0 0 var(--space-2);
+  max-width: var(--content-reading);
+}
+
+.footer > :last-child {
+  margin-bottom: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Navigation buttons and inline text buttons
+   ---------------------------------------------------------------------------
+   `.navbtn` is the top bar's view tab. It is not `.btn` — a page of filled
+   accent buttons would compete with the primary action on every card — so it
+   borrows the sidebar link's treatment instead: muted text, a subtle fill on
+   hover, and the accent reserved for the current view.
+   --------------------------------------------------------------------------- */
+
+.navbtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--space-1);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.navbtn:hover {
+  background: var(--bg-subtle);
+  color: var(--text);
+}
+
+.navbtn.is-on {
+  background: var(--bg-subtle);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* A <button> that reads as a link. Used for cross-view navigation where an
+   anchor would be wrong — there is no URL to point at — but the reader must
+   still see that it is something to click. */
+.linkish {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--accent);
+  text-align: left;
+  cursor: pointer;
+}
+
+.linkish:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.linkish:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.linkish:disabled:hover {
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Page furniture — heads, breadcrumbs and plain lists
+   ---------------------------------------------------------------------------
+   `.page__head` is the shared title block on the pages that do not carry the
+   dashboard's progress ring (Search, Reference, Tools library). Capping the
+   intro paragraph keeps it at a readable measure instead of running to 1,400px.
+   --------------------------------------------------------------------------- */
+
+.page__head {
+  margin-bottom: var(--space-5);
+}
+
+.page__head h1 {
+  margin-bottom: var(--space-2);
+}
+
+.page__head p {
+  max-width: var(--content-reading);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-4);
+}
+
+/* Lists that carry no marker of their own. The caller supplies the structure —
+   a skills list, a topic group, the deliverable items — and a bullet on each
+   would be noise, since every one of them is already inside a titled section. */
+.plainlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plainlist > li {
+  margin-bottom: var(--space-2);
+}
+
+.plainlist > li:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Dashboard
+   --------------------------------------------------------------------------- */
+
+/* The title sits beside the progress ring on a wide screen. The ring is the
+   headline number, so it keeps its width and the text column absorbs the
+   remainder. */
+.dashboard__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+
+.dashboard__head > :first-child {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.dashboard__head p {
+  max-width: var(--content-reading);
+  margin-bottom: 0;
+}
+
+/* The corpus counts. `auto-fill`/`minmax` rather than a fixed column count so
+   the six numbers tile three-up on a laptop and two-up on a phone without a
+   breakpoint for each. Each cell is a <div> wrapping a <dt>/<dd> pair, because
+   the description list's default block layout would stack the six pairs into
+   one column — which is exactly what it did before this rule existed. */
+.statgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-4) 0 0;
+}
+
+.statgrid dt {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.statgrid dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+/* The muted " of 11 written" suffix is a note on the number, not a second
+   number, so it drops back to body size inside the large value. */
+.statgrid dd .muted {
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+/* A track's heading and its phase count share a row. */
+.trackblock__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-2);
+}
+
+.trackblock__head h2 {
+  margin: 0;
+}
+
+/* The phase cards within one track. Same tiling rule as `.phase-grid`, which
+   styles the standalone grid on other pages; both exist because the dashboard
+   nests its cards inside a track card and needs the bottom margin removed. */
+.phasegrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-3);
+  align-items: stretch;
+  margin-top: var(--space-4);
+}
+
+.phasegrid .phase-card {
+  margin-bottom: 0;
+  height: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+   Phase detail
+   --------------------------------------------------------------------------- */
+
+.phase__head {
+  margin-bottom: var(--space-5);
+}
+
+.phase__head h1 {
+  margin-bottom: var(--space-2);
+}
+
+/* The goal is the phase's one-line promise. It is given a left accent rule so
+   it reads as a statement of intent rather than as another paragraph of meta,
+   which is what the muted duration line above it already is. */
+.phase__goal {
+  border-left: 3px solid var(--accent);
+  padding-left: var(--space-4);
+  font-size: var(--text-lg);
+  color: var(--text);
+  max-width: var(--content-reading);
+  margin: var(--space-4) 0;
+}
+
+/* One authored topic cluster: a heading and the items under it. The spacing
+   separates clusters from each other, since the heading alone is a weak break
+   when every item is the same size. */
+.topicgroup {
+  margin-bottom: var(--space-4);
+}
+
+.topicgroup h4 {
+  margin: 0 0 var(--space-2);
+}
+
+.topicgroup:last-child {
+  margin-bottom: 0;
+}
+
+/* Resources are names with URLs. The list has no decoration, but the links are
+   inline-block so a long name wraps as a unit rather than breaking mid-word. */
+.reslist > li {
+  margin-bottom: var(--space-2);
+}
+
+.reslist a {
+  overflow-wrap: anywhere;
+}
+
+/* The checklist is a stack of `.check` labels with no list markers, because the
+   checkbox is the marker. */
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Tool grids and the toolbar above them
+   ---------------------------------------------------------------------------
+   `.toolgrid` is the phase's "Tools for this phase" card list; `.toolgrid--wide`
+   is the tools library, where the same cards are the page's whole content, so
+   it is allowed a narrower minimum and therefore more columns.
+   --------------------------------------------------------------------------- */
+
+.toolgrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.toolgrid > li {
+  min-width: 0;
+}
+
+.toolgrid--wide {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+/* The provenance line under a tool card in the library. */
+.toolprov {
+  font-size: var(--text-sm);
+  margin: var(--space-2) 0 0;
+}
+
+/* A filter row: a group of chips on the left, a search field on the right. It
+   stays one row until the chips can no longer fit beside the field, then wraps. */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+
+.toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.toolbar__search {
+  flex: 1 1 220px;
+  max-width: 320px;
+}
+
+.toolbar__search input {
+  width: 100%;
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--text);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+
+/* The current filter. `.chip.is-on` is the class ToolsLibrary and Shared render;
+   `.chip.is-active` above is the equivalent state on the older controls. Both
+   spellings are live, so both are given the same treatment rather than one
+   silently doing nothing. */
+.chip.is-on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Search
+   --------------------------------------------------------------------------- */
+
+.searchpage {
+  max-width: var(--content-reading);
+}
+
+.searchform {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.searchform input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+}
+
+.searchform button {
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-on-accent);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.searchform button:hover {
+  background: var(--accent-hover);
+}
+
+.searchmeta {
+  font-size: var(--text-sm);
+}
+
+/* A search term the reader typed, quoted back to them. Monospace distinguishes
+   the term from the prose sentence it is embedded in. */
+.term {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
+  font-size: var(--text-sm);
+  background: var(--bg-subtle);
+  border-radius: var(--space-1);
+  padding: 0 var(--space-1);
+  color: var(--text);
+}
+
+.results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.results > li {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.results > li:last-child {
+  border-bottom: none;
+}
+
+/* The result headline is a button, so it must not inherit the muted weight of
+   the provenance line that follows it on the same row. */
+.result__head {
+  font-size: var(--text-base);
+  font-weight: 600;
+  margin-right: var(--space-2);
+}
+
+.result__where {
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   Reference and tools library pages
+   --------------------------------------------------------------------------- */
+
+.sharedpage,
+.tools-library {
+  max-width: var(--content-wide);
+}
+
+/* ---------------------------------------------------------------------------
+   Data transfer — a row label in the import review
+   --------------------------------------------------------------------------- */
+
+.data-transfer__label {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------------------------
+   Small screens for the blocks added above
+   ---------------------------------------------------------------------------
+   The existing 560px pass covers the lesson furniture. These are the few rules
+   that need to change below it: the padding on the frame, the topbar's rows,
+   and the two grids whose minimum column width is wider than a phone. The
+   topbar nav is allowed to scroll horizontally rather than overflow, because
+   four view tabs at a 40px touch target do not fit across 390px.
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .main {
+    padding: var(--space-4) var(--space-3) var(--space-7);
+  }
+
+  .topbar {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .topbar__brand {
+    font-size: var(--text-base);
+  }
+
+  .topbar__nav {
+    order: 3;
+    flex-basis: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    /* The scrollbar would sit across a 40px-tall row and eat most of it. */
+    scrollbar-width: none;
+  }
+
+  .topbar__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .topbar__meta {
+    font-size: var(--text-xs);
+  }
+
+  .navbtn,
+  .iconbtn {
+    min-height: 40px;
+  }
+
+  .iconbtn {
+    min-width: 40px;
+  }
+
+  .footer {
+    padding: var(--space-5) var(--space-3);
+  }
+
+  /* A 300px minimum card cannot fit a 390px viewport once the frame's padding
+     is subtracted, so both grids collapse to one column. */
+  .phasegrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statgrid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .statgrid dd {
+    font-size: var(--text-xl);
+  }
+
+  .toolgrid,
+  .toolgrid--wide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .toolbar {
+    gap: var(--space-3);
+  }
+
+  .toolbar__search {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .searchform {
+    flex-wrap: wrap;
+  }
+
+  .searchform input {
+    flex-basis: 100%;
+  }
+
+  .searchform button {
+    min-height: 40px;
+    width: 100%;
+  }
+}
+
+/* --- Answered-task state ---
+   TaskList appends this modifier when a task has a saved answer, and renders a
+   `.task__dot` beside the text. Before this rule the dot was the ONLY cue that a
+   task had been answered, so a long task list gave no sense of how much was
+   left. A left border duplicates the signal without relying on colour, so the
+   state still reads on a greyscale display or with a colour-vision difference. */
+.task--answered {
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--accent);
+}
+
+/* --- Open notes panel ---
+   NotesPanel toggles this modifier with `open`, and the panel is the only place
+   a reader can write. Collapsed it is a single row in a long reading page;
+   open it should read as a distinct surface rather than blending into the
+   lesson behind it, so it gets a subtle background lift and a visible boundary. */
+.notes--open {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+}

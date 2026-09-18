@@ -91,7 +91,7 @@ The filtering step on day 3 is where this technique is won or lost. Do not compr
 
 | Tool | Purpose | Cost | Link | Task | Free alternative |
 |---|---|---|---|---|---|
-| Your existing teacher system | Generates the training data | Freemium | https://platform.openai.com/docs/api-reference | Task t03 — run it over representative inputs | Any model access you already have, including a strong free-tier model |
+| Your existing teacher system | Generates the training data | Freemium | https://developers.openai.com/api/docs/api-reference | Task t03 — run it over representative inputs | Any model access you already have, including a strong free-tier model |
 | Unsloth | Trains the student efficiently on free hardware | Free/open-source | https://github.com/unslothai/unsloth | Task t08 — QLoRA on the distilled set | `peft` + `trl` directly |
 | `datasets` | Build and filter the distilled dataset | Free/open-source | https://huggingface.co/docs/datasets/index | Tasks t04–t06 — filtering at scale | JSON files and plain Python |
 | `pytest` | The evaluation both comparisons depend on | Free/open-source | https://docs.pytest.org/ | Task t10 — score teacher and student identically | Any runner that exits non-zero |

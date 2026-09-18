@@ -63,7 +63,7 @@ The concepts take an afternoon. The rest of the week is the hands-on task, which
 
 | Tool | Purpose | Cost | Link | Task | Free alternative |
 |---|---|---|---|---|---|
-| Provider batch endpoints | Submit many requests as one asynchronous job | Free to submit; tokens billed at a discount | https://platform.openai.com/docs/guides/batch | Submit your eval set as a batch job and compare wall-clock to an interactive loop | Google AI Studio, or any provider with an async/batch mode |
+| Provider batch endpoints | Submit many requests as one asynchronous job | Free to submit; tokens billed at a discount | https://developers.openai.com/api/docs/guides/batch | Submit your eval set as a batch job and compare wall-clock to an interactive loop | Google AI Studio, or any provider with an async/batch mode |
 | SQLite | Track job state and reconcile partial failures | Free/open-source | https://sqlite.org/ | Store one row per request with a status column | A CSV file and a text editor |
 | jq | Inspect and slice batch result files | Free/open-source | https://jqlang.github.io/jq/ | Extract only the failed request IDs from a result file | Python's `json` module |
 | Python `concurrent.futures` | The interactive baseline you are comparing against | Free | https://docs.python.org/3/library/concurrent.futures.html | Run the same job interactively to get a real comparison | A simple `for` loop |
@@ -72,12 +72,12 @@ The concepts take an afternoon. The rest of the week is the hands-on task, which
 
 ## Free/cheap resources
 
-- **OpenAI — Batch API guide** — https://platform.openai.com/docs/guides/batch
-- **Anthropic — Message Batches** — https://docs.claude.com/en/docs/build-with-claude/batch-processing
+- **OpenAI — Batch API guide** — https://developers.openai.com/api/docs/guides/batch
+- **Anthropic — Message Batches** — https://platform.claude.com/docs/en/build-with-claude/batch-processing
 - **Google — Vertex AI batch predictions** — https://cloud.google.com/vertex-ai/docs/predictions/batch-predictions
 - **Python — concurrent.futures** — https://docs.python.org/3/library/concurrent.futures.html
 - **jq manual** — https://jqlang.github.io/jq/manual/
-- **OpenAI — Rate limits guide** — https://platform.openai.com/docs/guides/rate-limits
+- **OpenAI — Rate limits guide** — https://developers.openai.com/api/docs/guides/rate-limits
 
 ## Lesson: Trading Patience for Money
 

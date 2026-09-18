@@ -136,8 +136,8 @@ Nothing here needs a paid account. A free tier of any chat interface plus, if yo
 - **From Local to Global: A Graph RAG Approach to Query-Focused Summarization (Edge et al., 2024)** — https://arxiv.org/abs/2404.16130
 - **Model Context Protocol — specification and introduction** — https://modelcontextprotocol.io/
 - **OpenAI tokenizer (tiktoken), the tool used to count tokens locally** — https://github.com/openai/tiktoken
-- **Anthropic prompt engineering documentation** — https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview
-- **OpenAI prompt engineering guide** — https://platform.openai.com/docs/guides/prompt-engineering
+- **Anthropic prompt engineering documentation** — https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview
+- **OpenAI prompt engineering guide** — https://developers.openai.com/api/docs/guides/prompt-engineering
 - **Andrej Karpathy — Let's build GPT from scratch (why position and attention interact at all)** — https://www.youtube.com/watch?v=kCc8FmEb1nY
 - **Hugging Face LLM course** — https://huggingface.co/learn/llm-course
 

@@ -73,6 +73,12 @@ const STEPS = [
     args: [join(HERE, "audit-encoding.mjs")],
     why: "a CRLF file or a mojibake em dash is invisible in review and looks fine in an editor",
   },
+  {
+    name: "css wiring",
+    cmd: "node",
+    args: [join(HERE, "audit-css.mjs")],
+    why: "the site once shipped with 40 layout classes that no stylesheet defined, and every content check stayed green while the page rendered unstyled",
+  },
 ];
 
 let failed = 0;

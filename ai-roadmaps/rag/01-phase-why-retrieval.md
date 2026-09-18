@@ -71,7 +71,7 @@ Most of this phase is reasoning rather than building. The hands-on tasks are dia
 
 - **Lewis et al. — Retrieval-Augmented Generation (arXiv:2005.11401)** — https://arxiv.org/abs/2005.11401
 - **Anthropic — Contextual Retrieval** — https://www.anthropic.com/news/contextual-retrieval
-- **Anthropic — Context windows** — https://docs.claude.com/en/docs/build-with-claude/context-windows
+- **Anthropic — Context windows** — https://platform.claude.com/docs/en/build-with-claude/context-windows
 - **Liu et al. — Lost in the Middle (arXiv:2307.03172)** — https://arxiv.org/abs/2307.03172
 - **Pinecone — What is RAG?** — https://www.pinecone.io/learn/retrieval-augmented-generation/
 - **Jay Alammar — The Illustrated Word2vec** — https://jalammar.github.io/illustrated-word2vec/

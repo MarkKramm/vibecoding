@@ -90,7 +90,7 @@ The reading is not long, but the *measurement* work is where the understanding l
 
 | Tool | Purpose | Cost | Link | Task | Free alternative |
 |---|---|---|---|---|---|
-| OpenAI Tokenizer playground | See exactly how text splits into tokens, live | Free | https://platform.openai.com/tokenizer | Paste a paragraph of English, then the same paragraph in Filipino, and compare counts | Any open tokenizer demo, or the `tiktoken` Python package run locally |
+| OpenAI Tokenizer playground | See exactly how text splits into tokens, live | Free | https://developers.openai.com/api/docs/guides/token-counting | Paste a paragraph of English, then the same paragraph in Filipino, and compare counts | Any open tokenizer demo, or the `tiktoken` Python package run locally |
 | Google AI Studio | A free API key for real token counting on real requests | Free tier | https://aistudio.google.com/ | Send a long prompt and read the reported input/output token counts | Any provider's free tier that returns usage numbers |
 | tiktoken (Python package) | Count tokens programmatically so you can measure a whole file | Free, open source | https://github.com/openai/tiktoken | Write a script that counts tokens across a folder of your own files | Hugging Face `transformers` tokenizers, or `tokenizers` Rust/Python bindings |
 | Hugging Face Tokenizers docs | Understand how tokenizer training actually works | Free | https://huggingface.co/docs/tokenizers/index | Read the BPE section and reproduce a merge on paper | The original BPE paper and any public tokenizer config file |
@@ -99,13 +99,13 @@ The reading is not long, but the *measurement* work is where the understanding l
 
 ## Free/cheap resources
 
-- **OpenAI — Tokenizer (interactive)** — https://platform.openai.com/tokenizer
+- **OpenAI — Tokenizer (interactive)** — https://developers.openai.com/api/docs/guides/token-counting
 - **Hugging Face — Tokenizers documentation** — https://huggingface.co/docs/tokenizers/index
 - **tiktoken repository (open source tokenizer)** — https://github.com/openai/tiktoken
 - **Andrej Karpathy — Let's build the GPT Tokenizer** — https://www.youtube.com/watch?v=zduSFxRajkE
 - **Andrej Karpathy — Deep Dive into LLMs** — https://www.youtube.com/watch?v=7xTGNNLPyMI
-- **Anthropic — Context windows (docs)** — https://docs.claude.com/en/docs/build-with-claude/context-windows
-- **Anthropic — Long context prompting tips** — https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/long-context-tips
+- **Anthropic — Context windows (docs)** — https://platform.claude.com/docs/en/build-with-claude/context-windows
+- **Anthropic — Long context prompting tips** — https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/long-context-tips
 - **Google AI Studio** — https://aistudio.google.com/
 - **Ollama** — https://ollama.com/
 

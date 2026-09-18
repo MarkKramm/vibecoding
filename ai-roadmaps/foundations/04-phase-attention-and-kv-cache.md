@@ -95,7 +95,7 @@ You do not need a GPU, a paid API key, or an account anywhere to finish this pha
 - **Hugging Face blog on KV cache and generation strategies** — https://huggingface.co/blog/not-lain/kv-caching
 - **RoFormer paper page (rotary position embeddings)** — https://arxiv.org/abs/2104.09864
 - **EleutherAI, transformer maths walkthrough** — https://blog.eleuther.ai/transformer-math/
-- **OpenAI prompt caching documentation** — https://platform.openai.com/docs/guides/prompt-caching
+- **OpenAI prompt caching documentation** — https://developers.openai.com/api/docs/guides/prompt-caching
 
 ## Lesson: What the Model Actually Computes
 

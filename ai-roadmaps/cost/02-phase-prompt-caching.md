@@ -83,16 +83,16 @@ The reading is about half of it. The phase only becomes real when you have taken
 | Python 3 | Run the reuse-break-even arithmetic and simulate prompt hashing | Free | https://www.python.org/downloads/ | Tasks t01, t04, t05 | Any Python from your OS package manager |
 | tiktoken | Count tokens locally so you can measure prefix lengths without spending credit | Free/open-source | https://github.com/openai/tiktoken | Tasks t02, t05 | Any local tokenizer library, or a provider's free counting endpoint |
 | Tiktokenizer | See how a prompt splits into tokens in the browser, no install | Free | https://tiktokenizer.vercel.app/ | Task t02 | `tiktoken` in a local script |
-| OpenAI prompt caching docs | Read the live minimum length, granularity, and retention rules | Free to read | https://platform.openai.com/docs/guides/prompt-caching | Tasks t03, t06 | Any provider's caching page; read at least two |
-| Anthropic prompt caching docs | Read explicit breakpoints, TTL, and cache-write/read pricing columns | Free to read | https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching | Tasks t03, t06, t07 | Any provider's caching page |
+| OpenAI prompt caching docs | Read the live minimum length, granularity, and retention rules | Free to read | https://developers.openai.com/api/docs/guides/prompt-caching | Tasks t03, t06 | Any provider's caching page; read at least two |
+| Anthropic prompt caching docs | Read explicit breakpoints, TTL, and cache-write/read pricing columns | Free to read | https://platform.claude.com/docs/en/build-with-claude/prompt-caching | Tasks t03, t06, t07 | Any provider's caching page |
 | Google Gemini context caching docs | Compare implicit versus explicit caching and storage billing | Free to read | https://ai.google.dev/gemini-api/docs/caching | Task t03 | The other providers' equivalent pages |
 | vLLM automatic prefix caching docs | See the same idea implemented in open-source serving, for free | Free/open-source | https://docs.vllm.ai/en/latest/features/automatic_prefix_caching.html | Task t07 | llama.cpp's prompt cache flags, also free |
-| A provider usage dashboard | Observe reported cached versus uncached input tokens | Freemium; paid above the free tier | https://platform.openai.com/docs/guides/prompt-caching | Task t06 | Your provider's free tier usage page, or read the cached-token fields in a raw API response instead |
+| A provider usage dashboard | Observe reported cached versus uncached input tokens | Freemium; paid above the free tier | https://developers.openai.com/api/docs/guides/prompt-caching | Task t06 | Your provider's free tier usage page, or read the cached-token fields in a raw API response instead |
 
 ## Free/cheap resources
 
-- **OpenAI, Prompt caching guide** — https://platform.openai.com/docs/guides/prompt-caching
-- **Anthropic, Prompt caching documentation** — https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
+- **OpenAI, Prompt caching guide** — https://developers.openai.com/api/docs/guides/prompt-caching
+- **Anthropic, Prompt caching documentation** — https://platform.claude.com/docs/en/build-with-claude/prompt-caching
 - **Google, Gemini API context caching** — https://ai.google.dev/gemini-api/docs/caching
 - **Google Cloud, Vertex AI context cache overview** — https://cloud.google.com/vertex-ai/generative-ai/docs/context-cache/context-cache-overview
 - **AWS, Amazon Bedrock prompt caching** — https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html

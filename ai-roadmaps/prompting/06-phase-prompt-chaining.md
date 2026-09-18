@@ -99,8 +99,8 @@ Budget an extra half hour if you have never written a regular expression or pars
 
 ## Free/cheap resources
 
-- **Anthropic — Chain complex prompts for stronger performance** — https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/chain-prompts
-- **OpenAI — Prompt engineering guide (splitting complex tasks)** — https://platform.openai.com/docs/guides/prompt-engineering
+- **Anthropic — Chain complex prompts for stronger performance** — https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/chain-prompts
+- **OpenAI — Prompt engineering guide (splitting complex tasks)** — https://developers.openai.com/api/docs/guides/prompt-engineering
 - **Google — Prompting strategies, including decomposition** — https://ai.google.dev/gemini-api/docs/prompting-strategies
 - **Least-to-Most Prompting (Zhou et al., 2022)** — https://arxiv.org/abs/2205.10625 — decomposition as an explicit two-stage method: decompose, then solve the subproblems in order.
 - **Plan-and-Solve Prompting (Wang et al., 2023)** — https://arxiv.org/abs/2305.04091 — a related argument that planning first and executing second beats one undivided prompt.

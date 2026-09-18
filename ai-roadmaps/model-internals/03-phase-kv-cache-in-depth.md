@@ -85,8 +85,8 @@ You do not need a GPU, a paid API key, or an account anywhere to finish this pha
 | PagedAttention paper (Kwon et al., SOSP 2023) | The utilisation figures and the fragmentation argument, from the source | Free | https://arxiv.org/abs/2309.06180 | Task t04 | The vLLM docs blog posts summarise the same argument |
 | llama.cpp | Run a small model locally and watch the KV cache take memory | Free | https://github.com/ggml-org/llama.cpp | Task t05 | Any free CPU inference tool with a context-size flag |
 | Google Colab | Free notebook with a small GPU, if you want to measure real memory | Freemium | https://colab.research.google.com/ | Optional extension to t05 | Your own laptop CPU; the formula carries most of the way |
-| An LLM provider pricing page | Compare cached versus uncached input pricing | Free to read | https://platform.openai.com/docs/pricing | Tasks t07 and t08 | Any provider's documentation; read at least two |
-| Anthropic prompt caching docs | A concrete, dated implementation of the prompt-cache product | Free | https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching | Task t07 | Any provider's caching documentation |
+| An LLM provider pricing page | Compare cached versus uncached input pricing | Free to read | https://developers.openai.com/api/docs/pricing | Tasks t07 and t08 | Any provider's documentation; read at least two |
+| Anthropic prompt caching docs | A concrete, dated implementation of the prompt-cache product | Free | https://platform.claude.com/docs/en/build-with-claude/prompt-caching | Task t07 | Any provider's caching documentation |
 | draw.io or pen and paper | Draw the block table and the paging diagram | Free | https://app.diagrams.net/ | Task t04 | Paper. Paper is genuinely better here |
 
 ## Free/cheap resources
@@ -99,9 +99,9 @@ You do not need a GPU, a paid API key, or an account anywhere to finish this pha
 - **llama.cpp (GGML project) on GitHub** — https://github.com/ggml-org/llama.cpp
 - **Attention Is All You Need (the original paper, arXiv)** — https://arxiv.org/abs/1706.03762
 - **RoFormer paper page (rotary position embeddings)** — https://arxiv.org/abs/2104.09864
-- **Anthropic prompt caching documentation** — https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
-- **OpenAI prompt caching guide** — https://platform.openai.com/docs/guides/prompt-caching
-- **OpenAI pricing page** — https://platform.openai.com/docs/pricing
+- **Anthropic prompt caching documentation** — https://platform.claude.com/docs/en/build-with-claude/prompt-caching
+- **OpenAI prompt caching guide** — https://developers.openai.com/api/docs/guides/prompt-caching
+- **OpenAI pricing page** — https://developers.openai.com/api/docs/pricing
 - **Andrej Karpathy, Let's build GPT from scratch (video)** — https://www.youtube.com/watch?v=kCc8FmEb1nY
 - **EleutherAI, transformer maths walkthrough** — https://blog.eleuther.ai/transformer-math/
 - **Anthropic engineering, introducing Contextual Retrieval (19 Sep 2024)** — https://www.anthropic.com/news/contextual-retrieval

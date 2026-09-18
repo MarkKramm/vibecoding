@@ -104,7 +104,7 @@ Roughly 5–8 hours total. The conceptual material is about two hours of genuine
 
 - **Hugging Face — Text generation strategies** — https://huggingface.co/docs/transformers/main/en/generation_strategies
 - **Hugging Face — GenerationConfig reference** — https://huggingface.co/docs/transformers/main/en/main_classes/text_generation
-- **OpenAI — API reference: chat completions parameters** — https://platform.openai.com/docs/api-reference/chat
+- **OpenAI — API reference: chat completions parameters** — https://developers.openai.com/api/docs/api-reference/chat
 - **OpenAI — Cookbook: using logprobs** — https://cookbook.openai.com/examples/using_logprobs
 - **Google AI Studio — prompting and parameters docs** — https://ai.google.dev/gemini-api/docs/prompting-strategies
 - **Ollama — model file and parameter documentation** — https://github.com/ollama/ollama/blob/main/docs/modelfile.md

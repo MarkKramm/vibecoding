@@ -58,6 +58,14 @@ jobs:
       - name: Encoding audit
         run: node learning-site/scripts/audit-encoding.mjs
 
+      # The site once shipped 40 layout classes that no stylesheet defined. Every
+      # content check stayed green because a missing CSS rule changes no text and
+      # breaks no JSON field -- the page simply rendered unstyled. This guard
+      # proves the JSX/CSS contract holds. It needs no install, so it belongs here
+      # rather than in the site job.
+      - name: CSS wiring audit
+        run: node learning-site/scripts/audit-css.mjs
+
   learning-site:
     name: Learning site
     runs-on: ubuntu-latest

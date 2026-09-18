@@ -36,7 +36,7 @@ Use these for tasks that genuinely exceed your hardware. Know that free tiers of
 The fastest way to make tokenization concrete is to watch a sentence split. These tools do that live, in the browser, with no install.
 
 - Tiktokenizer — https://tiktokenizer.vercel.app/
-- OpenAI Tokenizer — https://platform.openai.com/tokenizer
+- OpenAI Tokenizer — https://developers.openai.com/api/docs/guides/token-counting
 - tiktoken — https://github.com/openai/tiktoken
 - Hugging Face Tokenizers — https://github.com/huggingface/tokenizers
 

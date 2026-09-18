@@ -92,13 +92,13 @@ Roughly half of that is reading. The other half is deliberately manufacturing fa
 
 ## Free/cheap resources
 
-- **OpenAI — Safety best practices** — https://platform.openai.com/docs/guides/safety-best-practices
-- **OpenAI — Evals: getting started** — https://platform.openai.com/docs/guides/evals
+- **OpenAI — Safety best practices** — https://developers.openai.com/api/docs/guides/safety-best-practices
+- **OpenAI — Evals: getting started** — https://developers.openai.com/api/docs/guides/evals
 - **Google — People + AI Guidebook** — https://pair.withgoogle.com/guidebook/
 - **Microsoft — Introduction to prompt engineering** — https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering
-- **Anthropic — Reduce hallucinations** — https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-hallucinations
+- **Anthropic — Reduce hallucinations** — https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations
 - **NIST AI Risk Management Framework** — https://www.nist.gov/itl/ai-risk-management-framework
-- **Anthropic — Claude model documentation (context windows, cutoffs)** — https://docs.claude.com/en/docs/about-claude/models/overview
+- **Anthropic — Claude model documentation (context windows, cutoffs)** — https://platform.claude.com/docs/en/about-claude/models/overview
 
 ## Lesson: How Much of This Should You Believe
 
