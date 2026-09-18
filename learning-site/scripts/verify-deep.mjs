@@ -22,6 +22,18 @@ const BROWSER = [
 
 const PORT = 9444;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Accept --url so the same checks can run against the dev server (5173) or the
+// built output served by `vite preview` (4173). Testing only the dev server
+// leaves a real gap: the production bundle is minified, code-split differently,
+// and built from whatever was on disk at build time, so it can fail while dev
+// passes. That happened — a stale dist/ was serving a crash that had already
+// been fixed in source — and it is exactly the case this flag exists to catch.
+const SITE_URL = (() => {
+  const i = process.argv.indexOf("--url");
+  return i !== -1 && process.argv[i + 1] ? process.argv[i + 1] : "http://localhost:5173";
+})();
+console.log(`verifying ${SITE_URL}\n`);
 const profile = mkdtempSync(join(tmpdir(), "vbdeep-"));
 const child = spawn(
   BROWSER,
@@ -92,7 +104,7 @@ try {
 
   await send("Runtime.enable");
   await send("Page.enable");
-  await send("Page.navigate", { url: "http://localhost:5173/" });
+  await send("Page.navigate", { url: SITE_URL + "/" });
   await sleep(4000);
 
   // ---- Quiz correctness ---------------------------------------------------

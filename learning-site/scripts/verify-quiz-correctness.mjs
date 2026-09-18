@@ -35,6 +35,13 @@ const BROWSER = [
 const PORT = 9666;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// --url lets these checks run against the dev server or the built output.
+// See the longer note in scripts/verify-deep.mjs for why both matter.
+const SITE_URL = (() => {
+  const i = process.argv.indexOf("--url");
+  return i !== -1 && process.argv[i + 1] ? process.argv[i + 1] : "http://localhost:5173";
+})();
+
 // ---- Source of truth -------------------------------------------------------
 const GEN = fileURLToPath(new URL("../src/data/generated/", import.meta.url));
 const track = JSON.parse(readFileSync(join(GEN, "foundations.json"), "utf8"));
@@ -99,7 +106,7 @@ try {
 
   await send("Runtime.enable");
   await send("Page.enable");
-  await send("Page.navigate", { url: "http://localhost:5173/" });
+  await send("Page.navigate", { url: SITE_URL + "/" });
   await sleep(4000);
 
   await ev(`document.querySelector('.phase-card').click(); true;`);
