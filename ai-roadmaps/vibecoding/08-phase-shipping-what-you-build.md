@@ -397,7 +397,7 @@ That last line is the one that makes the checklist trustworthy, and it is the di
 
 ## Quiz
 
-### Q1. What does AI assistance change about who is responsible for shipped code? <!-- id: vb-08-shipping-what-you-build-q01 -->
+### Q1. What does AI assistance change about who is responsible for shipped code? <!-- id: vb-08-shipping-what-you-build-q01 energy: normal -->
 
 - [ ] The vendor becomes responsible if the code was generated on their platform
 - [ ] Responsibility is shared proportionally between user and vendor
@@ -406,7 +406,7 @@ That last line is the one that makes the checklist trustworthy, and it is the di
 
 **Why:** Shipping has always meant accepting authorship, and a tool does not change that. The output-assignment question in Q4's option is a real terms question, but assigning you the *copyright* is not the same as assigning you the *responsibility* — which is what this phase is about. A carpenter who uses a power saw owns the table.
 
-### Q2. Why is a secret committed to a repository worse than most defects in Part 2's table? <!-- id: vb-08-shipping-what-you-build-q02 -->
+### Q2. Why is a secret committed to a repository worse than most defects in Part 2's table? <!-- id: vb-08-shipping-what-you-build-q02 energy: high -->
 
 - [ ] Because secrets are harder to detect than other defects
 - [x] It is in the history permanently, so rotation is the only fix and every clone already has it
@@ -415,7 +415,7 @@ That last line is the one that makes the checklist trustworthy, and it is the di
 
 **Why:** Every other class on the list can be fixed by changing the code. A committed secret cannot be removed by `git rm` — it remains in the objects and in anyone's clone. That is why the ordering matters: check before the first push, not after, because this is the only defect in the phase with no undo.
 
-### Q3. Why does the phase require recording a verdict for each security defect class separately? <!-- id: vb-08-shipping-what-you-build-q03 -->
+### Q3. Why does the phase require recording a verdict for each security defect class separately? <!-- id: vb-08-shipping-what-you-build-q03 energy: high -->
 
 - [ ] Because each class requires a different tool to detect
 - [ ] Because a general review takes longer than a structured one
@@ -424,7 +424,7 @@ That last line is the one that makes the checklist trustworthy, and it is the di
 
 **Why:** You are looking for the *absence* of a check, which is Phase 3's hardest skill. A general assurance like "looks secure" is a judgement, and this curriculum's standard is that judgements and verifications are different kinds of statement. Task 6 requires opening every endpoint rather than summarising the authorisation story.
 
-### Q4. What does the phase say about the indemnity a free-tier user may be relying on? <!-- id: vb-08-shipping-what-you-build-q04 -->
+### Q4. What does the phase say about the indemnity a free-tier user may be relying on? <!-- id: vb-08-shipping-what-you-build-q04 energy: normal -->
 
 - [ ] All major vendors indemnify users regardless of tier
 - [ ] Indemnities apply automatically once you accept the terms
@@ -433,7 +433,7 @@ That last line is the one that makes the checklist trustworthy, and it is the di
 
 **Why:** Two things to check rather than assume: whether it applies to your tier, and what conditions attach — since indemnities often require the tool's filters to have been used. Knowing you are uncovered is itself protection, because it tells you which projects to put through that tool, and this is part of the free-tier gap the phase names plainly.
 
-### Q5. Why does the phase require writing Unverified rather than inferring, for tool terms? <!-- id: vb-08-shipping-what-you-build-q05 -->
+### Q5. Why does the phase require writing Unverified rather than inferring, for tool terms? <!-- id: vb-08-shipping-what-you-build-q05 energy: high -->
 
 - [ ] Because terms change too frequently to state
 - [x] Because during research some vendors' terms pages were unreachable (403, 404), and a plausible guess about an unread page is the exact failure this curriculum detects
@@ -442,7 +442,7 @@ That last line is the one that makes the checklist trustworthy, and it is the di
 
 **Why:** The verified brief in this repository records OpenAI's terms pages returning HTTP 403 and Windsurf/Devin's returning 404. A confident statement about a page nobody read is precisely what a whole session of this project's verification work was spent learning to catch — so the honest gap is recorded instead of filled.
 
-### Q6. Why does the phase call a fully-ticked pre-ship checklist less credible than one with three gaps? <!-- id: vb-08-shipping-what-you-build-q06 -->
+### Q6. Why does the phase call a fully-ticked pre-ship checklist less credible than one with three gaps? <!-- id: vb-08-shipping-what-you-build-q06 energy: high -->
 
 - [ ] Because a complete checklist usually means the work was rushed
 - [ ] Because some items are impossible to verify

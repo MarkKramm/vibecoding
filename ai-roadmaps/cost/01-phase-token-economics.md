@@ -571,7 +571,7 @@ Write `portfolio/cost/01-token-economics.md` containing:
 
 **Why:** Weight before comparing. Input contributes 900 units, output contributes 300 times 4, or 1200 units, out of 2100 — about 57 percent. The tokens are three-quarters input, but the money is majority output. This is the single most useful calculation in the phase, and it takes ten seconds.
 
-### Q2. Why does generating output cost more per token than reading input? <!-- id: cost-01-token-economics-q02 energy: normal -->
+### Q2. Why does generating output cost more per token than reading input? <!-- id: cost-01-token-economics-q02 energy: high -->
 
 - [x] Input is processed in one parallel pass, while output is generated one token at a time in a strictly sequential chain
 - [ ] Output tokens are larger in the vocabulary and take more memory

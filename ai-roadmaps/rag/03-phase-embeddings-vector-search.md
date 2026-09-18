@@ -404,7 +404,7 @@ Write `portfolio/rag/03-embeddings-vector-search.md` containing:
 
 **Why:** Cosine divides by both magnitudes, dot product does not, so they only agree when the magnitudes are equal or one. Most models normalise, which hides this — but if you compute similarities yourself or use a model that does not, the divergence is silent and the results still look valid.
 
-### Q2. Why does approximate nearest neighbour search exist? <!-- id: rag-03-q02 energy: normal -->
+### Q2. Why does approximate nearest neighbour search exist? <!-- id: rag-03-q02 energy: high -->
 
 - [ ] Because exact nearest neighbour is mathematically ill-defined in high dimensions
 - [ ] Because embeddings are lossy and exact search would be misleading

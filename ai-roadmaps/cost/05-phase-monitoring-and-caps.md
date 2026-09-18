@@ -673,7 +673,7 @@ Write `portfolio/cost/05-monitoring-and-caps.md` containing:
 
 **Why:** A budget's only function is to abort. A log line at 3 a.m. is read by nobody and stops nothing, so an over-budget loop keeps spending at exactly the rate it would have with no budget. The budget must raise an exception before the request is sent, which also means the check happens pre-flight rather than after the money is already gone.
 
-### Q3. Your bill is four times your estimate, even though the answers you receive are about the length you predicted. What is the most likely explanation? <!-- id: cost-05-monitoring-and-caps-q03 energy: normal -->
+### Q3. Your bill is four times your estimate, even though the answers you receive are about the length you predicted. What is the most likely explanation? <!-- id: cost-05-monitoring-and-caps-q03 energy: high -->
 
 - [ ] The provider prices output tokens higher than you assumed
 - [ ] Your input token estimate was wrong because you counted characters
@@ -709,7 +709,7 @@ Write `portfolio/cost/05-monitoring-and-caps.md` containing:
 
 **Why:** Cost per call is the supplier's metric. If A succeeds 60% of the time and B succeeds 95%, the attempts, follow-ups, and rework that a failed call triggers often make B cheaper per completed task. Measuring this requires a `run_id` grouping all calls for one logical task and a written definition of what success means.
 
-### Q7. A per-day budget aborts nothing during the day, yet your spend triples. What is the most likely cause? <!-- id: cost-05-monitoring-and-caps-q07 energy: normal -->
+### Q7. A per-day budget aborts nothing during the day, yet your spend triples. What is the most likely cause? <!-- id: cost-05-monitoring-and-caps-q07 energy: high -->
 
 - [ ] Genuine user growth, since daily budgets do not scale with traffic
 - [x] A background or scheduled job running repeatedly, producing a flat elevated plateau rather than a spike

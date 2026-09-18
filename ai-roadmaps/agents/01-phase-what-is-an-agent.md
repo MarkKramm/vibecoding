@@ -322,7 +322,7 @@ Write `portfolio/agents/01-what-is-an-agent.md` containing:
 
 **Why:** The distinction is between a value that varies and a *path* that varies. A fixed sequence parameterised by runtime data is a pipeline, and it keeps all the properties that make a pipeline good: reproducible, testable, cheap and fast. Reaching for a loop here buys nothing and costs latency, money, variance and debuggability. The other options mistake "dynamic input" for "dynamic control flow", which is the confusion that leads to agents where pipelines belong.
 
-### Q5. Why is a step cap insufficient to bound your bill? <!-- id: agent-01-what-is-an-agent-q05 energy: normal -->
+### Q5. Why is a step cap insufficient to bound your bill? <!-- id: agent-01-what-is-an-agent-q05 energy: high -->
 
 - [ ] Because steps can be retried internally without counting
 - [ ] Because the cap is enforced by the model rather than by your code
@@ -349,7 +349,7 @@ Write `portfolio/agents/01-what-is-an-agent.md` containing:
 
 **Why:** The model's report is a claim generated the same way its answers are, and the failure mode of a loop is precisely that it believes it succeeded when it did not — the impossibility test in Phase 7 exists for this reason. A code check is external to the model and cannot be talked out of its verdict. Running longer than typical suggests something is wrong rather than right, and the absence of further tool calls is a formatting behaviour rather than evidence about the world.
 
-### Q8. Why does moving right on the agentic spectrum make debugging harder? <!-- id: agent-01-what-is-an-agent-q08 energy: normal -->
+### Q8. Why does moving right on the agentic spectrum make debugging harder? <!-- id: agent-01-what-is-an-agent-q08 energy: high -->
 
 - [x] The path is chosen at runtime and may not reproduce, so you read a generated trajectory instead of a stack trace — and every step can look reasonable while the whole is wrong
 - [ ] Because agents cannot be logged

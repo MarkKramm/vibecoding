@@ -489,7 +489,7 @@ Write `portfolio/model-internals/02-transformer-architecture.md` containing:
 
 ## Quiz
 
-### Q1. A model card lists a scaling divisor of `sqrt(64)` for an attention layer with `d_model = 512` and 8 heads. A colleague insists it should be `sqrt(512)`. Which is correct, and why does the difference matter? <!-- id: intern-02-transformer-architecture-q01 energy: normal -->
+### Q1. A model card lists a scaling divisor of `sqrt(64)` for an attention layer with `d_model = 512` and 8 heads. A colleague insists it should be `sqrt(512)`. Which is correct, and why does the difference matter? <!-- id: intern-02-transformer-architecture-q01 energy: high -->
 
 - [x] `sqrt(64)`, because the divisor is the key/query dimension per head, and using `d_model` would over-scale by roughly a factor of 2.8 here
 - [ ] `sqrt(512)`, because scaling must account for the full model width
@@ -507,7 +507,7 @@ Write `portfolio/model-internals/02-transformer-architecture.md` containing:
 
 **Why:** Every expert must be resident because routing decisions are made per token at inference time and cannot be predicted ahead. Sparse activation reduces compute, not memory — which is precisely why total parameters is the right number for memory and active parameters is the right number for compute. Offloading experts to system RAM or disk is possible but costs speed, so it is a trade rather than a free fix.
 
-### Q3. A dense transformer's MLP blocks hold roughly twice the parameters of its attention blocks. What is the most accurate reading of that fact? <!-- id: intern-02-transformer-architecture-q03 energy: normal -->
+### Q3. A dense transformer's MLP blocks hold roughly twice the parameters of its attention blocks. What is the most accurate reading of that fact? <!-- id: intern-02-transformer-architecture-q03 energy: high -->
 
 - [x] It follows from the width convention `d_ff ≈ 4 × d_model`, so it is a property of the configuration rather than a law
 - [ ] Attention is a minor part of the architecture and could be removed with little effect
@@ -561,7 +561,7 @@ Write `portfolio/model-internals/02-transformer-architecture.md` containing:
 
 **Why:** Sparse activation decouples capacity from per-token compute: only `k` experts participate in the forward pass, so the FLOPs resemble a smaller dense model. But any token may be routed to any expert, so all expert weights must be available, which is why a large MoE is hard to run on constrained hardware even though its active parameter count is modest. This is the memory-versus-compute distinction that the phrase "MoE models are cheaper to run" quietly gets wrong.
 
-### Q9. Why does adding expert capacity to a model change what it can be served on, but not necessarily what it can be trained to do cheaply? <!-- id: intern-02-transformer-architecture-q09 energy: normal -->
+### Q9. Why does adding expert capacity to a model change what it can be served on, but not necessarily what it can be trained to do cheaply? <!-- id: intern-02-transformer-architecture-q09 energy: high -->
 
 - [ ] Because training is compute-bound and inference is always memory-bound in every regime
 - [ ] Because experts are trained one at a time, so training cost grows only with the number of layers

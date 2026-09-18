@@ -292,7 +292,7 @@ Write `portfolio/rag/07-graphrag-advanced.md` containing:
 
 ## Quiz
 
-### Q1. A user asks "What are the recurring complaints across these 400 support tickets?" Why does raising k not fix this? <!-- id: rag-07-graphrag-advanced-q01 energy: normal -->
+### Q1. A user asks "What are the recurring complaints across these 400 support tickets?" Why does raising k not fix this? <!-- id: rag-07-graphrag-advanced-q01 energy: high -->
 
 - [x] Because no single ticket contains the answer — the question asks about a property of the whole corpus, so it is a summarisation task rather than a retrieval task
 - [ ] Because the tickets are too short for embeddings to represent well
@@ -346,7 +346,7 @@ Write `portfolio/rag/07-graphrag-advanced.md` containing:
 
 **Why:** The four conditions are jointly necessary, and each rules out a different bad reason to escalate. A question mentioning two documents is usually multi-hop and served by iterative retrieval. Unsatisfying results may be a chunking or ranking bug that Phase 6 would localise. And corpus size alone is not the trigger — a large corpus that changes constantly defeats pre-computation. The evaluation condition is the one most often skipped and the most important: without a way to know whether the graph helped, its cost cannot be justified even retrospectively.
 
-### Q7. Why does GraphRAG's cost structure differ from the query-time costs in the rest of this track? <!-- id: rag-07-graphrag-advanced-q07 energy: normal -->
+### Q7. Why does GraphRAG's cost structure differ from the query-time costs in the rest of this track? <!-- id: rag-07-graphrag-advanced-q07 energy: high -->
 
 - [x] Because indexing is LLM work proportional to corpus size, paid up front whether or not the approach turns out to help, rather than per query as you go
 - [ ] Because graph databases charge per stored node rather than per query

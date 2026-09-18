@@ -370,7 +370,7 @@ Write `portfolio/rag/05-metadata-and-evaluation.md` containing:
 
 **Why:** The arithmetic is decisive: a fixed permitted slice of 0.4% of the corpus will very rarely appear in an unfiltered top 10, so a post-filtering implementation returns empty for a user whose documents are present and correct. The failure looks like a content problem, which is why people look for a missing document or a weak model instead of a broken query. The fix is to filter inside the search, so the k neighbours are drawn only from the eligible set.
 
-### Q2. Why is a prompt instruction insufficient for access control? <!-- id: rag-05-metadata-and-evaluation-q02 energy: normal -->
+### Q2. Why is a prompt instruction insufficient for access control? <!-- id: rag-05-metadata-and-evaluation-q02 energy: high -->
 
 - [ ] Because models cannot reliably read permission metadata
 - [x] Because it is a preference expressed to a probabilistic system rather than a constraint enforced by code, so documents the user may not see still enter the context window
@@ -388,7 +388,7 @@ Write `portfolio/rag/05-metadata-and-evaluation.md` containing:
 
 **Why:** High recall means the answer material is reaching the context window, so retrieval is unlikely to be the gate and the remaining suspect is what the model does with it. Injecting the known-correct chunk separates the two cleanly in seconds: correct with the injected chunk isolates the problem to generation, and still-wrong points at the prompt, the ordering, or the model's capability. Raising k is wrong because recall is already high — more passages adds distractors rather than information. A reranker improves ordering, which recall does not measure but also does not explain with the answer material already present.
 
-### Q4. What does it mean that RAGAS is a reference-free evaluation framework? <!-- id: rag-05-metadata-and-evaluation-q04 energy: normal -->
+### Q4. What does it mean that RAGAS is a reference-free evaluation framework? <!-- id: rag-05-metadata-and-evaluation-q04 energy: low -->
 
 - [ ] That its metrics require no labels and are therefore objective and bias-free
 - [ ] That it evaluates retrieval without using a language model
@@ -442,7 +442,7 @@ Write `portfolio/rag/05-metadata-and-evaluation.md` containing:
 
 **Why:** Faithfulness measures support, not truth — so a well-grounded answer built from a wrong or irrelevant source scores highly and is still wrong. The two remaining suspects are the corpus containing incorrect material, or retrieval supplying a passage that reads as authoritative without answering the question. This is precisely why the metrics are a diagnostic instrument rather than a verdict, and why the forward test follows the numbers rather than replacing them: it distinguishes "the right passage was absent" from "the wrong passage was present". Parametric answering would show up in the reverse test instead.
 
-### Q10. Why is Recall@k described as a gate rather than a verdict? <!-- id: rag-05-metadata-and-evaluation-q10 energy: normal -->
+### Q10. Why is Recall@k described as a gate rather than a verdict? <!-- id: rag-05-metadata-and-evaluation-q10 energy: high -->
 
 - [x] Because if the answer passage is not in the context the generator cannot succeed, so recall bounds what is possible — while recall can be high and the system still be bad
 - [ ] Because recall is the only metric that can be computed without labels

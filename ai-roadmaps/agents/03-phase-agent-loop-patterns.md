@@ -351,7 +351,7 @@ Write `portfolio/agents/03-agent-loop-patterns.md` containing:
 
 ## Quiz
 
-### Q1. Why does interleaving reasoning with actions outperform pure chain-of-thought on knowledge tasks? <!-- id: agent-03-agent-loop-patterns-q01 energy: normal -->
+### Q1. Why does interleaving reasoning with actions outperform pure chain-of-thought on knowledge tasks? <!-- id: agent-03-agent-loop-patterns-q01 energy: high -->
 
 - [x] Because the reasoning can be corrected by information from the environment, so wrong premises are caught rather than carried through a fluent chain
 - [ ] Because reasoning traces make the model larger and more capable
@@ -369,7 +369,7 @@ Write `portfolio/agents/03-agent-loop-patterns.md` containing:
 
 **Why:** The large percentages come from the two interactive benchmarks, where ReAct outperformed imitation and RL methods while being prompted with only one or two in-context examples. On question answering and fact verification the reported benefit is different in kind — overcoming hallucination and error propagation by interacting with an API, and producing more interpretable trajectories. Attaching 34% to the QA tasks overstates a result measured on specific benchmarks against specific baselines, which is the kind of compression that makes a reader expect more from the technique than it delivers.
 
-### Q3. Your loop has a step cap of 6. Why does it still need a token cap? <!-- id: agent-03-agent-loop-patterns-q03 energy: normal -->
+### Q3. Your loop has a step cap of 6. Why does it still need a token cap? <!-- id: agent-03-agent-loop-patterns-q03 energy: high -->
 
 - [ ] Because the step cap may be bypassed by parallel tool calls
 - [ ] Because token caps are enforced by the provider and step caps are not

@@ -512,7 +512,7 @@ Write `portfolio/cost/06-local-vs-api.md` containing:
 
 **Why:** The two options have different cost structures, not different prices. Local is a fixed cost with a near-zero marginal cost; the API is a variable cost that starts at zero. Comparing the marginal side of one against the total of the other guarantees the wrong answer at every volume. The electricity point is a real term but it is rarely larger than the hardware, and the API price is not the issue — the comparison is.
 
-### Q2. You are choosing a model that must fit on your 8 GB laptop. Which property of the model decides whether it fits? <!-- id: cost-06-local-vs-api-q02 energy: normal -->
+### Q2. You are choosing a model that must fit on your 8 GB laptop. Which property of the model decides whether it fits? <!-- id: cost-06-local-vs-api-q02 energy: high -->
 
 - [ ] Its parameter count alone, because that is what determines size
 - [ ] Its benchmark score, because better models are better optimised
@@ -530,7 +530,7 @@ Write `portfolio/cost/06-local-vs-api.md` containing:
 
 **Why:** On an unlimited plan a download is an inconvenience; on a metered or capped connection it is a direct charge against a finite budget, and the first model you try is rarely the one you keep. Multiplying size by cost per gigabyte gives a real number, and comparing it against a month of API usage is what tells you whether local is actually the cheap option here. It frequently is not.
 
-### Q4. A provider's headline price is noticeably lower than its competitor's. Why is that not enough to choose it? <!-- id: cost-06-local-vs-api-q04 energy: normal -->
+### Q4. A provider's headline price is noticeably lower than its competitor's. Why is that not enough to choose it? <!-- id: cost-06-local-vs-api-q04 energy: high -->
 
 - [ ] Because headline prices are usually inaccurate
 - [x] Because prompt caching, batch pricing, tool calling and structured outputs can move your bill more than the per-token rate does

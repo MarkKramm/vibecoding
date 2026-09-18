@@ -445,7 +445,7 @@ Write `portfolio/foundations/07-reading-model-outputs.md` containing:
 
 **Why:** Fluency is roughly constant whether the output is right or wrong, so it carries almost no information. Coherence is generateable from fabricated parts and is exactly what fools domain experts. Confidence is the model's default register rather than a calibration signal, and formatting comes from the system prompt, not from the content being sourced.
 
-### Q9. Why is scoring an output on fluency, coherence and correctness separately more useful than giving it one quality rating? <!-- id: found-07-reading-model-outputs-q09 energy: normal -->
+### Q9. Why is scoring an output on fluency, coherence and correctness separately more useful than giving it one quality rating? <!-- id: found-07-reading-model-outputs-q09 energy: high -->
 
 - [ ] Because those three are the metrics model providers report
 - [x] Because the axes move independently, and knowing which one failed tells you what kind of check would fix it

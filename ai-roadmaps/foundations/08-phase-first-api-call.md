@@ -613,7 +613,7 @@ Write `portfolio/foundations/08-first-api-call.md` containing:
 
 ## Quiz
 
-### Q1. You send the same request twice and get different text back, with `temperature` set to 0. What is the most accurate conclusion? <!-- id: found-08-first-api-call-q01 energy: normal -->
+### Q1. You send the same request twice and get different text back, with `temperature` set to 0. What is the most accurate conclusion? <!-- id: found-08-first-api-call-q01 energy: high -->
 
 - [ ] The provider is ignoring your temperature setting
 - [ ] You have made an error in the request body
@@ -658,7 +658,7 @@ Write `portfolio/foundations/08-first-api-call.md` containing:
 
 **Why:** A malformed request is deterministic: the same body fails the same way every time. Retrying it produces no new information and delays diagnosis. Only rate limits, timeouts and server errors should be retried; client errors should be raised immediately.
 
-### Q6. Why does `prompt_tokens` grow on each turn of a conversation even when every message you type is short? <!-- id: found-08-first-api-call-q06 energy: normal -->
+### Q6. Why does `prompt_tokens` grow on each turn of a conversation even when every message you type is short? <!-- id: found-08-first-api-call-q06 energy: high -->
 
 - [ ] The provider caches your previous requests and bills them again
 - [x] The model is stateless, so you resend the whole messages array every turn and all the earlier turns are counted as input

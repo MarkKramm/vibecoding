@@ -454,7 +454,7 @@ Write `portfolio/rag/04-hybrid-search-reranking.md` containing:
 
 ## Quiz
 
-### Q1. Why should you not add a BM25 score and a cosine similarity together to rank results? <!-- id: rag-04-q01 energy: normal -->
+### Q1. Why should you not add a BM25 score and a cosine similarity together to rank results? <!-- id: rag-04-q01 energy: high -->
 
 - [ ] Because BM25 is always more accurate than cosine similarity
 - [ ] Because cosine similarity must be used alone by definition
@@ -508,7 +508,7 @@ Write `portfolio/rag/04-hybrid-search-reranking.md` containing:
 
 **Why:** Questions and answers share little vocabulary even when they match perfectly. HyDE exploits that: it translates the query from question-space into answer-space, and factual accuracy is irrelevant to the translation — only the register matters. It helps most on short vague queries where the vocabulary gap is widest.
 
-### Q7. For a conversational RAG system, why is query rewriting close to mandatory? <!-- id: rag-04-q07 energy: normal -->
+### Q7. For a conversational RAG system, why is query rewriting close to mandatory? <!-- id: rag-04-q07 energy: high -->
 
 - [ ] Because it improves the embedding model's accuracy
 - [x] Because follow-up questions are typically uninterpretable alone, so retrieving them verbatim matches the wrong content

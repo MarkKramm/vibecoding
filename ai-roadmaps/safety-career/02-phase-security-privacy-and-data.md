@@ -367,7 +367,7 @@ The inventory in item 7 is the artefact that matters most, and the `Unverified` 
 
 ## Quiz
 
-### Q1. Why does indirect prompt injection work at all? <!-- id: sc-02-security-privacy-and-data-q01 -->
+### Q1. Why does indirect prompt injection work at all? <!-- id: sc-02-security-privacy-and-data-q01 energy: high -->
 
 - [ ] Because attackers can modify the model's weights through crafted input
 - [x] Because instructions and content arrive as the same flat token sequence, so the boundary between them is a learned convention rather than a mechanism the runtime enforces
@@ -376,7 +376,7 @@ The inventory in item 7 is the artefact that matters most, and the `Unverified` 
 
 **Why:** There is no field marked "instruction" and none marked "data" — the distinction is carried in the text itself and in the model's expectations about how conversations go. Changing the weights is not something input can do, and no provider ships a deliberate injection mode; the vulnerability is structural rather than a feature. Retrieval quality is a separate question: a perfectly implemented retrieval system still hands the model text that can read like a command.
 
-### Q2. What makes injection worse in an agent than in a chat? <!-- id: sc-02-security-privacy-and-data-q02 -->
+### Q2. What makes injection worse in an agent than in a chat? <!-- id: sc-02-security-privacy-and-data-q02 energy: normal -->
 
 - [ ] Agents use larger models with weaker safety training
 - [ ] Agents read more content, so there is simply more attack surface
@@ -385,7 +385,7 @@ The inventory in item 7 is the artefact that matters most, and the `Unverified` 
 
 **Why:** More content does mean more surface, but that is a difference of degree. The difference in kind is that the agent can *do* things — read files, call APIs, push commits — using permissions you granted for legitimate reasons, so the injected sentence does not stop at the output. Agents are given system prompts like any other system, and model size is not the mechanism.
 
-### Q3. A credential was committed and then removed in a later commit. What is the correct first response? <!-- id: sc-02-security-privacy-and-data-q03 -->
+### Q3. A credential was committed and then removed in a later commit. What is the correct first response? <!-- id: sc-02-security-privacy-and-data-q03 energy: normal -->
 
 - [ ] Rewrite history with `git filter-repo` so the blob is purged
 - [x] Rotate the credential immediately, then decide separately whether the history is worth rewriting
@@ -394,7 +394,7 @@ The inventory in item 7 is the artefact that matters most, and the `Unverified` 
 
 **Why:** Once exposed, the credential's value is gone regardless of what happens to the repository, so rotation is the only step that actually restores your security. History rewriting is disruptive and incomplete — it changes every downstream commit hash and does not reach forks, caches or CI logs — so it is tidying, not a fix. Recreating the repository destroys the evidence you need and still does not help, and a removed file remains in `.git/objects` and in every clone.
 
-### Q4. Which mitigation layer actually holds against an adaptive attacker? <!-- id: sc-02-security-privacy-and-data-q04 -->
+### Q4. Which mitigation layer actually holds against an adaptive attacker? <!-- id: sc-02-security-privacy-and-data-q04 energy: normal -->
 
 - [ ] A system-prompt instruction telling the model to ignore commands in documents
 - [ ] A blocklist of suspicious phrases like "ignore previous instructions"
@@ -403,7 +403,7 @@ The inventory in item 7 is the artefact that matters most, and the `Unverified` 
 
 **Why:** The SK survey found attack success rates above 85% against state-of-the-art defences under adaptive strategies, with most of 18 reviewed defences achieving under 50% mitigation. Text-level layers — prompt instructions, blocklists, self-classification — are all defeated by paraphrase, encoding or a politer sentence, and self-classification is a model judgement made from the same tokens being judged. Permission-level controls do not stop the injection; they make its success uninteresting, which is the achievable goal.
 
-### Q5. Why is `git rm secrets.env` not a fix? <!-- id: sc-02-security-privacy-and-data-q05 -->
+### Q5. Why is `git rm secrets.env` not a fix? <!-- id: sc-02-security-privacy-and-data-q05 energy: high -->
 
 - [x] Because the blob stays in `.git/objects`, still reachable from the earlier commit and present in every clone
 - [ ] Because the file is recreated by the build
@@ -412,7 +412,7 @@ The inventory in item 7 is the artefact that matters most, and the `Unverified` 
 
 **Why:** Git is content-addressed, so removing a file from the current tree does not remove the object that holds it — `git log -S` will still find the string in the change that introduced it. Build recreation and `.gitignore` behaviour are real Git facts but not the reason the secret survives. Nothing is pushed to forks automatically; forks already contain it because they were cloned while it was there.
 
-### Q6. Your project stores a user's birthdate, a profile photo, and an optional free-text field labelled "anything else we should know". What is the accurate reading under RA 10173? <!-- id: sc-02-security-privacy-and-data-q06 -->
+### Q6. Your project stores a user's birthdate, a profile photo, and an optional free-text field labelled "anything else we should know". What is the accurate reading under RA 10173? <!-- id: sc-02-security-privacy-and-data-q06 energy: normal -->
 
 - [ ] All three are ordinary personal information, so §12 is sufficient
 - [ ] Only the free-text field is sensitive, because its contents are unknown

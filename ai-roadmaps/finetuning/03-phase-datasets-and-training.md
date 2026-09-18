@@ -408,7 +408,7 @@ Item 2 must state plainly how many outputs you verified by hand. "Generated" wit
 
 **Why:** Fine-tuning's winning conditions included having real input data, precisely because invented inputs encode your imagination of the task rather than the task. Generating inputs with a model does not fix this, since the generated inputs share the model's assumptions about what users send. The honest response is to treat the absence as evidence about the project's readiness and to label the result accordingly, rather than to quietly substitute invented examples and report a successful fine-tune.
 
-### Q8. Which is the correct setting when preparing training data with `apply_chat_template`? <!-- id: ft-03-datasets-and-training-q08 energy: normal -->
+### Q8. Which is the correct setting when preparing training data with `apply_chat_template`? <!-- id: ft-03-datasets-and-training-q08 energy: high -->
 
 - [ ] `add_generation_prompt=True`, because the model must learn to respond
 - [x] `add_generation_prompt=False`, because those tokens start an assistant reply and are not helpful when the reply is already present in the data

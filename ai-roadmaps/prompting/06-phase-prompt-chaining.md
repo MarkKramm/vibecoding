@@ -675,7 +675,7 @@ Write `portfolio/prompting/06-prompt-chaining.md` containing:
 
 ## Quiz
 
-### Q1. Your extraction prompt asks for a meeting start time as an ISO 8601 timestamp with an offset. The model returns a well-formed one, but it is one hour off. What is the most useful change? <!-- id: prompt-06-prompt-chaining-q01 energy: normal -->
+### Q1. Your extraction prompt asks for a meeting start time as an ISO 8601 timestamp with an offset. The model returns a well-formed one, but it is one hour off. What is the most useful change? <!-- id: prompt-06-prompt-chaining-q01 energy: high -->
 
 - [ ] Add a worked example of a correct timestamp to the prompt so the model has a pattern to copy
 - [x] Extract the raw time string and the timezone separately, and do the conversion in code with a real timezone library

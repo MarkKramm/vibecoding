@@ -370,7 +370,7 @@ Items 6 and 7 are the ones most people omit and the ones that most change how yo
 
 ## Quiz
 
-### Q1. Why does this phase insist on a harness with no framework? <!-- id: ft-06-running-evals-in-practice-q01 energy: normal -->
+### Q1. Why does this phase insist on a harness with no framework? <!-- id: ft-06-running-evals-in-practice-q01 energy: high -->
 
 - [x] Because the most common failure is not starting at all — a framework feels like a prerequisite and the setup grows until the goal is forgotten
 - [ ] Because frameworks are unreliable

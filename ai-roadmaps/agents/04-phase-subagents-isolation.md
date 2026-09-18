@@ -373,7 +373,7 @@ Write `portfolio/agents/04-subagents-isolation.md` containing:
 
 **Why:** The brief is a specification, and presenting unverified claims as established facts has already corrupted the child's work before it begins — the child cannot verify what it was told to accept, and it has no access to the sources that would settle the question. This is Prompting Phase 10's framing at the architecture level. Blaming the child inverts the responsibility: the child was instructed to treat the claims as verified and had no tools, so its accurate flagging was in fact the best available behaviour.
 
-### Q6. Why does splitting work across contexts make some tasks *worse*? <!-- id: agent-04-subagents-isolation-q06 energy: normal -->
+### Q6. Why does splitting work across contexts make some tasks *worse*? <!-- id: agent-04-subagents-isolation-q06 energy: high -->
 
 - [ ] Because more agents always produce more errors than one
 - [ ] Because children are less capable than the parent model

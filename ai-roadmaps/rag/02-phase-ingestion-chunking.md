@@ -469,7 +469,7 @@ Write `portfolio/rag/02-ingestion-chunking.md` containing:
 
 ## Quiz
 
-### Q1. A two-column research paper extracts with the left column's first sentence followed by the right column's first sentence. Why is this fatal for retrieval? <!-- id: rag-02-q01 energy: normal -->
+### Q1. A two-column research paper extracts with the left column's first sentence followed by the right column's first sentence. Why is this fatal for retrieval? <!-- id: rag-02-q01 energy: high -->
 
 - [ ] Because the token count becomes unpredictable
 - [x] Every word is present but the meaning is scrambled, so chunks do not mean what the document says and no embedding model can recover the original claims
@@ -487,7 +487,7 @@ Write `portfolio/rag/02-ingestion-chunking.md` containing:
 
 **Why:** This is the characteristic boundary failure. Both chunks are individually reasonable; together they hold the answer; separately neither does. It is invisible because nothing is lost — the meaning is just divided. Overlap, larger chunks, or a prepended context each mitigate it.
 
-### Q3. What is the most defensible way to choose a chunk size? <!-- id: rag-02-q03 energy: normal -->
+### Q3. What is the most defensible way to choose a chunk size? <!-- id: rag-02-q03 energy: high -->
 
 - [ ] Use 512 tokens, the commonly recommended value
 - [ ] Use the maximum input length of your embedding model
@@ -505,7 +505,7 @@ Write `portfolio/rag/02-ingestion-chunking.md` containing:
 
 **Why:** A chunk that says "revenue grew 3%" cannot be found by "ACME Q2 2023 revenue growth" because it names neither ACME nor the quarter. Prepending that context adds the missing retrieval signal without changing the chunk's meaning. Prompt caching is what makes the preprocessing affordable.
 
-### Q5. Why is semantic chunking NOT the recommended default? <!-- id: rag-02-q05 energy: normal -->
+### Q5. Why is semantic chunking NOT the recommended default? <!-- id: rag-02-q05 energy: high -->
 
 - [ ] Because it is impossible to implement
 - [ ] Because it produces chunks that are always too large

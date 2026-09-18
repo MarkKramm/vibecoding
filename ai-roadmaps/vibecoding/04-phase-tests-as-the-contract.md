@@ -314,7 +314,7 @@ What you *do* test, and this is the whole list: **the acceptance criteria from y
 
 ## Quiz
 
-### Q1. Why can a test written after the implementation not validate that implementation? <!-- id: vb-04-tests-as-the-contract-q01 -->
+### Q1. Why can a test written after the implementation not validate that implementation? <!-- id: vb-04-tests-as-the-contract-q01 energy: normal -->
 
 - [ ] Because it runs slower than a test written first
 - [x] Because it is derived from the code and therefore shares the code's assumptions
@@ -323,7 +323,7 @@ What you *do* test, and this is the whole list: **the acceptance criteria from y
 
 **Why:** The two files can be byte-identical and mean different things. A test written before comes from a stated intent that exists independently of the code; a test written after describes what the code does. If the code is wrong, a derived test is wrong in the same direction and the green suite certifies the defect.
 
-### Q2. A newly written test fails. What must you do before implementing? <!-- id: vb-04-tests-as-the-contract-q02 -->
+### Q2. A newly written test fails. What must you do before implementing? <!-- id: vb-04-tests-as-the-contract-q02 energy: normal -->
 
 - [ ] Nothing — a failing test is the expected state, so proceed
 - [ ] Delete it and write it again more carefully
@@ -332,7 +332,7 @@ What you *do* test, and this is the whole list: **the acceptance criteria from y
 
 **Why:** A test can fail from an import error, a typo, a broken fixture or the wrong exception. A test that fails for the wrong reason will pass for the wrong reason, meaning the eventual green indicates the setup error was fixed rather than that the behaviour is correct. Task 4 asks for exactly this confirmation.
 
-### Q3. Which assertion actually constrains behaviour? <!-- id: vb-04-tests-as-the-contract-q03 -->
+### Q3. Which assertion actually constrains behaviour? <!-- id: vb-04-tests-as-the-contract-q03 energy: normal -->
 
 - [ ] `assert result is not None`
 - [ ] `assert len(result) > 0`
@@ -341,7 +341,7 @@ What you *do* test, and this is the whole list: **the acceptance criteria from y
 
 **Why:** The first three pass for an error object, an empty dict, or a wrong parse — they occupy space in the suite without constraining anything. Asserting the specific expected value cannot be satisfied by accident, which is why task 7 has you weaken an assertion three ways and watch all three stay green.
 
-### Q4. Coverage reports 100%. What does this establish? <!-- id: vb-04-tests-as-the-contract-q04 -->
+### Q4. Coverage reports 100%. What does this establish? <!-- id: vb-04-tests-as-the-contract-q04 energy: normal -->
 
 - [ ] That every behaviour has been verified
 - [ ] That no bugs remain in the covered code
@@ -350,7 +350,7 @@ What you *do* test, and this is the whole list: **the acceptance criteria from y
 
 **Why:** Coverage measures execution, not assertion. A line can run while nothing meaningful is asserted about it — Part 6 calls this the coverage trap, and task 11 has you check how many of your *uncaught* mutations sat on covered lines. That comparison is the argument against coverage as a quality metric, demonstrated on your own code.
 
-### Q5. Why does this phase claim implementation tests actively obstruct AI-assisted work? <!-- id: vb-04-tests-as-the-contract-q05 -->
+### Q5. Why does this phase claim implementation tests actively obstruct AI-assisted work? <!-- id: vb-04-tests-as-the-contract-q05 energy: high -->
 
 - [ ] They run more slowly than behaviour tests
 - [ ] They are harder for a model to generate
@@ -359,7 +359,7 @@ What you *do* test, and this is the whole list: **the acceptance criteria from y
 
 **Why:** Asking a model to restructure working code is a legitimate and common request. Implementation tests — asserting a helper was called, or an internal ordering — make that look like a regression, so you either abandon a good refactor or edit tests that should not have needed editing, and each edit is a chance to weaken them. The check is whether the test survives a rewrite that preserves behaviour.
 
-### Q6. You introduce five deliberate defects and the suite catches none. What is the correct conclusion? <!-- id: vb-04-tests-as-the-contract-q06 -->
+### Q6. You introduce five deliberate defects and the suite catches none. What is the correct conclusion? <!-- id: vb-04-tests-as-the-contract-q06 energy: normal -->
 
 - [ ] The implementation must be correct after all
 - [ ] Coverage must be miscalculating

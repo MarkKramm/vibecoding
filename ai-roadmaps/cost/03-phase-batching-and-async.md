@@ -427,7 +427,7 @@ Write `portfolio/cost/03-batching-and-async.md` containing:
 
 **Why:** The classification test is who reads the output, and when, not where the code executes. If the same user is waiting for that value before they can continue, the work is on their critical path regardless of which process performs it. Batching would turn a short wait into an hours-long one.
 
-### Q2. Why is asynchronous work cheaper at the provider? <!-- id: cost-03-q02 energy: normal -->
+### Q2. Why is asynchronous work cheaper at the provider? <!-- id: cost-03-q02 energy: high -->
 
 - [ ] Because asynchronous requests use fewer tokens for the same content
 - [x] Because you gave up the latency guarantee, so the provider can schedule the work when capacity is otherwise idle
@@ -445,7 +445,7 @@ Write `portfolio/cost/03-batching-and-async.md` containing:
 
 **Why:** Missing items are a routine feature of asynchronous jobs, not an exception. Reconciliation exists precisely to detect them: every submitted id must appear in exactly one of output or error, and anything in neither gets re-submitted. Ignoring them silently truncates your dataset.
 
-### Q4. You read batch results into a list and assign them to your input rows by index. It works in testing. Why is it dangerous? <!-- id: cost-03-q04 energy: normal -->
+### Q4. You read batch results into a list and assign them to your input rows by index. It works in testing. Why is it dangerous? <!-- id: cost-03-q04 energy: high -->
 
 - [x] Because result order is not guaranteed, so correct answers can be attached to the wrong rows without any visible error
 - [ ] Because the provider may return results as a dictionary instead of a list

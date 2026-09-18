@@ -466,7 +466,7 @@ Write `portfolio/foundations/04-attention-and-kv-cache.md` containing:
 
 ## Quiz
 
-### Q1. In a decoder-only model, why is the key and value for an earlier token not recomputed on the next generation step? <!-- id: found-04-attention-and-kv-cache-q01 energy: normal -->
+### Q1. In a decoder-only model, why is the key and value for an earlier token not recomputed on the next generation step? <!-- id: found-04-attention-and-kv-cache-q01 energy: high -->
 
 - [ ] Because the model reuses the previous step's full output tensor wholesale
 - [ ] Because the server stores the token text and hashes it
@@ -547,7 +547,7 @@ Write `portfolio/foundations/04-attention-and-kv-cache.md` containing:
 
 **Why:** Cache memory is O(n): it stores a fixed number of bytes per token. The score matrix and prefill pairwise work are O(n²), and total generation arithmetic is also O(n²) across the whole reply. Keeping these three separate prevents a lot of confused cost reasoning.
 
-### Q10. Which is the best reason to be cautious about claiming "this model is slow because attention is quadratic"? <!-- id: found-04-attention-and-kv-cache-q10 energy: normal -->
+### Q10. Which is the best reason to be cautious about claiming "this model is slow because attention is quadratic"? <!-- id: found-04-attention-and-kv-cache-q10 energy: high -->
 
 - [ ] Attention is actually linear in all modern implementations
 - [ ] The quadratic term only exists in encoder models

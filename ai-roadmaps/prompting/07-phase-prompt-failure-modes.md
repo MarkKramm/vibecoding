@@ -609,7 +609,7 @@ Write `portfolio/prompting/07-prompt-failure-modes.md` containing:
 
 **Why:** All four reduce the probability of the payload being generated. Only the fourth stops the data leaving if it is generated. That is the general rule for this failure mode: instruction-level defences are probabilistic and live in the model, while enforcement lives in your code and holds whether or not the model was fooled.
 
-### Q8. A long structured document is perfect for its first ten sections and then drifts. What is the best explanation? <!-- id: prompt-07-prompt-failure-modes-q08 energy: normal -->
+### Q8. A long structured document is perfect for its first ten sections and then drifts. What is the best explanation? <!-- id: prompt-07-prompt-failure-modes-q08 energy: high -->
 
 - [x] Generation is left to right, so the model's own recent prose becomes the strongest influence on what shape comes next, and the schema stated at the top fades
 - [ ] The model has a fixed output-length limit and starts compressing when it approaches it
@@ -645,7 +645,7 @@ Write `portfolio/prompting/07-prompt-failure-modes.md` containing:
 
 **Why:** A judge is a probabilistic measurement, and it costs almost nothing to run — which is exactly why it gets over-trusted. Where a deterministic check exists (schema validation, citation membership, unit tests, exact match), it dominates the judge on both trust and cost. Reach for a judge only where nothing checkable exists, and calibrate it against your own scoring on a handful of cases.
 
-### Q12. What is the central idea behind DSPy, and why should it not be your starting point? <!-- id: prompt-07-prompt-failure-modes-q12 energy: normal -->
+### Q12. What is the central idea behind DSPy, and why should it not be your starting point? <!-- id: prompt-07-prompt-failure-modes-q12 energy: high -->
 
 - [ ] It replaces prompting with fine-tuning, which requires a GPU you do not have
 - [ ] It provides a library of pre-written prompts that outperform hand-written ones

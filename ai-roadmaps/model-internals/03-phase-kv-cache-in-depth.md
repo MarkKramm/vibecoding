@@ -409,7 +409,7 @@ Write `portfolio/model-internals/03-phase-kv-cache-in-depth.md` containing:
 
 ## Quiz
 
-### Q1. Why is a past token's key and value still valid on the next generation step? <!-- id: intern-03-kv-cache-in-depth-q01 energy: normal -->
+### Q1. Why is a past token's key and value still valid on the next generation step? <!-- id: intern-03-kv-cache-in-depth-q01 energy: high -->
 
 - [x] Because the key and value at that position are a function only of earlier embeddings and the layer weights, both already fixed
 - [ ] Because causal masking means it depends only on tokens at or before its position, so nothing later can change it
@@ -463,7 +463,7 @@ Write `portfolio/model-internals/03-phase-kv-cache-in-depth.md` containing:
 
 **Why:** 4 bits is half of 8 bits and a quarter of 16 bits, so the element storage falls about 4×. Block-quantization schemes store a scale, and often a zero point, per group of elements, so the real figure sits modestly above a clean quarter. The number of values read is unchanged — only their width.
 
-### Q7. Why does putting a per-request timestamp at the very start of a long prompt break provider prompt caching? <!-- id: intern-03-kv-cache-in-depth-q07 energy: normal -->
+### Q7. Why does putting a per-request timestamp at the very start of a long prompt break provider prompt caching? <!-- id: intern-03-kv-cache-in-depth-q07 energy: high -->
 
 - [ ] It does not; prompt caching matches on content anywhere in the prompt
 - [ ] It only breaks caching if the timestamp changes by more than a minute

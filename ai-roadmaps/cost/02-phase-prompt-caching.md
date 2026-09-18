@@ -453,7 +453,7 @@ Write `portfolio/cost/02-prompt-caching.md` containing:
 
 **Why:** The cache compares token sequences, not meanings. A different ordering is a different sequence, so the block is no longer a prefix of what was stored. Stable content is not sufficient; stable *ordering* is required, which is why sorting by a floating-point score is a cache anti-pattern.
 
-### Q7. Which of these is a reason to decide *against* enabling prompt caching? <!-- id: cost-02-prompt-caching-q07 energy: normal -->
+### Q7. Which of these is a reason to decide *against* enabling prompt caching? <!-- id: cost-02-prompt-caching-q07 energy: high -->
 
 - [ ] Your prefix contains tool definitions rather than prose
 - [ ] Your provider supports explicit cache breakpoints

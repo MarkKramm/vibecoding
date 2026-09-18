@@ -292,7 +292,7 @@ The `NOT CHECKED` section is the one people omit and the one that makes a review
 
 ## Quiz
 
-### Q1. Why does this phase argue that reviewing generated code is not easier than writing it? <!-- id: vb-03-reading-generated-code-q01 -->
+### Q1. Why does this phase argue that reviewing generated code is not easier than writing it? <!-- id: vb-03-reading-generated-code-q01 energy: high -->
 
 - [x] Reviewing means searching for absence, and absence is harder to see than presence in fluent code
 - [ ] Generated code is longer than hand-written code
@@ -301,7 +301,7 @@ The `NOT CHECKED` section is the one people omit and the one that makes a review
 
 **Why:** Writing accumulates understanding as decisions are made; reviewing must infer the decisions that produced the artefact, and a decision that was *never made* leaves no trace. The unconsidered empty case and the deliberately handled one can look identical from outside, which is why reading a file and feeling good about it is not a review.
 
-### Q2. A study of 576,000 generated code samples found hallucinated packages in at least what proportion of open-source model outputs? <!-- id: vb-03-reading-generated-code-q02 -->
+### Q2. A study of 576,000 generated code samples found hallucinated packages in at least what proportion of open-source model outputs? <!-- id: vb-03-reading-generated-code-q02 energy: normal -->
 
 - [ ] About 1.2%
 - [ ] About 5.2%
@@ -310,7 +310,7 @@ The `NOT CHECKED` section is the one people omit and the one that makes a review
 
 **Why:** USENIX Security 2025 reported at least 5.2% for commercial models and **21.7% for open-source models** — roughly four times the rate ([arXiv:2406.10279](https://arxiv.org/abs/2406.10279)). 5.2% is the commercial figure and is the trap answer; the budget gap in this track changes the *risk* here, not only the headroom.
 
-### Q3. Why is a hallucinated package more dangerous than an ordinary bug? <!-- id: vb-03-reading-generated-code-q03 -->
+### Q3. Why is a hallucinated package more dangerous than an ordinary bug? <!-- id: vb-03-reading-generated-code-q03 energy: high -->
 
 - [ ] It is harder to debug because no error is raised
 - [ ] It slows down the build without failing it
@@ -319,7 +319,7 @@ The `NOT CHECKED` section is the one people omit and the one that makes a review
 
 **Why:** An invented name normally fails to install and you notice. But **slopsquatting** pre-registers the names models most reliably hallucinate, and then the install succeeds rather than failing — turning a typo into a supply-chain compromise. The 205,474 unique invented names are what makes the target list large enough to be worth an attacker's time.
 
-### Q4. You are reviewing a diff from a task that asked for one file to be edited. What is the first thing to check? <!-- id: vb-03-reading-generated-code-q04 -->
+### Q4. You are reviewing a diff from a task that asked for one file to be edited. What is the first thing to check? <!-- id: vb-03-reading-generated-code-q04 energy: normal -->
 
 - [ ] Whether the added lines follow the project's style guide
 - [x] Which files changed, before reading any hunks
@@ -328,7 +328,7 @@ The `NOT CHECKED` section is the one people omit and the one that makes a review
 
 **Why:** `git diff --stat` takes a second and answers a question no hunk-level review can: is this diff *only* what I asked for? A task that asked for one file and changed six has a scope problem more important than any line-level issue. Style and comments are the cheapest things to notice and the least likely to hurt you.
 
-### Q5. What does the three-question read ask? <!-- id: vb-03-reading-generated-code-q05 -->
+### Q5. What does the three-question read ask? <!-- id: vb-03-reading-generated-code-q05 energy: normal -->
 
 - [ ] What does it do, is it efficient, and does it follow conventions
 - [ ] Who wrote it, when, and why
@@ -337,7 +337,7 @@ The `NOT CHECKED` section is the one people omit and the one that makes a review
 
 **Why:** The three questions reduce the ownership bar from Phase 1 — "describe its behaviour and failure modes" — into a repeatable routine. The second question is the dangerous one, because the worst answer is a silent wrong result rather than an exception, and the third surfaces the assumptions the model made without mentioning them.
 
-### Q6. Which of these is a VERIFIED statement rather than a judged one? <!-- id: vb-03-reading-generated-code-q06 -->
+### Q6. Which of these is a VERIFIED statement rather than a judged one? <!-- id: vb-03-reading-generated-code-q06 energy: normal -->
 
 - [ ] The error handling looks reasonable
 - [ ] The logic appears correct for the documented cases

@@ -269,7 +269,7 @@ Point 1 is the centre of the deliverable. **The rewritten claim should be more c
 
 ## Quiz
 
-### Q1. Why does RLHF include a KL penalty against the base model? <!-- id: sc-03-alignment-capability-and-honest-limits-q01 energy: normal -->
+### Q1. Why does RLHF include a KL penalty against the base model? <!-- id: sc-03-alignment-capability-and-honest-limits-q01 energy: high -->
 
 - [ ] To reduce training cost by keeping the model small
 - [x] Because the reward model is an approximation that can be exploited if optimised without limit
@@ -278,7 +278,7 @@ Point 1 is the centre of the deliverable. **The rewritten claim should be more c
 
 **Why:** The reward model is learned from a finite set of human comparisons, so it is a proxy rather than the goal. Optimising hard against any approximation finds its weaknesses. The KL penalty constrains how far the model may drift from where the reward signal is trustworthy — which is an explicit admission by the designers of how much they trust their own objective.
 
-### Q2. A team is scored on the number of features shipped per month. Output rises sharply and user satisfaction falls. What is the best description of what happened? <!-- id: sc-03-alignment-capability-and-honest-limits-q02 energy: normal -->
+### Q2. A team is scored on the number of features shipped per month. Output rises sharply and user satisfaction falls. What is the best description of what happened? <!-- id: sc-03-alignment-capability-and-honest-limits-q02 energy: high -->
 
 - [ ] The metric was measured incorrectly
 - [ ] The team became less competent
@@ -305,7 +305,7 @@ Point 1 is the centre of the deliverable. **The rewritten claim should be more c
 
 **Why:** The reader's problem is not that claims are imperfect — it is that they cannot tell which claims are which. A writer who states the limits of their evidence has demonstrated they know the difference, which makes every unqualified claim in the same document worth more. Generation is cheap, so checkable claims are the scarce thing.
 
-### Q5. Why is "build the capability first, add the safety later" a misleading plan? <!-- id: sc-03-alignment-capability-and-honest-limits-q05 energy: normal -->
+### Q5. Why is "build the capability first, add the safety later" a misleading plan? <!-- id: sc-03-alignment-capability-and-honest-limits-q05 energy: high -->
 
 - [ ] Safety work is more expensive after launch
 - [x] Capable and safe behaviours are learned by the same process, so they cannot be cleanly separated afterward

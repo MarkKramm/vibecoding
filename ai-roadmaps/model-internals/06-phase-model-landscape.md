@@ -497,7 +497,7 @@ Nothing in this deliverable requires a paid account. Three candidates can be a l
 
 **Why:** Cost per token answers a question you are not asking. Once failures require retries, the cheap model's effective cost per working answer rises by the retry factor, and the ranking can reverse. The engineering cost of detecting those failures never appears on a pricing page, which is why it belongs in the decision rather than outside it.
 
-### Q3. A model card reports a large improvement on a well-known published benchmark. What is the most useful first question? <!-- id: intern-06-model-landscape-q03 energy: normal -->
+### Q3. A model card reports a large improvement on a well-known published benchmark. What is the most useful first question? <!-- id: intern-06-model-landscape-q03 energy: high -->
 
 - [ ] Whether the benchmark is run in English or in several languages
 - [ ] Whether the model was evaluated at full precision or quantised
@@ -542,7 +542,7 @@ Nothing in this deliverable requires a paid account. Three candidates can be a l
 
 **Why:** An instrument stops discriminating once everything scores near the ceiling, and rankings within that cluster are effectively arbitrary despite being printed to two decimal places. Saturation is a property of the benchmark's difficulty relative to the field, not evidence of architectural similarity or misconduct.
 
-### Q8. You ran a 30-item eval once and chose a model. What is the most accurate statement about that result now? <!-- id: intern-06-model-landscape-q08 energy: normal -->
+### Q8. You ran a 30-item eval once and chose a model. What is the most accurate statement about that result now? <!-- id: intern-06-model-landscape-q08 energy: high -->
 
 - [ ] It is a permanent measurement, since the eval set has not changed
 - [ ] It is proof the model is the best available for the task

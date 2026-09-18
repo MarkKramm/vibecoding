@@ -255,7 +255,7 @@ Point 2 is the one that cannot be faked. A taxonomy is writing; a check that dem
 
 ## Quiz
 
-### Q1. A model gives you a citation with an author, a journal and a year. None of it exists. What is the most accurate description of what happened? <!-- id: sc-01-how-models-go-wrong-q01 energy: normal -->
+### Q1. A model gives you a citation with an author, a journal and a year. None of it exists. What is the most accurate description of what happened? <!-- id: sc-01-how-models-go-wrong-q01 energy: high -->
 
 - [ ] The model retrieved a real paper and corrupted the metadata
 - [x] The model generated a plausible continuation, using the same process it uses for correct answers
@@ -264,7 +264,7 @@ Point 2 is the one that cannot be faked. A taxonomy is writing; a check that dem
 
 **Why:** There is no retrieval step and no separate failure mode. The model produces likely text, and a correct citation and a fabricated one are produced by an identical process — which is exactly why the fabrication is undetectable from the output. Believing there is a retrieval step that "went wrong" leads you to wait for a fix rather than checking citations yourself.
 
-### Q2. You ask a model whether its previous answer was accurate, and it says it was. Why is this weak evidence? <!-- id: sc-01-how-models-go-wrong-q02 energy: normal -->
+### Q2. You ask a model whether its previous answer was accurate, and it says it was. Why is this weak evidence? <!-- id: sc-01-how-models-go-wrong-q02 energy: high -->
 
 - [ ] The model refuses to evaluate its own output
 - [ ] The check uses a smaller model with less capability
@@ -300,7 +300,7 @@ Point 2 is the one that cannot be faked. A taxonomy is writing; a check that dem
 
 **Why:** Agreement plus fluent elaboration is the signature of sycophancy, not of validation. The extra detail is generated text, not derived analysis. Because a beginner cannot distinguish agreement from correctness, this is the failure most likely to harden a misconception — which is why the countermeasure is asking the model to argue against you.
 
-### Q6. You tested your ticket classifier on a hundred tickets you wrote and it was accurate. In production it is not. What is the most likely explanation? <!-- id: sc-01-how-models-go-wrong-q06 energy: normal -->
+### Q6. You tested your ticket classifier on a hundred tickets you wrote and it was accurate. In production it is not. What is the most likely explanation? <!-- id: sc-01-how-models-go-wrong-q06 energy: high -->
 
 - [ ] The model degraded over time and needs retraining
 - [ ] The production server is misconfigured

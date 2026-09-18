@@ -388,7 +388,7 @@ Write `portfolio/agents/05-agent-memory.md` containing:
 
 **Why:** Three properties compound to make it the most valuable field: it was expensive to produce, it is invisible in the resulting artefacts because a codebase never shows you the approaches that were rejected, and it is the most likely thing a fresh agent re-attempts because the same problem generates the same plausible ideas. A handoff missing it does not merely lose information — it actively invites the reader to repeat your work. Completed steps are descriptive and easier to reconstruct; the reasons behind abandoned work are not.
 
-### Q3. Why is persisting state only at the end of a task a serious mistake? <!-- id: agent-05-agent-memory-q03 energy: normal -->
+### Q3. Why is persisting state only at the end of a task a serious mistake? <!-- id: agent-05-agent-memory-q03 energy: high -->
 
 - [ ] Because the final state is usually the least accurate
 - [ ] Because the file will be too large to write at once
@@ -424,7 +424,7 @@ Write `portfolio/agents/05-agent-memory.md` containing:
 
 **Why:** Indirect prompt injection exploits exactly this path — the paper's central observation is that LLM-integrated applications blur the line between data and instructions, letting adversaries inject prompts into data likely to be retrieved, remotely and with no direct interface. Once written, a poisoned note loads as fact on every future run, and by then the originating document is gone, so the note is indistinguishable from the agent's own verified finding. Encryption addresses confidentiality at rest rather than integrity of provenance, and neither privacy obligations nor performance is the integrity problem.
 
-### Q7. Why should the original user constraint be explicitly preserved through compaction? <!-- id: agent-05-agent-memory-q07 energy: normal -->
+### Q7. Why should the original user constraint be explicitly preserved through compaction? <!-- id: agent-05-agent-memory-q07 energy: high -->
 
 - [ ] Because it is the longest part of the conversation
 - [x] Because it usually sits in the first message, which summarisation compresses hardest and a sliding window drops first — and it often contains the tightest requirement

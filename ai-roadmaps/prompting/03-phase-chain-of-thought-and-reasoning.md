@@ -448,7 +448,7 @@ Write `portfolio/prompting/03-chain-of-thought-and-reasoning.md` containing:
 
 ## Quiz
 
-### Q1. Why does writing out intermediate steps improve a model's answer on a multi-step problem? <!-- id: prompt-03-chain-of-thought-and-reasoning-q01 energy: normal -->
+### Q1. Why does writing out intermediate steps improve a model's answer on a multi-step problem? <!-- id: prompt-03-chain-of-thought-and-reasoning-q01 energy: high -->
 
 - [ ] The written steps are read by a separate reasoning module that corrects errors
 - [x] Each generated step becomes input that later positions attend to, so the computation is spread across more serial operations than one token's fixed-depth pass allows
@@ -457,7 +457,7 @@ Write `portfolio/prompting/03-chain-of-thought-and-reasoning.md` containing:
 
 **Why:** The non-embedding computation for a single token is a bounded-depth circuit, so a problem needing more serial steps than that cannot be finished in one pass. Generating a step writes it into the context, and the next position conditions on it. The chain's length is not a side effect of the mechanism — it *is* the mechanism.
 
-### Q2. You add "think step by step" to a support-ticket classification prompt and accuracy drops. What is the best explanation? <!-- id: prompt-03-chain-of-thought-and-reasoning-q02 energy: normal -->
+### Q2. You add "think step by step" to a support-ticket classification prompt and accuracy drops. What is the best explanation? <!-- id: prompt-03-chain-of-thought-and-reasoning-q02 energy: high -->
 
 - [x] There are no dependent intermediate results to compute, so the added text is drift surface — generated reasoning can wander before the label is committed
 - [ ] The phrase confuses the model because classification tasks have no steps

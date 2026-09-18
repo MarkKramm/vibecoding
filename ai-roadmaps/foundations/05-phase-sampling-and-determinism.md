@@ -473,7 +473,7 @@ Write `portfolio/foundations/05-sampling-and-determinism.md` containing:
 
 **Why:** Format compliance is a specification problem, not a sampling problem. Temperature 0 makes a malformed format malformed consistently rather than fixing it. The reliable levers are a clearer specification, a schema constraint, or a provider feature built for structured output.
 
-### Q2. Why is top-p usually preferred over top-k as a default? <!-- id: found-05-q02 energy: normal -->
+### Q2. Why is top-p usually preferred over top-k as a default? <!-- id: found-05-q02 energy: high -->
 
 - [ ] Because top-p keeps more tokens and therefore produces more accurate answers
 - [ ] Because top-k is mathematically equivalent but slower to compute
@@ -509,7 +509,7 @@ Write `portfolio/foundations/05-sampling-and-determinism.md` containing:
 
 **Why:** Low logprobs across a factual span are a genuine warning sign of guessing, because the model is producing plausible-sounding continuation instead of a strong association. The correct conclusion is caution, not certainty of error: logprobs measure the model's internal confidence, not the truth of the content.
 
-### Q6. A model keeps looping and repeating the same phrase in a long creative output. What is the most likely structural cause? <!-- id: found-05-q06 energy: normal -->
+### Q6. A model keeps looping and repeating the same phrase in a long creative output. What is the most likely structural cause? <!-- id: found-05-q06 energy: high -->
 
 - [x] Each repeated token becomes more likely to be chosen again, because the growing context makes the loop a self-reinforcingly plausible continuation
 - [ ] The model has a bug that only appears in creative writing

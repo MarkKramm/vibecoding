@@ -461,7 +461,7 @@ Write `portfolio/model-internals/05-serving-and-throughput.md` containing:
 
 **Why:** TTFT is dominated by queueing and prefill; TPOT is the decode path. Equal TTFT rules out the queue, the prefix cache, and network distance as the main cause, because all three would move the first token. What remains is what changes per-step decode: batch operating point, weight precision, speculation, and parallelism strategy.
 
-### Q9. Why does sharing a prefix across replicas require prefix-aware routing rather than ordinary round-robin load balancing? <!-- id: intern-05-serving-and-throughput-q09 energy: normal -->
+### Q9. Why does sharing a prefix across replicas require prefix-aware routing rather than ordinary round-robin load balancing? <!-- id: intern-05-serving-and-throughput-q09 energy: high -->
 
 - [x] Because the cached KV blocks live in one machine's memory, so a request routed elsewhere must recompute the prefix
 - [ ] Because the KV blocks are compressed and must be decompressed by the original worker

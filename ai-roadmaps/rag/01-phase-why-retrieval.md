@@ -328,7 +328,7 @@ Write `portfolio/rag/01-why-retrieval.md` containing:
 
 ## Quiz
 
-### Q1. A model answers questions about your company's internal wiki fluently and confidently, but the version numbers are subtly wrong. What is the most likely explanation? <!-- id: rag-01-q01 energy: normal -->
+### Q1. A model answers questions about your company's internal wiki fluently and confidently, but the version numbers are subtly wrong. What is the most likely explanation? <!-- id: rag-01-q01 energy: high -->
 
 - [x] It is producing approximate parametric recall — a blurred impression of similar text rather than the document — with no internal signal distinguishing that from accurate recall
 - [ ] The wiki is corrupted in the training data

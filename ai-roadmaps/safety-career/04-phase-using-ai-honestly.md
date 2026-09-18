@@ -366,7 +366,7 @@ Point 5 is the one that cannot be faked. A policy is writing, and the classifica
 
 **Why:** The same action is legitimate or self-defeating depending entirely on what you were trying to build, so no property of the action itself decides it. The replacement question — what am I actually building, an artefact or a capability — has an answer you can check, and checking it is the work of this phase.
 
-### Q2. You have just read a model's detailed explanation of code it wrote for you, and you could repeat the explanation back. Why is this weak evidence of understanding? <!-- id: sc-04-using-ai-honestly-q02 energy: normal -->
+### Q2. You have just read a model's detailed explanation of code it wrote for you, and you could repeat the explanation back. Why is this weak evidence of understanding? <!-- id: sc-04-using-ai-honestly-q02 energy: high -->
 
 - [ ] Because the model's explanations are usually factually wrong
 - [x] Because the explanation is in your working memory, which feels like comprehension, and a model can produce a plausible rationale for a design whether or not it is sound

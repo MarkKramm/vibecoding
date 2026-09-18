@@ -300,7 +300,7 @@ The experiment: take two similar tasks of comparable size. Do one as the tail of
 
 ## Quiz
 
-### Q1. What happens to the conversation on each new turn? <!-- id: vb-06-managing-context-q01 -->
+### Q1. What happens to the conversation on each new turn? <!-- id: vb-06-managing-context-q01 energy: normal -->
 
 - [ ] The model retains a compressed memory of earlier turns
 - [x] The entire conversation is re-sent as input and seen fresh every time
@@ -309,7 +309,7 @@ The experiment: take two similar tasks of comparable size. Do one as the tail of
 
 **Why:** There is no state carried between turns except what is in the payload, which is why long-session behaviour has nothing to do with the model remembering or forgetting. Once this is internalised, the rest of the phase follows — and until it is, degradation looks like a personality flaw in the tool rather than a property of the window.
 
-### Q2. Why does a session degrade before its context window is full? <!-- id: vb-06-managing-context-q02 -->
+### Q2. Why does a session degrade before its context window is full? <!-- id: vb-06-managing-context-q02 energy: high -->
 
 - [ ] Because the model slows down as the context grows
 - [ ] Because vendors secretly reduce the window on free tiers
@@ -318,7 +318,7 @@ The experiment: take two similar tasks of comparable size. Do one as the tail of
 
 **Why:** This is why "start a new chat when it is full" is incomplete advice. A constraint stated at turn 2 and needed at turn 60 is tens of thousands of tokens away and behaves more like background text than like a rule. Task 2 is designed to make this visible in your own work, since the arithmetic alone would suggest you have plenty of room.
 
-### Q3. Which form of externalised state enforces itself and cannot go stale? <!-- id: vb-06-managing-context-q03 -->
+### Q3. Which form of externalised state enforces itself and cannot go stale? <!-- id: vb-06-managing-context-q03 energy: normal -->
 
 - [ ] A `NOTES.md` updated at the end of each session
 - [ ] A `DECISIONS.md` entry with a date and reason
@@ -327,7 +327,7 @@ The experiment: take two similar tasks of comparable size. Do one as the tail of
 
 **Why:** Prose can rot silently, and a fresh session will trust a stale note. A test runs on every change and fails loudly when the constraint is violated, which is why the phase says to prefer encoding a checkable constraint as a test. Note that the other three are all legitimate — they are simply weaker than the one that checks itself.
 
-### Q4. Which detail belongs in a handoff note's "decided, do not revisit" entry? <!-- id: vb-06-managing-context-q04 -->
+### Q4. Which detail belongs in a handoff note's "decided, do not revisit" entry? <!-- id: vb-06-managing-context-q04 energy: high -->
 
 - [x] The decision and the reason it was made
 - [ ] The decision alone, stated as a rule
@@ -336,7 +336,7 @@ The experiment: take two similar tasks of comparable size. Do one as the tail of
 
 **Why:** A decision without a reason gets re-opened, because a fresh session cannot tell a principled constraint from an accidental one. Task 7 has you deliberately omit the reasons and observe a fresh session propose revisiting the decision — that experiment is the argument for this entry's shape, and dates alone do not substitute for it.
 
-### Q5. You are mid-debugging with a reproduction you have not written down, and the session is degrading. What should you do? <!-- id: vb-06-managing-context-q05 -->
+### Q5. You are mid-debugging with a reproduction you have not written down, and the session is degrading. What should you do? <!-- id: vb-06-managing-context-q05 energy: normal -->
 
 - [ ] Start a fresh session immediately, since the current one is degraded
 - [x] Write the state down first, then restart
@@ -345,7 +345,7 @@ The experiment: take two similar tasks of comparable size. Do one as the tail of
 
 **Why:** Fresh sessions are good, but not at the cost of unrecorded live state. Writing the state down is what makes restarting possible, and it is precisely the tension the handoff note resolves — which is why the note is this phase's deliverable rather than an optional extra. Escalating phrasing adds text to an already crowded window.
 
-### Q6. Why does the measurement in task 14 require naming a confound? <!-- id: vb-06-managing-context-q06 -->
+### Q6. Why does the measurement in task 14 require naming a confound? <!-- id: vb-06-managing-context-q06 energy: high -->
 
 - [x] The second task benefits from what you learned doing the first, so the comparison is not clean evidence for session length alone
 - [ ] Because the second task is always easier than the first

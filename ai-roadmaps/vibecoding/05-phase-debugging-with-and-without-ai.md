@@ -312,7 +312,7 @@ Two conditions attach, and they are what separate a workaround from negligence.
 
 ## Quiz
 
-### Q1. What distinguishes sampling from debugging? <!-- id: vb-05-debugging-with-and-without-ai-q01 -->
+### Q1. What distinguishes sampling from debugging? <!-- id: vb-05-debugging-with-and-without-ai-q01 energy: normal -->
 
 - [ ] Sampling uses a model and debugging does not
 - [ ] Sampling is faster and therefore always worse
@@ -321,7 +321,7 @@ Two conditions attach, and they are what separate a workaround from negligence.
 
 **Why:** The diagnostic question is whether you can say what you currently believe the cause is. If the answer is "I am hoping one of these works", you are drawing candidate fixes without any model of the system. Sampling occasionally succeeds, which is precisely what makes it sticky.
 
-### Q2. Why does an error message alone often produce a confidently wrong suggestion? <!-- id: vb-05-debugging-with-and-without-ai-q02 -->
+### Q2. Why does an error message alone often produce a confidently wrong suggestion? <!-- id: vb-05-debugging-with-and-without-ai-q02 energy: high -->
 
 - [ ] Because models cannot read tracebacks accurately
 - [ ] Because error messages are usually inaccurate
@@ -330,7 +330,7 @@ Two conditions attach, and they are what separate a workaround from negligence.
 
 **Why:** Given only a symptom, the most-likely explanation is the best available guess — and it is confidently wrong whenever your cause is the uncommon one, such as a `KeyError` from a nested structure rather than a missing key. Only evidence distinguishes the common cause from yours, which is why the phase is about gathering it.
 
-### Q3. What must a bug reproduction have before you can confirm a fix? <!-- id: vb-05-debugging-with-and-without-ai-q03 -->
+### Q3. What must a bug reproduction have before you can confirm a fix? <!-- id: vb-05-debugging-with-and-without-ai-q03 energy: normal -->
 
 - [ ] A description of the symptom and the error message
 - [ ] Confirmation from a second person that the bug is real
@@ -339,7 +339,7 @@ Two conditions attach, and they are what separate a workaround from negligence.
 
 **Why:** A bug that fails one run in five is a different and harder problem, and treating it as deterministic sends you chasing the wrong cause. The five common sources of non-determinism are ordering, timing, an unseeded random, time and timezone, and external state — and task 10 has you create one deliberately to feel the difference.
 
-### Q4. Why reduce a reproduction to its minimum? <!-- id: vb-05-debugging-with-and-without-ai-q04 -->
+### Q4. Why reduce a reproduction to its minimum? <!-- id: vb-05-debugging-with-and-without-ai-q04 energy: normal -->
 
 - [x] A large reproduction is where wrong hypotheses hide, and twenty lines can be reasoned about
 - [ ] To make the bug report shorter for the reader
@@ -348,7 +348,7 @@ Two conditions attach, and they are what separate a workaround from negligence.
 
 **Why:** Reduction is mechanical and boring and it is the highest-yield debugging activity, because every removed line is a candidate cause eliminated. Task 8 asks for the line count before and after, which is also a useful measure of how much of the original code was irrelevant.
 
-### Q5. Suggestions have started repeating in different words and each attempt needs a new guess about your setup. What does this indicate? <!-- id: vb-05-debugging-with-and-without-ai-q05 -->
+### Q5. Suggestions have started repeating in different words and each attempt needs a new guess about your setup. What does this indicate? <!-- id: vb-05-debugging-with-and-without-ai-q05 energy: normal -->
 
 - [ ] The model has reached its context limit and needs a fresh conversation
 - [ ] The bug is in a third-party library and cannot be fixed
@@ -357,7 +357,7 @@ Two conditions attach, and they are what separate a workaround from negligence.
 
 **Why:** This is the convergence signal, and the correct response is to read: the failing function via Phase 3's three questions, the data backwards from the failure, the official documentation for the exact function, and your own unchecked assumption. A more capable model does not fix a missing reproduction.
 
-### Q6. When is a workaround the right answer, according to this phase? <!-- id: vb-05-debugging-with-and-without-ai-q06 -->
+### Q6. When is a workaround the right answer, according to this phase? <!-- id: vb-05-debugging-with-and-without-ai-q06 energy: normal -->
 
 - [ ] Never — every bug must be understood before it is closed
 - [x] When the cause is a third-party bug or code you are deleting, and you record it and know what you are deferring

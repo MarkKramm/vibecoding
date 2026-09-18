@@ -390,7 +390,7 @@ Write `portfolio/agents/06-safety-human-in-loop.md` containing:
 
 **Why:** The distinction between "more likely to resist" and "unable to comply" is the whole argument: a control that lives in the model's judgement is defeated by defeating the model's judgement. The work is real and promising — applied to GPT-3.5 it drastically increased robustness even against unseen attack types with minimal capability degradation — and it sits at the top of the defence-in-depth table precisely because the layers below assume it failed. The injection paper's own conclusion that effective mitigations are lacking remains the honest framing.
 
-### Q3. Which is the correct axis for deciding where to place an approval gate? <!-- id: agent-06-safety-human-in-loop-q03 energy: normal -->
+### Q3. Which is the correct axis for deciding where to place an approval gate? <!-- id: agent-06-safety-human-in-loop-q03 energy: high -->
 
 - [ ] The tool's name
 - [ ] The number of tokens the action costs
@@ -435,7 +435,7 @@ Write `portfolio/agents/06-safety-human-in-loop.md` containing:
 
 **Why:** Containment constrains capability, not correctness or susceptibility: a perfectly contained agent can still be manipulated into producing confidently wrong output, which is Phase 7's problem rather than this phase's. Fooling the agent is what injection does, and containment is designed on the assumption that fooling succeeds. Resource exhaustion is addressed separately — by the memory and CPU limits that are a distinct part of the configuration.
 
-### Q8. Why is testing containment by attempting escape essential? <!-- id: agent-06-safety-human-in-loop-q08 energy: normal -->
+### Q8. Why is testing containment by attempting escape essential? <!-- id: agent-06-safety-human-in-loop-q08 energy: high -->
 
 - [ ] Because it proves the sandbox is correctly configured
 - [x] Because a sandbox you have not attacked is one you do not know works — the gap between "I set up a container" and "I verified it holds" is where incidents live, and anything that escaped is your real attack surface

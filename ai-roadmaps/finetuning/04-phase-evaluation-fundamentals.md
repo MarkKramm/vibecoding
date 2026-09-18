@@ -325,7 +325,7 @@ Item 3 is required. An evaluation without a demonstrated-failing checker has not
 
 ## Quiz
 
-### Q1. Why is looking at a few outputs a poor way to judge a system? <!-- id: ft-04-evaluation-fundamentals-q01 energy: normal -->
+### Q1. Why is looking at a few outputs a poor way to judge a system? <!-- id: ft-04-evaluation-fundamentals-q01 energy: high -->
 
 - [ ] Because outputs are always wrong the first time
 - [x] Because outputs are stochastic and high-dimensional, so a few samples on self-selected inputs is a biased estimator of the whole distribution
@@ -361,7 +361,7 @@ Item 3 is required. An evaluation without a demonstrated-failing checker has not
 
 **Why:** Self-enhancement bias is documented: judges rate outputs from their own family more favourably. Using the same family therefore inflates your scores in a way that is invisible, because the judge is not wrong in any detectable manner — it is just systematically generous toward the thing you are measuring. Using a different family is a one-line configuration change that removes the bias, and you should state which judge you used so the choice is auditable.
 
-### Q5. What does Goodhart's law mean for benchmarks? <!-- id: ft-04-evaluation-fundamentals-q05 energy: normal -->
+### Q5. What does Goodhart's law mean for benchmarks? <!-- id: ft-04-evaluation-fundamentals-q05 energy: low -->
 
 - [ ] Benchmarks are always wrong
 - [x] When a measure becomes a target it stops being a good measure — optimising for the benchmark stops improving the thing it was meant to proxy

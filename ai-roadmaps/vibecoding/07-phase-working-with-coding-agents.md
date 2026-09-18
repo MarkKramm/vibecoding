@@ -327,7 +327,7 @@ The comparison is also **the honest test of Part 2**. If you predict, then read 
 
 ## Quiz
 
-### Q1. What is the single change that makes supervising an agent harder than reviewing a suggestion? <!-- id: vb-07-working-with-coding-agents-q01 -->
+### Q1. What is the single change that makes supervising an agent harder than reviewing a suggestion? <!-- id: vb-07-working-with-coding-agents-q01 energy: normal -->
 
 - [ ] The agent produces more code than a chat model
 - [ ] The agent uses a different and less capable model
@@ -336,7 +336,7 @@ The comparison is also **the honest test of Part 2**. If you predict, then read 
 
 **Why:** With a chat model, a wrong suggestion appears in front of you and you decline it. With an agent, a wrong action appears in your repository and you find it in the diff. The review did not disappear — it moved — and undoing is more expensive than declining, which is why the runs that go wrong cost more.
 
-### Q2. Why is an agent's summary a claim rather than evidence? <!-- id: vb-07-working-with-coding-agents-q02 -->
+### Q2. Why is an agent's summary a claim rather than evidence? <!-- id: vb-07-working-with-coding-agents-q02 energy: high -->
 
 - [ ] Because agents deliberately conceal what they did
 - [x] It is generated the same way as the code, so it can be optimistic, omit what was unchecked, and describe intent rather than outcome
@@ -345,7 +345,7 @@ The comparison is also **the honest test of Part 2**. If you predict, then read 
 
 **Why:** A summary that was never wrong would be the only reliable text a model produces, and nothing in this track suggests that is the case. Note the fourth failure in Part 2: unrequested scope expansion is announced in the same cheerful tone as success, which is why the diff rather than the summary is the only place the scope is visible.
 
-### Q3. What does committing before an agent run actually make possible? <!-- id: vb-07-working-with-coding-agents-q03 -->
+### Q3. What does committing before an agent run actually make possible? <!-- id: vb-07-working-with-coding-agents-q03 energy: normal -->
 
 - [ ] It prevents the agent from making mistakes
 - [ ] It lets the agent read the codebase more efficiently
@@ -354,7 +354,7 @@ The comparison is also **the honest test of Part 2**. If you predict, then read 
 
 **Why:** Without a commit, the diff mixes the agent's changes with yours and undoing means reconstructing from memory across however many files it touched. The habit takes five seconds, and it is why a bad run against a clean commit is a `git reset` away from being a non-event.
 
-### Q4. Why must the tests exist and pass *before* the agent run? <!-- id: vb-07-working-with-coding-agents-q04 -->
+### Q4. Why must the tests exist and pass *before* the agent run? <!-- id: vb-07-working-with-coding-agents-q04 energy: normal -->
 
 - [ ] Because agents cannot run tests that do not exist
 - [ ] Because it reduces the agent's context usage
@@ -363,7 +363,7 @@ The comparison is also **the honest test of Part 2**. If you predict, then read 
 
 **Why:** An agent asked to implement a feature will, if no tests exist, write tests that assert what its code does — and then truthfully report that all tests pass. Both statements are true and the suite certifies whatever the code does, which is exactly the derivation problem Phase 4 identified, now arriving via an actor.
 
-### Q5. Why does network access add a specific risk to an agent run? <!-- id: vb-07-working-with-coding-agents-q05 -->
+### Q5. Why does network access add a specific risk to an agent run? <!-- id: vb-07-working-with-coding-agents-q05 energy: high -->
 
 - [ ] It slows the agent down with unnecessary requests
 - [ ] It consumes quota that the task did not need
@@ -372,7 +372,7 @@ The comparison is also **the honest test of Part 2**. If you predict, then read 
 
 **Why:** Recall the measured rates — at least 5.2% of commercial-model samples and 21.7% of open-source ones contained hallucinated packages ([arXiv:2406.10279](https://arxiv.org/abs/2406.10279)). In a chat that is text you can catch on review. With an agent that has network access, the install succeeds, and a pre-registered name means hostile code runs.
 
-### Q6. Why does the phase require writing a prediction before reading the summary or the diff? <!-- id: vb-07-working-with-coding-agents-q06 -->
+### Q6. Why does the phase require writing a prediction before reading the summary or the diff? <!-- id: vb-07-working-with-coding-agents-q06 energy: high -->
 
 - [ ] To prove the agent was wrong if it was
 - [ ] To give the agent clearer instructions

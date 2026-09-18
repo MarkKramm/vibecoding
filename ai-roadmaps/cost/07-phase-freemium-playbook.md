@@ -403,7 +403,7 @@ Write `portfolio/cost/07-freemium-playbook.md` containing:
 
 ## Quiz
 
-### Q1. You describe your local model as "free" because it costs nothing per token. What is the most accurate correction? <!-- id: cost-07-freemium-playbook-q01 energy: normal -->
+### Q1. You describe your local model as "free" because it costs nothing per token. What is the most accurate correction? <!-- id: cost-07-freemium-playbook-q01 energy: high -->
 
 - [x] It has a near-zero marginal cost but a real fixed cost in hardware, electricity and your hours, so "free" describes one side of its cost structure rather than its cost
 - [ ] It is free only if you already owned the hardware, so the claim is conditional on your past spending
@@ -439,7 +439,7 @@ Write `portfolio/cost/07-freemium-playbook.md` containing:
 
 **Why:** The credit is the only resource you have for experiments that exceed local and free-tier capability, so spending it on work your laptop could have done converts a scarce resource into an ordinary one. Running daily work through it feels like maximizing value and is actually the opposite. Saving it *entirely* is also wrong — an unused credit is worth nothing after the expiry date, so the goal is targeted spending, not hoarding. The portfolio option is a pleasant by-product of a well-chosen experiment, not a reason to spend.
 
-### Q5. A provider's documentation shows you how to set reasoning effort on its API. You cannot access the paid tier where it lives. What is the best way to learn the mechanism? <!-- id: cost-07-freemium-playbook-q05 energy: normal -->
+### Q5. A provider's documentation shows you how to set reasoning effort on its API. You cannot access the paid tier where it lives. What is the best way to learn the mechanism? <!-- id: cost-07-freemium-playbook-q05 energy: high -->
 
 - [ ] Read the documentation carefully and memorise the parameter values available
 - [ ] Accept that this mechanism is unavailable to you until you can pay

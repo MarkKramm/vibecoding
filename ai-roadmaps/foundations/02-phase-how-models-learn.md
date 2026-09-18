@@ -312,7 +312,7 @@ Write `portfolio/foundations/02-how-models-learn.md` containing:
 
 **Why:** The loss measures surprise at the actual next token. Nothing in that objective references truth, consistency, or refusal. Those properties, where they exist, come from separate training stages or from the surrounding system.
 
-### Q2. Why does a serious pre-training run take months rather than hours? <!-- id: found-02-how-models-learn-q02 energy: normal -->
+### Q2. Why does a serious pre-training run take months rather than hours? <!-- id: found-02-how-models-learn-q02 energy: high -->
 
 - [ ] Because datasets must be downloaded from the internet slowly
 - [ ] Because each parameter is trained one at a time by a human
@@ -321,7 +321,7 @@ Write `portfolio/foundations/02-how-models-learn.md` containing:
 
 **Why:** Large steps overshoot and destabilise the loss, so steps must be small, and small steps mean millions of iterations. The wall-clock cost is that iteration count multiplied by model size and batch size.
 
-### Q3. A base model, asked a question with no chat formatting, responds by producing more questions. What is the best explanation? <!-- id: found-02-how-models-learn-q03 energy: normal -->
+### Q3. A base model, asked a question with no chat formatting, responds by producing more questions. What is the best explanation? <!-- id: found-02-how-models-learn-q03 energy: high -->
 
 - [ ] The model is broken by a training bug
 - [ ] The model is refusing to answer
@@ -339,7 +339,7 @@ Write `portfolio/foundations/02-how-models-learn.md` containing:
 
 **Why:** Instruction-tuning data is tiny compared to a pre-training corpus and contributes almost no new facts. What it reshapes is behaviour: treating a request as an instruction and producing answers in the demonstrated shape.
 
-### Q5. Two chat products use the same publicly released base model but behave very differently. What is the most likely cause? <!-- id: found-02-how-models-learn-q05 energy: normal -->
+### Q5. Two chat products use the same publicly released base model but behave very differently. What is the most likely cause? <!-- id: found-02-how-models-learn-q05 energy: high -->
 
 - [ ] One is secretly running a different architecture
 - [ ] The base model changes its behaviour randomly between deployments
@@ -366,7 +366,7 @@ Write `portfolio/foundations/02-how-models-learn.md` containing:
 
 **Why:** Learning a distribution means doing well on that distribution and poorly outside it. Unusual formatting moves the input outside the familiar region even when the content is identical, which is the same phenomenon as overfitting shown from the outside.
 
-### Q8. A model tops a public benchmark leaderboard. Why should you be cautious? <!-- id: found-02-how-models-learn-q08 energy: normal -->
+### Q8. A model tops a public benchmark leaderboard. Why should you be cautious? <!-- id: found-02-how-models-learn-q08 energy: high -->
 
 - [ ] Benchmarks are always measured incorrectly
 - [ ] Leaderboards only include small models

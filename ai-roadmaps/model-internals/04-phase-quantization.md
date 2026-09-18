@@ -430,7 +430,7 @@ Write `portfolio/model-internals/04-quantization.md` containing:
 
 **Why:** The quantisation step is `s`, and the worst-case absolute error is `s/2` for every weight. Since `s` must be large enough to span the largest magnitude, small weights get the same absolute error against a much smaller denominator — a large relative error. That is precisely the damage AWQ's activation-aware scaling is designed to reduce.
 
-### Q3. Why is bf16 usually preferred over fp16 for training large models? <!-- id: intern-04-quantization-q03 energy: normal -->
+### Q3. Why is bf16 usually preferred over fp16 for training large models? <!-- id: intern-04-quantization-q03 energy: high -->
 
 - [ ] bf16 has a wider mantissa, so it represents values more precisely
 - [ ] bf16 uses fewer bits in total, so training is faster
@@ -475,7 +475,7 @@ Write `portfolio/model-internals/04-quantization.md` containing:
 
 **Why:** They answer different questions. The algorithms decide which numbers to store given a bit budget, using calibration data. The k-quants define how bytes are arranged in a GGUF file — super-blocks, per-block scales and minima, and mixed sub-block precision. Neither is lossless, and both are used on both CPUs and GPUs.
 
-### Q8. Which practice gives the most reliable answer to "is this quantised model good enough for my task"? <!-- id: intern-04-quantization-q08 energy: normal -->
+### Q8. Which practice gives the most reliable answer to "is this quantised model good enough for my task"? <!-- id: intern-04-quantization-q08 energy: high -->
 
 - [x] Running your own cases at your real context length against a high-precision baseline, with a written pass condition
 - [ ] Comparing aggregate benchmark scores between the quantised and original model

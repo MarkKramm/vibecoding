@@ -259,7 +259,7 @@ Worth stating plainly, because a track about a hyped practice should be explicit
 
 ## Quiz
 
-### Q1. A model gives you a function that calls `client.fetch_document(id)`. The code reads cleanly. What is the most likely reason to distrust it? <!-- id: vb-01-what-vibecoding-is-q01 -->
+### Q1. A model gives you a function that calls `client.fetch_document(id)`. The code reads cleanly. What is the most likely reason to distrust it? <!-- id: vb-01-what-vibecoding-is-q01 energy: high -->
 
 - [x] The method may not exist — plausible-looking calls are what the model is optimised to produce
 - [ ] The function is probably too short to be correct
@@ -268,7 +268,7 @@ Worth stating plainly, because a track about a hyped practice should be explicit
 
 **Why:** Invented APIs are the archetypal failure in Part 3, and Part 4 explains the mechanism: the model produces *likely* text, and a call shaped like the documentation is more likely than the call that matches your actual library version. Length and formatting tell you nothing about correctness — that is precisely why these failures look like success.
 
-### Q2. You ask a model to write a function, then ask it to write tests for that function. The tests pass. What have you actually learned? <!-- id: vb-01-what-vibecoding-is-q02 -->
+### Q2. You ask a model to write a function, then ask it to write tests for that function. The tests pass. What have you actually learned? <!-- id: vb-01-what-vibecoding-is-q02 energy: normal -->
 
 - [ ] The function is correct, since independent tests were written
 - [ ] The function is correct for the cases the model thought of
@@ -277,7 +277,7 @@ Worth stating plainly, because a track about a hyped practice should be explicit
 
 **Why:** Tests written after code, by the same system, are derived from the code rather than from a specification. They certify current behaviour, not intended behaviour. Green tests then make a defect look confirmed, which is why Phase 4 treats test-first as a discipline rather than a preference. Option 2 sounds careful but is still wrong: the tests were not written against a stated contract.
 
-### Q3. Which task does this phase claim is genuinely, not deceptively, made easier by a model? <!-- id: vb-01-what-vibecoding-is-q03 -->
+### Q3. Which task does this phase claim is genuinely, not deceptively, made easier by a model? <!-- id: vb-01-what-vibecoding-is-q03 energy: normal -->
 
 - [ ] Deciding which of two architectures will scale
 - [ ] Determining whether a design is secure
@@ -286,7 +286,7 @@ Worth stating plainly, because a track about a hyped practice should be explicit
 
 **Why:** The pattern from Part 2 is that the model is fast at *the parts you could have looked up*, and returns your time for the parts requiring judgement. Glue code between documented APIs is squarely in the first category. Architecture, security and acceptance criteria are all judgement, and none of them becomes easier merely because generation is fast.
 
-### Q4. A colleague says they vibecode. Which question best distinguishes a disciplined workflow from a risky one? <!-- id: vb-01-what-vibecoding-is-q04 -->
+### Q4. A colleague says they vibecode. Which question best distinguishes a disciplined workflow from a risky one? <!-- id: vb-01-what-vibecoding-is-q04 energy: normal -->
 
 - [ ] Which model and tool they use
 - [ ] How many lines per day they produce
@@ -295,7 +295,7 @@ Worth stating plainly, because a track about a hyped practice should be explicit
 
 **Why:** This is the practical form of the ownership argument from Part 5. Tool choice and output volume say nothing about whether the code is understood, and "writes tests" is answered by Q2's trap. The stated bar is behaviour and failure modes — which is a weaker requirement than reading every line but a much stronger one than having it work once.
 
-### Q5. Why does this phase argue that fluency makes generated code harder to review than code written by a careful human? <!-- id: vb-01-what-vibecoding-is-q05 -->
+### Q5. Why does this phase argue that fluency makes generated code harder to review than code written by a careful human? <!-- id: vb-01-what-vibecoding-is-q05 energy: high -->
 
 - [ ] Generated code is longer and therefore slower to read
 - [x] Your "this looks right" instinct was trained on code written by people who understood it
@@ -304,7 +304,7 @@ Worth stating plainly, because a track about a hyped practice should be explicit
 
 **Why:** Part 4 makes this the second consequence of the likelihood mechanism. The heuristic you built by reading competent human code is real but miscalibrated here, and it fails hardest exactly where correctness matters most — because the model's output is fluent about everything, including the parts it invented.
 
-### Q6. On the autonomy spectrum, what is the main reason a lower level can be the better choice for security-sensitive work? <!-- id: vb-01-what-vibecoding-is-q06 -->
+### Q6. On the autonomy spectrum, what is the main reason a lower level can be the better choice for security-sensitive work? <!-- id: vb-01-what-vibecoding-is-q06 energy: normal -->
 
 - [ ] Lower levels produce fewer lines of code to review
 - [ ] Higher levels cannot access the files needed for security work

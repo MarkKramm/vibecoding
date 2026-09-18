@@ -487,7 +487,7 @@ Write `portfolio/foundations/01-what-a-model-is.md` containing:
 
 **Why:** A flat distribution means several continuations have similar probability, so the sampler's choice varies between runs. A confident fact produces a peaked distribution and repeated identical answers; variation is a signal of the model's own uncertainty.
 
-### Q2. You ask about a niche local event and get a detailed, confident, entirely wrong account. What is the best explanation? <!-- id: found-01-q02 energy: normal -->
+### Q2. You ask about a niche local event and get a detailed, confident, entirely wrong account. What is the best explanation? <!-- id: found-01-q02 energy: high -->
 
 - [ ] The model deliberately invented the answer to mislead
 - [ ] The model retrieved the wrong document from its training data

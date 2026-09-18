@@ -439,7 +439,7 @@ Write `portfolio/foundations/06-embeddings-and-similarity.md` containing:
 
 **Why:** For a unit vector, the norm is 1, so dividing by the product of norms changes nothing and the dot product is the cosine. Euclidean distance between unit vectors is a monotonic decreasing function of their cosine, so sorting by distance ascending is the same ordering as sorting by cosine descending — the numbers differ, the ranking does not.
 
-### Q3. You embed 4,000-word policy documents as single vectors and queries return vague, generic passages. What is the most likely cause? <!-- id: found-06-embeddings-and-similarity-q03 energy: normal -->
+### Q3. You embed 4,000-word policy documents as single vectors and queries return vague, generic passages. What is the most likely cause? <!-- id: found-06-embeddings-and-similarity-q03 energy: high -->
 
 - [ ] The embedding model is too small for legal text
 - [x] One vector cannot represent a document covering many topics, so the passages are blended into a mediocre average
@@ -448,7 +448,7 @@ Write `portfolio/foundations/06-embeddings-and-similarity.md` containing:
 
 **Why:** A single fixed-length vector has to summarise everything in the passage. Multi-topic documents land between their topics and match nothing specifically. The fix is chunking into passage-sized units, not switching models or measures — chunking will move quality far more than model choice.
 
-### Q4. Your search must reliably find the error code `ERR_4471`. Which approach is correct? <!-- id: found-06-embeddings-and-similarity-q04 energy: normal -->
+### Q4. Your search must reliably find the error code `ERR_4471`. Which approach is correct? <!-- id: found-06-embeddings-and-similarity-q04 energy: high -->
 
 - [ ] Semantic search, because it generalises better than string matching
 - [ ] Semantic search with a lowered similarity threshold
@@ -466,7 +466,7 @@ Write `portfolio/foundations/06-embeddings-and-similarity.md` containing:
 
 **Why:** Co-occurrence is not truth. "X is safe" and "X is not safe" appear in nearly the same contexts, differ by one token, and are about the same thing. Embeddings position text by topic, and negation barely changes the topic. Distinguishing stance requires the generation model reading the text, or an explicit filter.
 
-### Q6. Why is embedding a document far cheaper than asking a model to summarise the same document? <!-- id: found-06-embeddings-and-similarity-q06 energy: normal -->
+### Q6. Why is embedding a document far cheaper than asking a model to summarise the same document? <!-- id: found-06-embeddings-and-similarity-q06 energy: high -->
 
 - [ ] Embedding models use a cheaper floating-point format
 - [ ] Embedding providers subsidise embedding calls to attract customers

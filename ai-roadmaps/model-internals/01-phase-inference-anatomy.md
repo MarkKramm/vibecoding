@@ -473,7 +473,7 @@ Write `portfolio/model-internals/01-inference-anatomy.md` containing:
 
 ## Quiz
 
-### Q1. A language model has computed a state for every position of your prompt. Why does it still produce only one token per forward pass? <!-- id: intern-01-inference-anatomy-q01 energy: normal -->
+### Q1. A language model has computed a state for every position of your prompt. Why does it still produce only one token per forward pass? <!-- id: intern-01-inference-anatomy-q01 energy: high -->
 
 - [ ] Because the output projection can only select one vocabulary entry at a time
 - [x] Because the next token's input includes the token just generated, so position n+1 cannot be formulated until position n exists
@@ -527,7 +527,7 @@ Write `portfolio/model-internals/01-inference-anatomy.md` containing:
 
 **Why:** Weights are a fixed cost per decode step; the KV cache is not. At 100,000 tokens of context each step reads 100,000 tokens' worth of cached keys and values, all of it read to feed dot products that use each byte once. The model is not degrading and the settings have not changed — there is simply more data to move.
 
-### Q7. A hosted API's time-to-first-token is 3.5 seconds and the tokens-per-second rate is normal. What is the most defensible first conclusion? <!-- id: intern-01-inference-anatomy-q07 energy: normal -->
+### Q7. A hosted API's time-to-first-token is 3.5 seconds and the tokens-per-second rate is normal. What is the most defensible first conclusion? <!-- id: intern-01-inference-anatomy-q07 energy: high -->
 
 - [ ] The model is underpowered and should be replaced
 - [ ] Decode is starved of memory bandwidth

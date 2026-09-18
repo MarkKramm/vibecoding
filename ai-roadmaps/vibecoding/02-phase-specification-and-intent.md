@@ -278,7 +278,7 @@ That is why this phase sits before reading code, testing and debugging. Every la
 
 ## Quiz
 
-### Q1. Research on underspecified coding instructions found which result that makes specification more important rather than less? <!-- id: vb-02-specification-and-intent-q01 -->
+### Q1. Research on underspecified coding instructions found which result that makes specification more important rather than less? <!-- id: vb-02-specification-and-intent-q01 energy: normal -->
 
 - [ ] Models ask too many clarifying questions, wasting the user's time
 - [x] Models struggle to distinguish well-specified from underspecified instructions
@@ -287,7 +287,7 @@ That is why this phase sits before reading code, testing and debugging. Every la
 
 **Why:** Ambig-SWE found models "struggle to distinguish between well-specified and underspecified instructions" ([arXiv:2502.13069](https://arxiv.org/abs/2502.13069)). This is the crux: the model does not reliably know it lacks information, so it cannot warn you. The same work found interaction *improves* results by up to 74%, which is the case for supplying the information yourself.
 
-### Q2. Why does this phase call non-goals the highest-yield part of a brief? <!-- id: vb-02-specification-and-intent-q02 -->
+### Q2. Why does this phase call non-goals the highest-yield part of a brief? <!-- id: vb-02-specification-and-intent-q02 energy: high -->
 
 - [ ] They are the shortest section to write
 - [x] They convert reasonable scope expansion into a stated violation, and surface disagreement before work starts
@@ -296,7 +296,7 @@ That is why this phase sits before reading code, testing and debugging. Every la
 
 **Why:** Given "add authentication", delivering a user model, a migration and remember-me is defensible; a non-goal makes it a violation. They are also concrete enough to test, and writing them surfaces architectural needs you had not articulated — which is cheaper to discover in a sentence than after building on a foundation that cannot support it.
 
-### Q3. Which of these is a usable acceptance criterion? <!-- id: vb-02-specification-and-intent-q03 -->
+### Q3. Which of these is a usable acceptance criterion? <!-- id: vb-02-specification-and-intent-q03 energy: normal -->
 
 - [ ] The endpoint should be reasonably fast under load
 - [ ] Error handling should be robust and user-friendly
@@ -305,7 +305,7 @@ That is why this phase sits before reading code, testing and debugging. Every la
 
 **Why:** A criterion has to be checkable by running something and observing a result. The other three are adjectives, and an adjective in an acceptance criterion is usually hiding a decision you have not made — which is the point of task 3, where you convert each one into a runnable check or discover the undecided question underneath.
 
-### Q4. A brief pins the interface and the acceptance criteria but says nothing about storage or algorithm. Why? <!-- id: vb-02-specification-and-intent-q04 -->
+### Q4. A brief pins the interface and the acceptance criteria but says nothing about storage or algorithm. Why? <!-- id: vb-02-specification-and-intent-q04 energy: normal -->
 
 - [x] A brief fixes the destination and the boundary while leaving the interior free for the model's judgement
 - [ ] Because those details do not affect the outcome
@@ -314,7 +314,7 @@ That is why this phase sits before reading code, testing and debugging. Every la
 
 **Why:** The phase is explicit that specifying the implementation is a legitimate but *different* activity, in which the model becomes a typist and you take on the full cost of being wrong about the design. Leaving the interior free is what preserves the model's ability to suggest a better approach.
 
-### Q5. A model delivers authentication plus a user model, a migration and remember-me, all working. What does this phase say happened? <!-- id: vb-02-specification-and-intent-q05 -->
+### Q5. A model delivers authentication plus a user model, a migration and remember-me, all working. What does this phase say happened? <!-- id: vb-02-specification-and-intent-q05 energy: normal -->
 
 - [ ] The model exceeded its instructions and should be distrusted
 - [ ] The output should be accepted, since everything works
@@ -323,7 +323,7 @@ That is why this phase sits before reading code, testing and debugging. Every la
 
 **Why:** Every added item is individually defensible, which is exactly why the non-goal list is the highest-yield section — it turns "reasonable" from a justification into a violation. The cost is a larger review surface and ownership of code you did not ask for, which is a scope problem rather than an interface problem.
 
-### Q6. Why does the phase claim that writing the brief is where the thinking happens? <!-- id: vb-02-specification-and-intent-q06 -->
+### Q6. Why does the phase claim that writing the brief is where the thinking happens? <!-- id: vb-02-specification-and-intent-q06 energy: high -->
 
 - [ ] Because it produces a document you can reuse
 - [ ] Because models perform better with longer inputs

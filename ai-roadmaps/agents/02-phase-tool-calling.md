@@ -407,7 +407,7 @@ Write `portfolio/agents/02-tool-calling.md` containing:
 
 **Why:** An actionable error turns a loop failure into a recoverable one, and models frequently fix their own call on the next iteration when told precisely what was expected — which is why this is the highest-value technique in the phase. Ending the loop discards the work and the model's ability to recover. Coercing to zero silently produces a wrong amount, which is worse than an error. Schema types help and are necessary, but they are a declaration the model may still violate, so they complement validation rather than replacing it.
 
-### Q5. Why does returning a raw API response from a tool cause problems? <!-- id: agent-02-tool-calling-q05 energy: normal -->
+### Q5. Why does returning a raw API response from a tool cause problems? <!-- id: agent-02-tool-calling-q05 energy: high -->
 
 - [ ] Because models cannot parse nested JSON
 - [ ] Because the provider charges extra for large tool results

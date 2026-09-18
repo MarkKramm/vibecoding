@@ -485,7 +485,7 @@ Write `portfolio/prompting/02-few-shot-and-examples.md` containing:
 
 ## Quiz
 
-### Q1. You add four more examples to a working few-shot sentiment classifier and accuracy does not move. What is the best explanation? <!-- id: prompt-02-few-shot-and-examples-q01 energy: normal -->
+### Q1. You add four more examples to a working few-shot sentiment classifier and accuracy does not move. What is the best explanation? <!-- id: prompt-02-few-shot-and-examples-q01 energy: high -->
 
 - [x] The first example already demonstrated the format and label space, which is the part examples reliably teach, so the extra demonstrations added little
 - [ ] The model is at its capability ceiling for this task

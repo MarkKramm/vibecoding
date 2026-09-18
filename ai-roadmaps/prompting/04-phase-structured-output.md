@@ -557,7 +557,7 @@ Write `portfolio/prompting/04-structured-output.md` containing:
 
 **Why:** Hosted schema-constrained modes compile your schema into a decoder constraint, so keywords outside the supported subset cannot be enforced and are rejected when the request is validated. That is the good outcome — a loud failure rather than a silent downgrade. Which keywords are supported differs by provider and changes over time, so test against the one you use.
 
-### Q9. Why does a repair prompt need to say "fix ONLY the problems listed"? <!-- id: prompt-04-structured-output-q09 energy: normal -->
+### Q9. Why does a repair prompt need to say "fix ONLY the problems listed"? <!-- id: prompt-04-structured-output-q09 energy: high -->
 
 - [ ] Because it reduces the token count of the repair call
 - [ ] Because providers reject repair requests that do not use that phrasing
