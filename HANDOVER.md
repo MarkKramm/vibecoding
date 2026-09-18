@@ -766,6 +766,72 @@ assert what the app receives rather than what the file contains:
 says nothing about the object the component is handed.** When a pipeline normalises data on the
 way in, the test must go through the same normaliser, or it is testing a different program.
 
+---
+
+### 7.0b Section exams — the first graded surface, and the bug that would have shipped silently
+
+**What was built.** One exam per track (10 total), covering **every** question that track teaches
+(24–82), timed, scored, with an 80% pass mark. This is the documented exception to D-020 — argued
+in `docs/DECISIONS.md` → D-020a rather than by editing D-020, because D-020's own last paragraph
+says a score request *"is a change to the product's stance, not a small feature, and should be
+argued as one."*
+
+**The place this could have gone wrong, and why it was tested hardest.** The exam shuffles option
+order per attempt so a retake cannot be passed on position recall. That introduces the one failure
+this whole feature is exposed to:
+
+> **Shuffle the options without carrying the answer index, and every question is marked against the
+> wrong option.** The result is not a crash. It is a *believable score* and a *confident, incorrect
+> verdict* — a reader would simply be told they failed.
+
+So `test-exam.mjs` asserts the answer survives the shuffle across 300 seeds, asserts a perfect
+paper scores 100% *after* shuffling, and asserts the score arithmetic for **every possible count**
+from 1 to 60 questions crossed with every achievable score. Two more that caught real edge cases:
+
+- **Choosing option A must register as answered.** A falsy-zero bug (`chosen !== undefined` not
+  `if (chosen)`) would silently mark index 0 as blank. Asserted directly.
+- **An empty exam must not divide by zero or claim a pass.** `0/0` is `NaN`, and `NaN >= 0.8` is
+  `false`, so this happens to behave — but only by accident, so it is asserted rather than assumed.
+
+**The defect that was actually found — and it was in a different file than expected.** The exam key
+was added to `lib/transfer.js` → `KEYS`, which was assumed sufficient. It was not:
+
+```js
+// mergeValue dispatches on the human-readable `kind` string.
+// The new key's kind matched no branch, so it fell through to:
+return current;   // "preferences and reading position belong to this machine"
+```
+
+**A backup restore would therefore have silently discarded every exam pass recorded on the other
+machine.** The reader imports a backup, sees their results unchanged, and concludes the backup was
+empty. It is the worst failure this feature has, because it is invisible: no error, no crash, and
+the local data still looks correct.
+
+The fix adds an explicit branch — per track, higher score wins, earlier date wins a tie, attempt
+counts add — and the test asserts it from both directions (local ahead, and backup ahead). The
+lesson is in the shape of the miss, not the miss itself: **`KEYS` registration and merge behaviour
+are two different obligations, and satisfying the first looks exactly like satisfying both.**
+
+**What was deliberately kept from D-020**, so the exception did not quietly become a repeal: best
+result only (a worse retake never costs a pass), no failure record shown as a mark, the pass mark
+stated on the card *before* the first question, unanswered counts as **wrong** rather than being
+excluded from the denominator (otherwise leaving blanks would be a strategy), and the verdict leads
+with the next action — *"Not passed — 33%. 12 more correct answers would do it"* — because a reader
+who failed needs a target more than they need a number.
+
+**Exam answers are never stored.** They live in component state for the duration, so reloading
+mid-exam restarts it. That is a real cost and the correct trade: a resumable exam with saved
+answers is not a timed assessment, and the score would stop meaning anything. Only the *result*
+persists, under `vibecoding:exams:v1`.
+
+**Verified live, not just unit-tested:** 10 cards with per-track question counts, a counting-down
+clock, no explanation during the exam (revealed only in the review), answer jumping with
+answered-markers, a 33% verdict with the gap stated, 24 review items with right/wrong borders and
+all 24 explanations, the result surviving a reload, and — the riskiest path — **timer expiry
+auto-submitting** with whatever was answered rather than hanging or discarding the paper. Zero
+runtime errors.
+
+
 ### 7.0 ✅ RESOLVED (2026-09-18) — Previous/Next phase buttons did nothing
 
 **Was:** the Previous and Next buttons on every phase page had **no effect at all**. Fifty-nine
@@ -1041,51 +1107,54 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
 ## 9. Immediate next steps, in order
 
-> **⚠️ THE ORDER CHANGED THIS SESSION. Read §0.1 and §0.2 first.** `web_search` now works, which makes a **re-audit of the already-written 42 phases** both possible and higher-priority than it looks. The reasoning: writing 4 new tracks on top of a corpus that has never been checked against the live world compounds any drift, and the first search found a real defect in minutes. **Do the audit before the new authoring** — see step 8a below, which is now the true resume point. A subagent was dispatched to produce the defect list; check for its findings before starting.
+> **This section was rewritten. It had become a session log from the period when the corpus
+> was still being written — it listed "write the Vibecoding track" as step 9, "create
+> `ai-roadmaps/career/`" as step 4, and opened by asserting that `web_search` had started
+> working. All three were false by the time anyone would read it: the corpus is complete at
+> 65 phases, and `web_search` returns HTTP 402 (see §0.1).** A stale step list is worse than
+> no step list, because it is the first thing a new session reads and it is confident.
+> Steps that were completed are gone; what remains is what is actually still open.
 
-1. **✅ DONE.** Git committed (`3f1cab4`, 52 files) and two CRLF files converted to LF. See §7.3. Generated JSON is gitignored, so a fresh clone must run `node scripts/build-content.mjs` before the site tests can run.
+**The project is at a clean, verified stopping point.** Every commit is pushed, the tree is
+clean, `npm test` is 17 checks / 759 assertions green, and the site builds from Markdown at
+10 tracks / 65 phases. Nothing below is half-finished.
 
-2. **✅ DONE (Stage A).** The 4 quiz-skew files are fixed; `node scripts/audit-quiz.mjs` exits **0** and the corpus distribution improved (C 33.7%→28.2%, A 15.5%→18.2%). See §7.1. **All three guards are now green.**
+### The two queued features
 
-3. **✅ DONE (Stage A).** The AST character gain is explained as expected inline-markup synthesis and documented in `docs/CONTENT-SCHEMA.md`. No code change was needed. See §7.2.
+1. **A capstone exam across all 10 tracks.** One final assessment over the whole curriculum,
+   beside the 10 per-track exams. Two design questions are already settled and should not be
+   re-litigated:
+   - **It samples rather than includes all 549.** A 549-question sitting is not an exam, it is
+     a marathon, and the pass mark stops meaning anything when fatigue is the dominant term.
+     A fixed sample of roughly 50–60, drawn across all tracks, keeps the sitting comparable
+     between attempts.
+   - **It must be weighted per track, or the largest track wins.** Foundations has 82
+     questions and Career 24; a uniform sample over the pooled list would make the capstone
+     mostly a Foundations exam. Draw a fixed number *per track* instead.
+   - `buildExam(questions, trackId, ...)` already takes a question list and filters by
+     `trackId`, so this is a new **pool** plus a **sampling rule**, not a new scoring path.
+     `gradeExam`, `resultText` and `weakPhases` are all reusable unchanged.
 
-4. **Create `ai-roadmaps/career/`** — the new track's folder does not exist yet (§6.0.2). Then write its 4 phases.
+2. **Surface exam results on the dashboard.** A track shows its phases; it should also show
+   whether its exam is passed, so a result is visible where the reader actually navigates.
+   `useExamResults` already exposes `results[trackId].best.passed`; the work is display only.
 
-5. **Write `cost/07` Freemium Playbook** — **✅ DONE.** `ai-roadmaps/cost/07-phase-freemium-playbook.md`, commit `289986e`. The Cost track is now 7/7 complete. Note it deliberately completes `cost/05`'s dated transition plan (the four-way sort into move-to-local / move-to-free-tier / defer / cut), so if `cost/05` is ever revised, keep that handoff intact.
+**Not queued, and deliberately so:** the share-link (progress in a URL fragment). It was
+offered twice and passed over both times. Do not start it unasked.
 
-6. **Write `rag/05`, `rag/06`, `rag/07`** — **✅ DONE.** `f4693cf`, `56f36c0`, `beb01f5`. The RAG track is 7/7 complete. Note three corrections carried into these files and worth preserving if they are ever revised: (a) RAGAS is **reference-free first** — that is the paper's emphasis, and the IR metrics (Recall@k, MRR, nDCG) are **not** from RAGAS, they predate it; (b) GraphRAG's claim is scoped to *global sensemaking questions over datasets in the 1M token range, on comprehensiveness and diversity, versus a conventional RAG baseline* — never compress it to "GraphRAG is better"; (c) `rag/07` deliberately recommends **against** starting with GraphRAG, and its map-reduce alternative is presented as the better engineering choice at learner scale.
+### What is genuinely unverified
 
-7. **Write the Agents track (7 phases)** from §6.1 — **✅ DONE.** Commits `c7b3204`, `204289f`, `9828e4b`, `46e1f37`, `229c1db`, `fced416`, `8ab2b4f`. The Agents track is 7/7. Corrections carried into these files and worth preserving if they are ever revised:
+- **Mobile.** Every browser check in this project sets
+  `Emulation.setDeviceMetricsOverride`; no one has opened the site on a physical phone.
+  Emulation has **already hidden one bug class** — the off-screen-click failure in
+  `sweep-phases.mjs` (§12.31), where clicks fired React handlers and changed nothing because
+  the target was at y=18,865px inside a 450px window. Treat mobile as **unverified**, not as
+  "probably fine".
+- **Volatile facts.** §9a's debt table below still stands and has not shrunk: `web_search` is
+  off for this account. `docs/SEARCH-REQUESTS.md` is the handoff — a human pastes it into a
+  web chat and the answers come back.
 
-   (a) **ReAct's 34% / 10% figures are the ALFWorld and WebShop interactive-benchmark results**, against imitation and RL baselines with one or two in-context examples — **not** the HotpotQA/Fever results, whose reported benefit is overcoming hallucination and error propagation by interacting with an API. Never attach the percentages to the QA tasks. Quizzes in `agent/01`, `agent/03` and `agent/06` test this scoping.
-
-   (b) **`agent/04` carries a real, observed experiment**, not a hypothetical: a subagent was given a brief containing two deliberate fabrications (an invented "200:1" exploration-to-return ratio, and the overstatement that isolation is "the primary reason" multi-agent beats single-agent) marked as verified facts. The child did **not** blindly repeat them — it flagged both accurately in a trailing confidence section. But both still appear in the **body as plain assertions**, and the caveats live only in an appendix that further compression drops. So the finding is sharper than "subagents are confidently wrong": **a caveat does not survive a compression boundary, even when the source is honest.** Preserve that distinction if this phase is revised; the weaker lesson is a different and less useful claim.
-
-   (c) **`agent/06` states the instruction-hierarchy result accurately**: Wallace et al. (arXiv:2404.13208) identify that LLMs treat system prompts as the same priority as untrusted user/third-party text, and their method drastically increased robustness even against unseen attack types with minimal capability degradation — applied to **GPT-3.5**. It is framed throughout as a **mitigation, not an enforcement mechanism**. The injection paper's own conclusion (arXiv:2302.12173) that **effective mitigations are currently lacking** is quoted as the honest framing. Do not let a future edit upgrade either into "solved".
-
-   (d) **`agent/07` frames MCP as versioned.** ⚠️ **THIS NOTE WAS WRONG AND HAS BEEN CORRECTED — read this before revising the phase.** The original text said the revision fetched was "dated `2026-07-28`" and left it there, treating the difference between revisions as cosmetic. Verified with `web_search`: `2025-11-25` is the current **stable, stateful** revision (initialize handshake, `Mcp-Session-Id` sessions, SSE) and `2026-07-28` is a **stateless rewrite** — no handshake, no sessions, server→client requests replaced by Multi Round-Trip Requests, `roots`/`sampling`/`logging` deprecated. The phase now carries that comparison table. **Preserve it.** Also preserved: `pass@k` is explicitly separated from `pass^k`, and the MCP "USB-C" analogy is pushed on deliberately — it standardises the **connector, not the device** — no better tools, no safety, no evaluation, no capability upgrade.
-
-8a. **⭐ RE-AUDIT THE 42 WRITTEN PHASES AGAINST THE LIVE WORLD — this is the true resume point.** `web_search` was broken for the entire authoring of this corpus (§0.1), so **no volatile claim in it has ever been checked against a live source.** Steps:
-    - **Wait for or read the subagent's audit report** (dispatched this session; it was hunting stale pricing, model facts, protocol versions and arXiv mismatches across all 42 phases). Its defect table is the worklist.
-    - **Fix defects in severity order.** `cost/` is the highest-risk track: per-million-token prices change constantly and are the most likely to be outright stale.
-    - **Treat "materially misleading" as a defect, not a quibble.** The MCP case (§0.2) passed every guard while being wrong in substance.
-    - **Re-verify the `**Unverified**` markers** in `docs/research/*.md` — those were items that *could not* be checked without search. Some can now be resolved; others may now be checkable and wrong.
-    - Consider adding a standing **research/verification pass** as its own step in the workflow, since nothing in the guard suite can detect semantic drift (§12.22–23).
-
-8. **✅ DONE THIS SESSION — the Finetuning track (6 phases) is complete.** Commits `1b3d917`, `0e53d16`, `9bc15e4`, `4ec6fa3`, `a4aa919`, `4016417`. 2,442 lines. Written in parallel with a subagent that produced the 22 track files, which is the pattern to repeat (§12.28).
-
-   **The next writer should start here. Three tracks remain, and their folder state is now:**
-   - `vibecoding` — folder **EXISTS** (created by the track-files subagent), empty, needs **8 phases**. **This is the recommended next task** — it is the flagship the project is named for and the user's stated goal is skill and employability.
-   - `safety-career` — folder **EXISTS**, empty, needs **5 phases** — this is the Safety & Ethics track; its track key is `safety-career` (not `safety`)
-   - `career` — folder **EXISTS**, empty, needs **4 phases**
-
-   ⚠️ **The folder-state line above changed this session.** The three `MISSING` folders were created as a side effect of the track-files work, so a note saying "no phase files yet" now means *empty* rather than *absent*. Verified: `node scripts/build-content.mjs` reports exactly those three.
-
-   **While writing them, verify volatile claims as you author them** rather than accumulating debt. `web_fetch` works and is the tool — **`web_search` does not work on this setup and never will (§0.1)**. The difference shows: every arXiv id and every protocol version cited in the Finetuning track was checked against the primary source *before* the sentence was written, so that track carries **no verification debt at all** — unlike the 42 phases before it.
-
-   **The authoring loop that worked, per phase:** write → `build-content.mjs --check` → `audit-quiz.mjs` → `audit-lesson-ast.mjs` → `audit-encoding.mjs` → commit. **Expect the quiz guard to fail on your first draft** — it caught a real answer-position skew in 2 of the 6 Finetuning phases (§12.27). Fix the skew, never the guard.
-
-### 9a. The verification debt, quantified (so it is not hand-waved)
+### The verification debt, quantified (kept from the original §9a)
 
 Measured, not estimated:
 
@@ -1095,26 +1164,39 @@ Measured, not estimated:
 | `**Unverified**` markers in phase files | **0** | none — every marker was resolved *in the phase text* |
 | "unverified / could not verify" mentions in research notes | **~107** | `llm-reference-document.md` 36, `fact-check-embeddings…` 29, `fact-verification-report.md` 23, `tokenization-fact-check.md` 19 |
 
-**Read that table carefully, because the numbers mean different things.** The 45 `Volatile` markers are *correct practice* — each one is a dated, flagged claim that says "check this." They are a **worklist, not a defect list.** The `**Unverified**` count of 0 in the phases is genuinely good news: no phase shipped a claim it admitted it could not check. The ~107 research-note mentions are the real backlog — those are the items the missing search tool *forced* into an unresolved state, and they are the ones to re-check first.
+**Read that table carefully, because the numbers mean different things.** The 45 `Volatile`
+markers are *correct practice* — each is a dated, flagged claim that says "check this." They
+are a **worklist, not a defect list.** The `**Unverified**` count of 0 in the phases is
+genuinely good news: no phase shipped a claim it admitted it could not check. The ~107
+research-note mentions are the real backlog — the items the missing search tool *forced* into
+an unresolved state.
 
-9. **Write the Vibecoding track (8 phases)** from §6.1.
+**If you do any content work at all, start there** — but note that nothing in the guard suite
+can detect semantic drift (§12.22–23). A phase can be stale in substance and pass every check.
 
-10. **Write the Safety & Ethics track (5 phases)** from §6.1.
+---
 
-11. **Write the Career track (4 phases)** from §6.0.2.
+## 9b. The authoring loop, if you do write more content
 
-12. **Write the 20 track files** (10 × `00-overview.md`, 10 × `checklist-master.md`) plus the 2 missing shared docs (and consider `free-toolkit.md`), registering new shared docs in `scripts/shared-content.mjs`.
+Kept because it is still correct and was hard-won.
 
-13. ✅ **Build the learning site** — **DONE** (commit `7d4c8bd`, docs `b1278d7`), verified in a real browser against dev and production. See §6.3.
-14. **Then:** the remaining unit suites (§6.4), CI (§6.5), the six remaining meta-docs and the root files (§6.6–6.7). These are all now unblocked, because the site they describe exists.
-
-**After every phase file:** run the three commands and confirm all green before moving on.
+**Per phase:** write → `build-content.mjs --check` → `audit-quiz.mjs` → `audit-lesson-ast.mjs`
+→ `audit-encoding.mjs` → commit.
 
 ```powershell
 node scripts/build-content.mjs --check 2>$null; Write-Host "exit: $LASTEXITCODE"
 node scripts/audit-quiz.mjs 2>$null | Select-Object -Last 3
 node scripts/audit-lesson-ast.mjs 2>$null | Select-Object -Last 3
 ```
+
+**Expect the quiz guard to fail on your first draft.** It caught a real answer-position skew
+in 2 of the 6 Finetuning phases (§12.27). Fix the skew, never the guard.
+
+**Verify volatile claims as you author them** rather than accumulating debt. `web_fetch` works
+and is the tool; **`web_search` does not work on this setup (§0.1).** The difference shows in
+the corpus: every arXiv id and protocol version in the Finetuning track was checked against
+the primary source *before* the sentence was written, so that track carries **no verification
+debt at all** — unlike the 42 phases before it.
 
 ---
 
@@ -1397,6 +1479,19 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
     - `AGENTS.md` said `build-content.mjs` writes notes to **stderr**; its one-line PASS summary goes to **stdout** and only genuine failures go to stderr — which means `| tail` can display the pass line from a run that **failed**. Replaced with the precise behaviour and an explicit "check the exit code" instruction.
     - `DECISIONS.md` D-008 said **four** career hooks remain unported; only **two** are unreferenced.
     Docs that describe enforcement are load-bearing: an agent reads `AGENTS.md`, believes it, and skips the check. **When you change a guard, change the doc that describes it in the same commit.**
+
+57. **`verify-site.mjs` had been driving SOMEBODY ELSE'S WEBSITE, and reported 13 of 15 checks failed on a perfectly healthy project.**
+    Its default URL was `http://localhost:5173` — the Vite **dev** port — and a completely unrelated app (a restaurant reservation page, `<title>you've got a table reserved 🌧️</title>`) was listening there. Run with no argument, the script navigated to that app, found none of this project's markup, and produced fifteen lines that read exactly like a catastrophe. **The site was fine. The instrument was pointed at the wrong subject.**
+
+    This is instance **14** of *suspect the instrument before the subject*, and it is the most expensive shape that rule takes, because the output is not merely unhelpful — it is *confidently wrong in the alarming direction*. Two fixes, and the second is the one that matters:
+
+    - The default is now **4173 (preview)**, and the two corpus totals it asserted — `/42/` phases and `/706/` checklist items — are now **read from the built data** instead of hardcoded. They had gone stale when the corpus grew to 65 phases and 1054 items, so the check was measuring a memory of the corpus rather than the corpus.
+    - A **preflight** fetches the URL before launching a browser and refuses to continue unless the HTML is this project. A wrong port now yields one line naming the actual app and its title, instead of thirteen misleading failures.
+
+    **The lesson generalises past ports: before believing a wall of failures, confirm the thing you tested is the thing you meant to test.** Cheap check, and it converts a fake catastrophe into a one-line diagnosis. Same family as lesson 54 (`VITE_BASE` left set, blank page, no error naming the cause).
+
+58. **Two documented counts and one default port were wrong, and all three failed in the direction of wasted time rather than a caught bug.**
+    A hardcoded expected value in a guard is a claim about the artifact that nothing re-checks. `/42/` and `/706/` were correct when written and silently wrong later, and the suite stayed green through it because `verify-site.mjs` is not in `npm test` — it needs a running preview server. **A check that only runs when a human remembers to run it will not notice when the world moves.** Prefer deriving an expectation from the source of truth over restating it.
 
 ---
 

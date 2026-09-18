@@ -11,16 +11,50 @@
 // talks to Edge over CDP rather than using a driver library, because the project
 // has no test dependencies and this must stay installable on a zero budget.
 //
-// Run: node scripts/verify-site.mjs [--url http://localhost:5173]
+// Run: node scripts/verify-site.mjs [--url http://localhost:4173]
+//
+// ⚠️ THE DEFAULT PORT IS 4173 (preview), NOT 5173 (dev), AND THAT MATTERS MORE THAN IT
+// LOOKS. The dev server on 5173 is frequently occupied by an UNRELATED project, and
+// this script used to default to it. The failure mode was brutal and silent in the
+// direction that wastes the most time: run with no argument and it would drive
+// somebody else's website, fail 13 of 15 checks, and look exactly like this project
+// had catastrophically broken. It had not.
+//
+// Point it at the port this project is actually served on, and if a run fails
+// wholesale, CHECK WHAT IS LISTENING before debugging the app.
 
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+
+// The corpus totals the dashboard is expected to display, read from the built data
+// rather than hardcoded. These were /42/ and /706/ until the corpus grew to 65
+// phases and 1054 checklist items, at which point the check failed against a
+// perfectly correct site — a guard measuring a memory instead of the artifact.
+const EXPECTED = (() => {
+  try {
+    const index = JSON.parse(readFileSync(join(HERE, "..", "src", "data", "generated", "index.json"), "utf8"));
+    let phases = 0;
+    let checklist = 0;
+    for (const t of index.tracks) {
+      phases += t.phases.length;
+      for (const p of t.phases) checklist += (p.checklistIds || []).length;
+    }
+    return { phases, checklist };
+  } catch {
+    // Generated data is gitignored, so a fresh clone may not have it yet. Fall back
+    // to values that at least do not produce a confusing pass.
+    return { phases: 65, checklist: 1054 };
+  }
+})();
 
 const URL_BASE = (() => {
   const i = process.argv.indexOf("--url");
-  return i !== -1 && process.argv[i + 1] ? process.argv[i + 1] : "http://localhost:5173";
+  return i !== -1 && process.argv[i + 1] ? process.argv[i + 1] : "http://localhost:4173";
 })();
 
 const EDGE_CANDIDATES = [
@@ -105,6 +139,31 @@ async function main() {
     process.exit(2);
   }
 
+  // ---- PREFLIGHT: make sure this project is what is on that port -------------
+  //
+  // Without this, pointing at the wrong port is the worst kind of failure: every
+  // check fails, the output looks like a catastrophe, and the actual cause is that
+  // an unrelated app is listening. That happened — port 5173 held a restaurant
+  // reservation site and this script reported 13 of 15 failures against it.
+  //
+  // So confirm the HTML is OURS before launching a browser at all. A wrong-port
+  // result is then one clear line instead of fifteen misleading ones.
+  try {
+    const res = await fetch(URL_BASE, { redirect: "follow" });
+    const html = await res.text();
+    if (!/Vibecoding/i.test(html)) {
+      console.error(`\n  ✖ ${URL_BASE} is serving something that is not this project.`);
+      const t = html.match(/<title>(.*?)<\/title>/i);
+      if (t) console.error(`    Its title is: ${t[1].trim()}`);
+      console.error("    Start the preview (npm run preview, port 4173) or pass --url.\n");
+      process.exit(2);
+    }
+  } catch (e) {
+    console.error(`\n  ✖ Nothing is serving ${URL_BASE} — ${e.message}`);
+    console.error("    Start it with: npm run preview\n");
+    process.exit(2);
+  }
+
   const profile = mkdtempSync(join(tmpdir(), "vbverify-"));
   const child = spawn(
     browser,
@@ -157,8 +216,15 @@ async function main() {
     check("React mounted", rootText.length > 500, `${rootText.length} chars of text`);
 
     // The dashboard must show the real corpus totals.
-    check("dashboard shows 42 phases", /42/.test(rootText));
-    check("dashboard shows checklist total", /706/.test(rootText));
+    //
+    // These were hardcoded to /42/ and /706/ and went stale when the corpus grew to
+    // 65 phases. Read the expected numbers from the built data instead, so a future
+    // authoring pass cannot leave this failing on a correct site.
+    check(`dashboard shows ${EXPECTED.phases} phases`, rootText.includes(String(EXPECTED.phases)));
+    check(
+      `dashboard shows checklist total ${EXPECTED.checklist}`,
+      rootText.includes(String(EXPECTED.checklist))
+    );
     check("dashboard lists 10 tracks", (rootText.match(/phases|not yet written/g) || []).length >= 6);
 
     // ---- Walk into a phase ------------------------------------------------

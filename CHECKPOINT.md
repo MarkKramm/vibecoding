@@ -63,10 +63,34 @@ checklistIds, taskIds, quizIds` — **no tools, resources or prose**. Full data 
 | Offline checks | 17 |
 | Test assertions | 759 (699 offline + 60 accessibility) |
 | Guards proved to fail | all of them |
-| `src/` modules | 43 — **every one reachable from `main.jsx`** |
+| `src/` modules | 48 — **every one reachable from `main.jsx`** |
+| Views | 6 — Curriculum, Practice, Exams, Tools, Reference, Search |
+| Section exams | 10, one per track, 80% pass mark |
 
 Per track: Foundations 8, Model Internals 6, Prompting 7, RAG 7, Agents 7, Fine-tuning 6,
 Cost 7, Vibecoding Craft 8, Safety & Career 5, Career 4.
+
+---
+
+## The three ways to test yourself
+
+The 549 questions are reachable three ways, and the difference between them is the point:
+
+| | Draws from | Order | Graded? | Explanation |
+|---|---|---|---|---|
+| **Phase quiz** | that phase | as authored | no | immediately |
+| **Practice** | a whole track, or everything | shuffled | no | immediately |
+| **Exam** | a whole track, **every** question | shuffled, options too | **yes, 80%** | only in the review |
+
+**Practice and the exam are not redundant.** Practice answers *"what should I study next?"*
+and the exam answers *"do I actually know this track?"* — the second cannot be answered
+without a threshold, which is why the exam is the documented exception to D-020 (see D-020a).
+Practice stays ungraded because a score there would turn it into a performance and the reader
+who most needs to practise would start avoiding it.
+
+⚠️ **Exam answers are never stored.** They live in memory for the duration, so reloading
+mid-exam restarts it. That is deliberate: a resumable exam with saved answers is not a timed
+assessment. Only the *result* persists (`vibecoding:exams:v1`).
 
 ---
 
@@ -262,7 +286,35 @@ checks here; it catches a class they structurally cannot.
 
 ---
 
-## A note on why this file is short
+## Queued for next session
+
+Asked for and agreed, **not yet built** — nothing below is half-done, the tree is clean:
+
+1. **A capstone exam across all 10 tracks.** One long final assessment covering the whole
+   curriculum, alongside the 10 per-track exams. Design questions already settled: it should
+   sample rather than include all 549 (a 549-question sitting is not an exam, it is a
+   marathon), and it should be weighted per track so a large track cannot dominate the score.
+   `buildExam` already takes a question list, so a capstone is a new pool plus a sampling
+   rule, not a new scoring path.
+2. **Surface exam results on the dashboard.** A track currently shows its phases; it should
+   also show whether its exam has been passed, so the result is visible where the reader
+   actually navigates rather than only inside the Exams view.
+
+Deliberately **not** queued: the share-link (progress in a URL fragment). It was offered and
+passed over twice — do not start it without being asked again.
+
+---
+
+## Still open, and honestly so
+
+- **P0 — mobile has been emulated, never touched.** Every browser check here sets a viewport
+  override; no one has held this site on a real phone. Emulation has already hidden one bug
+  class (the off-screen-click problem), so treat mobile as **unverified**.
+- **P2 — volatile facts are unverified.** Free tiers, pricing and model availability are dated
+  in the content but not re-checked, because `web_search` returns HTTP 402 on this account.
+  `docs/SEARCH-REQUESTS.md` holds the list; it needs a human to paste it into a web chat.
+
+---
 
 It states what is true, not what was done. The history is in
 [CHANGELOG.md](CHANGELOG.md); the engineering lessons, mistakes included, are in
