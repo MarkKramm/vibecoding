@@ -526,16 +526,51 @@ So a **4th guard now exists**: `learning-site/scripts/audit-shapes.mjs` asserts,
 
 **Praised limits, recorded so they are not oversold:** the quiz-correctness test covers **one phase** (the mapping is a pure function, so the evidence transfers, but it is not a per-phase guarantee); `debug-phase.mjs` and `debug-tracks.mjs` are **instruments, not gates** and must not be wired into CI.
 
-### 6.4 Test suites — 🟡 PARTIAL (offline complete, browser complete, unit suites not written)
+### 6.4 Test suites — 🟢 OFFLINE COMPLETE (9 checks, 135 unit assertions)
 
-**Exists and green:** `npm test` (content build → `audit-shapes` → `test-cost-tone` → `audit-encoding`) and `npm run test:browser` (`verify-site` 15 checks, `verify-deep` 8, `verify-quiz-correctness` 2).
+**Exists and green:** `npm test` runs `scripts/check-all.mjs`, now **9** offline checks:
+content build → field shapes → inline markdown rendering → quiz correctness → lesson block
+renderer coverage → cost classification → worked-example arithmetic → encoding → CSS wiring.
+`npm run test:browser` adds `verify-site` 15 checks, `verify-deep` 8,
+`verify-quiz-correctness` 2.
 
-**Still owed:** the per-module unit suites — `test:render-inline`, `test:highlight`, `test:search`, `test:lesson-search`, `test:quiz`, `test:today`, `test:ui`. The sibling project has all of these as plain Node scripts; port them the same way (no test framework, no dependency).
+**Written since this section first said "not written":** `test-render-inline.mjs` (38
+assertions), `test-quiz.mjs` (58), `test-lesson-blocks.mjs` (39) — plus `audit-css.mjs`, which
+was added after the site was found rendering completely unstyled (§12 lesson 50).
 
-### 6.5 CI — not started
+**No test framework and no new dependency.** Where JSX must be loaded, the scripts transform it
+in memory with **esbuild** (already on disk as a Vite dependency) and render via
+`react-dom/server`, which needs no DOM.
 
-`.github/workflows/` with **two jobs**: `content-integrity` (no install needed) and `learning-site`.
-Note: `npm test` needs no browser and can run in CI as-is. `npm run test:browser` needs a browser binary and a running server — either install Edge/Chrome in the runner or keep it as a local-only gate. Do **not** add the two `debug-*.mjs` scripts to CI.
+**Still owed:** `test:search` / `test:lesson-search` (`lib/lessonSearch.js` is pure and imports
+nothing — the highest-value remaining target), `test:highlight`, `test:today`, `test:ui`. Note
+`lib/today.js` exists in the sibling project but **is not wired to any page here** — decide
+whether a Today view is wanted before porting a test around it.
+
+**Every new test must be proved capable of failing.** Three scripts were verified by deliberate
+mutation (dropping a `case` from `LessonBlock.jsx`, no-op'ing `maskCodeSpans`, breaking
+`lib/quiz.js`'s 1-based numbering), each producing specific failures, then restored with
+`git diff` empty.
+
+### 6.5 CI — ✅ DONE
+
+Two workflows, both green on first run:
+
+- `.github/workflows/ci.yml` — content integrity on every push and PR, **with no install step**,
+  then the site build and offline checks.
+- `.github/workflows/pages.yml` — builds and publishes to Pages. It runs the integrity gate
+  **before** installing, so a broken content file fails fast. Sets `VITE_BASE=/vibecoding/`,
+  writes `404.html` and `.nojekyll`, and uses `cancel-in-progress: false` so a deploy is never
+  interrupted mid-publish.
+
+`npm test` needs no browser, so it runs in CI as-is. `npm run test:browser` needs a browser
+binary and a running server — kept local-only. The two `debug-*.mjs` scripts are deliberately
+**not** in CI.
+
+**Live at https://markkramm.github.io/vibecoding/** — deploy verified (all steps success,
+artifact 1202.8 KB, deployment `state=success`). ⚠️ **The rendered live page has never been
+observed from this sandbox**: `*.github.io` resolves IPv6-only here and is unreachable.
+`api.github.com` works, so deploy *status* is verifiable even though the page is not.
 
 ### 6.6 Meta-docs owed
 
@@ -545,13 +580,40 @@ Note: `npm test` needs no browser and can run in CI as-is. `npm run test:browser
 
 ⚠️ **`docs/` is ambiguous and comments cite it both ways.** `docs/CONTENT-SCHEMA.md` and `docs/DESIGN-SYSTEM.md` mean **repo-root** `docs/`; `docs/DECISIONS.md` means **`learning-site/docs/`**. All three resolve today. ARCHITECTURE.md carries a table making this explicit; new citations should use the unambiguous form.
 
-🐛 **Four hooks are unimported dead code:** `useApplications.js`, `useCertifications.js`, `usePortfolio.js`, `useSchedule.js`. They were ported with the rest of the sibling project's `hooks/` but **nothing imports them**, because the six career-specific views they served (Schedule, Applications, Certifications, Portfolio, YourWork, PathOrder) were deliberately not ported — see D-008. They are not harmful, but four comments elsewhere cite them as live examples. Either delete them or wire them when the Career track is written; do not leave them indefinitely as evidence of a feature that does not exist.
+🐛 **Two hooks are unimported dead code, not four.** An earlier note here said
+`useApplications.js`, `useCertifications.js`, `usePortfolio.js` and `useSchedule.js` are all
+unreferenced. Re-measured: only **`useCertifications.js` and `useSchedule.js`** are —
+`useApplications` and `usePortfolio` are genuinely used, because `DataTransfer.jsx` imports
+them to describe and validate what a backup contains. (The first measurement was wrong because
+an inline `node -e` regex lost its `$` to PowerShell and matched no files at all, reporting all
+17 hooks as dead — §12 lesson 53.)
 
-**Still owed:** `docs/CHECKPOINT.md`, `docs/WORKFLOW.md`, `docs/SETUP.md`, `docs/TROUBLESHOOTING.md`, `docs/ROADMAP.md`.
+The two genuinely unreachable hooks served career views that were deliberately not ported — see
+D-008, which now carries the corrected count. They cannot be reached from any screen.
 
-### 6.7 Root files owed
+**Partly addressed:** the reader-facing half is fixed. `labelFor` in `lib/transfer.js` now names
+them *"Certifications (not used in this app)"* and *"Schedule start dates (not used in this
+app)"*, so a reader restoring a backup is not invited to hunt for a screen that does not exist.
+The keys, validators and hooks all stay, because **deleting a key silently drops that field
+from a reader's own backup on the next restore** — the one outcome a backup must not have.
+Verified live in a browser: the restored-backup list shows both rows with the new labels.
 
-`README.md`, `AGENTS.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `LICENSE`, `netlify.toml` (optional)
+**Still owed:** `docs/CHECKPOINT.md`, `docs/WORKFLOW.md`, `docs/TROUBLESHOOTING.md`,
+`docs/ROADMAP.md`. ✅ `SETUP.md` is written at the **repo root** (not `docs/`) — it documents
+the silent traps: Markdown is not read directly, the stale-generated-bundle trap, the
+`VITE_BASE` blank-page trap, the IPv6 `localhost` binding, and the write-API encoding trap.
+
+### 6.7 Root files owed — ✅ DONE
+
+`README.md`, `AGENTS.md`, `CONTRIBUTING.md`, `LICENSE` and `SETUP.md` are all written. `LICENSE`
+is **MIT for the code and CC BY 4.0 for the curriculum prose**, with an explicit
+no-warranty-of-accuracy clause, because the content makes factual claims about a field that
+changes monthly.
+
+✅ `.github/workflows/pages.yml` was the workflow `vite.config.js` had been written to expect but
+that did not exist — `VITE_BASE` was read by the config while nothing ever set it.
+
+⚠️ `netlify.toml` is **not** written and is **optional** — Pages is the chosen host and works.
 
 ---
 
@@ -1064,6 +1126,48 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **Verify subagent claims individually against the artefact, and never edit a correct file to satisfy an outdated report.**
 
+50. **⛔ THE SITE WAS RENDERING COMPLETELY UNSTYLED AND EVERY GUARD WAS GREEN — a stylesheet is a contract between JSX and CSS, and nothing was checking it.**
+    Found by **screenshotting the app and looking at it**, which nothing in the suite did. `global.css` was 3634 lines and styled 344 classes, but it was missing **every top-level layout class the components use**: `.main`, `.topbar`, `.skip`, `.footer`, `.phasegrid`, `.statgrid`, `.toolgrid`, `.breadcrumb`, `.plainlist`, `.linkish` and about thirty more. The topbar collapsed into a raw row, the stat block drew as a vertical list, and cards stacked full-width with no grid.
+
+    **Why nothing caught it:** every existing check reads CONTENT. The build guards read Markdown and generated JSON; `check-browser.mjs` asserts expected *text* appears in the DOM; the shape audit inspects JSON fields. A class with no CSS rule changes no text and breaks no JSON field, so the entire suite stayed green while the page looked broken.
+
+    **Why the classes were missing, which is the transferable part:** the file contains `.app-shell` / `.content` / `.sidebar`, and hyphenated `.phase-grid` / `.stat-grid` — a shell and grids **the app does not render**. The components render `.phasegrid` and `.statgrid` with no hyphen and no shell wrapper. So the stylesheet was written against one DOM shape and the app was built to another, and no check compared the two. Two orphan rules tell the same story: `.topbar__where` carried the only `flex: 1` separating brand from controls, and `App.jsx` renders no such element — which is *why* the topbar collapsed.
+
+    **Fixed** with a pure-append 706-line block (all values from existing tokens, responsive grids, a real skip link), and **guarded** by a new `learning-site/scripts/audit-css.mjs` that fails when any class referenced in JSX has no rule, or any bare `var(--x)` has no definition. It was **proved to fail for the right reason** against the broken stylesheet: exit 1, naming all 40 classes with the files that use them. Wired into `npm test` and CI.
+
+51. **A guard's blind spot is exactly as wide as the selector it uses to find its input — this project has now hit that THREE times, and twice in one session.**
+    First instance (already in §12): `audit-encoding.mjs` scanned only `learning-site/*` and reported clean while never opening the 48 curriculum phases. Fixed then by adding directories.
+    Second instance, this session: the **same guard** decided coverage by file **extension**, so `.gitignore` (no extension), `.editorconfig` and `.github/workflows/*.yml` were never opened. A stray CR landed in `.gitignore` and **git itself warned on push** — the guard had reported "all clean" because it had never read the file. Fixed by adding `.github`, the root docs, and an `EXTENSIONLESS` set; files scanned went **190 → 200**. Proved by injecting CRLF into `.gitignore` and watching it exit 1 with `.gitignore: 38 CRLF line ending(s)`.
+
+    An extension list, a directory list, or a hardcoded file list all fail **silently** and report success on everything they never looked at. When adding a check, ask what input it *cannot* see.
+
+52. **⛔ TWO GUARDS DID NOT DO WHAT `AGENTS.md` SAID THEY DID — test the contract by breaking it, not by trusting the doc.**
+    `AGENTS.md` claimed *"a guard checks ordering positionally, so a misspelled or reordered heading fails the build."* I mutated each of the 14 documented sections in turn and measured. Two of the three claims were **false**:
+    - **Nothing compared section ORDER to anything.** `MANDATORY_SECTIONS` carried the docstring *"in this order"*, `splitSections` dutifully collected the order, and no code ever looked at it. Swapping `## Goal of this phase` with `## Estimated time` built cleanly.
+    - **`## Specific topics to learn` and `## Common Pitfalls` were in no guard list at all**, so renaming one to `## CommonPitfalls` passed every check. This is the worse failure, because an unrecognised `##` heading is **not an error to the parser** — it is silently absorbed as body text. The file looks correct in an editor while content stops rendering in the right place.
+
+    Fixed by adding `SECTION_ORDER` (the full 14-section contract) with an order check and a **near-miss detector** that reports *"spelled X, contract requires Y"* rather than a bare "missing", since a typo and an omission need different fixes. Re-ran the same 14-case harness: **all 12 mutable spellings now caught, plus the reorder**; the 2 rows still reading "NOT CAUGHT" were **my harness's** fault (it built the mutation by stripping spaces from the heading, and `Checklist`/`Quiz` have none — the "mutation" was a no-op). Tested properly: `## Check list` is caught by the near-miss check, `## Quizes` as missing. The corpus was already correct — 65/65 pass, zero pre-existing violations.
+
+53. **Suspect the instrument before the subject — this fired SEVEN times in one session, and it is now the single most common failure mode in this project.**
+    New instances this session, all of which produced a confident wrong answer first:
+    - An inline `node -e` regex containing `\.(jsx|js)$` had its **`$` eaten by PowerShell** before node saw it. `walk()` returned **zero files** and the audit reported **all 17 hooks as never imported**. An alphabetical list of everything being dead is absurd on its face — that is the tell. Moved to a script file: the real answer is **2** (`useCertifications`, `useSchedule`); `useApplications` and `usePortfolio` are genuinely used by `DataTransfer.jsx`. **A stale "four dead hooks" note in this project was wrong on two of four.**
+    - A probe looking for an `o.correct === true` flag on quiz options returned an **all-zero histogram across 549 questions**. Options are plain **strings** in the generated JSON with the answer named by `answerIndex`; `correct` is a shape the Quiz component builds at runtime. Real spread: **A99 / B148 / C161 / D141**.
+    - The same UI probe reported `h1-count=0`, `main-landmarks=0`, `focusRules=0` for every view. **All three false** — the click helper silently failed (so every "view" audited the dashboard) and `document.styleSheets` throws on cross-origin rules. Fixed the probe to **assert navigation happened** before auditing and to **count** unreadable stylesheets instead of swallowing them.
+
+    **The rule:** an implausibly large, implausibly small, or suspiciously identical result means the QUERY is wrong. And once a number is written down it is repeated as fact — three of the errors above were me trusting an earlier note rather than re-measuring.
+
+54. **⛔ I built `dist` with `VITE_BASE=/vibecoding/` for the Pages test and then served it from the preview root — a completely BLANK page, and I had already written the warning about this exact failure.**
+    The HTML requested `/vibecoding/assets/index-*.js`, the preview server did not have it, and it returned the `index.html` fallback instead of JavaScript. No console error names the cause. Rebuilding without `VITE_BASE` fixed it. **`VITE_BASE` set in a shell and forgotten makes every subsequent build wrong** — and if the site is blank, read what `dist/index.html` actually references *before* debugging anything else.
+
+55. **A bad `edit` silently corrupted a CSS declaration, and the only thing that caught it was re-reading the file.**
+    An `edit` whose `old_string` ended mid-line left `color: var(--text);g-subtle);` — a truncated declaration. The build still passed and the guard still reported clean, because a malformed *declaration* is not a missing *class*. Caught by reading the changed region, repaired, and verified with a brace-balance count (depth 0, min 0) plus a check that the corrupted fragment was gone. **After appending a large block to a file, re-read the region you touched** — do not assume the tool did what you meant.
+
+56. **A document that is wrong about the code is worse than a silent one — and this session corrected three separate stale claims in the project's own docs.**
+    - `HANDOVER.md` §13 said `npm test` runs **5** offline checks; it now runs **9**.
+    - `AGENTS.md` said `build-content.mjs` writes notes to **stderr**; its one-line PASS summary goes to **stdout** and only genuine failures go to stderr — which means `| tail` can display the pass line from a run that **failed**. Replaced with the precise behaviour and an explicit "check the exit code" instruction.
+    - `DECISIONS.md` D-008 said **four** career hooks remain unported; only **two** are unreferenced.
+    Docs that describe enforcement are load-bearing: an agent reads `AGENTS.md`, believes it, and skips the check. **When you change a guard, change the doc that describes it in the same commit.**
+
 ---
 
 ## 13. What "done" looks like
@@ -1084,11 +1188,11 @@ The user's five-part objective, **as clarified mid-session**. The user later nar
 - Build report shows **0 task ids minted from position**
 - Every ID authored; every paid tool row has a free alternative
 - **Every phase has a `## Free vs Paid` section that is honest about what free gives up**
-- `npm test` in `learning-site/` → exit 0 (5 offline checks)
+- `npm test` in `learning-site/` → exit 0 (**9** offline checks; it was 5, then 6 after the CSS guard, then 9 after three unit suites)
 - `npm run test:browser` → all green (needs the dev server running)
 - Everything committed
 
-**Status of those criteria right now:** all content guards green; `npm test` green (4/4); browser suites green (25 checks) on dev **and** production. The remaining gap to "done" is **content**, not the site: 21 of 63 phases across 4 tracks.
+**Status of those criteria right now:** all content guards green; `npm test` green (9/9 offline, 135 unit assertions); browser suites green (25 checks) on dev **and** production. The remaining gap to "done" is **content**, not the site: 21 of 63 phases across 4 tracks.
 
 ---
 
