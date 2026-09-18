@@ -1,6 +1,6 @@
 # Finetuning & Evals — Track Overview
 
-> **Status: in progress.** Five of this track's six phases are written; the last is being authored now. The phase table below marks exactly which are ready to read. This overview describes the whole track, including the phase that is not yet available.
+> **Status: complete.** All six phases of this track are written. Every phase carries dated and flagged volatile claims, with `**Unverified**` markers where a claim could not be confirmed from a primary source.
 
 ## What this track is for
 
@@ -41,7 +41,7 @@ No paid compute is required. Every training phase is designed around free GPU se
 | 3 | Datasets and Running a Fine-Tune | 2 weeks | **Written** | The 80% of the work that is data: real inputs, verified outputs, the exact chat template, splitting by source, and why quality beats quantity |
 | 4 | Evaluation Fundamentals | 2 weeks | **Written** | Golden datasets, objective pass criteria, LLM-as-judge with its biases and mitigations, and why benchmarks mislead |
 | 5 | Distillation and Small Models | 1 week | **Written** | Training a small model on a larger one's outputs, the filtering step where quality is won, and the licence question |
-| 6 | Running Evals in Practice | — | In progress | A minimal harness in about a hundred lines, cost control, failure classification, and the habit of regression testing |
+| 6 | Running Evals in Practice | Written | A minimal harness in about a hundred lines, cost control, failure classification, and the habit of regression testing |
 
 **Read Phase 1 first regardless of the others.** It is the decision framework, and its honest answer — usually "don't" — will save you weeks.
 
@@ -61,7 +61,7 @@ No paid compute is required. Every training phase is designed around free GPU se
 
 ## Roughly how long it takes
 
-**6 phases, about 7 weeks at five sessions a week** once all phases are written. Phase 1 is available now; the rest are in progress.
+**6 phases, about 7 weeks at five sessions a week.** All six phases are written and available now.
 
 At one hour a day, plan on ten weeks. The training phases are unpredictable — a failed run costs hours — so build slack into your plan.
 

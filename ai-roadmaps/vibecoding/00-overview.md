@@ -1,6 +1,6 @@
 # Vibecoding Craft — Track Overview
 
-> **Status: not started.** None of this track's eight phases are written yet. This overview describes what the track **will** contain, based on the agreed plan, so you can decide whether it is where you want to spend your time. There is no phase content to read today.
+> **Status: complete.** All eight phases of this track are written. The track is the one the project is named after, and every phase carries dated and flagged volatile claims, with `**Unverified**` markers where a claim could not be confirmed from a primary source.
 
 ## What this track is for
 
@@ -34,14 +34,14 @@ The right preparation is Prompting plus some real programming practice, in any l
 
 | # | Phase | Status | What it will establish |
 |---|---|---|---|
-| 1 | What Vibecoding Actually Is | Planned | An honest definition, what it makes easy versus deceptively easy, the spectrum from autocomplete to agentic, and the track's thesis |
-| 2 | Specification and Intent | Planned | The real bottleneck is specification, not generation: goal, constraints, non-goals, acceptance criteria, and converting a vague wish into an executable brief |
-| 3 | Reading and Reviewing Generated Code | Planned | The core survival skill: reviewing at the right altitude, red flags, and verifying that an API exists rather than assuming it |
-| 4 | Tests as the Contract | Planned | Writing the test first as a specification, and why a test written to pass proves nothing |
-| 5 | Debugging With and Without AI | Planned | Forming a hypothesis before asking, giving the model real evidence, and knowing when to stop asking and start reading |
-| 6 | Managing Context in a Coding Session | Planned | Why long sessions degrade, externalising state to files, and when to reset rather than continue |
-| 7 | Working With Coding Agents | Planned | Bounded tasks, reviewing diffs rather than summaries, committing before a run, and spotting scope creep |
-| 8 | Shipping What You Build | Planned | Security review of generated code, dependency hygiene, licences, disclosure, and maintainability |
+| 1 | What Vibecoding Actually Is | Written | An honest definition, what it makes easy versus deceptively easy, the spectrum from autocomplete to agentic, and the track's thesis |
+| 2 | Specification and Intent | Written | The real bottleneck is specification, not generation: goal, constraints, non-goals, acceptance criteria, and converting a vague wish into an executable brief |
+| 3 | Reading and Reviewing Generated Code | Written | The core survival skill: reviewing at the right altitude, red flags, and verifying that an API exists rather than assuming it |
+| 4 | Tests as the Contract | Written | Writing the test first as a specification, and why a test written to pass proves nothing |
+| 5 | Debugging With and Without AI | Written | Forming a hypothesis before asking, giving the model real evidence, and knowing when to stop asking and start reading |
+| 6 | Managing Context in a Coding Session | Written | Why long sessions degrade, externalising state to files, and when to reset rather than continue |
+| 7 | Working With Coding Agents | Written | Bounded tasks, reviewing diffs rather than summaries, committing before a run, and spotting scope creep |
+| 8 | Shipping What You Build | Written | Security review of generated code, dependency hygiene, licences, disclosure, and maintainability |
 
 **Read them in order.** Phases 2, 3 and 4 are the load-bearing trio — specify, read, test — and everything after them assumes those three. Phase 8 is the one that turns a project into something you can publish and defend.
 
@@ -103,6 +103,6 @@ What will date: which tool is best, what a free tier includes, what a coding age
 1. Confirm you have Foundations and Prompting behind you, and that you can read basic code.
 2. Read [`../shared/study-rules.md`](../shared/study-rules.md) if you have not — this track is where the anti-burnout rules earn their keep, because AI-assisted work makes it very easy to feel productive while learning nothing.
 3. Track your progress in [`checklist-master.md`](checklist-master.md).
-4. Watch this folder for phase files as they are written.
+4. Begin with [Phase 1](01-phase-what-vibecoding-is.md). Work in order — the phases depend on each other more than any other track's do, and Phase 3 is the one the rest rest on.
 
-> **On reading a track that is not finished.** You can start the material as it lands, but do not mistake partial coverage for the whole discipline. Phase 3 — reading generated code — is the one to wait for if you must choose, because it is the phase that makes the rest safe.
+> **On reading the phases in order.** Every phase here assumes the one before it. Phase 3 — reading generated code — is the one to prioritise if you must choose, because it is the phase that makes the rest safe: Phases 4 through 8 are all verification against a stated intent, and none of them work if you cannot tell whether the code does what it claims. **Phase 1 carries dated, volatile claims about tools that will date quickly. Its failure taxonomy will not** — that follows from how the models work, and it has outlived several generations of them.
