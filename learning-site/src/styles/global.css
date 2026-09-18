@@ -1,0 +1,3634 @@
+/* Base styles. Reads only tokens from tokens.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  margin: 0 0 var(--space-3);
+}
+
+h1 {
+  font-size: var(--text-3xl);
+}
+
+h2 {
+  font-size: var(--text-2xl);
+}
+
+h3 {
+  font-size: var(--text-xl);
+}
+
+p {
+  margin: 0 0 var(--space-4);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* Focus is always visible — accessibility requirement in DESIGN-SYSTEM.md. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--space-1);
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100%;
+}
+
+/* The sidebar must stay put while a long lesson scrolls. `position: sticky`
+   with a viewport height keeps it pinned; `overflow-y: auto` gives it its own
+   scrollbar so a long phase list never pushes the lower links out of reach.
+   Without these three declarations the nav is a flex item that stretches to
+   the full document height and scrolls away with the page. */
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border);
+  padding: var(--space-5);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sidebar__title {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-5);
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* The content column is centred rather than left-aligned against the sidebar.
+   On a wide screen a 1,400px block pinned to the left of a 1,919px viewport
+   leaves a dead band on the right that no page can use — and every page here is
+   a column of cards, so the fix belongs in the shell rather than in each page. */
+.content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-6);
+  max-width: var(--content-max);
+  margin-inline: auto;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.empty-state {
+  background: var(--bg-subtle);
+  border: 1px dashed var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-5);
+  color: var(--text-muted);
+}
+
+/* The trailing paragraph margin would leave a gap when no action follows. */
+.empty-state > :last-child {
+  margin-bottom: 0;
+}
+
+/* --- Sidebar --- */
+
+.sidebar__section {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.sidebar__link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font: inherit;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--space-1);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.sidebar__link:hover {
+  background: var(--bg-subtle);
+  color: var(--text);
+}
+
+.sidebar__link.is-active {
+  background: var(--bg-subtle);
+  color: var(--accent);
+}
+
+.sidebar__link.is-complete::after {
+  content: " ✓";
+  color: var(--success);
+}
+
+/* --- Screen-reader-only text ---
+   Used where a control's visible label is a glyph. The accessible name must not
+   depend on the reader inferring meaning from a character. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Keyboard --- */
+.kbd {
+  display: inline-block;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  padding: 0 var(--space-2);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* --- Buttons --- */
+
+.btn {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--space-1);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.btn:hover {
+  background: var(--accent-hover);
+}
+
+/* A button that is deliberately inert — the pager at a track boundary. It stays
+   visible so the control does not appear to be missing, but it must also read as
+   unavailable rather than broken. */
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn:disabled:hover {
+  background: var(--accent);
+}
+
+.btn--small {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.btn--ghost {
+  background: none;
+  color: var(--text-muted);
+  padding: var(--space-2) 0;
+}
+
+.btn--ghost:hover {
+  background: none;
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.btn--ghost:disabled {
+  text-decoration: none;
+}
+
+.btn--ghost:disabled:hover {
+  background: none;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+/* --- Progress --- */
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.progress__track {
+  flex: 1;
+  height: var(--space-2);
+  background: var(--bg-subtle);
+  border-radius: var(--space-2);
+  overflow: hidden;
+}
+
+.progress__fill {
+  height: 100%;
+  background: var(--success);
+  transition: width var(--transition-fast);
+}
+
+.progress__label {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* --- Checkboxes --- */
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  cursor: pointer;
+}
+
+.check input {
+  margin-top: 0.25em;
+  flex-shrink: 0;
+  accent-color: var(--success);
+}
+
+.check__text {
+  flex: 1;
+}
+
+.check--done .check__text {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+/* --- Badges --- */
+
+.badge {
+  font-size: var(--text-xs);
+  padding: 2px var(--space-2);
+  border-radius: var(--space-1);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.badge--low {
+  color: var(--success);
+}
+.badge--normal {
+  color: var(--accent);
+}
+.badge--high {
+  color: var(--warning);
+}
+.badge--free {
+  color: var(--success);
+}
+.badge--freemium {
+  color: var(--warning);
+}
+.badge--paid {
+  color: var(--text-muted);
+}
+
+/* --- Cards --- */
+
+.phase-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.phase-card:hover {
+  border-color: var(--accent);
+}
+
+.phase-card.is-active {
+  border-color: var(--accent);
+}
+
+.phase-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.phase-card__title {
+  font-size: var(--text-lg);
+  margin: 0;
+}
+
+.phase-card__duration {
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.phase-card__goal {
+  font-size: var(--text-sm);
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+.card--focus {
+  border-color: var(--accent);
+}
+
+.focus__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.focus__task {
+  font-size: var(--text-xl);
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.focus__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* --- Lists --- */
+
+.track-grid,
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-3);
+}
+
+/* --- Tools --- */
+
+.tool-card {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-4);
+}
+
+.tool-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.tool-card__name {
+  font-weight: 600;
+}
+
+.tool-card__purpose,
+.tool-card__task,
+.tool-card__alt {
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-2);
+}
+
+.tool-card__link {
+  font-size: var(--text-sm);
+}
+
+/* --- Tools library --- */
+
+.tools-filters {
+  margin-top: var(--space-5);
+}
+
+.tools-filters__row {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.tools-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1 1 220px;
+}
+
+.tools-filters__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.tools-filters__input,
+.tools-filters__select {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+
+.tools-filters__tones {
+  border: none;
+  padding: 0;
+  margin: var(--space-4) 0 0;
+}
+
+.tools-filters__chips {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-1);
+}
+
+.chip {
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.chip:hover {
+  color: var(--text);
+}
+
+.chip.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chip__count {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.tools-count {
+  font-size: var(--text-sm);
+}
+
+/* A button that reads as inline text — used for "clear filters". */
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.link-btn:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.tool-result__from {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0 0 var(--space-1);
+  cursor: pointer;
+}
+
+.tool-result__from:hover {
+  color: var(--accent);
+}
+
+/* --- Portfolio and applications --- */
+
+.entry-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.entry-form__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.entry-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.entry__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.entry__title {
+  font-size: var(--text-lg);
+  margin: 0;
+}
+
+.entry__notes {
+  font-size: var(--text-sm);
+  margin: var(--space-2) 0;
+}
+
+.entry__meta {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-3);
+}
+
+.entry__actions {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.entry__status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.badge--idea {
+  color: var(--text-muted);
+}
+
+.badge--in-progress {
+  color: var(--warning);
+}
+
+.badge--done {
+  color: var(--success);
+}
+
+/* --- Application tracker --- */
+
+.entry-form__row {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.entry-form__row .entry-form__field {
+  flex: 1 1 200px;
+}
+
+/* A follow-up that has come due. Warning, never danger — a missed reminder
+   is not an error state. See docs/DESIGN-SYSTEM.md —— Anti-patterns. */
+.chip--due {
+  color: var(--warning);
+  border-color: var(--warning);
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.app-table th {
+  text-align: left;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 400;
+  padding: 0 var(--space-3) var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-table td {
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.app-table tr:last-child td {
+  border-bottom: none;
+}
+
+.app-table__company {
+  font-weight: 600;
+}
+
+.app-table__sub {
+  display: block;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.app-table select {
+  font: inherit;
+  font-size: var(--text-sm);
+}
+
+.app-table__actions {
+  white-space: nowrap;
+}
+
+/* Overdue follow-up date, marked with a weight change as well as colour so it
+   is not conveyed by colour alone. See DESIGN-SYSTEM.md — Accessibility. */
+.app-due {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.app-table-wrap {
+  overflow-x: auto;
+}
+
+/* --- Energy mode --- */
+
+.energy {
+  border: none;
+  padding: 0;
+  margin: var(--space-5) 0 0;
+}
+
+.energy__legend {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+
+.energy__options {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.energy__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.energy__option.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.energy__option input {
+  accent-color: var(--accent);
+}
+
+/* --- Time budget ---
+   src/components/TimeBudgetSelector.jsx. Deliberately the same shape as the
+   energy control, because they are the same kind of question asked twice: the
+   reader answers both once and both persist. Two differently-styled controls
+   side by side would read as two different kinds of thing. */
+
+.budget {
+  border: none;
+  padding: 0;
+  margin: var(--space-5) 0 0;
+}
+
+.budget__legend {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+
+.budget__options {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.budget__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.budget__option.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.budget__option input {
+  accent-color: var(--accent);
+}
+
+/* The honesty label. Not muted to the point of invisibility: a reader deciding
+   whether to trust "30–90 minutes" needs to be able to read this, and a
+   disclaimer nobody notices is worse than none because it launders the guess. */
+.budget__note {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: var(--space-2) 0 0;
+  max-width: 34rem;
+}
+
+/* The two controls share a row above the narrow breakpoint so the focus card
+   does not grow by two stacked fieldsets. Below it they stack. */
+.focus__controls {
+  display: flex;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.focus__controls > * {
+  margin-top: var(--space-5);
+}
+
+@media (max-width: 560px) {
+  .focus__controls {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+/* --- Band badges ---
+   How long a task takes, shown on the suggested task. Colour is a reading aid,
+   not a severity scale: quick and deep are not good and bad, and neither is
+   emphasised over the other. All three inherit the neutral badge background. */
+
+.badge--band-quick {
+  color: var(--success);
+}
+
+.badge--band-focused {
+  color: var(--accent);
+}
+
+.badge--band-deep {
+  color: var(--warning);
+}
+
+.badge--band-ongoing {
+  color: var(--text-muted);
+}
+
+/* Below the breakpoint the sidebar becomes an off-canvas drawer. The previous
+   behaviour stacked it above the content, which pushed the page down and left
+   the nav just as far away as before. A drawer keeps the content at the top of
+   the screen and puts navigation one tap away. */
+@media (max-width: 860px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 40;
+    width: min(84vw, var(--sidebar-width));
+    height: 100vh;
+    border-right: 1px solid var(--border);
+    border-bottom: none;
+    transform: translateX(-100%);
+    transition: transform var(--transition-fast);
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .sidebar__close {
+    display: block;
+  }
+
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: var(--overlay);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .content {
+    padding: var(--space-5) var(--space-4) var(--space-8);
+  }
+
+  .content__topbar {
+    display: flex;
+  }
+
+  /* The sidebar is off-canvas from here down, so the reading bar must stop
+     starting at its width. Without this the bar began 260px into the viewport
+     and floated over the middle of the prose for the whole 561–860px band. */
+  .reading-bar {
+    left: 0;
+  }
+
+  /* Two stickies cannot share `top: 0`. The topbar has the higher z-index, so
+     the lesson toolbar slid underneath it and the section count, the tick
+     toggle and the size chips were all hidden behind it on every phone. The
+     topbar is the one that must stay, so the toolbar gives up sticking here. */
+  .lesson-tools {
+    position: static;
+  }
+}
+
+/* The drawer's own affordances are desktop-invisible. */
+.sidebar__close {
+  display: none;
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--text-xl);
+  line-height: 1;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--space-1);
+}
+
+.sidebar__close:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+}
+
+.content__topbar {
+  display: none;
+  align-items: center;
+  gap: var(--space-3);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  margin: calc(var(--space-6) * -1) calc(var(--space-6) * -1) var(--space-5);
+  padding: var(--space-3) var(--space-6);
+}
+
+.nav-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  color: var(--text);
+  font: inherit;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+}
+
+.nav-toggle:hover {
+  background: var(--bg-subtle);
+}
+
+/* ---------------------------------------------------------------------------
+   Lesson body
+   ---------------------------------------------------------------------------
+   The lesson region is 84–95% of every phase file, so this is where the page
+   spends most of its pixels. Two constraints shape it:
+
+   1. Reading comfort. Prose is capped at --content-reading rather than the full
+      content width; a 1,100px line of text is hard to track. Tables are exempt,
+      because a six-column comparison cannot be squeezed into 760px.
+   2. Navigability. A 24,000-word lesson needs the sticky table of contents,
+      otherwise the reader has no way back to the top of a section.
+
+   Headings carry scroll-margin-top so an anchored jump clears the sticky
+   mobile topbar instead of hiding the heading underneath it.
+   --------------------------------------------------------------------------- */
+
+.lesson {
+  margin-bottom: var(--space-5);
+}
+
+.lesson__toc {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.lesson__toc-title {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.lesson__toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  columns: 2;
+  column-gap: var(--space-6);
+}
+
+.lesson__toc-item {
+  break-inside: avoid;
+  margin-bottom: var(--space-1);
+}
+
+.lesson__toc-item.is-sub {
+  padding-left: var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.lesson__toc-item button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font: inherit;
+  text-align: left;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--space-1);
+  cursor: pointer;
+  width: 100%;
+}
+
+.lesson__toc-item button:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+}
+
+.lesson__toc-item.is-active button {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* The prose column. Tables opt out of this cap below. */
+.lesson__body {
+  max-width: var(--content-reading);
+}
+
+.lesson__body > p {
+  margin: 0 0 var(--space-4);
+}
+
+.lesson__heading {
+  scroll-margin-top: 88px;
+}
+
+.lesson__body h3 {
+  font-size: var(--text-2xl);
+  margin: var(--space-7) 0 var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.lesson__body h4 {
+  font-size: var(--text-lg);
+  margin: var(--space-5) 0 var(--space-3);
+  color: var(--text);
+}
+
+.lesson__body h5 {
+  font-size: var(--text-base);
+  margin: var(--space-4) 0 var(--space-2);
+  color: var(--text-muted);
+}
+
+.lesson__body ul,
+.lesson__body ol {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-5);
+}
+
+.lesson__body li {
+  margin-bottom: var(--space-2);
+}
+
+/* A nested list sits tight under its parent item. */
+.lesson__body li > ul,
+.lesson__body li > ol {
+  margin-top: var(--space-2);
+  margin-bottom: 0;
+}
+
+/* --- Tables: the one element allowed past the reading measure --- */
+
+.lesson__table-wrap {
+  overflow-x: auto;
+  margin: 0 0 var(--space-5);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  /* Lets the wrapper bleed past the prose column on wide screens. */
+  max-width: var(--content-wide);
+}
+
+.lesson__table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--text-sm);
+}
+
+.lesson__table th,
+.lesson__table td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.lesson__table th {
+  background: var(--bg-subtle);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lesson__table tr:last-child td {
+  border-bottom: none;
+}
+
+.lesson__table tbody tr:hover {
+  background: var(--bg-subtle);
+}
+
+/* --- Code --- */
+
+.lesson__code {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-4);
+  margin: 0 0 var(--space-4);
+  overflow-x: auto;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.lesson__code code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* --- Copy control on code blocks ---
+   The button sits above the block rather than floating over it, so it never
+   covers the first line of a command and stays clear when the code scrolls
+   horizontally. It is always rendered rather than revealed on hover, because a
+   touch user has no hover to reveal it with. */
+
+.lesson__code-wrap {
+  position: relative;
+  margin: 0 0 var(--space-4);
+}
+
+.lesson__code-wrap .lesson__code {
+  margin: 0;
+}
+
+.lesson__copy {
+  display: block;
+  margin-left: auto;
+  margin-bottom: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  line-height: 1.8;
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.lesson__copy:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.lesson__copy[data-state="copied"] {
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.lesson__copy[data-state="failed"] {
+  color: var(--warning);
+  border-color: var(--warning);
+}
+
+/* On a phone there is no hover to reveal the control, so it is made
+   comfortably tappable instead. */
+@media (max-width: 860px) {
+  .lesson__copy {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+  }
+}
+
+/* --- Blockquote: used for the certification and interview verdicts --- */
+
+.lesson__quote {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-elevated);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--space-2) var(--space-2) 0;
+}
+
+.lesson__quote p:last-child {
+  margin-bottom: 0;
+}
+
+.lesson__unsupported {
+  background: var(--bg-subtle);
+  border: 1px dashed var(--danger);
+  border-radius: var(--space-1);
+  padding: var(--space-3);
+  /* --danger directly on --bg-subtle is 4.30:1, under the 4.5:1 AA floor for
+     14px body text. The BORDER keeps --danger (it is the accent stripe, not
+     text, and 3:1 is the applicable bar for a non-text boundary), while the
+     text uses a lightened variant that reaches 6.1:1 on the same surface. */
+  color: var(--danger-text);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 860px) {
+  .lesson__toc ol {
+    columns: 1;
+  }
+
+  .lesson__heading {
+    scroll-margin-top: 72px;
+  }
+}
+/* ---------------------------------------------------------------------------
+   Inline content formatting
+   ---------------------------------------------------------------------------
+   Content strings in the generated JSON carry a small amount of inline
+   Markdown — **bold**, `code`, *italic* — because that is how the curriculum
+   Markdown emphasises practice tasks and deliverables. These rules style what
+   src/lib/renderInline.jsx produces, so the emphasis reads as emphasis
+   instead of showing the literal asterisks and backticks.
+   --------------------------------------------------------------------------- */
+
+code {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
+  font-size: 0.9em;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+/* Emphasis inside a list item should not shout; it is a qualifier, not a
+   heading. Muted weight keeps the primary clause dominant. */
+li em,
+p em {
+  color: var(--text-muted);
+}
+
+/* ── Search ─────────────────────────────────────────────────────────────────
+   The box is wide and the results are a vertical list of clickable rows. Each
+   row shows where the hit lives, the heading it sits under, and a snippet
+   windowed around the match. */
+
+.search__header {
+  margin-bottom: var(--space-5);
+}
+
+.search__header h1 {
+  margin: 0 0 var(--space-1);
+}
+
+.search__header p {
+  margin: 0;
+}
+
+.search__box {
+  position: relative;
+  margin-bottom: var(--space-5);
+}
+
+.search__input {
+  width: 100%;
+  padding: var(--space-3) var(--space-7) var(--space-3) var(--space-4);
+  font-size: var(--text-lg);
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  transition: border-color var(--transition-fast);
+}
+
+/* The border tint is an ADDITION to the ring, never a replacement for it.
+   This rule used to carry `outline: none`, the only such suppression in the
+   file — and because `.search__input:focus` (0,2,0) outranks the global
+   `:focus-visible` (0,1,0), it removed the keyboard focus ring from a
+   `type="search"` input, not merely the mouse-click ring. A 1px border colour
+   change is not a focus affordance on its own. */
+.search__input:focus {
+  border-color: var(--accent);
+}
+.search__input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.search__input::placeholder {
+  color: var(--text-muted);
+}
+
+/* The browser's own clear button duplicates ours and only appears in some
+   engines, so suppress it and keep one consistent control. */
+.search__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search__clear {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  transform: translateY(-50%);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--space-1);
+  cursor: pointer;
+}
+
+.search__clear:hover {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.search__note,
+.search__count {
+  margin: 0 0 var(--space-4);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.search__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.search__link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-4);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.search__link:hover {
+  border-color: var(--accent);
+}
+
+.search__link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.search__where {
+  display: block;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.search__heading {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+  overflow-wrap: anywhere;
+}
+
+/* The snippet is the evidence that the hit is real, so it gets room to show a
+   full clause rather than collapsing to a single truncated line. */
+.search__snippet {
+  display: block;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* The matched term inside a snippet. The browser default is black on yellow,
+   which is unreadable against the dark surface and looks like a bug, so the
+   colour is set explicitly and the text keeps its inherited size. */
+.search__snippet mark {
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 2px;
+  padding: 0 2px;
+  font-weight: 600;
+}
+
+.search__hint {
+  padding: var(--space-5);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+}
+
+.search__hint h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-lg);
+}
+
+.search__hint ul {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-5);
+}
+
+.search__hint li {
+  margin-bottom: var(--space-2);
+}
+
+.search__hint p {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+/* ---------------------------------------------------------------------------
+   Phase navigation, reading position, section toggles, schedule, shortcuts
+   ---------------------------------------------------------------------------
+   Everything below this line was added in one pass, for one reason: the site
+   could render 24,000 words of lesson but gave the reader no way to move
+   through it. A phase ended after its exit criteria with no "next"; a lesson
+   reported no depth; the checklist that tracks completion sat below the lesson
+   it was about. Each block closes one of those.
+   --------------------------------------------------------------------------- */
+
+/* --- Phase pager ---
+   Rendered twice per phase: a compact strip at the top for a reader arriving,
+   and a pair of cards at the bottom for a reader who has just finished. */
+
+.phase-detail__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.phase-nav--compact {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.phase-nav__position {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.phase-nav--full {
+  margin: var(--space-6) 0 var(--space-4);
+}
+
+.phase-nav__legend {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-3);
+}
+
+.phase-nav__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-3);
+}
+
+.phase-nav__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  text-align: left;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-4);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.phase-nav__card:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+/* The forward direction is the common one, so it gets the accent. */
+.phase-nav__card--next {
+  border-color: var(--accent);
+}
+
+/* A boundary placeholder. Not a button, so it carries no hover or cursor. */
+.phase-nav__card.is-empty {
+  cursor: default;
+  border-style: dashed;
+  background: none;
+}
+
+.phase-nav__dir {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.phase-nav__name {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.phase-nav__meta {
+  font-size: var(--text-sm);
+  /* Two lines is enough to identify the phase; the goal text runs long. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- Reading position bar ---
+   Fixed to the top of the viewport, spanning the content column only, so it
+   never sits over the sidebar. Two pixels: it reports position, it is not a
+   decoration. `pointer-events: none` keeps it from eating a click on the
+   topbar it overlaps on narrow screens. */
+
+.reading-bar {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  height: 2px;
+  z-index: 50;
+  background: transparent;
+  pointer-events: none;
+}
+
+.reading-bar__fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 80ms linear;
+}
+
+/* --- Resume prompt ---
+   A suggestion, never an automatic jump. See ReadingPosition.jsx. */
+
+.resume {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  background: var(--bg-subtle);
+  border: 1px dashed var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.resume__text {
+  font-size: var(--text-sm);
+}
+
+.resume__section {
+  color: var(--text);
+}
+
+/* --- Lesson toolbar ---
+   Section progress, tick mode, and text size. Sticky under the topbar so the
+   controls stay reachable in a 15,000-word lesson without a scroll to the top. */
+
+.lesson-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-3);
+  position: sticky;
+  top: 0;
+  z-index: 15;
+}
+
+.lesson-tools__progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1 1 200px;
+}
+
+.lesson-tools__count {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.lesson-tools__track {
+  flex: 1;
+  height: var(--space-1);
+  min-width: 80px;
+  background: var(--bg-subtle);
+  border-radius: var(--space-2);
+  overflow: hidden;
+}
+
+.lesson-tools__fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--transition-fast);
+}
+
+.lesson-tools__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.lesson-tools__size {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lesson-tools__size-legend {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0 var(--space-2) 0 0;
+  float: left;
+  line-height: 2;
+}
+
+/* The size chips are glyphs, so they are square-ish and tight. */
+.lesson-tools__size .chip {
+  padding: var(--space-1) var(--space-2);
+  line-height: 1.2;
+  min-width: 28px;
+}
+
+.chip--s.size-s {
+  font-size: var(--text-xs);
+}
+.chip--s.size-m {
+  font-size: var(--text-sm);
+}
+.chip--s.size-l {
+  font-size: var(--text-base);
+}
+.chip--s.size-xl {
+  font-size: var(--text-lg);
+}
+
+/* --- Per-section done control ---
+   In reading mode the control is present but quiet: revealed on hover or
+   keyboard focus. In tick mode it is always visible, because that is the mode's
+   whole purpose. A completed section is marked in the heading itself as well, so
+   the state is readable without hovering. */
+
+.lesson__done {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-right: var(--space-2);
+  padding: 0;
+  vertical-align: baseline;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--text-xs);
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast), border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.lesson__heading:hover .lesson__done,
+.lesson__done:focus-visible,
+.lesson__body.is-ticking .lesson__done,
+.lesson__done.is-done {
+  opacity: 1;
+}
+
+.lesson__done:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.lesson__done.is-done {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+/* A completed section reads as complete without hovering it. */
+.lesson__heading.is-done {
+  border-bottom-color: var(--success);
+}
+
+/* --- Table of contents: completion marks ---
+   The mark is a fixed-width gutter so unmarked and marked entries stay aligned
+   and the list does not jitter as sections are ticked. */
+
+.lesson__toc-mark {
+  display: inline-block;
+  width: 1.1em;
+  color: var(--success);
+  font-size: var(--text-xs);
+}
+
+.lesson__toc-item.is-done button {
+  color: var(--text-muted);
+}
+
+.lesson__toc-item.is-done.is-active button {
+  color: var(--accent);
+}
+
+/* --- Reading size ---
+   Scales the lesson body through one custom property, so navigation, cards,
+   tables and the sidebar keep their designed proportions. Only prose scales —
+   code blocks and tables have their own sizes and scaling them would break
+   their alignment. */
+
+.lesson__body {
+  font-size: calc(var(--text-base) * var(--lesson-scale, 1));
+}
+
+.lesson__body p,
+.lesson__body li {
+  line-height: 1.6;
+}
+
+/* Body text only. A heading that grows with the reader quickly overwhelms the
+   page, so headings step by a fraction of the prose scale. */
+.lesson__body h3,
+.lesson__body h4,
+.lesson__body h5 {
+  font-size: calc(1em * (1 + (var(--lesson-scale, 1) - 1) * 0.5));
+}
+
+.lesson__body .lesson__table,
+.lesson__body .lesson__code,
+.lesson__body code {
+  font-size: var(--text-sm);
+}
+
+.lesson__body .lesson__quote {
+  font-size: 1em;
+}
+
+/* --- Dashboard: carry-on card, progress note --- */
+
+.carry-on {
+  border-color: var(--border);
+}
+
+.carry-on__title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+/* .progress__note was deleted 2026-09-17: no reference in any component, page,
+   or hook. Its live siblings (.progress__label / __track / __fill) remain. */
+
+.track-card__weeks {
+  font-size: var(--text-xs);
+  margin: var(--space-2) 0 0;
+}
+
+/* --- Dashboard layout: main column and reference rail ---
+   The dashboard was a single 1,100px column, which on a wide screen left the
+   whole right half of the viewport empty. The fix is not more content — it is to
+   give the numbers a place of their own and let the phases tile.
+
+   The rail is a reference column, not a second dashboard: a progress ring, the
+   plan's dates, three read-only counts, and the next two phases. It carries no
+   charts and no streaks, per docs/DESIGN-SYSTEM.md → Anti-patterns. Below
+   1180px it stops being a column and lays out as cards under the main column,
+   in the same order, so nothing is hidden at a narrow width. */
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+@media (min-width: 1180px) {
+  .dashboard__grid {
+    grid-template-columns: minmax(0, 1fr) var(--rail-width);
+  }
+
+  /* The rail follows the reader down the page on a short viewport. It is a
+     reference column, and a reference you have to scroll back to is not one. */
+  .dashboard__rail {
+    position: sticky;
+    top: var(--space-6);
+  }
+}
+
+/* Phase cards tile two-up once there is width for two honest cards. A single
+   column of eleven full-width cards is a lot of scrolling for very little
+   information per card. */
+.phase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.phase-grid .phase-card {
+  margin-bottom: 0;
+  height: 100%;
+}
+
+@media (max-width: 560px) {
+  .phase-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --- Reference rail cards --- */
+
+.rail-card {
+  margin-bottom: var(--space-4);
+}
+
+.rail-card:last-child {
+  margin-bottom: 0;
+}
+
+.rail-card__title {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin: 0 0 var(--space-4);
+}
+
+.rail-card__cta {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-size: var(--text-sm);
+  padding: var(--space-2) 0 0;
+}
+
+.rail-card__note {
+  font-size: var(--text-sm);
+  margin: var(--space-4) 0 0;
+}
+
+/* Deep links to the shared documents. Each is a full-width text button, matching
+   .rail-card__cta, but stacked with a little air between them so three titles do
+   not read as one paragraph. */
+.rail-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rail-links .rail-card__cta {
+  padding: var(--space-1) 0;
+}
+
+/* --- Carry one phase between machines ---
+   An inline, collapsed panel beside the phase it acts on. Deliberately NOT a
+   modal like DataTransfer: that one can overwrite every storage key at once and
+   warrants a confirmation, while this import is additive by construction and can
+   never remove anything, so it does not need to interrupt the page. */
+.phase-transfer__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.phase-transfer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+.phase-transfer__note,
+.phase-transfer__message {
+  font-size: var(--text-sm);
+  margin: var(--space-2) 0 0;
+}
+
+.phase-transfer__message.is-error {
+  color: var(--danger-text);
+}
+
+/* Off-screen but reachable by assistive tech and by `.click()`. A file input
+   cannot be usefully styled, so it is hidden and driven by a real button. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Where you've been ---
+   A neutral list of the reader's own file. Deliberately colourless: no warning
+   tone, no red, no "missing" styling, because the design system forbids shame UI
+   and this page is the one most able to become it. The three sections are
+   identical in weight on purpose — "not started yet" is the normal state of most
+   of a 34–112 week curriculum, not a problem to fix. */
+.path-order__header {
+  margin-bottom: var(--space-5);
+}
+
+.path-order__tracks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.path-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-4) 0 0;
+}
+
+.path-row + .path-row {
+  border-top: 1px solid var(--border);
+}
+
+.path-row__open {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-3) 0;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.path-row__open:hover .path-row__title {
+  text-decoration: underline;
+}
+
+.path-row__title {
+  font-weight: 600;
+}
+
+.path-row__meta,
+.path-empty {
+  font-size: var(--text-sm);
+}
+
+/* --- Progress ring ---
+   A single-value readout. The percentage and the raw count are also rendered as
+   text beside it, so the ring is never the only carrier of the number — the same
+   rule ProgressBar follows, and the reason the svg carries an aria-label rather
+   than being left silent. */
+
+.rail-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.rail-progress__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  min-width: 0;
+}
+
+.rail-progress__value {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ring {
+  flex-shrink: 0;
+}
+
+.ring__track {
+  stroke: var(--bg-subtle);
+}
+
+.ring__fill {
+  stroke: var(--accent);
+  /* No transition. This is a readout, not a reward. */
+}
+
+/* --- Rail: plan facts --- */
+
+.rail-facts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rail-fact {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.rail-fact dt {
+  color: var(--text-muted);
+}
+
+.rail-fact dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* --- Rail: readiness chips ---
+   Buttons, because each one navigates to the page that owns the count. Phrased
+   as "you have N", never "you are missing N". */
+
+.rail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.rail-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 84px;
+  flex: 1 1 84px;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.rail-chip:hover {
+  border-color: var(--accent);
+}
+
+.rail-chip__value {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-chip__label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* --- Rail: what comes up next --- */
+
+.rail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rail-list__open {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-left: 2px solid var(--border);
+  padding: var(--space-1) 0 var(--space-1) var(--space-3);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.rail-list__open:hover {
+  border-left-color: var(--accent);
+}
+
+.rail-list__title {
+  font-size: var(--text-sm);
+}
+
+.rail-list__now {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.rail-list__meta {
+  font-size: var(--text-xs);
+}
+
+/* --- Schedule --- */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.stat__value {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.stat__sub {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.stat__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+/* The pace card is informational. Warning and success are border accents only —
+   never a red background, because "behind a self-set schedule" is not an error
+   state. See docs/DESIGN-SYSTEM.md → Anti-patterns. */
+.pace--warning {
+  border-left: 3px solid var(--warning);
+}
+
+.pace--success {
+  border-left: 3px solid var(--success);
+}
+
+.pace--muted {
+  border-left: 3px solid var(--border);
+}
+
+.pace__bars {
+  margin: var(--space-4) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pace__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pace__label {
+  flex: 0 0 110px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.pace__track {
+  flex: 1;
+  height: var(--space-2);
+  background: var(--bg-subtle);
+  border-radius: var(--space-2);
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.pace__fill {
+  display: block;
+  height: 100%;
+  transition: width var(--transition-fast);
+}
+
+.pace__fill--time {
+  background: var(--text-muted);
+}
+
+.pace__fill--work {
+  background: var(--success);
+}
+
+.pace__value {
+  flex: 0 0 44px;
+  text-align: right;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.pace__actions {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-sm);
+}
+
+.pace__note {
+  font-size: var(--text-sm);
+  margin: var(--space-3) 0 0;
+}
+
+/* --- Look-ahead plan list --- */
+
+.plan {
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.plan__open {
+  display: grid;
+  grid-template-columns: 190px 1fr auto;
+  align-items: baseline;
+  gap: var(--space-4);
+  width: 100%;
+  text-align: left;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.plan__open:hover {
+  border-color: var(--accent);
+}
+
+.plan__dates {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.plan__title {
+  font-weight: 600;
+}
+
+.plan__weeks {
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+/* --- Modal shell --- */
+/*
+ * One backdrop and one panel, shared by every overlay in the site.
+ *
+ * The selector lists below carry two names each on purpose. The `.shortcuts*`
+ * names came first (the keyboard-shortcut panel) and are still in the markup;
+ * `.modal*` is the generic name the backup panel uses. Listing both means there
+ * is exactly ONE rule set rather than two that drift — the failure being a
+ * backdrop that dims at 55% in one panel and 60% in the other because someone
+ * edited one copy.
+ *
+ * `data-transfer` is a modifier, not a variant: it only widens the panel,
+ * because a key-by-key list of what a backup file contains needs more room than
+ * a list of keyboard shortcuts.
+ */
+
+.modal-backdrop,
+.shortcuts-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.modal,
+.shortcuts {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-5);
+  width: min(100%, 420px);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* A wider panel for the backup review, which lists one row per data set. */
+.data-transfer {
+  width: min(100%, 560px);
+}
+
+.modal__head,
+.shortcuts__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.modal__head h2,
+.shortcuts__head h2 {
+  font-size: var(--text-xl);
+  margin: 0 0 var(--space-4);
+}
+
+.modal__close,
+.shortcuts__close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--text-xl);
+  line-height: 1;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--space-1);
+}
+
+.modal__close:hover,
+.shortcuts__close:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+}
+
+.shortcuts__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.shortcuts__row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.shortcuts__label {
+  font-size: var(--text-sm);
+}
+
+.shortcuts__note {
+  font-size: var(--text-sm);
+  margin: var(--space-5) 0 0;
+}
+
+/* --- Backup panel --- */
+
+.data-transfer__block {
+  margin: var(--space-5) 0 0;
+  padding: var(--space-4) 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.data-transfer__block h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-base);
+}
+
+.data-transfer__block p {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-sm);
+}
+
+/*
+ * The native file input is hidden and driven by the label styled as a button.
+ * A bare `<input type="file">` renders as an unstyled OS control that ignores
+ * the design tokens entirely, and its "No file chosen" text cannot be
+ * translated or reworded. The label keeps the real input focusable and
+ * keyboard-operable — this is a visual replacement, not a click hijack.
+ */
+.data-transfer__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.data-transfer__pick {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.data-transfer__file:focus-visible + .data-transfer__pick {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.data-transfer__review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.data-transfer__review-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.data-transfer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+}
+
+.data-transfer__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.data-transfer__row + .data-transfer__row {
+  border-top: 1px solid var(--border);
+}
+
+/*
+ * A refused row is greyed, not red. Nothing has gone wrong with the reader's
+ * data — a key in the file did not match what this version expects — and
+ * colouring it as an error would read as "your backup is broken", which is the
+ * shame framing the anti-patterns rule out.
+ */
+.data-transfer__row.is-refused {
+  color: var(--text-muted);
+}
+
+.data-transfer__count {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.data-transfer__modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.data-transfer__hint {
+  font-size: var(--text-sm);
+}
+
+.data-transfer__warn,
+.data-transfer__notice,
+.data-transfer__error {
+  font-size: var(--text-sm);
+  margin: var(--space-3) 0 0;
+}
+
+.data-transfer__warn,
+.data-transfer__error {
+  color: var(--text-muted);
+}
+
+.data-transfer__error {
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .data-transfer__modes {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* --- Topbar: the help control --- */
+
+.topbar__where {
+  flex: 1;
+}
+
+.topbar__help {
+  font-weight: 600;
+  min-width: 34px;
+}
+
+/* ---------------------------------------------------------------------------
+   Small screens
+   ---------------------------------------------------------------------------
+   The single 860px breakpoint was the whole responsive story, so phones got the
+   tablet layout: 260px sidebar targets, a two-column TOC, and a pager whose
+   cards sat side by side at 300px each. Everything below tightens those rather
+   than restructuring the page. Touch targets are the priority — the smallest is
+   brought to 40px — because a mis-tap on a 24,000-word lesson loses the reader's
+   place.
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .content {
+    padding: var(--space-4) var(--space-3) var(--space-7);
+  }
+
+  /* The reading bar starts at the sidebar width on desktop; on small screens
+     the sidebar is off-canvas so the bar runs the full width. */
+  .reading-bar {
+    left: 0;
+  }
+
+  .lesson__toc ol {
+    columns: 1;
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+  }
+
+  .card {
+    padding: var(--space-4);
+  }
+
+  /* Touch targets. */
+  .sidebar__link,
+  .chip,
+  .btn,
+  .nav-toggle,
+  .lesson-tools__size .chip {
+    min-height: 40px;
+  }
+
+  .sidebar__link {
+    display: flex;
+    align-items: center;
+  }
+
+  .lesson-tools__size .chip {
+    min-width: 40px;
+  }
+
+  .chip {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  /* The done control cannot rely on hover on a touch device, so it is always
+     visible there. This is the same rule the code-block copy button follows. */
+  .lesson__done {
+    opacity: 1;
+    width: 26px;
+    height: 26px;
+  }
+
+  .phase-nav__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .phase-detail__topbar {
+    gap: var(--space-2);
+  }
+
+  /* The look-ahead list stops being a three-column grid. */
+  .plan__open {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+
+  .pace__label {
+    flex-basis: 88px;
+  }
+
+  .shortcuts__row {
+    grid-template-columns: 84px 1fr;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .lesson-tools {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+}
+
+/* --- Reduced motion ---
+   Nothing here animates the content, but a reader who has asked the system for
+   less motion should not get the scroll transitions either. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- In-lesson finder ---
+   Sits directly under the sticky lesson toolbar, which is where the reader's
+   attention already is when they decide they want to find something. Collapsed
+   by default (see LessonFinder.jsx) so it costs a 15,000-word reading page
+   nothing until it is asked for. */
+
+.lesson-find {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.lesson-find__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.lesson-find__input {
+  flex: 1;
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--text);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+
+.lesson-find__input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.lesson-find__close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--text-base);
+  line-height: 1;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--space-1);
+  cursor: pointer;
+}
+
+.lesson-find__close:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+}
+
+.lesson-find__results {
+  margin-top: var(--space-3);
+}
+
+.lesson-find__count {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-2);
+}
+
+.lesson-find__note {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: var(--space-3) 0 0;
+}
+
+.lesson-find__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 45vh;
+  overflow-y: auto;
+}
+
+.lesson-find__item + .lesson-find__item {
+  border-top: 1px solid var(--border);
+}
+
+.lesson-find__link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font: inherit;
+  color: var(--text);
+  padding: var(--space-2) var(--space-2);
+  border-radius: var(--space-1);
+  cursor: pointer;
+}
+
+.lesson-find__link:hover {
+  background: var(--bg-subtle);
+}
+
+.lesson-find__where {
+  display: block;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.lesson-find__snippet {
+  display: block;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.lesson-find__snippet mark {
+  background: var(--accent-soft);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* --- Notes and task answers ---
+   The reader's own writing. Nothing here is scored, counted, or surfaced
+   anywhere else in the site — see docs/DECISIONS.md → D-019. The styles are
+   deliberately quiet: a note box that shouts reads as a demand. */
+
+.notes__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.notes__head h2 {
+  margin-bottom: 0;
+}
+
+.notes__hint {
+  margin: var(--space-3) 0 0;
+}
+
+.notes__label {
+  display: block;
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.notes__area,
+.task__area {
+  width: 100%;
+  min-height: 8rem;
+  resize: vertical;
+  font: inherit;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+}
+
+.notes__area:focus-visible,
+.task__area:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.notes__foot,
+.task__foot {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+}
+
+.notes__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+/* --- Practice tasks with an answer box --- */
+
+.task-list {
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.task + .task {
+  margin-top: var(--space-4);
+}
+
+.task__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.task__text {
+  flex: 1 1 22rem;
+  min-width: 0;
+}
+
+/* A chip small enough to sit beside a list item without competing with it. */
+.chip--tiny {
+  font-size: var(--text-xs);
+  padding: 2px var(--space-2);
+}
+
+.task__toggle {
+  white-space: nowrap;
+}
+
+/* The dot is the whole progress signal: it says writing exists here, and says
+   nothing about how much, how good, or how many are left. */
+.task__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: var(--space-2);
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: middle;
+}
+
+.task__area {
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 560px) {
+  .task__head {
+    flex-direction: column;
+  }
+
+  .task__toggle {
+    align-self: flex-start;
+  }
+}
+
+/* --- Shared strategy documents ---
+   career-roadmaps/shared/ rendered by src/pages/Shared.jsx. These are reference
+   material rather than lessons, so the styling is deliberately flatter than a
+   lesson page: no reading bar, no per-section controls, nothing to tick. See
+   docs/DECISIONS.md → D-020. */
+
+.shared__header {
+  margin-bottom: var(--space-5);
+}
+
+.shared__header p {
+  max-width: var(--content-reading);
+}
+
+/* The document picker. Three chips, one per shared file — a row rather than a
+   select, because three is few enough that showing every option at once costs
+   less than hiding them behind a control the reader has to open. */
+.shared__picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.shared__doc {
+  max-width: var(--content-wide);
+}
+
+.shared__blurb {
+  margin-bottom: var(--space-5);
+}
+
+.shared__group {
+  margin-bottom: var(--space-5);
+}
+
+.shared__group h3 {
+  margin-bottom: var(--space-3);
+}
+
+/* The resource list is 42 links, so it is two columns above the reading
+   breakpoint rather than one long scroll. Column count is capped at two rather
+   than made fluid because a resource name is a short phrase, and three columns
+   of short phrases reads as a wall. */
+.shared__resources {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2) var(--space-5);
+}
+
+@media (min-width: 700px) {
+  .shared__resources {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.shared__resources li {
+  min-width: 0;
+}
+
+.shared__source {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+
+/* --- Template checkboxes ---
+   A `- [ ]` line in the weekly tracker template. Drawn, not interactive: the
+   file is a template the reader is told to copy and fill in elsewhere, so a real
+   <input> would look tickable and do nothing — the same lie as a button that
+   goes nowhere. The span states "this is a checkbox" without promising it works. */
+
+.tmpl-item {
+  list-style: none;
+  margin-left: calc(-1 * var(--space-5));
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.tmpl-box {
+  flex-shrink: 0;
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 1px solid var(--text-muted);
+  border-radius: 2px;
+  position: relative;
+  top: 1px;
+}
+
+.tmpl-box.is-checked::after {
+  content: "✓";
+  position: absolute;
+  inset: -4px 0 0 1px;
+  font-size: var(--text-xs);
+  line-height: 1;
+  color: var(--text-muted);
+}
+
+/* --- Your work: the read-back of the reader's own writing ---
+   src/pages/YourWork.jsx. Nothing here is styled to look like a metric: no
+   progress bar, no percentage, no completion treatment. It is a document, so it
+   gets document styling — a heading per phase and prose under it. */
+
+.work__header {
+  margin-bottom: var(--space-5);
+}
+
+.work__header p {
+  max-width: var(--content-reading);
+}
+
+.work__phase {
+  max-width: var(--content-reading);
+}
+
+.work__phase-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.work__track {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.work__title {
+  margin-bottom: 0;
+}
+
+.work__label {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.work__note {
+  margin-bottom: var(--space-5);
+}
+
+/* The reader's own prose. `pre-wrap` because someone who writes a list or an
+   indented code snippet in a textarea means it, and collapsing that whitespace
+   would quietly reformat their writing. */
+.work__note-text,
+.work__answer-text {
+  white-space: pre-wrap;
+  margin-bottom: 0;
+}
+
+.work__answers {
+  margin-top: var(--space-4);
+}
+
+.work__answer {
+  padding: var(--space-4) 0 0;
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-4);
+}
+
+.work__task {
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.work__answer-text {
+  border-left: 2px solid var(--border);
+  padding-left: var(--space-4);
+}
+
+/* An answer whose task was renumbered by a curriculum edit. Marked, not hidden:
+   the writing is the reader's and it does not disappear because the question
+   moved. */
+.work__answer.is-orphaned {
+  opacity: 0.85;
+}
+
+@media (max-width: 560px) {
+  .work__phase-head {
+    flex-direction: column;
+  }
+}
+
+/* --- Questions to revisit (the review queue)
+   Sits below the reader's writing on the same page, because it is the same kind
+   of thing: something the reader produced, gathered from every phase so it can
+   be found again.
+
+   DELIBERATELY UNCOLOURED. The reader's own wrong choice is stated plainly and
+   the correct answer is stated plainly, and neither is red or green. Marking the
+   wrong pick in red would turn a revision aid into a correction, which is the
+   grading this product refuses everywhere else (docs/DESIGN-SYSTEM.md -> the
+   no-shame rule). The information is the option text and the explanation, not a
+   verdict colour. */
+.work__review {
+  margin-top: var(--space-7);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-5);
+}
+
+.work__review-head {
+  font-size: var(--text-base);
+  margin-bottom: var(--space-2);
+}
+
+.review__empty {
+  margin-top: var(--space-3);
+}
+
+.review__phase {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--space-2);
+  padding: var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.review__phase-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.review__track {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.review__title {
+  font-size: var(--text-base);
+  margin: 0;
+}
+
+/* A left rule rather than a background tint: the question is set apart from its
+   explanation without either reading as a status. */
+.review__q {
+  border-left: 2px solid var(--border);
+  padding-left: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.review__q:first-of-type {
+  margin-top: 0;
+}
+
+.review__prompt {
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.review__chosen,
+.review__answer {
+  margin-bottom: var(--space-2);
+}
+
+.review__chosen-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.review__letter {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.review__why {
+  color: var(--text-muted);
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 560px) {
+  .review__phase-head {
+    flex-direction: column;
+  }
+}
+
+/* --- Print ---
+   A phase is meant to be printable. The curriculum is 34–112 weeks and the
+   whole point of this stylesheet is that a reader can take one phase offline on
+   paper — on a train, in a lab with no network, or just away from a screen.
+
+   Everything that only exists to operate a browser is hidden: the sidebar, the
+   off-canvas nav toggle, the sticky reading bar, the sticky lesson toolbar, the
+   in-lesson finder, the per-section tick controls, the code copy buttons, the
+   resume prompt, the prev/next pager, and every modal or overlay. What prints is
+   the prose, the code, the tables, the checklist and the phase's structured
+   sections — the lesson itself.
+
+   Link URLs are NOT expanded inline. The curriculum's links are mostly to
+   documentation the reader will look up when back online, and appending the URL
+   to every one of them would bury the prose in query strings on paper.
+
+   Page-break rules matter more than anything else here: a code block split across
+   a page boundary is unreadable, and a table split mid-row is worse. */
+
+/* --- Quiz ------------------------------------------------------------------
+
+   A quiz question is a set of buttons rather than radio inputs. Radios would
+   need a shared `name` per question and a form around them, and the correct
+   answer is revealed by disabling the group — which reads more naturally as
+   "this question is done" than a disabled radio does.
+
+   The right/wrong colours are the one place in the site that uses a semantic
+   colour, and they are deliberately not the only signal: the correct option
+   carries a "Correct" label and the reader's wrong pick carries "Your answer",
+   so the distinction survives greyscale printing and colour blindness. Colour
+   alone would fail both. */
+
+.quiz {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quiz__q {
+  border-left: 3px solid var(--border);
+  padding-left: 0.9rem;
+}
+
+.quiz__q--right {
+  border-left-color: var(--success);
+}
+
+.quiz__q--wrong {
+  border-left-color: var(--danger);
+}
+
+.quiz__prompt {
+  margin: 0 0 0.6rem;
+  font-weight: 600;
+}
+
+.quiz__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.quiz__energy {
+  margin-left: 0.5rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+
+.quiz__options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.quiz__opt {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.quiz__opt:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.quiz__opt:disabled {
+  cursor: default;
+}
+
+.quiz__opt--chosen {
+  border-color: var(--accent);
+}
+
+.quiz__opt--correct {
+  border-color: var(--success);
+}
+
+.quiz__opt--wrong {
+  border-color: var(--danger);
+}
+
+.quiz__letter {
+  flex: none;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.quiz__badge {
+  margin-left: auto;
+  flex: none;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.quiz__badge--wrong {
+  color: var(--danger-text);
+}
+
+.quiz__why {
+  margin: 0.7rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border-left: 3px solid var(--border);
+  background: var(--bg-subtle);
+  font-size: 0.95rem;
+}
+
+.quiz__foot {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+.quiz__foot p {
+  margin: 0;
+}
+
+.quiz__summary {
+  font-weight: 600;
+}
+
+@media print {
+  /* On paper the quiz prints as a question list: the buttons lose their chrome
+     and the correct answer is marked, so the printed page is usable as a
+     worksheet rather than as a record of what the reader clicked. This is why
+     the format is authored as Markdown task-list syntax — the same [x] the
+     printer would have shown anyway. */
+  .quiz__opt {
+    border: none;
+    padding: 0.15rem 0;
+    background: none;
+  }
+
+  .quiz__foot {
+    display: none;
+  }
+}
+
+@media print {
+  /* The review queue is made of the same things the quiz print rules already
+     handle -- a prompt, options, an explanation -- so it prints as a revision
+     sheet rather than being hidden. That is deliberate: a reader revising on a
+     train is exactly who this page is for, and the curriculum is meant to work
+     on paper (see the Print section above).
+
+     What changes is the chrome. The card background and border exist to group
+     the list on a screen that also has a sidebar; on paper they are ink. The
+     left rule stays, because it is what separates a question from its
+     explanation when nothing is coloured. */
+  .work__review {
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 0.8rem;
+  }
+
+  .review__phase {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: 1rem;
+  }
+
+  .review__q {
+    border-left: 3px solid var(--border);
+    padding-left: 0.9rem;
+  }
+}
+
+@media print {
+  /* Repaint for paper. The dark theme would empty a toner cartridge and is
+     unreadable on a laser printout anyway; the site's own tokens are overridden
+     rather than each rule being rewritten, so component styles carry over. */
+  :root {
+    --bg: #ffffff;
+    --bg-subtle: #ffffff;
+    --bg-elevated: #ffffff;
+    --text: #000000;
+    --text-muted: #333333;
+    --border: #999999;
+    --accent: #000000;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  /* The shell is a fixed-sidebar grid on screen; on paper it is one column. */
+  .app-shell {
+    display: block !important;
+  }
+
+  .content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: auto !important;
+  }
+
+  .sidebar,
+  .sidebar-backdrop,
+  .content__topbar,
+  .nav-toggle,
+  .reading-bar,
+  .lesson-tools,
+  .lesson-find,
+  .lesson__done,
+  .lesson__copy,
+  .resume,
+  .shortcuts-backdrop,
+  .modal-backdrop,
+  .sidebar__close,
+  /* The two preference controls on the focus card. The chosen task prints —
+     that is useful on a train — but the dials it was chosen with do not. */
+  .focus__controls {
+    display: none !important;
+  }
+
+  /* The pager is navigation, not content. The exit criteria and the phase's own
+     text are what the reader printed it for. */
+  .phase-nav,
+  .phase-detail__topbar {
+    display: none !important;
+  }
+
+  /* Nothing is sticky on paper. */
+  .sidebar,
+  .lesson-tools,
+  .content__topbar {
+    position: static !important;
+  }
+
+  /* Cards stop being panels: a border box around every section wastes paper and
+     reads as noise. A heading is enough separation. */
+  .card,
+  .lesson-find,
+  .lesson-tools,
+  .lesson__toc {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep a heading with the text it introduces, and never split a code block,
+     table, list item or blockquote across a page. A code block cut in half is
+     the single worst print outcome in this document. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    break-after: avoid-page;
+    page-break-after: avoid;
+    color: #000000;
+  }
+
+  pre,
+  .lesson__code-wrap,
+  .lesson__code,
+  .lesson__table-wrap,
+  .lesson__table,
+  table,
+  blockquote,
+  .lesson__quote,
+  li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* The TOC survives — it is how the reader finds their place on paper — but the
+     two-column screen layout becomes one column and the "done" marks are moot. */
+  .lesson__toc ol {
+    columns: 1 !important;
+  }
+
+  .lesson__toc-item button {
+    color: #000000 !important;
+    background: none !important;
+  }
+
+  /* Code and tables keep their own type size on screen; on paper they must not
+     inherit the reader's chosen on-screen reading scale. */
+  .lesson__body {
+    font-size: 11pt !important;
+  }
+
+  .lesson__body h3,
+  .lesson__body h4,
+  .lesson__body h5 {
+    font-size: 1em !important;
+  }
+
+  .lesson__code,
+  .lesson__table,
+  code,
+  pre {
+    font-size: 9pt !important;
+  }
+
+  /* A table that scrolls horizontally on screen has to fit the page or it is
+     truncated with no way to scroll. */
+  .lesson__table-wrap {
+    overflow: visible !important;
+  }
+
+  .lesson__table {
+    width: 100% !important;
+  }
+
+  /* Inline emphasis survives; interactive colour does not. */
+  a {
+    color: #000000 !important;
+    text-decoration: underline;
+  }
+
+  mark {
+    background: transparent !important;
+    color: #000000 !important;
+    font-weight: 700;
+  }
+
+  /* A single global rule cannot reach inside a sticky ancestor; be explicit. */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Break between top-level sections rather than mid-paragraph where a new
+     heading starts a genuinely new page's worth of material. Applied only to
+     the lesson's own h3 so short cards do not each take a page. */
+  .lesson__body h3 {
+    break-before: auto;
+    page-break-before: auto;
+  }
+
+  /* The reader's own writing does not print, and that is deliberate. This
+     stylesheet exists so a phase can be taken to a train or a lab bench and
+     annotated with a pen — and a printed page full of the reader's earlier
+     answers is a page with no room to write on. The note panel and the answer
+     boxes are hidden; the tasks themselves still print, with blank space after
+     each one. */
+  .notes,
+  .task__area,
+  .task__foot,
+  .task__toggle {
+    display: none !important;
+  }
+
+  .task-list {
+    padding-left: var(--space-4);
+  }
+
+  .task + .task {
+    margin-top: var(--space-5);
+  }
+
+  @page {
+    margin: 18mm 16mm;
+  }
+}

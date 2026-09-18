@@ -1,0 +1,24 @@
+{
+  "name": "vibecoding-learning-site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Personal learning site that renders the vibecoding / AI-era curriculum.",
+  "scripts": {
+    "build:content": "node ../scripts/build-content.mjs",
+    "dev": "npm run build:content && vite",
+    "build": "npm run build:content && vite build",
+    "preview": "vite preview",
+    "test": "node scripts/check-all.mjs",
+    "test:browser": "node scripts/verify-site.mjs && node scripts/verify-deep.mjs && node scripts/verify-quiz-correctness.mjs",
+    "check": "node ../scripts/build-content.mjs --check && node ../scripts/audit-quiz.mjs && node ../scripts/audit-lesson-ast.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.0"
+  }
+}

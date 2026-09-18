@@ -926,6 +926,63 @@ function main() {
     writeFileSync(join(OUT_DIR, `${trackId}.json`), `${JSON.stringify(output, null, 2)}\n`, 'utf8');
   }
 
+  // -------------------------------------------------------------------------
+  // A LIGHT INDEX, SEPARATE FROM THE FULL TRACK FILES
+  // -------------------------------------------------------------------------
+  // The track files above carry everything a phase page needs — tools with
+  // their purposes, resources, practice tasks, quiz questions and answers,
+  // free-vs-paid prose. That is ~1.3 MB across ten tracks, and it is needed
+  // only for the ONE phase the reader opens.
+  //
+  // The dashboard and the navigation, by contrast, need almost none of it: a
+  // card renders the title, duration, goal and a checklist count. Statically
+  // importing the full track files to build that dashboard pulled all 1.3 MB
+  // into the initial bundle, which is what pushed the entry chunk to 1.56 MB
+  // and delayed first paint on the connection this curriculum is written for.
+  //
+  // So the build emits a second, much smaller projection: per phase, only the
+  // fields the shell and the cards actually read, plus the checklist item IDS
+  // (not their text) so progress can be counted without loading the phase.
+  //
+  // This is a projection, not a second source of truth — it is derived in the
+  // same pass from the same parsed data, so the two cannot disagree. Anything
+  // that needs a phase's prose loads that one track file on demand.
+  const indexFor = (output) => ({
+    id: output.track,
+    label: output.label,
+    blurb: output.blurb,
+    phaseCount: output.phaseCount,
+    phases: (output.phases || []).map((p) => ({
+      id: p.id,
+      order: p.order,
+      phase: p.phase,
+      title: p.title,
+      duration: p.duration,
+      durationWeeks: p.durationWeeks,
+      goal: p.goal,
+      lessonWordCount: p.lessonWordCount,
+      // IDs only. Checklist text lives in the full track file; the shell needs
+      // to know which items exist and which are ticked, nothing more.
+      checklistIds: (p.checklist || []).map((c) => c.id),
+      taskIds: (p.tasks || []).map((t) => t.id),
+      quizIds: (p.quiz || []).map((q) => q.id),
+    })),
+  });
+
+  const index = {
+    generatedAt: new Date().toISOString(),
+    tracks: Object.entries(KNOWN_TRACKS).map(([id, meta]) => ({
+      id,
+      label: meta.label,
+      blurb: meta.blurb,
+      short: meta.short,
+      note: meta.blurb,
+      phaseCount: trackOutputs[id]?.phaseCount ?? 0,
+      phases: trackOutputs[id] ? indexFor(trackOutputs[id]).phases : [],
+    })),
+  };
+  writeFileSync(join(OUT_DIR, 'index.json'), `${JSON.stringify(index)}\n`, 'utf8');
+
   for (const [id, lesson] of lessons) {
     writeFileSync(join(OUT_DIR, 'lessons', `${id}.json`), `${JSON.stringify(lesson)}\n`, 'utf8');
   }

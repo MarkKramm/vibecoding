@@ -1,0 +1,78 @@
+/* Design tokens — concrete values for docs/DESIGN-SYSTEM.md.
+   Dark-first. Semantic names only; components never hard-code hex values. */
+
+:root {
+  /* Surfaces */
+  --bg: #12141a;
+  --bg-elevated: #1a1d26;
+  --bg-subtle: #222634;
+  --border: #2e3346;
+
+  /* Text */
+  --text: #e6e9f0;
+  --text-muted: #9aa1b5;
+
+  /* Accent and state */
+  --accent: #5b8cff;
+  --accent-hover: #7ba3ff;
+  /* A washed accent for texture that must not compete with text — selected
+     rows, lesson highlights, inline code backgrounds. It is a real token now:
+     global.css consumed it as `var(--accent-soft, rgba(…))` for several
+     revisions, so the literal fallback was the only thing rendering and the
+     token name was decorative. */
+  --accent-soft: rgba(120, 160, 255, 0.28);
+  --success: #4ac48a;
+  --warning: #d9a441;
+  --danger: #e0605e;
+  /* --danger as TEXT. The base --danger is a 4.30:1 pairing on --bg-subtle,
+     which fails the 4.5:1 AA floor for body-sized text, so text uses this
+     lighter variant (6.14:1 on --bg-subtle, 6.86:1 on --bg-elevated) while
+     borders and fills keep --danger, where the applicable bar is 3:1. */
+  --danger-text: #ec8a88;
+  /* The colour of a focus ring. Separate from --accent because a ring sometimes
+     needs to sit on an accent-coloured surface, where an accent ring vanishes;
+     --text is the near-white that stays visible against every surface here.
+     Also consumed as `var(--focus, var(--text))` before this line existed. */
+  --focus: #e6e9f0;
+  /* The backdrop scrim behind a modal or the mobile drawer. Was written as a
+     literal `rgb(0 0 0 / 55%)` in two places that could have drifted apart. */
+  --overlay: rgb(0 0 0 / 55%);
+  /* Text that sits ON the accent fill (primary buttons). Was a literal
+     `#0d1017` in global.css — the one genuine component-level hex bypass. */
+  --text-on-accent: #0d1017;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Type scale */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --content-reading: 760px;
+  --content-wide: 1100px;
+  /* The outer cap for a page. Wider than --content-wide, which is the cap for
+     the one element allowed past the reading measure (tables). */
+  --content-max: 1400px;
+  /* The dashboard's reference column. Its fold-back width is NOT a token: the
+     value has to sit in the media query condition in global.css, and a custom
+     property is not valid there. Naming it twice would let the two drift, so it
+     is written once, as a literal, and documented in docs/DESIGN-SYSTEM.md. */
+  --rail-width: 320px;
+
+  /* Motion — nothing that delays reading */
+  --transition-fast: 120ms ease;
+}
