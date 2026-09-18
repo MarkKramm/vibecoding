@@ -4024,6 +4024,64 @@ p em {
   overflow-wrap: anywhere;
 }
 
+/* ---- Reference documents: glossary and resource groups ----
+   Both render from `shared.json`, which emits a different shape per document
+   kind. These classes were added with the renderers; before that the glossary
+   and resource list rendered an empty body. */
+
+.resgroups {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.resgroup__title {
+  margin: 0 0 var(--space-2);
+}
+
+.resgroup__blurb {
+  margin: 0 0 var(--space-3);
+}
+
+.glossary {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.glossary__category {
+  margin: 0 0 var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.glossary__group {
+  display: block;
+}
+
+.glossary__list {
+  margin: 0;
+}
+
+/* A definition list, because a term and its definition have a real semantic
+   relationship — announcing these as a flat list of paragraphs loses it. */
+.glossary__entry {
+  margin-bottom: var(--space-4);
+}
+
+.glossary__entry:last-child {
+  margin-bottom: 0;
+}
+
+.glossary__term {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.glossary__def {
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
 /* The checklist is a stack of `.check` labels with no list markers, because the
    checkbox is the marker. */
 .checklist {

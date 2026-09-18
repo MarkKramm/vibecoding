@@ -522,6 +522,89 @@ const destructureRe = new RegExp(
 /** 1-based line number of a match index in `source`. */
 const lineAt = (source, index) => source.slice(0, index).split("\n").length;
 
+/**
+ * Blank out comments while preserving offsets and line numbers.
+ *
+ * WHY THIS EXISTS. Without it the guard reads PROSE. A comment in PhaseCard.jsx
+ * explaining the Tools-library defect — "`phase.tools` off the light projection"
+ * — was reported as a violation of that same defect, and failed `npm test`
+ * before the component tests could even run.
+ *
+ * The fix is not to reword the comment. A guard that punishes accurate
+ * documentation of a bug is worse than no guard, because the rational response
+ * is to stop documenting bugs, and this codebase's comments are a substantial
+ * part of its value. So the guard reads CODE, not prose.
+ *
+ * Every comment character is replaced by a SPACE rather than deleted, so that
+ * (a) `m.index` still maps to the original line via `lineAt`, and (b) two tokens
+ * separated by a comment cannot be joined into a false match.
+ *
+ * String and template literals are tracked so that `//` inside a URL like
+ * `"https://…"` is not mistaken for a comment — which would blank the rest of
+ * the line and could hide a real access after it.
+ */
+function stripComments(source) {
+  let out = "";
+  let i = 0;
+  const n = source.length;
+
+  while (i < n) {
+    const c = source[i];
+    const next = source[i + 1];
+
+    // Line comment.
+    if (c === "/" && next === "/") {
+      while (i < n && source[i] !== "\n") {
+        out += " ";
+        i += 1;
+      }
+      continue;
+    }
+
+    // Block comment — newlines preserved so line numbers stay correct.
+    if (c === "/" && next === "*") {
+      out += "  ";
+      i += 2;
+      while (i < n && !(source[i] === "*" && source[i + 1] === "/")) {
+        out += source[i] === "\n" ? "\n" : " ";
+        i += 1;
+      }
+      if (i < n) {
+        out += "  ";
+        i += 2;
+      }
+      continue;
+    }
+
+    // String / template literal — copied verbatim so its contents are not
+    // parsed as code or as a comment.
+    if (c === '"' || c === "'" || c === "`") {
+      const quote = c;
+      out += c;
+      i += 1;
+      while (i < n) {
+        if (source[i] === "\\") {
+          out += source[i] + (source[i + 1] ?? "");
+          i += 2;
+          continue;
+        }
+        out += source[i];
+        if (source[i] === quote) {
+          i += 1;
+          break;
+        }
+        i += 1;
+      }
+      continue;
+    }
+
+    out += c;
+    i += 1;
+  }
+
+  return out;
+}
+
 for (const file of [...lightModules].sort()) {
   if (FULL_DATA_PHASES.has(file)) {
     checked.push({ file, note: FULL_DATA_PHASES.get(file), exempt: true });
@@ -530,6 +613,13 @@ for (const file of [...lightModules].sort()) {
 
   const source = sources.get(file);
   const lines = source.split("\n");
+
+  // Scan CODE, not prose. Comments are blanked to spaces so `lineAt` still maps
+  // to the right line, but a comment mentioning `phase.tools` — which is how a
+  // reader is told about the defect this guard exists to catch — is not itself
+  // reported as the defect. See stripComments() for why this is the fix rather
+  // than rewording the comment.
+  const code = stripComments(source);
 
   // The line ranges of functions whose `phase` parameter is a FULL record. An
   // access on one of these lines is not an access on a light record.
@@ -549,8 +639,8 @@ for (const file of [...lightModules].sort()) {
   const exemptedHits = [];
 
   let m;
-  while ((m = accessRe.exec(source)) !== null) {
-    const line = lineAt(source, m.index);
+  while ((m = accessRe.exec(code)) !== null) {
+    const line = lineAt(code, m.index);
     const where = `${m[1]}.${m[2]} on line ${line}`;
     const span = spanFor(line);
     if (span) {
@@ -559,8 +649,8 @@ for (const file of [...lightModules].sort()) {
     }
     if (!found.has(m[2])) found.set(m[2], where);
   }
-  while ((m = destructureRe.exec(source)) !== null) {
-    const line = lineAt(source, m.index);
+  while ((m = destructureRe.exec(code)) !== null) {
+    const line = lineAt(code, m.index);
     if (spanFor(line) || namesExemptFn(line)) continue;
     for (const part of m[1].split(",")) {
       const name = part.split(":")[0].trim();

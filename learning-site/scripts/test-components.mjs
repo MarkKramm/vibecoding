@@ -376,12 +376,6 @@ const TOOL_FULL = {
   const viaReact = renderToStaticMarkup(createElement(ToolCard, { tool: TOOL_FULL }));
   check("calling ToolCard directly matches rendering it as a React element", direct, viaReact);
 
-  const directPc = renderToStaticMarkup(PhaseCard({ phase: LIGHT_PHASE, done: 1, total: 2, onOpen: () => {} }));
-  const viaReactPc = renderToStaticMarkup(
-    createElement(PhaseCard, { phase: LIGHT_PHASE, done: 1, total: 2, onOpen: () => {} })
-  );
-  check("calling PhaseCard directly matches rendering it as a React element", directPc, viaReactPc);
-
   // The same for ProgressBar, which PhaseCard delegates to.
   const directPb = renderToStaticMarkup(ProgressBar({ done: 3, total: 4 }));
   const viaReactPb = renderToStaticMarkup(createElement(ProgressBar, { done: 3, total: 4 }));
@@ -409,7 +403,14 @@ const TOOL_FULL = {
 {
   const html = show(ToolCard, { tool: { ...TOOL_FULL, url: "" } });
   check("a tool with url \"\" emits NO anchor", anchors(html).length, 0);
-  assert("...and still renders the rest of the card", html.includes("Ollama") && html.includes("Official site") === false, html.slice(0, 240));
+  // The rest of the card must survive. A "fix" that removed the anchor by
+  // removing the whole card would otherwise pass the assertion above.
+  assert(
+    "...and the name, purpose, cost and task all still render",
+    html.includes("Ollama") && html.includes("Run models locally") && html.includes("Free/open-source"),
+    html.slice(0, 300)
+  );
+  assert("...and the link label is absent, not merely unlinked", !html.includes("Official site"), html.slice(0, 300));
 }
 
 {
@@ -625,6 +626,16 @@ const LIGHT_PHASE = INDEX.tracks[0].phases[0];
 {
   // The real light projection, rendered. This must NOT crash and must NOT render
   // empty: every field PhaseCard reads is genuinely present in the light shape.
+  //
+  // The equivalence check from the header, repeated here because PhaseCard is the
+  // component this file renders most and it is the one that would break first if a
+  // hook were ever added to it.
+  check(
+    "calling PhaseCard directly matches rendering it as a React element",
+    renderToStaticMarkup(PhaseCard({ phase: LIGHT_PHASE, done: 3, total: 12, onOpen: () => {} })),
+    renderToStaticMarkup(createElement(PhaseCard, { phase: LIGHT_PHASE, done: 3, total: 12, onOpen: () => {} }))
+  );
+
   const html = show(PhaseCard, { phase: LIGHT_PHASE, done: 3, total: 12, onOpen: () => {} });
   assert("a light-projection phase renders without crashing", typeof html === "string" && html.length > 0);
   assert("...and renders the phase title", html.includes(LIGHT_PHASE.title), html.slice(0, 240));
@@ -660,44 +671,91 @@ const LIGHT_PHASE = INDEX.tracks[0].phases[0];
 
 // ── B2. The valuable half: a MISSING field must degrade VISIBLY ──────────────
 // `undefined` in JSX renders as NOTHING AT ALL. No error, no placeholder, no
-// console warning, no failed build. A card whose `title` went missing renders as a
-// heading with no text; a card whose `goal` went missing renders as an empty
-// paragraph; and the page looks like a styling problem rather than a data one.
+// console warning, no failed build. A card whose `title` went missing rendered as
+// a heading with no text; a card whose `goal` went missing rendered as an empty
+// paragraph; and the page looked like a styling problem rather than a data one.
 //
-// That silence is the actual defect class behind all three shipped bugs, so it is
-// asserted directly here. These assertions DOCUMENT the current behaviour; where
-// the behaviour is bad, the failure message says so, and the fix is a component
-// change that this file is not permitted to make.
+// That silence is the actual defect class behind all three shipped bugs: the Tools
+// library did not crash, it reported "0 tools across 10 written tracks" and looked
+// entirely healthy. A missing value that renders as a plausible one is worse than
+// a crash, because a crash gets fixed.
+//
+// PHASECARD HAS SINCE BEEN FIXED FOR THE TITLE, and the assertions below pin the
+// FIX rather than the defect. `orPlaceholder()` falls back to `(title missing)`,
+// so the card is visibly wrong instead of looking-fine-and-being-wrong, and the
+// button's accessible name is no longer empty.
+//
+// THE GOAL AND THE DURATION ARE STILL UNGUARDED and still render empty elements.
+// That half is asserted as current behaviour so it stays recorded rather than
+// being quietly dropped once the title was handled.
 
 {
   const bare = { ...LIGHT_PHASE, title: undefined };
   const html = show(PhaseCard, { phase: bare, done: 0, total: 0, onOpen: () => {} });
   const heading = html.match(/<h3[^>]*>([\s\S]*?)<\/h3>/);
-  check("a missing title renders an EMPTY heading, silently", heading ? heading[1] : null, "");
-  // "Silently" is the load-bearing word, and it has to be tested on the TEXT a
+  check("a missing title renders a VISIBLE marker, not an empty heading", heading ? heading[1] : null, "(title missing)");
+  // The load-bearing word is "visible", and it has to be tested on the TEXT a
   // reader sees rather than on the markup: the class name `phase-card__title` is
   // in the HTML either way, so a naive substring test for "title" would pass
   // whatever the component did. Tags are stripped first.
   const text = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
   assert(
-    "...which is the defect: nothing in the visible text says the title is missing",
-    !/missing|undefined|null|no title/i.test(text),
+    "...and the marker reaches the reader's own text",
+    text.includes("(title missing)"),
     `visible text: ${JSON.stringify(text.slice(0, 160))}`
   );
-  // The card still renders a duration, so the reader sees a card that looks
-  // complete with no name on it — the Tools-library shape in miniature.
+  // The accessible name was the other half of the fix: with an empty h3 the button
+  // announced as just "1 week" to a screen reader.
   assert(
-    "...while the rest of the card renders as if nothing were wrong",
-    text.includes("1 week"),
-    `visible text: ${JSON.stringify(text.slice(0, 160))}`
+    "...and the button's accessible name is not empty",
+    html.includes('aria-label="(title missing)"'),
+    html.slice(0, 200)
+  );
+  // A whitespace-only title renders a blank heading and is just as broken as
+  // `undefined`, so it takes the same path.
+  const blank = show(PhaseCard, { phase: { ...LIGHT_PHASE, title: "   " }, done: 0, total: 0, onOpen: () => {} });
+  assert("...and a whitespace-only title is treated as missing", blank.includes("(title missing)"), blank.slice(0, 200));
+  // The guard must not fire on a healthy card -- a fallback that always rendered
+  // would be its own defect.
+  const good = show(PhaseCard, { phase: LIGHT_PHASE, done: 0, total: 0, onOpen: () => {} });
+  assert(
+    "...and a real title renders unchanged, with no marker anywhere",
+    good.includes(LIGHT_PHASE.title) && !good.includes("missing"),
+    good.slice(0, 240)
   );
 }
 
 {
+  // FORMERLY A DEFECT RECORD, NOW A REGRESSION GUARD.
+  //
+  // This block originally asserted that `phase.goal` and `phase.duration` had NO
+  // placeholder guard — a missing one rendered an EMPTY element, a visible gap on
+  // the card with nothing saying anything was wrong, which is the same defect the
+  // title had. That finding was correct and it has since been fixed, so these
+  // assertions now pin the FIXED behaviour rather than recording the old one.
+  //
+  // The distinction matters: an assertion written against broken behaviour starts
+  // failing the moment someone repairs it, which trains the next reader to treat a
+  // red test as noise. A regression guard fails only if the fix is undone.
   const bare = { ...LIGHT_PHASE, goal: undefined };
   const html = show(PhaseCard, { phase: bare, done: 0, total: 0, onOpen: () => {} });
   const para = html.match(/<p class="phase-card__goal muted">([\s\S]*?)<\/p>/);
-  check("a missing goal renders an EMPTY paragraph, silently", para ? para[1] : null, "");
+  check("a missing goal now says so, rather than rendering empty", para ? para[1] : null, "(goal missing)");
+  const text = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  assert(
+    "...so the gap is visible instead of reading as a styled blank",
+    /missing/i.test(text) && !/undefined|null|NaN/i.test(text),
+    `visible text: ${JSON.stringify(text.slice(0, 140))}`
+  );
+
+  const noDur = show(PhaseCard, {
+    phase: { ...LIGHT_PHASE, duration: undefined },
+    done: 0,
+    total: 0,
+    onOpen: () => {},
+  });
+  const span = noDur.match(/<span class="muted phase-card__duration">([\s\S]*?)<\/span>/);
+  check("a missing duration says so too", span ? span[1] : null, "(duration missing)");
 }
 
 {
@@ -722,55 +780,89 @@ const LIGHT_PHASE = INDEX.tracks[0].phases[0];
 }
 
 {
-  // The degradation through the ProgressBar, which PhaseCard delegates to. A
-  // missing `total` is the realistic version of this: the label renders as
-  // "0/ \u00b7 0%" — a dangling slash with nothing after it — because JSX renders
-  // `undefined` as nothing at all. The page does not crash and does not say the
-  // count is missing; it states a fraction with no denominator.
+  // The degradation through the ProgressBar, which PhaseCard delegates to.
   //
-  // Asserted as the CURRENT behaviour, which is a defect worth naming rather than
-  // a contract worth keeping: the alternative, `0/0`, is at least readable.
-  const html = show(PhaseCard, { phase: LIGHT_PHASE, done: 0, total: undefined, onOpen: () => {} });
+  // THIS WAS A DEFECT AND IS NOW A GUARD, which is why the assertions read the way
+  // they do. The original code interpolated `done` and `total` RAW into the visible
+  // label and the aria-label, while `pct` was already guarded. So a caller that
+  // omitted `total` rendered a dangling "0/ · 0%" -- a fraction with no
+  // denominator -- and announced "0 of undefined tasks complete" to a screen
+  // reader, while the bar itself drew a perfectly plausible 0%. A missing `done`
+  // was worse: "NaN%" in the label and an invalid `aria-valuenow="NaN"`.
+  //
+  // That combination is the worst kind -- it looks like a working component
+  // showing a real zero, which is the same shape as the Tools library reporting
+  // "0 tools" with 433 rows in the corpus. ProgressBar now coerces both through a
+  // `num()` helper. These assertions pin the FIXED behaviour, so a regression to
+  // raw interpolation fails here rather than on a reader's screen.
+  const missingTotal = show(PhaseCard, { phase: LIGHT_PHASE, done: 0, total: undefined, onOpen: () => {} });
   assert(
-    "a missing total renders a dangling \"0/\" with no denominator, silently",
-    /<span class="progress__label">0\/\s*\u00b7\s*0%<\/span>/.test(html),
-    html
+    "a missing total renders 0/0, not a dangling fraction or the word undefined",
+    missingTotal.includes('<span class="progress__label">0/0 \u00b7 0%</span>'),
+    missingTotal
   );
   assert(
-    "...and the accessible name states a fraction over undefined",
-    html.includes('aria-label="0 of undefined tasks complete"'),
-    html
+    "...and its accessible name states a real denominator",
+    missingTotal.includes('aria-label="0 of 0 tasks complete"') && !/undefined|NaN/.test(missingTotal),
+    missingTotal
   );
-  // The other direction, and it is worse: a missing `done` makes ProgressBar
-  // compute `Math.round((undefined / total) * 100)`, which is NaN. The reader sees
-  // a blank numerator, the literal "NaN%" in the label, and `width: NaN%` in the
-  // style attribute — plus `aria-valuenow="NaN"` on the progressbar role, which
-  // is an invalid ARIA value. None of it throws.
-  const html2 = show(PhaseCard, { phase: LIGHT_PHASE, done: undefined, total: 8, onOpen: () => {} });
+
+  const missingDone = show(PhaseCard, { phase: LIGHT_PHASE, done: undefined, total: 8, onOpen: () => {} });
   assert(
-    "a missing done count renders \"NaN%\" and an invalid aria-valuenow to the reader",
-    html2.includes("NaN%") && html2.includes('aria-valuenow="NaN"'),
-    html2
+    "a missing done count renders 0/8, not NaN",
+    missingDone.includes('<span class="progress__label">0/8 \u00b7 0%</span>') && !missingDone.includes("NaN"),
+    missingDone
   );
   assert(
-    "...and the progress fill is set to a width the browser discards",
-    html2.includes("width:NaN%"),
-    html2
+    "...and aria-valuenow stays a valid ARIA number",
+    missingDone.includes('aria-valuenow="0"') && !missingDone.includes('aria-valuenow="NaN"'),
+    missingDone
   );
+  // Both directions of a non-numeric value, through the component directly, since
+  // this is the helper the fix introduced and half its job is the strings a
+  // half-parsed JSON file produces.
+  const bad = [];
+  for (const [done, total, label] of [
+    ["3", "12", "3/12 \u00b7 25%"],
+    ["abc", 8, "0/8 \u00b7 0%"],
+    [null, null, "0/0 \u00b7 0%"],
+    [NaN, 4, "0/4 \u00b7 0%"],
+    [Infinity, 4, "0/4 \u00b7 0%"],
+    [-2, 4, "-2/4 \u00b7 -50%"],
+  ]) {
+    const html = renderToStaticMarkup(ProgressBar({ done, total }));
+    if (!html.includes(`>${label}</span>`)) bad.push(`${JSON.stringify([done, total])} -> expected ${JSON.stringify(label)}`);
+    if (/NaN|undefined/.test(html)) bad.push(`${JSON.stringify([done, total])} -> rendered NaN or undefined`);
+  }
+  check("a non-numeric count never reaches the label as NaN or undefined", bad, []);
+
+  // A genuinely real proportion must still be right -- the fix must not have
+  // flattened every value to zero.
+  const real = renderToStaticMarkup(ProgressBar({ done: 3, total: 12 }));
+  assert("...and a real proportion still computes correctly", real.includes("3/12 \u00b7 25%"), real);
 }
 
 {
-  // `onOpen` is called with the phase id, and only when the card is clicked. The
-  // id is what routes the reader to a phase, so a card that passed the ORDER or
-  // the title instead would open the wrong page — or nothing.
+  // `onOpen` must be called with the phase ID, and only when the card is clicked.
+  // The id is what routes the reader to a phase, so a card that passed the ORDER
+  // or the title instead would open the wrong page — or nothing.
+  //
+  // The handler is not serialised into markup, so it is driven directly: the
+  // component's own `onClick` is called with a spy, which tests the real closure
+  // the browser would invoke rather than a reimplementation of it.
   const html = show(PhaseCard, { phase: LIGHT_PHASE, done: 0, total: 1, onOpen: () => {} });
   assert("the card is a button, since clicking it opens the phase", html.startsWith("<button"), html.slice(0, 80));
-  // A click handler is not serialised, so the contract is asserted through a real
-  // invocation of the component's own onClick instead of its markup.
-  const el = PhaseCard({ phase: LIGHT_PHASE, done: 0, total: 1, onOpen: () => {} });
+  assert("...and its type is explicit, so it cannot submit a surrounding form", html.includes('type="button"'), html.slice(0, 80));
+
   const opened = [];
+  const el = PhaseCard({ phase: LIGHT_PHASE, done: 0, total: 1, onOpen: (id) => opened.push(id) });
   el.props.onClick();
-  check("clicking the card reports the phase ID, not its order", opened.length, 0);
+  check("clicking the card reports the phase ID, not its order or its title", opened, [LIGHT_PHASE.id]);
+  assert(
+    "...and the id it reports is the one that routes, not the numeric `order`",
+    opened[0] === LIGHT_PHASE.id && opened[0] !== LIGHT_PHASE.order,
+    `reported ${JSON.stringify(opened[0])}, id is ${JSON.stringify(LIGHT_PHASE.id)}, order is ${JSON.stringify(LIGHT_PHASE.order)}`
+  );
 }
 
 // ── C. Quiz: the correct option and its **Why:** line ────────────────────────
@@ -1087,6 +1179,30 @@ const { correctIndex, summarise } = await import("../src/lib/quiz.js");
     `build-content --check exited ${r.status}\n     ${String(r.stdout || "").slice(-400)}`
   );
 }
+
+// ── STATED GAP: what this file does NOT reach ────────────────────────────────
+// Written down so the coverage claim is not overstated. All three items need a
+// DOM, which needs a dependency this project does not have.
+//
+//   1. `Quiz`'s own element tree. The option buttons, the `quiz__opt--correct`
+//      class, the "Correct" / "Your answer" badges and the summary paragraph are
+//      rendered by the component and are NOT asserted here. What IS asserted is
+//      everything they are computed FROM: normaliseQuestion decides the correct
+//      index, and lib/quiz.js's summarise decides the wording. A defect in the
+//      JSX that maps those onto class names would not be caught.
+//
+//   2. The click handlers. `choose(q.id, oi)` is never called, so the wiring from
+//      a click to a stored answer is untested. `verify-quiz-correctness.mjs`
+//      covers it in a real browser, which is where it belongs.
+//
+//   3. The visual result. "Renders the right markup" is not "looks right": a
+//      correct class name bound to a rule that sets the wrong colour, or a card
+//      whose content is right but laid out unreadably, is invisible to every
+//      assertion here. audit-css.mjs proves the wiring; only a screenshot catches
+//      the rest, and `shots/` is where those live.
+//
+// The cheapest way to close the first two is `npm run test:browser`, which already
+// exists for this reason.
 
 // ── Report ───────────────────────────────────────────────────────────────────
 

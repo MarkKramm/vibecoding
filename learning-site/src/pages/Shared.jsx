@@ -14,6 +14,7 @@
 
 import { useEffect, useState } from "react";
 import LessonBlock from "../components/LessonBlock.jsx";
+import { renderInline } from "../lib/renderInline.jsx";
 
 // Loaded on demand rather than imported statically.
 //
@@ -126,12 +127,134 @@ export default function Shared({ initialId = null }) {
           </nav>
         )}
 
-        <div className="lesson__body">
-          {(active.blocks || []).map((b, i) => (
-            <LessonBlock key={i} block={b} index={i} />
-          ))}
-        </div>
+        {/* The three document kinds do NOT share a shape, and this component
+            only ever rendered one of them.
+
+            `shared-content.mjs` emits `kind: "doc"` with `blocks`, but
+            `kind: "glossary"` with `terms`/`categories` and
+            `kind: "resources"` with `groups` -- deliberately, because a glossary
+            is looked up by term and a resource list is a set of links, and both
+            would be worse as prose.
+
+            This component mapped `active.blocks` unconditionally, so for those
+            two kinds it rendered an empty div. The tabs worked, the titles and
+            blurbs appeared, and the body was blank -- 254 glossary terms across
+            10 categories and 71 resources across 14 groups were authored,
+            compiled, shipped, and INVISIBLE on the live site.
+
+            Nothing caught it because every check verified the DATA, which was
+            correct and complete. The defect was entirely in the render path,
+            which is the same shape as the Tools library reporting "0 tools" and
+            the unstyled layout: correct data, wrong screen. */}
+
+        {active.kind === "doc" && (
+          <div className="lesson__body">
+            {(active.blocks || []).map((b, i) => (
+              <LessonBlock key={i} block={b} index={i} />
+            ))}
+          </div>
+        )}
+
+        {active.kind === "glossary" && <Glossary doc={active} />}
+
+        {active.kind === "resources" && <ResourceGroups doc={active} />}
       </article>
+    </div>
+  );
+}
+
+/**
+ * The glossary: 254 authored terms, grouped by category.
+ *
+ * Rendered as a definition list because that is what it is — a term and its
+ * definition have a real semantic relationship, and a screen reader announcing
+ * "254 items" in a plain list of paragraphs loses it.
+ *
+ * The category headings come from the document's own `## ` headings, in
+ * document order, rather than being sorted: the glossary's order is pedagogical
+ * (foundations first), and alphabetising it would destroy that.
+ */
+function Glossary({ doc }) {
+  const terms = doc.terms || [];
+  const categories = doc.categories || [];
+
+  if (!terms.length) {
+    return <p className="muted">This glossary has no entries yet.</p>;
+  }
+
+  // Group without losing the category order the author chose.
+  const byCategory = new Map();
+  for (const t of terms) {
+    const key = t.category || "";
+    if (!byCategory.has(key)) byCategory.set(key, []);
+    byCategory.get(key).push(t);
+  }
+  const ordered = categories
+    .filter((c) => byCategory.has(c))
+    .map((c) => [c, byCategory.get(c)]);
+  // Any entry whose category is not in `categories` still gets rendered rather
+  // than being dropped — an ungrouped term is far better than a missing one.
+  for (const [key, list] of byCategory) {
+    if (!categories.includes(key)) ordered.push([key, list]);
+  }
+
+  return (
+    <div className="glossary">
+      {ordered.map(([category, list]) => (
+        <section key={category || "(uncategorised)"} className="glossary__group">
+          {category && <h3 className="glossary__category">{category}</h3>}
+          <dl className="glossary__list">
+            {list.map((t, i) => (
+              <div className="glossary__entry" key={`${t.term}-${i}`}>
+                <dt className="glossary__term">{t.term}</dt>
+                <dd className="glossary__def">{renderInline(t.definition, `glossary-${i}`)}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * The resource list: 71 links in 14 groups.
+ *
+ * Each entry is a real anchor. `renderInline` handles bold, code and italic and
+ * deliberately does not autolink, so a resource list rendered as prose would be
+ * a wall of unclickable URLs — which is exactly what the build comments say the
+ * `resources` shape exists to avoid.
+ */
+function ResourceGroups({ doc }) {
+  const groups = doc.groups || [];
+
+  if (!groups.length) {
+    return <p className="muted">This resource list has no entries yet.</p>;
+  }
+
+  return (
+    <div className="resgroups">
+      {groups.map((g) => (
+        <section key={g.heading} className="resgroup">
+          <h3 className="resgroup__title">{g.heading}</h3>
+          {/* The blurbs are authored Markdown and contain bold spans, which
+              rendered as literal `**asterisks**` when interpolated directly. */}
+          {g.blurb && (
+            <p className="muted resgroup__blurb">
+              {renderInline(g.blurb, `resgroup-blurb-${g.heading}`)}
+            </p>
+          )}
+          <ul className="reslist">
+            {g.resources.map((r, i) => (
+              <li key={`${r.url}-${i}`}>
+                <a href={r.url} target="_blank" rel="noreferrer">
+                  {r.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }
