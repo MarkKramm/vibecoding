@@ -160,7 +160,23 @@ const STEPS = [
     name: "accessibility (rendered page)",
     cmd: "node",
     args: [join(HERE, "audit-a11y.mjs"), "http://localhost:4173", "--strict"],
-    why: "every a11y claim in this project was hand-checked, and a hand-check of accessibility has one specific failure mode: the attribute is in the SOURCE and the rendered page does something else. Eleven other steps read data; this is the only one that asks a browser what a keyboard-only or screen-reader user actually gets. It catches the class nothing else can see — a skip link that scrolls without moving focus (shipped), placeholder text at 3.27:1 because ::placeholder was styled for one input and not another (shipped), an icon control with no accessible name, a heading level skipped, or a control that takes focus with no visible indicator. Without it, all of those reach the reader silently, and the suite stays green",
+    why: "every a11y claim in this project was hand-checked, and a hand-check of accessibility has one specific failure mode: the attribute is in the SOURCE and the rendered page does something else. Twelve other steps read data; this is the only one that asks a browser what a keyboard-only or screen-reader user actually gets. It catches the class nothing else can see — a skip link that scrolls without moving focus (shipped), placeholder text at 3.27:1 because ::placeholder was styled for one input and not another (shipped), an icon control with no accessible name, a heading level skipped, or a control that takes focus with no visible indicator. Without it, all of those reach the reader silently, and the suite stays green",
+  },
+  {
+    // The precondition is handled by the script itself, exactly as above: with no
+    // server answering it reports that it could not run and exits 0 with a loud
+    // notice, rather than failing for an unrelated reason.
+    //
+    // This is the ONLY step that opens every page of the corpus. Its reason for
+    // existing is in its own header, but the short version is that it found the
+    // Previous/Next phase buttons doing nothing at all — a defect that is
+    // invisible to every other check here, because the data was correct and the
+    // buttons were correctly rendered, labelled, enabled and focusable. Only
+    // clicking them revealed that they had no effect.
+    name: "every phase renders (browser, all 65)",
+    cmd: "node",
+    args: [join(HERE, "sweep-phases.mjs"), "http://localhost:4173"],
+    why: "the other browser step checks FOUR views and the other twelve read data, so nothing has ever opened a phase page except the six in one track. This walks all 65 across all 10 tracks, clicking through them the way a reader does, and asserts each one renders its title, all six sections, a tappable checklist and a working quiz explanation. It found the Previous/Next buttons silently doing nothing — a defect no data check can see, because the data was right and the buttons looked right. Without it, a page can break for one phase out of 65 and every other check stays green",
   },
 ];
 

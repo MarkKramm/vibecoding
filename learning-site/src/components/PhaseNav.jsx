@@ -34,13 +34,44 @@ export default function PhaseNav({
 }) {
   const position = index >= 0 ? `Phase ${index + 1} of ${count}` : "";
 
+  // THE PHASE-ID CONVENTION, AND THE BUG THAT PASSING ONLY ONE ARGUMENT CAUSED.
+  //
+  // App's `openPhase(tId, pId, anchor)` treats its FIRST argument as a TRACK id:
+  //
+  //     openPhase(tId, pId) {
+  //       let resolved = tId;
+  //       if (!resolved || !findTrack(resolved)) {   // a phase id is not a track
+  //         for (const t of tracks) if (t.phases.some(p => p.id === pId)) ...
+  //       }
+  //       if (!resolved) return;                     // <-- nothing happens
+  //     }
+  //
+  // These buttons called `onOpenPhase(prev.id)` — ONE argument, a PHASE id. So
+  // `tId` was a phase id, `findTrack` rejected it, and the fallback scanned for a
+  // phase whose id is `undefined`, found none, and returned. Previous and Next
+  // therefore did NOTHING, in both variants.
+  //
+  // It is invisible to every data check: the data is right, and the buttons are
+  // correctly rendered, labelled, enabled and focusable. Only the handler had no
+  // effect. It was found by a browser sweep that opened all 65 phases — phases 2
+  // through 65 each reported the title of phase 1.
+  //
+  // `onOpenPhase` is called with the PHASE ID ALONE, which is the convention this
+  // component uses; App adapts it (see the `onNav` wrapper there). Passing
+  // `p.trackId` here would NOT work: `prev`/`next` come from the light index,
+  // whose 11 fields do not include `trackId`.
+  const goPhase = (p) => {
+    if (!onOpenPhase || !p) return undefined;
+    return () => onOpenPhase(p.id);
+  };
+
   if (variant === "compact") {
     return (
       <div className="phase-nav phase-nav--compact" aria-label="Phase navigation">
         <button
           type="button"
           className="btn btn--ghost"
-          onClick={onOpenPhase ? () => onOpenPhase(prev.id) : undefined}
+          onClick={goPhase(prev)}
           disabled={!prev || !onOpenPhase}
           title={prev ? "Previous: " + shortName(prev) : "This is the first phase"}
         >
@@ -50,7 +81,7 @@ export default function PhaseNav({
         <button
           type="button"
           className="btn btn--ghost"
-          onClick={onOpenPhase ? () => onOpenPhase(next.id) : undefined}
+          onClick={goPhase(next)}
           disabled={!next || !onOpenPhase}
           title={next ? "Next: " + shortName(next) : "This is the last phase"}
         >
@@ -68,7 +99,7 @@ export default function PhaseNav({
           <button
             type="button"
             className="phase-nav__card"
-            onClick={onOpenPhase ? () => onOpenPhase(prev.id) : undefined}
+            onClick={goPhase(prev)}
             disabled={!onOpenPhase}
           >
             <span className="phase-nav__dir">← Previous phase</span>
@@ -88,7 +119,7 @@ export default function PhaseNav({
           <button
             type="button"
             className="phase-nav__card phase-nav__card--next"
-            onClick={onOpenPhase ? () => onOpenPhase(next.id) : undefined}
+            onClick={goPhase(next)}
             disabled={!onOpenPhase}
           >
             <span className="phase-nav__dir">Next phase →</span>

@@ -278,7 +278,16 @@ export default function App() {
             next={nav.next}
             index={phaseIndex}
             phaseCount={track.phases.length}
-            onOpenPhase={(tId, pId) => openPhase(tId || track.id, pId)}
+            // PhaseNav calls this with a PHASE ID ALONE, because `prev`/`next`
+            // come from the light index and carry no `trackId`. This wrapper
+            // supplies the track, which is the only piece PhaseNav cannot know.
+            //
+            // It previously read `(tId, pId) => openPhase(tId || track.id, pId)`,
+            // written for a caller that passed two arguments. PhaseNav passes
+            // one, so `tId` received a phase id and `pId` was `undefined`;
+            // `openPhase` rejected the phase id as a track, scanned for a phase
+            // called `undefined`, and returned. Previous and Next did nothing.
+            onOpenPhase={(pId) => openPhase(track.id, pId)}
             onVisitSection={(id, text) => reading.visitSection(phase.id, id, text)}
             lastSection={lastSection}
             size={readingSize.size}
