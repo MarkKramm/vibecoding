@@ -1290,6 +1290,20 @@ p em {
   margin: 0;
 }
 
+/* ⚠️ ORPHANED: `.search__box`, `.search__input` and `.search__form` are styled
+   here but referenced by NO component. The Search view's real input is styled by
+   `.searchform input` further down, and it has no class at all.
+
+   The consequences were not cosmetic:
+     * the placeholder fell back to Chromium's #757575, which is 3.27:1 on
+       --bg-subtle and fails the 4.5:1 AA floor (the audit measured this);
+     * `:focus-visible` below never applied to the real input, so the rule written
+       specifically to fix a missing keyboard focus ring was itself dead.
+
+   Kept rather than deleted because the comment below records a genuine past bug
+   that a future reader may otherwise reintroduce. If these are ever revived,
+   either wire the classes up in Search.jsx or delete both blocks together — do
+   not leave one copy live and the other decorative. */
 .search__box {
   position: relative;
   margin-bottom: var(--space-5);
@@ -4156,6 +4170,18 @@ p em {
   padding: var(--space-2) var(--space-3);
 }
 
+/* Without this the input falls back to Chromium's default placeholder colour
+   (#757575), which is 3.27:1 on --bg-subtle — below the 4.5:1 AA floor for
+   body-sized text. Two search boxes were affected: this one and the Search
+   view's. `.search__input::placeholder` was already styled, so ONLY the Tools
+   box was wrong, which is why it read as an inconsistency rather than a bug.
+
+   --text-muted is 5.84:1 here, so the placeholder is legible while still
+   reading as secondary to a typed value. Measured, not estimated. */
+.toolbar__search input::placeholder {
+  color: var(--text-muted);
+}
+
 /* The current filter. `.chip.is-on` is the class ToolsLibrary and Shared render;
    `.chip.is-active` above is the equivalent state on the older controls. Both
    spellings are live, so both are given the same treatment rather than one
@@ -4189,6 +4215,17 @@ p em {
   border: 1px solid var(--border);
   border-radius: var(--space-1);
   padding: var(--space-3) var(--space-4);
+}
+
+/* Same fallback problem as .toolbar__search above: unstyled, chromium picks
+   #757575, which is 3.27:1 here instead of the 5.84:1 --text-muted gives. */
+.searchform input::placeholder {
+  color: var(--text-muted);
+}
+
+.searchform input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .searchform button {

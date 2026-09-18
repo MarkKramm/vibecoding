@@ -213,7 +213,14 @@ export default function App() {
         </div>
       </header>
 
-      <main id="main" className="main">
+      {/* tabIndex={-1} is what makes the skip link WORK, and it was missing.
+          Without it `main.focus()` is refused: the anchor sets the hash and
+          scrolls the viewport, so the link appears to function, but focus stays
+          on <body>. A keyboard reader's next Tab therefore restarts at the top
+          of the page — the exact thing the skip link exists to prevent.
+          A negative tabindex makes the element programmatically focusable
+          without adding it to the tab order, which is precisely the intent. */}
+      <main id="main" className="main" tabIndex={-1}>
         {view === "dashboard" && (
           <Dashboard
             done={done}
