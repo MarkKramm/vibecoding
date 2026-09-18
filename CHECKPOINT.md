@@ -53,8 +53,10 @@ checklistIds, taskIds, quizIds` — **no tools, resources or prose**. Full data 
 | Practice tasks | 886 |
 | Checklist items | 1,054 |
 | Tool rows | 433 (237 after de-duplication) |
-| Offline checks | 11 |
-| Unit-test assertions | 315 |
+| Glossary terms | 254 across 10 categories |
+| Catalogued resources | 71 across 14 groups |
+| Offline checks | 12 |
+| Unit-test assertions | 435 |
 | Guards proved to fail | all of them |
 
 Per track: Foundations 8, Model Internals 6, Prompting 7, RAG 7, Agents 7, Fine-tuning 6,
@@ -94,16 +96,47 @@ npm run test:browser # needs a running server
 
 **NOT verified:**
 
-- ⚠️ **The live page has never been observed loading.** `*.github.io` is IPv6-only and
-  unreachable from where this was built. The *artifact* is verified (deployment success,
-  artifact size, bundle contents, and local rendering of the same bundle). That is not the
-  same as having loaded the URL.
 - ⚠️ **Mobile has only been emulated**, never touched on a real device.
 - ⚠️ **No automated accessibility audit.** Contrast, heading order and keyboard reachability
   are hand-checked only.
 - ⚠️ Browser checks **sample** phases, not all 65.
 - ⚠️ Volatile facts (free tiers, context windows, model availability) are **dated, not
   continuously verified**, because verification needs network access this project rations.
+
+✅ **The live site HAS now been observed.** Loaded by the project owner on 2026-09-18 and all
+four views render. This was the last significant unverified claim, and checking it immediately
+found a serious defect — see below.
+
+---
+
+## The defect that only looking could find
+
+The first time anyone loaded the live site, the Reference view was visibly wrong: raw Markdown
+(`---`, `## The rules`) leaking as body text. Following that to the data found something much
+worse.
+
+**325 authored items were completely invisible.**
+
+`shared-content.mjs` emits three shapes because the documents differ: `kind: "doc"` with
+`blocks`, `kind: "glossary"` with `terms`, and `kind: "resources"` with `groups`. `Shared.jsx`
+mapped `active.blocks` unconditionally, so two of the three kinds rendered an empty `<div>`.
+
+| Document | Authored | Rendered |
+|---|---|---|
+| Glossary | 254 terms, 10 categories | **nothing** |
+| Resource list | 71 links, 14 groups | **nothing** |
+
+The tabs worked, titles and blurbs appeared, and the body was blank. The data was correct,
+complete, compiled and deployed — no code path drew it.
+
+**This is the fourth instance of one shape**, and it is the single most useful pattern in this
+project:
+
+> **Correct source, wrong screen — and every test green.**
+
+The unstyled layout (40 CSS classes), the Tools library ("0 tools" with 433 rows), the 40 dead
+links, and now this. Every check verified the *data*; the defect was always in the path from
+data to screen. That is what component tests and a browser now cover.
 
 ---
 
@@ -139,8 +172,10 @@ histogram across 549 questions.
 3. Read **[AGENTS.md](AGENTS.md)** before editing any phase file.
 4. Check **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** before debugging anything.
 
-**If you do exactly one thing:** open the live site and confirm it renders. It is the only
-significant claim here that has never actually been checked.
+**If you do exactly one thing:** open the live site and click through all four views. That is
+now the highest-yield check available, and it is how the 325 invisible glossary and resource
+items were found — after a fully green test suite had missed them. Visual inspection is not
+redundant with automated checks here; it catches a class they structurally cannot.
 
 ---
 
