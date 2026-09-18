@@ -1,129 +1,113 @@
-# SEARCH REQUESTS — for the human to relay
+# SEARCH REQUESTS
 
-**Why this file exists.** `web_search` is **deliberately OFF** on this machine, by the
-user's decision on 2026-09-19. The provider is correctly configured and it *works* — it
-was fixed earlier this session and answered real queries. It is off because **the DeepSeek
-account balance went negative** during a research subagent run, and the user does not want
-further spend on it. A 402 (Insufficient Balance) is what a search now returns.
+> ## ðŸ‘‰ TO RELAY: paste [`docs/RELAY-PASTE.md`](RELAY-PASTE.md) — that file only.
+>
+> **Do not paste this file.** It contains agent-facing protocol and internal bookkeeping,
+> and it used to be pasted whole — which failed **three times in a row**, for reasons now
+> understood and recorded below under "Why the relay kept failing".
+>
+> `RELAY-PASTE.md` is a self-contained block written **for the web chat**, containing the
+> questions and nothing else. Paste that. Bring the reply back under "ANSWERS" here.
+
+---
+
+## Why the relay kept failing — three defects, all in this file
+
+The relay was attempted three times and came back with no answers each time. The cause was
+not the questions. It was that this file was pasted into a web chat whose assistant then
+correctly concluded it should not search.
+
+**Defect 1 — the file instructed the reader NOT to search.** The line *"**Do not call
+`web_search`.** It is off by decision and will return 402"* is addressed to **me** (the
+agent). A web chat reads it as addressing **itself**, so it declined to search. This was the
+fatal one, and it is the direct cause of three failed relays.
+
+**Defect 2 — the file addressed the wrong reader.** It is written for an agent that has
+`grep`, `web_fetch`, a 402 error and a filesystem. A web chat has none of those. The result
+was a reply asking which of (a), (b) or (c) was intended — reasonable behaviour from a
+confused reader, and entirely our fault for sending the wrong document.
+
+**Defect 3 — the questions were buried.** 12 questions sat inside ~306 lines, roughly 170 of
+which are internal bookkeeping (protocol header, my `web_fetch` log, resolved history from
+earlier sessions). Even a reader who understood the task had to extract the questions from
+irrelevant material.
+
+**The fix, and the rule going forward.** Keep two documents with different audiences, and
+never paste the agent's one:
+
+| File | Audience | Contains |
+|---|---|---|
+| `RELAY-PASTE.md` | **The web chat** | Questions and reply instructions only |
+| this file | **The agent** | Protocol, request queue, answer landing zone, history |
+
+---
+
+## Protocol for the agent (this file only — never paste)
+
+**Why search is off.** `web_search` is **deliberately OFF** on this machine, by the user's
+decision on 2026-09-19. The provider is correctly configured and it *works* — it was fixed
+earlier and answered real queries. It is off because **the DeepSeek account balance went
+negative** during a research subagent run. A 402 (Insufficient Balance) is what a search now
+returns.
 
 **This is a budget decision, not a defect.** Do not "fix" it by re-enabling search, and do
-not diagnose the configuration — the configuration is right. The correct behaviour is to
-write requests into this file instead.
+not diagnose the configuration — the configuration is right.
 
-**What still works, and is free.** Only `web_search` was routed through DeepSeek. These do
-not touch that key and remain available:
+**What still works, and is free.** Only `web_search` routed through DeepSeek:
 
 - `web_fetch` — a separate `http` provider. Use it freely on any URL you already know.
 - `grep`, `glob`, `read`, `pwsh` — local, no network at all.
 
-**So the rule is: fetch if you know the URL, ask the human only if you do not.** That is
-strictly better practice anyway — an arXiv abstract or an official pricing page is
-authoritative where a search snippet is not, and this project has already been burned by
-treating a snippet as evidence.
+**So the rule is: fetch if you know the URL, ask the human only if you do not.** Strictly
+better practice anyway — an official pricing page is authoritative where a snippet is not.
 
-**⚠️ The cost estimate that used to be printed here was wrong, or at least incomplete.**
-It said "roughly $0.001 per search… a few dollars covers years". Reading the provider
-source, one search request really is tiny — the body is literally
-`{"text": "Perform a web search for the query: <q>"}` with `max_tokens: 4096` and
-`max_uses: 5`, so roughly 30 input tokens. **Yet the balance still went negative in a
-single session.** The honest conclusion is that the per-search figure was measured against
-*my* searches and did not account for a subagent running dozens of fetches across three
-nested agents, each with an independent context. Do not repeat the confident "years of
-use" claim: the observed cost per session was two orders of magnitude above it.
-
-**How to use it.** The agent writes questions under "OPEN REQUESTS". The human
-pastes the whole block into Gemini Pro, DeepSeek web chat, or any assistant with live
-search, copies the answer back under "ANSWERS", and the agent reads it on the next turn.
+**⚠️ The cost estimate that used to be printed here was wrong.** It said "roughly $0.001 per
+search… a few dollars covers years". Reading the provider source, one search request really
+is tiny — the body is literally `{"text": "Perform a web search for the query: <q>"}` with
+`max_tokens: 4096` and `max_uses: 5`, so roughly 30 input tokens. **Yet the balance still
+went negative in a single session.** The per-search figure was measured against *my* searches
+and did not account for a subagent running dozens of fetches across three nested agents, each
+with an independent context. Do not repeat the confident "years of use" claim.
 
 **Rules for the agent:**
-- Only ask what `web_fetch` genuinely cannot reach. If a URL is known or guessable,
-  fetch it directly — do not spend a human round-trip on it.
+- **Never paste this file into a chat.** Update `RELAY-PASTE.md` instead.
+- Only ask what `web_fetch` genuinely cannot reach. If a URL is known or guessable, fetch it.
 - **Do not call `web_search`.** It is off by decision and will return 402.
-- Number every request. One question per numbered item, phrased so a single search
-  can answer it.
-- State the claim being checked and the file it lives in, so the human can see why
-  it matters.
-- Never treat an answer in this file as verified until it names a source. An
-  answer without a URL is a lead, not a fact.
+- Number every request. One question per item, answerable by a single search.
+- State the claim being checked so the human can see why it matters.
+- Never treat an answer as verified until it names a source. No URL means it is a lead.
 - When an answer resolves a request, move it to "RESOLVED" with the source URL.
-- **Subagents must be told this too.** A subagent that is not told will search, spend,
-  and may spawn further agents. Every research delegation carries the delegation bound.
+- **Subagents must be told this too**, with an explicit delegation bound.
 
 ---
 
 ## OPEN REQUESTS
 
-**Paste the block below into Gemini Pro / DeepSeek web chat.** Answers go under
-"ANSWERS" with a source URL for each. Anything without a URL is a lead, not a fact.
+**The questions now live in [`RELAY-PASTE.md`](RELAY-PASTE.md).** That file is written
+for the chat and is the only thing to paste. The 12 requests below are kept as the
+agent-side record — do not paste them.
 
----
+### Queue: vibecoding phases 6-8 (asked 2026-09-19)
 
-### For vibecoding phases 6, 7 and 8 (asked 2026-09-19)
+Status key: **OPEN** = needs the relay · **CLOSED** = answered with a source ·
+**BLOCKED** = not reachable by any route we have.
 
-I am writing lessons that must be accurate as of **2026-09**. For each question, please
-give the answer **and a source URL**. If you cannot find a reliable source, say so
-plainly rather than estimating — "I could not verify this" is a useful answer and a
-plausible guess is not.
+| # | Claim it settles | Status |
+|---|---|---|
+| 1 | Coding-agent context windows, and which vendors withhold them | OPEN |
+| 2 | What an agent does without asking, per tool | OPEN |
+| 3 | Sandbox and approval defaults | OPEN |
+| 4 | Prompt injection via repository content — documented incidents | OPEN |
+| 5 | Git-as-safety-net authoritative guidance | OPEN |
+| 6 | Evidence on agent self-reports being inaccurate | OPEN |
+| 7 | Security defects in generated code beyond package hallucination | OPEN |
+| 8 | Indemnity on free tiers (Anthropic CLOSED; GitHub/Google/OpenAI open) | PARTLY CLOSED |
+| 9 | Training on free-tier code, per vendor | PARTLY CLOSED |
+| 10 | Disclosure norms for AI-assisted work | OPEN |
+| 11 | Documented production incidents from AI-assisted code | OPEN |
+| 12 | Philippines availability (DPA half CLOSED via LawPhil) | PARTLY CLOSED |
 
-1. **Coding-agent context limits as of 2026-09.** For the main AI coding agents —
-   Claude Code, OpenAI Codex, GitHub Copilot's agent mode, Google Antigravity, Cursor,
-   Devin Desktop (formerly Windsurf) — what context window does each use, and are the
-   numbers published? I specifically want to know which vendors *do not* publish them.
-
-2. **What a coding agent does NOT do by default.** When an agent is given a task and runs
-   unattended, what does it typically do without asking — run tests, install packages,
-   edit files outside the requested scope, make network calls, commit, push? I want
-   documented default behaviour and permission prompts, per tool, with URLs.
-
-3. **Sandboxing and approval defaults.** Which coding agents run commands in a sandbox by
-   default, which ask for approval per command, and which run with full user permissions?
-   This is for a lesson on bounded tasks. Official docs preferred.
-
-4. **The "prompt injection via repository content" risk in coding agents.** Are there
-   documented incidents, vendor advisories, or research papers where malicious content in
-   a repo (a README, an issue, a dependency's file) caused a coding agent to take an
-   unwanted action? I need primary sources, not blog commentary.
-
-5. **Git as an agent safety net — the specific practices.** Is there authoritative
-   guidance (vendor docs, or well-known engineering write-ups) recommending committing
-   before an agent run, or reviewing diffs rather than summaries? I want to cite something
-   real rather than assert it.
-
-6. **Agent-generated commit messages and summaries.** Is there any study or documented
-   case of an agent's summary of its own work being inaccurate — i.e. claiming more
-   verification than it performed? Primary sources preferred.
-
-7. **Security review of AI-generated code specifically.** Beyond package hallucination
-   (which I have: arXiv 2406.10279), what does the research or vendor guidance say about
-   *other* security defects over-represented in generated code — injection, hardcoded
-   secrets, missing authorisation, weak crypto? Papers or official advisories with URLs.
-
-8. **Licence and IP status of AI-generated code as of 2026-09.** Do the major vendors
-   (GitHub, Google, Anthropic, OpenAI) indemnify users for copyright claims, and does that
-   indemnity extend to **free tiers**? I need the actual terms pages, and I need to know
-   where the free tier is excluded — that distinction matters a lot to my reader.
-
-9. **Training on free-tier code.** Confirm, with URLs, the current position for GitHub
-   Copilot Free, Google Antigravity, Cursor Hobby, and Codex Free: is free-tier code used
-   for training by default, and is there an opt-out? (I have a partial answer for Copilot:
-   default since 2026-04-24. I need the others.)
-
-10. **Disclosure norms for AI-assisted work.** Is there any emerging standard — employer
-    policy, professional-body guidance, conference or open-source policy — on disclosing
-    that code was AI-generated? I want to teach this honestly rather than invent a rule.
-
-11. **The "publish to production" failure cases.** Are there documented, sourced incidents
-    of AI-assisted code causing a real production outage or security incident? Specific
-    cases with post-mortems or news coverage, not general warnings.
-
-12. **Philippines-specific, for a $0-budget reader.** Do the free tiers named above
-    (Antigravity CLI, Copilot Free, Gemini API free tier, Groq) work from the Philippines
-    without a VPN or a foreign payment method? Are any region-restricted? And is there an
-    authoritative summary of the **Data Privacy Act of 2012 (RA 10173)** obligations that
-    would apply to someone building a small app handling personal data?
-
----
-
+The full wording of each is in `RELAY-PASTE.md` under the same numbers.
 ## ATTEMPTED WITH `web_fetch` — what closed, what is blocked
 
 Run 2026-09-19, following this file's own rule (*fetch if you know the URL, ask the human
@@ -150,7 +134,7 @@ The four obligations that actually bind someone building a small app:
   involved, and the measures taken. Delay is permitted only to determine scope, prevent
   further disclosure, or restore system integrity.
 - **S.30 — concealing a breach is itself a crime.** 1 year 6 months to 5 years and a fine of
-  Php500,000–1,000,000 for anyone who, knowing of a breach and of the S.20(f) duty,
+  Php500,000“1,000,000 for anyone who, knowing of a breach and of the S.20(f) duty,
   *"intentionally or by omission conceals"* it. **This is the clause that makes logging and
   silence the wrong strategy**, and it is the most useful thing in the whole Act for a
   developer.
@@ -163,7 +147,7 @@ The four obligations that actually bind someone building a small app:
   Consent must be *"specific to the purpose prior to the processing"*.
 
 Penalties scale with negligence and volume: **S.26** covers access *"due to negligence"*
-(1–3 years / Php500k–2M for personal; 3–6 years / Php500k–4M for sensitive), **S.35** imposes
+(1“3 years / Php500k“2M for personal; 3“6 years / Php500k“4M for sensitive), **S.35** imposes
 the maximum when **at least 100 persons** are affected, and **S.34** puts liability on
 *"responsible officers"* of a corporation who participated or *"by their gross negligence,
 allowed"* it — which is the clause that makes this a personal risk, not only a company one.
@@ -177,18 +161,18 @@ vendor availability pages, not on a statute.
 **Source:** https://www.anthropic.com/legal/commercial-terms — Commercial Terms of Service,
 **effective June 17, 2025**, fetched in full, HTTP 200.
 
-- **Ownership (§B).** *"Customer... (b) owns its Outputs. Anthropic disclaims any rights it
+- **Ownership (Â§B).** *"Customer... (b) owns its Outputs. Anthropic disclaims any rights it
   receives to the Customer Content under these Terms... Anthropic hereby assigns to Customer
   its right, title and interest (if any) in and to Outputs."*
-- **Training (§B), verbatim:** *"Anthropic may not train models on Customer Content from
+- **Training (Â§B), verbatim:** *"Anthropic may not train models on Customer Content from
   Services."* This is a **commercial-terms** commitment; the consumer terms are a different
   document and this quote must not be used for `claude.ai`.
-- **Indemnity (§K.1), and here is the free-tier answer.** Anthropic will defend the customer
+- **Indemnity (Â§K.1), and here is the free-tier answer.** Anthropic will defend the customer
   against a claim that *"Customer's **paid** use of the Services... violates any third-party
   intellectual property right."* **The word "paid" is the exclusion, in the terms
   themselves** — so the commercial indemnity is not available on a free tier, and this is a
   direct answer to the question request 8 asked.
-- **Six exclusions (§K.3), and one of them matters enormously for this track:** the indemnity
+- **Six exclusions (Â§K.3), and one of them matters enormously for this track:** the indemnity
   does **not** apply where the claim arises from *"(a) modifications made by Customer to the
   Services or Outputs"*, *"(b) the combination of the Services or Outputs with technology or
   content not provided by Anthropic"*, *"(c) Inputs or other data provided by Customer"*,
@@ -247,7 +231,7 @@ merely "dated revisions", implying a cosmetic difference.
 handshake, no sessions, server→client requests via Multi Round-Trip Requests,
 `roots`/`sampling`/`logging` deprecated.
 
-**Sources:** https://modelcontextprotocol.io/specification/2025-11-25/changelog ·
+**Sources:** https://modelcontextprotocol.io/specification/2025-11-25/changelog Â·
 https://github.com/modelcontextprotocol/modelcontextprotocol/releases/tag/2025-11-25
 
 **Outcome:** Fixed in commit `3fd5a9b`. The phase now carries the comparison table.

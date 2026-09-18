@@ -1,0 +1,77 @@
+# Research request — please search the web and cite sources
+
+I am writing a technical curriculum about building software with AI coding tools. I need
+current, sourced answers so the lessons are accurate as of **September 2026**.
+
+**Please use web search.** These questions are specifically about things that changed
+recently, so I need current information rather than general knowledge, and I need a
+**source URL for each answer**.
+
+**How to reply:**
+- Answer under the **same number** as the question.
+- Give the answer **and a source URL** for each.
+- **If you cannot find a reliable source, say "could not verify" — do not estimate.** An
+  acknowledged gap is genuinely useful to me. A confident guess is worse than nothing,
+  because I will publish it.
+
+Twelve questions. Partial answers are fine — answer what you can and mark the rest.
+
+---
+
+**1. Coding-agent context windows.** For Claude Code, OpenAI Codex, GitHub Copilot's agent
+mode, Google Antigravity, Cursor, and Devin Desktop (formerly Windsurf) — what context
+window does each use? Which vendors **do not publish** this number?
+
+**2. Coding-agent default permissions.** When a coding agent runs unattended on a task,
+what will it typically do **without asking** — run tests, install packages, edit files
+outside the requested scope, make network calls, commit, push? Per tool, from official docs.
+
+**3. Sandboxing defaults.** Which coding agents run commands in a sandbox by default, which
+ask for approval per command, and which run with full user permissions?
+
+**4. Prompt injection through repository content.** Are there documented incidents, vendor
+advisories, or research papers where malicious content in a repository — a README, an issue,
+a dependency's file — caused a coding agent to take an unwanted action? Primary sources
+preferred, not blog commentary.
+
+**5. Git as an agent safety net.** Is there authoritative guidance — vendor documentation or
+well-known engineering write-ups — recommending committing before an agent run, or reviewing
+diffs rather than the agent's summary? I want to cite something real rather than assert it.
+
+**6. Accuracy of agent self-reports.** Is there any study or documented case of a coding
+agent's summary of its own work being inaccurate — claiming more verification than it
+performed, or omitting what it did not check?
+
+**7. Security defects in AI-generated code.** Beyond hallucinated package names (I already
+have arXiv 2406.10279), what does research or vendor guidance say about other security
+defects over-represented in generated code — SQL injection, hardcoded secrets, missing
+authorisation checks, weak cryptography? Papers or official advisories with URLs.
+
+**8. Indemnity on free tiers.** Do GitHub, Google, and OpenAI indemnify users against
+copyright claims on AI-generated code, and **does that indemnity apply to free tiers or only
+paid ones**? I need the actual terms pages. (I have already verified Anthropic's commercial
+terms, which specify "paid use" — so I need the other three, and I specifically need to know
+where the free tier is excluded.)
+
+**9. Training on free-tier code.** For **GitHub Copilot Free**, **Google Antigravity**,
+**Cursor Hobby**, and **Codex Free**: is free-tier code used for training by default, and is
+there an opt-out? (I have a partial answer for Copilot: default since 2026-04-24. I need the
+others confirmed.)
+
+**10. Disclosure norms for AI-assisted code.** Is there any emerging standard — employer
+policy, professional-body guidance, conference or open-source project policy — on disclosing
+that code was AI-generated? I would rather teach something real than invent a rule.
+
+**11. Real incidents.** Are there documented, sourced cases of AI-assisted code causing a
+production outage or security incident? I need specific cases with post-mortems or news
+coverage, not general warnings about risk.
+
+**12. Availability from the Philippines.** Do these free tiers work from the Philippines
+without a VPN or a foreign payment method — **Google Antigravity CLI, GitHub Copilot Free,
+the Gemini API free tier, and Groq**? Are any region-restricted? Pricing or availability
+pages preferred.
+
+---
+
+*If you can only answer some of these, that is fine — please just say which ones you could
+not verify rather than filling the gap.*
