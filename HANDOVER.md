@@ -960,6 +960,25 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **Do not parallelise across one phase.** Two writers on the same file, or on two phases whose IDs must stay in sequence, will collide. **Parallelise across artifact *types*.**
 
+29. **A guard that has only ever passed is not evidence. Prove it can fail.**
+    `audit-encoding.mjs` could not detect mojibake **at all** — not "missed some", but **structurally incapable** — and had been reporting `✓ all files are clean` for the project's entire history. The table was built with raw UTF-8 **byte** values (`String.fromCharCode(0xe2, 0x80, 0x94)`), but `fromCharCode` yields **characters**, and `check()` searched text already **decoded** as UTF-8, where the same corruption appears as `U+00E2 U+20AC U+201D`. The pattern and the haystack could never meet. **A guard whose failure mode is silence is worse than no guard**, because it converts "unknown" into "known good" in the reader's mind.
+
+    **How it was actually caught — the reusable procedure, in order:**
+    1. **Widen the scope first.** `SCAN` covered only `learning-site/*`, so it had never once read `ai-roadmaps/` — the 48 curriculum phases, the files most likely to carry a bad character and the ones where it does the most damage, since the garbage lands in rendered lesson text. Scope gaps and detector bugs are **different faults**, and widening is how the second one became visible.
+    2. **Test that the widened guard CAN FAIL** — inject real corruption into a real file and confirm a non-zero exit. It passed instead. That single experiment is what exposed the bug.
+    3. Only then fix the detector, and re-run the injection to prove the fix.
+
+    **The damage it had been hiding:** 100+ corrupted characters in `foundations/01-phase-what-a-model-is.md`, in **four different corrupted spellings** (em dash, en dash, left double quote, left arrow) — because the same bytes decode differently per single-byte codepage, and Latin-1, cp1252 and MacRoman each map the `0x80–0x9F` range differently. The worst instance was the lesson's **own title**: `# Phase 1 — What a Model Actually Is`, rendering as garbage in the **H1 of the first lesson in the curriculum**. `HANDOVER.md` had three more.
+
+30. **A mojibake table is never finished by reasoning. It grows by finding real damage.**
+    Four variants were added, **each one discovered rather than predicted**, each proved by injecting that exact sequence. Guessing the set of possible corruptions in advance produces a table that looks thorough and misses the one in front of you. When a new variant appears: add it, fix the file, and **prove the new entry fails** — an entry that never matches is indistinguishable from a working one until a reader sees the garbage.
+
+31. **⚠️ Fixing an encoding bug can introduce a WRONG CHARACTER, and the guard will not catch it.**
+    The first repair pass mapped a corrupted **en dash** onto `U+201C`, a **left double quote**, turning `at 1–2 hours a day` into `at 1“2 hours a day`. The encoding guard went **green immediately** — `U+201C` is a perfectly legitimate character it has no reason to flag. **Encoding validity and textual correctness are different properties**, and only the first is mechanised. Repair with a **context-aware rule** (here, a regex replacing a quote only *between two digits*) rather than a blanket substitution, then sweep the corpus for the same mis-mapping.
+
+32. **Read codepoints from the FILE, never from the console. Both directions of this error occurred in one session.**
+    `Get-Content` rendered a perfectly good `U+2014` as `—` and made a **clean file look corrupted**; the same display artifact nearly caused a **real corruption to be dismissed as cosmetic**. PowerShell's console is a rendering layer that lies about encoding. The only trustworthy check is reading bytes and codepoints directly, which is why every encoding claim in this file is written that way.
+
 ---
 
 ## 13. What "done" looks like
