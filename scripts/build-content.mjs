@@ -660,6 +660,29 @@ export function parseQuiz(section, phaseId, errors, file, seenIds) {
         errors.add(file, section.start + i, `quiz energy "${energy}" is not one of low, normal, high`);
       }
 
+      // A MISSING energy is an error, not a default.
+      //
+      // The check above only fires when an energy is present, so a quiz heading
+      // written without `energy:` built cleanly and shipped with `energy: null`
+      // on the question. Nothing downstream noticed: `audit-quiz.mjs`'s header
+      // claims it verifies "a valid energy", but it never reads the field, and
+      // the component falls back to rendering no energy chip.
+      //
+      // It is required for the same reason `band` is required on a task: the
+      // time-budget picker selects questions by energy, so a null one is invisible
+      // to that filter. It is not corrupt data, it is a question the reader is
+      // never offered -- which is exactly the failure mode the task-band note
+      // already warns about, and it should stop the build rather than warn.
+      if (!id) {
+        errors.add(file, section.start + i, 'quiz question has no <!-- id: ... --> comment');
+      } else if (!energy) {
+        errors.add(
+          file,
+          section.start + i,
+          `quiz question "${id}" has no energy — add "energy: low|normal|high" to its <!-- id: ... --> comment, because the time-budget picker selects questions by energy and a missing one is never offered`
+        );
+      }
+
       current = { id, energy, question: text, options: [], why: null, line: section.start + i };
       continue;
     }
