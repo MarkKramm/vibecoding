@@ -66,6 +66,12 @@ const STEPS = [
     args: [join(HERE, "audit-shapes.mjs")],
     why: "a changed element type only fails at render time, not at build time",
   },
+  {
+    name: "projection reads",
+    cmd: "node",
+    args: [join(HERE, "audit-projections.mjs")],
+    why: "the build emits the curriculum TWICE — a light index.json and full per-track files — and a component that reads a field the projection it actually imports does not carry gets `undefined`, not an error. The Tools library shipped reading `phase.tools` off the light index and told the reader '0 tools across 10 written tracks' while the corpus held 433 tool rows; every other check in this suite reads the SOURCE data or the FULL projection, where `tools` is present and correctly shaped, so all of them stayed green while the rendered page was empty. This is the only step that compares what a component ACCESSES against the projection that SUPPLIES it",
+  },
   // The three below test the site's OWN logic rather than the content. They are
   // pure — no browser, no dev server — which is why they belong here and not in
   // `npm run test:browser`, and they read the same generated JSON the steps
