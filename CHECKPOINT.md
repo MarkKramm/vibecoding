@@ -2,8 +2,13 @@
 
 A cold-start snapshot: what this project is, where it stands, and what is true right now.
 
-**Last verified:** all 13 offline checks green, all 451 assertions passing, every
-GitHub Actions run green, deployment `state=success`.
+**Last verified:** all 15 offline checks green, all 451 assertions passing (407 offline + 44 in
+the accessibility audit), local and remote `main` identical at `a570682`, working tree clean.
+
+⚠️ **GitHub Pages was unreachable at the time of this checkpoint** — `*.github.io` timed out
+while `github.blog` and `raw.githubusercontent.com` answered normally, so the fault is GitHub's
+Pages service, not this site. The commits are pushed; the deploy publishes when Pages recovers.
+Re-check before concluding anything is wrong with the deployment.
 
 ---
 
@@ -23,7 +28,7 @@ It ships as a React site that reads compiled JSON from hand-authored Markdown.
 ## The shape of it
 
 ```
-ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (65 files, 32,970 lines)
+ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (65 files, 22,244 lines)
         |
         |  scripts/build-content.mjs
         v
@@ -48,16 +53,17 @@ checklistIds, taskIds, quizIds` — **no tools, resources or prose**. Full data 
 | | |
 |---|---|
 | Phases | 65 across 10 tracks |
-| Authored Markdown | 35,383 lines across 89 files |
+| Authored Markdown | 24,033 lines in `ai-roadmaps/` across 90 files |
 | Quiz questions | 549 |
 | Practice tasks | 886 |
 | Checklist items | 1,054 |
 | Tool rows | 433 (237 after de-duplication) |
 | Glossary terms | 254 across 10 categories |
 | Catalogued resources | 71 across 14 groups |
-| Offline checks | 12 |
-| Unit-test assertions | 435 |
+| Offline checks | 15 |
+| Test assertions | 451 (407 offline + 44 accessibility) |
 | Guards proved to fail | all of them |
+| `src/` modules | 43 — **every one reachable from `main.jsx`** |
 
 Per track: Foundations 8, Model Internals 6, Prompting 7, RAG 7, Agents 7, Fine-tuning 6,
 Cost 7, Vibecoding Craft 8, Safety & Career 5, Career 4.
@@ -71,14 +77,14 @@ cd learning-site
 npm run dev          # content rebuild + dev server on 5173
 npm run build        # content rebuild + bundle to dist/
 npm run preview      # serve dist/ on 4173
-npm test             # 13 offline checks
+npm test             # 15 offline checks
 npm run test:browser # needs a running server
 ```
 
-⚠️ Exactly one of the 13 — `accessibility (rendered page)` — needs `npm run preview` running on
-4173. It is the only step that opens a browser; the other twelve read data. It skips with a loud
-notice rather than failing when no server answers, because a guard that fails for an unrelated
-reason gets disabled, and a disabled guard is worse than none.
+⚠️ Exactly two of the 15 — `accessibility (rendered page)` and `every phase renders (browser,
+all 65)` — need `npm run preview` on 4173. They **skip with a loud notice rather than failing**
+when no server answers, because a guard that fails for an unrelated reason gets disabled, and a
+disabled guard is worse than none.
 
 ⚠️ `localhost`, not `127.0.0.1` (dev server binds IPv6 only).
 ⚠️ Never set `VITE_BASE` locally — it produces a blank page.
@@ -97,14 +103,15 @@ reason gets disabled, and a disabled guard is worse than none.
 - Inline markdown, lesson-block coverage, search (all against the real corpus)
 - Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (205 files)
 - CSS wiring — every JSX class has a rule, every token is defined
+- **Accessibility** — 44 assertions across 4 views: contrast, accessible names, focus visibility,
+  and keyboard reachability by control *kind*
+- **Every one of the 65 phases renders** — opened in a real browser, not sampled
+- **Reachability** — every module under `src/` is reachable from `main.jsx`
 - Guards themselves — each was broken deliberately and shown to fail
 
 **NOT verified:**
 
 - ⚠️ **Mobile has only been emulated**, never touched on a real device.
-- ⚠️ **No automated accessibility audit.** Contrast, heading order and keyboard reachability
-  are hand-checked only.
-- ⚠️ Browser checks **sample** phases, not all 65.
 - ⚠️ Volatile facts (free tiers, context windows, model availability) are **dated, not
   continuously verified**, because verification needs network access this project rations.
 
@@ -145,6 +152,34 @@ data to screen. That is what component tests and a browser now cover.
 
 ---
 
+## The defect that only clicking could find — **the fifth instance, and the purest one**
+
+A new check that opens all 65 phases in a browser found, on its first run, that **the Previous
+and Next phase buttons did absolutely nothing** — on every phase, in both variants.
+
+`PhaseNav` called `onOpenPhase(prev.id)`: **one argument, a phase id.** But `App`'s handler is
+`openPhase(tId, pId)`, which treats its **first** argument as a **track** id. So `findTrack`
+rejected the phase id, the fallback scanned for a phase whose id is `undefined`, found none, and
+the handler returned without changing anything.
+
+> **This is the pattern in its purest form yet.** The data was correct. The buttons rendered
+> correctly, with the right labels and the neighbouring phase's title and goal. They were
+> enabled, focusable, and correctly styled. The click handler even fired — React's listener ran
+> every time. **Nothing was wrong except that the page did not change.**
+
+Nothing could see it but clicking, which is why it survived fourteen checks and dozens of manual
+page opens. The old browser check verified **one track of six phases** against hardcoded strings,
+so 59 phases had never been rendered at all.
+
+**Four bugs in the new check had to die before it could find this one**, each caught by
+disbelieving its own output: it assumed a track opens a *grid* of phase cards (it opens phase 1);
+headless had **no viewport**, putting the button at y=18,865px so clicks never landed; it flagged
+six phases for the word "undefined" that was legitimate **quiz prose** ("Cosine similarity is
+undefined for out-of-vocabulary words"); and it counted checklist items with **two wrong selectors
+in a row**, because `ChecklistItem` renders a `label.check`, not an `li`.
+
+---
+
 ## The thing to know before touching anything
 
 **Three times in this project a guard was documented as enforcing a rule it did not enforce**,
@@ -163,10 +198,15 @@ The specific manifestations:
   were never read. A stray CR reached `.gitignore` and **git warned on push** while the guard
   said clean.
 
-And: **suspect the instrument before the subject.** Eight times an implausible result was the
-query's fault — an inline regex that lost its `$` to PowerShell reported all 17 hooks as dead
-when the answer was 2; a probe looked for `o.correct` on quiz options and returned an all-zero
-histogram across 549 questions.
+And: **suspect the instrument before the subject.** **Thirteen** times an implausible result
+was the query's fault — an inline regex that lost its `$` to PowerShell reported all 17 hooks as
+dead when the answer was 2; a probe looked for `o.correct` on quiz options and returned an
+all-zero histogram across 549 questions; and a sweep of all 65 phases reported every one as
+broken when the selector had been guessed from a container's tag instead of read off the
+component.
+
+**A guard's blind spot is exactly as wide as the selector it uses.** Four instances: a directory
+list, an extension list, a hardcoded file list, and `[tabindex]` matched at *any* value.
 
 ---
 
@@ -177,10 +217,11 @@ histogram across 549 questions.
 3. Read **[AGENTS.md](AGENTS.md)** before editing any phase file.
 4. Check **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** before debugging anything.
 
-**If you do exactly one thing:** open the live site and click through all four views. That is
-now the highest-yield check available, and it is how the 325 invisible glossary and resource
-items were found — after a fully green test suite had missed them. Visual inspection is not
-redundant with automated checks here; it catches a class they structurally cannot.
+**If you do exactly one thing:** open the live site and **click all the way through a track** —
+not just look at the views. That is now the highest-yield check available. Looking found the 325
+invisible glossary and resource items; *clicking* found that Previous and Next did nothing. Both
+were invisible to a fully green test suite. Visual inspection is not redundant with automated
+checks here; it catches a class they structurally cannot.
 
 ---
 

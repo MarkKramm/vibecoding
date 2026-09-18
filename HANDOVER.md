@@ -617,7 +617,13 @@ that did not exist — `VITE_BASE` was read by the config while nothing ever set
 
 ---
 
-### 6.D Dead code — unreachable modules (measured, do not re-derive)
+### 6.D Dead code — unreachable modules (**RESOLVED — all 14 deleted**)
+
+> **✅ STATUS: RESOLVED.** All fourteen modules were **deleted** — 1,740 lines, 71 KB. The count
+> below is kept because the method is the lesson, not the inventory. See
+> `scripts/check-reachability.mjs` (check 15), which now fails the build if any module under
+> `src/` becomes unreachable again, and `ROADMAP.md` → "Resolve D-008 properly" for the
+> conclusion. **43 modules in `src/`, all reachable.**
 
 **This exists so the next reader does not have to measure it again** — the count has
 already been recorded wrong twice in `learning-site/docs/DECISIONS.md` (D-008), so the
@@ -629,7 +635,8 @@ that is the mistake that produced both wrong counts. `DataTransfer.jsx` contains
 `useApplications` and `usePortfolio`, but only inside a prose comment on line 22; a grep
 reports two live hooks, a reachability walk reports none.
 
-**Result: 14 of the 57 files in `learning-site/src/` are unreachable from `main.jsx`.**
+**Result: 14 of the 57 files in `learning-site/src/` were unreachable from `main.jsx`** before
+the deletion.
 
 | Kind | Modules | Why unreachable |
 |---|---|---|
@@ -696,6 +703,89 @@ is outside a documentation task.
 ---
 
 ## 7. Known defects to fix
+
+### 7.0 ✅ RESOLVED (2026-09-18) — Previous/Next phase buttons did nothing
+
+**Was:** the Previous and Next buttons on every phase page had **no effect at all**. Fifty-nine
+of the sixty-five phases had never been rendered by any check, so this shipped and stayed.
+
+**The bug, exactly.** `PhaseNav` called `onOpenPhase(prev.id)` — **one argument, a phase id.**
+`App`'s handler is `openPhase(tId, pId, anchor)` and treats its **first** argument as a **track**
+id:
+
+```js
+const openPhase = useCallback((tId, pId, anchor) => {
+  let resolved = tId;
+  if (!resolved || !findTrack(resolved)) {        // a phase id is not a track
+    resolved = null;
+    for (const t of tracks) {
+      if (t.phases.some((p) => p.id === pId)) {   // pId is `undefined`
+        resolved = t.id; break;
+      }
+    }
+  }
+  if (!resolved) return;                          // <-- nothing happens
+  ...
+```
+
+So `tId` received a phase id, `findTrack` rejected it, the fallback scanned for a phase whose id
+is `undefined`, found none, and the handler returned. Four call sites were wrong (both variants,
+prev and next). Fixed by having `PhaseNav` call `onOpenPhase(p.id)` — one argument, the phase id,
+the convention it already used — and `App` supply the track:
+`onOpenPhase={(pId) => openPhase(track.id, pId)}`.
+
+⚠️ **`p.trackId` would NOT have worked**, though it looks like the obvious fix: `prev`/`next` come
+from the light index, whose 11 fields do not include `trackId`. Verified before choosing.
+
+**Why nothing caught it, and the generalisable lesson.** The data was correct. The buttons
+rendered correctly, with the right labels and the neighbouring phase's title and goal. They were
+enabled, focusable, and correctly styled. **React's click listener fired on every click.** The
+only thing wrong was that the page did not change.
+
+> **A handler that runs and does nothing is invisible to every static check and to any inspection
+> that does not click.** Rendering, labelling, enabling and focusing are all properties you can
+> assert without ever invoking the behaviour.
+
+This is the **fifth** instance of *correct source, wrong screen, every test green* — and the
+purest, because there was no wrong pixel to notice. It was found by `sweep-phases.mjs`
+(check 14), which opens all 65 phases and clicks through them the way a reader does. Its first
+run reported phases 2–65 all showing phase 1's title.
+
+**Four bugs in that check had to die first**, each found by disbelieving its output:
+
+| Reported | Reality |
+|---|---|
+| All 65 "card not found" | A track heading opens **phase 1**, not a grid of phase cards |
+| Clicks never advanced | Headless had **no viewport**; button at y=18,865px, outside a 450px window |
+| 6 phases rendering `undefined` | Legitimate **quiz prose** — "Cosine similarity is undefined for out-of-vocabulary words" |
+| 5 phases with no checklist | **Two wrong selectors in a row** — `ChecklistItem` renders a `label.check`, not an `li` |
+
+The viewport one is worth remembering on its own: `--headless=old` without
+`Emulation.setDeviceMetricsOverride` gave a **450px-tall window**, and a synthetic `.click()` on
+an off-screen element still fires React's handler while changing nothing. The check now sets
+1440×1100 explicitly, matching `audit-a11y.mjs`.
+
+**Verified:** all 65 phases pass; negative control (emptying one phase's checklist) fails
+**exactly that phase**, exit 1, other 64 unaffected.
+
+### 7.0b ✅ RESOLVED (2026-09-18) — D-008's justification was false
+
+D-008 said the fourteen unreachable modules were kept "because they are **tested pure modules**".
+
+**Nothing tested them.** No `scripts/test-*.mjs` imported any of the fourteen. The claim survived
+because `audit-projections.mjs` walks the tree and therefore *mentions* all of them — which reads
+like coverage in a grep and is not coverage.
+
+> **A mention is not a test.** And a justification written in prose is the one kind of claim no
+> guard in this repository can falsify.
+
+All fourteen were deleted after checking two things that are cheap to assert and cheaper to
+falsify: every design principle survives (D-019 in seven other files, D-020 in four, D-021 in
+two), and the build is **byte-identical** — 3,910 KB of `dist/` before and after, a 0 KB delta,
+which is direct evidence they were never in the bundle.
+
+`audit-projections.mjs` now distinguishes **deleted** from **revived**; it previously reported
+both as "reachable again", so deleting them made it fail — the opposite of what happened.
 
 ### 7.1 ✅ RESOLVED (Stage A, 2026-09-18) — Quiz answer-position skew
 
