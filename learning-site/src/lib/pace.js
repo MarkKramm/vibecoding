@@ -1,5 +1,24 @@
 // Study pace: how the plan compares to elapsed time.
 //
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE
+// ---------------------------------------------------------------------------
+// Nothing imports this module. It was ported from the sibling CS Roadmap
+// project, whose Schedule view is one of the six career-specific views this
+// curriculum deliberately does not have. See docs/DECISIONS.md → D-008.
+//
+// It is kept rather than deleted because removal would also touch the transfer
+// KEYS list, the validators and the tests, and would have to be redone if the
+// career views return. See D-008 for that trade-off.
+//
+// ⚠️ THE HAZARD THIS MODULE CARRIES
+// `upcomingPhases` reads `phase.checklist`, which does not exist on the light
+// index — the light record carries only `checklistIds`. That call used to be an
+// unguarded `.every()` and threw on every invocation. It is now defended (see
+// the comment at the call site), but the defence only stops the crash; it does
+// not make the numbers right. This module must not be revived against the light
+// projection without loading full phase records.
+//
 // WHY THIS EXISTS
 // Every phase carries `duration_weeks` and every track therefore has a planned
 // length — 34 weeks for IT, 112 for cyber — but nothing in the site used those
@@ -136,7 +155,28 @@ export function upcomingPhases(track, fromIso, done, weeks) {
   for (const phase of track.phases || []) {
     const w = Number(phase.durationWeeks) || 0;
     if (w > remaining) break;
-    const finished = phase.checklist.every((c) => done[c.id]);
+    // `phase.checklist` is the FULL projection's field. On the light index the
+    // same phase carries only `checklistIds`, so `phase.checklist` is undefined
+    // and an unguarded `.every()` here throws `TypeError: Cannot read properties
+    // of undefined` on the first phase examined — every call, not an edge case.
+    //
+    // The `|| []` fallback is deliberately the same shape as `track.phases || []`
+    // above, and it is NOT a silent repair of the data. A bare `|| []` is exactly
+    // what caused the Tools-library defect: `ToolsLibrary.jsx` read `phase.tools`
+    // off the light projection, got undefined, and rendered "0 tools" while 433
+    // tool rows existed — a wrong answer that looked like a real one. So read the
+    // fallback as "do not crash", not as "this works":
+    //
+    //   ⚠️ DO NOT REVIVE THIS MODULE AGAINST THE LIGHT INDEX.
+    //   `upcomingPhases` needs full phase records (`checklist`, `tasks`), which
+    //   only arrive from the lazily-loaded per-track files via `loadTrackPhases`.
+    //   With `[]` substituted, every phase classifies as unfinished and the
+    //   function returns the full unfiltered list instead of the phases that fit.
+    //   That is a silently wrong schedule. Load the full track first.
+    //
+    // See the header of src/data/roadmaps.js for the two projections, and the
+    // DEAD CODE block at the top of this file.
+    const finished = (phase.checklist || []).every((c) => done[c.id]);
     if (finished) {
       cursor = addWeeks(cursor, w);
       continue;

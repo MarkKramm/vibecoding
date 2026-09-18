@@ -1,6 +1,23 @@
 // Low / Normal / High. Changes which tasks the dashboard offers as the next
 // action — a low-energy day should not be shown a 3-hour lab.
 // See docs/DESIGN-SYSTEM.md → <EnergyModeSelector>.
+//
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE
+// ---------------------------------------------------------------------------
+// Nothing renders this component. `App.jsx` calls `useEnergyMode()` and prints
+// the mode in the footer, but this selector — the only way to *change* it — is
+// never mounted, so the value is whatever the hook defaults to and the reader
+// cannot alter it. See docs/DECISIONS.md → D-008.
+//
+// ⚠️ The claim in the first paragraph is therefore not true of this app. No
+// dashboard offers "the next action" by energy, and neither `energy` nor
+// `budget` is passed to any page: `App.jsx` reads both only for the footer text
+// on line 305. `acceptsTask` below is dead with the rest of the file. The
+// picker it was written for — `lib/today.js`'s `pickToday` — is dead too.
+//
+// It is kept rather than deleted because removal would have to be redone if the
+// career views return. See D-008.
 
 export const MODES = [
   {

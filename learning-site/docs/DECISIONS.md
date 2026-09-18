@@ -117,16 +117,20 @@ components: `src/hooks/useApplications.js`, `useCertifications.js`,
 `usePortfolio.js` and `useSchedule.js` keep their storage keys and are registered
 in `lib/transfer.js`, but no view renders them since the career pages were not
 ported (D-008). The same is true of `src/lib/review.js`, `today.js`,
-`pathOrder.js` and `yourWork.js`: `today.js` is still imported for its `BANDS`
-labels, but `review.js`, `pathOrder.js` and `yourWork.js` have no importers at
-all. They are kept because they are tested pure modules and because the career
-material may yet return. The honest framing is that **“ported verbatim” means
-“ported including the parts this curriculum does not use”**, so a future cleanup
-should start by listing importers rather than by assuming everything in `src/lib/`
-is live. Note also the corollary for the no-shame rules: D-019, D-020 and D-021
-are cited from `review.js`, `yourWork.js` and `global.css`, so deleting the
-unimported modules would not delete the principles — but it would delete the code
-comments that carry them into the future.
+`pathOrder.js` and `yourWork.js`: `today.js` still has an import line — from
+`components/TimeBudgetSelector.jsx`, for `bandInfo` — but that component is
+unreachable, so **nothing live reaches `today.js` either**, and `review.js`,
+`pathOrder.js` and `yourWork.js` have no importers at all. D-008 carries the
+measured inventory; this paragraph originally claimed `today.js` was “still
+imported for its `BANDS` labels”, which described an import line rather than a
+reachable render. They are kept because they are tested pure modules and because
+the career material may yet return. The honest framing is that **“ported
+verbatim” means “ported including the parts this curriculum does not use”**, so a
+future cleanup should start by walking reachability from `main.jsx` rather than by
+assuming everything in `src/lib/` is live. Note also the corollary for the no-shame
+rules: D-019, D-020 and D-021 are cited from `review.js`, `yourWork.js` and
+`global.css`, so deleting the unimported modules would not delete the principles —
+but it would delete the code comments that carry them into the future.
 
 ---
 
@@ -187,8 +191,8 @@ that does not depend on the reader having exported a backup.
 ## D-008 — The sibling’s six career-specific views are not ported
 
 **Decision.** `Schedule`, `Applications`, `Certifications`, `Portfolio`,
-`YourWork` and `PathOrder` are not views in this site. Four corresponding hooks
-and four pure modules were still ported and remain in the tree.
+`YourWork` and `PathOrder` are not views in this site. The hooks and pure modules
+those views were built on were still ported and remain in the tree.
 
 **Why.** The sibling curriculum ends in a job hunt with deadlines attached: a
 schedule to keep, applications to track, certifications to price, a portfolio to
@@ -201,7 +205,7 @@ them. Porting those six views would have added surface area that nothing in the
 content refers to. The career material lives in the Career track’s own phases,
 which is where it belongs.
 
-**Cost.** The site carries hooks, storage keys, transfer registrations and three
+**Cost.** The site carries hooks, storage keys, transfer registrations and
 unimported pure modules for features no reader can reach. A reader who inspects
 `lib/transfer.js` sees `vibecoding:applications:v1` and
 `vibecoding:certifications:v1` in the backup and reasonably concludes the UI is
@@ -209,7 +213,7 @@ broken. That is a documentation problem more than a code problem, but it is a re
 one: the decision log is the only place that explains it. Removing the dead code
 would be a bigger job than it looks (the transfer `KEYS` list, the validators, the
 tests) and would have to be redone if the career views return — so it is deferred
-rather than resolved.
+rather than resolved, and the dead modules now say so in their own headers.
 
 **Partly addressed (reader-facing half).** The confusion above is real and cheap to
 fix, so it was fixed without touching the keys. `labelFor` in `lib/transfer.js` now
@@ -219,11 +223,46 @@ is told what they are looking at instead of being invited to hunt for a screen t
 does not exist. The keys, validators and hooks are all left in place, because
 deleting a key silently drops that field from a reader’s backup on the next restore.
 
-**Correction to the count.** This entry says four corresponding hooks remain. Only
-**two** are unreferenced (`useCertifications`, `useSchedule`); `useApplications` and
-`usePortfolio` are both genuinely used, because `DataTransfer.jsx` imports them to
-describe and validate what a backup contains. The original figure was not checked
-against the code before it was written down.
+**Verified dead-code inventory (the counts above were wrong twice — this one is
+measured).** An earlier version of this entry said “four corresponding hooks and
+four pure modules”, then a “correction” narrowed the hooks to two. **Both figures
+were wrong, and the correction was wrong in the same way as the original: it was
+not checked against the code.** The correction claimed `useApplications` and
+`usePortfolio` are “genuinely used, because `DataTransfer.jsx` imports them”. They
+are not imported by anything; `DataTransfer.jsx` mentions both names **only inside
+a prose comment** (line 22). A grep for a symbol cannot distinguish an import from
+a comment, and that is exactly how the wrong count survived.
+
+Measured by walking the import graph forward from `src/main.jsx` and taking the
+complement (**14 of 57 `src/` files are unreachable**):
+
+| Kind | Modules |
+|---|---|
+| lib (5) | `lib/highlight.js`, `lib/pace.js`, `lib/pathOrder.js`, `lib/review.js`, `lib/yourWork.js` |
+| lib, transitively dead (1) | `lib/today.js` |
+| hooks (4) | `useApplications.js`, `useCertifications.js`, `usePortfolio.js`, `useSchedule.js` |
+| components (4) | `EmptyState.jsx`, `EnergyModeSelector.jsx`, `ReviewQueue.jsx`, `TimeBudgetSelector.jsx` |
+
+`lib/today.js` is the trap. It **is** imported — by
+`components/TimeBudgetSelector.jsx`, for `bandInfo` — but that component is itself
+unreachable, so nothing live reaches `today.js` either. A file is not live because
+it has an importer; it is live because the importer is. The two claims in D-004
+that `today.js` is “still imported for its `BANDS` labels” and that the four hooks
+“keep their storage keys” are correct as written about import lines, and misleading
+about reachability.
+
+**The three hooks and modules are not merely unused — they are unsound against the
+light projection.** `lib/review.js` reads `phase.quiz`, `lib/today.js` reads
+`phase.checklist` and `phase.tasks`, `lib/pace.js` reads `phase.checklist`, and
+`lib/pathOrder.js`/`lib/yourWork.js` read `phase.checklist`/`phase.tasks`. None of
+those fields exist on the light index — it carries only `checklistIds`, `taskIds`
+and `quizIds` (**0 of 65 light phase records carry any of the three**). This is the
+defect shape that shipped once already, when `ToolsLibrary.jsx` read `phase.tools`
+off the light projection and rendered “0 tools” while 433 tool rows existed. Most
+of these reads are guarded with `|| []`, which prevents a crash but silently
+produces an empty answer instead of a right one; `lib/pace.js` was unguarded and
+**threw on every invocation** until it was fixed. Anything reviving these modules
+must feed them full phase records from `loadTrackPhases`, never the light index.
 
 ---
 

@@ -617,6 +617,84 @@ that did not exist — `VITE_BASE` was read by the config while nothing ever set
 
 ---
 
+### 6.D Dead code — unreachable modules (measured, do not re-derive)
+
+**This exists so the next reader does not have to measure it again** — the count has
+already been recorded wrong twice in `learning-site/docs/DECISIONS.md` (D-008), so the
+measurement is stated here with its method.
+
+**How to reproduce.** Walk imports forward from `learning-site/src/main.jsx`, resolve each
+relative specifier to a file, and take the complement. **Do not grep for a symbol name** —
+that is the mistake that produced both wrong counts. `DataTransfer.jsx` contains the words
+`useApplications` and `usePortfolio`, but only inside a prose comment on line 22; a grep
+reports two live hooks, a reachability walk reports none.
+
+**Result: 14 of the 57 files in `learning-site/src/` are unreachable from `main.jsx`.**
+
+| Kind | Modules | Why unreachable |
+|---|---|---|
+| lib (5) | `lib/highlight.js`, `lib/pace.js`, `lib/pathOrder.js`, `lib/review.js`, `lib/yourWork.js` | No importer at all |
+| lib, transitively dead (1) | `lib/today.js` | Imported only by `TimeBudgetSelector.jsx`, which is itself dead |
+| hooks (4) | `useApplications.js`, `useCertifications.js`, `usePortfolio.js`, `useSchedule.js` | No importer at all |
+| components (4) | `EmptyState.jsx`, `EnergyModeSelector.jsx`, `ReviewQueue.jsx`, `TimeBudgetSelector.jsx` | No importer at all |
+
+**Why they are here rather than deleted.** All of it was ported from the sibling **CS
+Roadmap** project, whose curriculum ends in a job hunt — Schedule, Applications,
+Certifications, Portfolio, YourWork, PathOrder. This curriculum has no deadline, so those
+six views were deliberately not ported. The modules were kept because removal would also
+touch the transfer `KEYS` list, the validators and the tests, and would have to be redone
+if the career views return. **The full reasoning and the accepted cost are in
+`learning-site/docs/DECISIONS.md` → D-008** — read that before proposing removal.
+
+**Each dead module now carries a `DEAD CODE` header block** citing D-008, so the state is
+visible at the point of use rather than only in the decision log.
+
+#### ⚠️ The projection hazard — the reason this is not merely untidy
+
+Three of these modules read fields that **do not exist** on the light projection
+(`generated/index.json`). The light phase record carries **only**
+`id, order, phase, title, duration, durationWeeks, goal, lessonWordCount, checklistIds,
+taskIds, quizIds`. Measured: **0 of 65 light phase records carry `checklist`, `tasks` or
+`quiz`.** The full per-track files carry all three.
+
+| Module | Reads | Status |
+|---|---|---|
+| `lib/pace.js:139` | `phase.checklist.every(...)` | **Threw on every call** — now guarded (see below) |
+| `lib/review.js:57` | `phase.quiz \|\| []` | Silent: returns empty, "nothing to revisit" |
+| `lib/today.js:125,127` | `phase.checklist \|\| []`, `phase.tasks \|\| []` | Silent: no task ever marks as addressed |
+| `lib/pathOrder.js:58` | `phase.checklist \|\| []` | Silent: every phase reads `untouched` |
+| `lib/yourWork.js:51` | `phase.tasks \|\| []` | Silent: answers render with no question |
+
+This is **the same defect shape that shipped once already**: `ToolsLibrary.jsx` read
+`phase.tools` off the light projection and rendered "0 tools" while 433 tool rows existed.
+A `|| []` fallback does not fix that class of bug — it converts a crash into a **wrong
+answer that looks like a real one**, which is worse. The guards stop the crash; they do not
+make the numbers right.
+
+**Rule for anyone reviving these modules: feed them full phase records from
+`loadTrackPhases()`, never the light index.** The two projections are described in the
+header of `learning-site/src/data/roadmaps.js`.
+
+**Fixed (was a live latent crash, not just dead code).** `lib/pace.js:139` called
+`.every()` on `phase.checklist`, which is always `undefined` on the light index — so the
+module threw `TypeError: Cannot read properties of undefined` on the first phase examined,
+every single call. It is now `(phase.checklist || []).every(...)`, matching the
+`track.phases || []` style used two lines above it. The call site carries a comment
+explaining both the fix and why the fallback must not be read as "this now works".
+
+#### Genuine defect found while auditing, NOT fixed
+
+`App.jsx` calls `useEnergyMode()` and `useTimeBudget()` and prints both values in the footer
+(line 305), but **neither value is passed to any page** — `energy` and `budget` appear
+nowhere in `Dashboard.jsx`. With `EnergyModeSelector` and `TimeBudgetSelector` both
+unreachable, the reader can never change either setting, and even if they could it would
+change nothing. The footer advertises two controls that do not exist. This is a
+reader-facing confusion of the same kind D-008 already fixed for the backup labels, and it
+was left alone here because fixing it means changing `App.jsx` and `Dashboard.jsx`, which
+is outside a documentation task.
+
+---
+
 ## 7. Known defects to fix
 
 ### 7.1 ✅ RESOLVED (Stage A, 2026-09-18) — Quiz answer-position skew

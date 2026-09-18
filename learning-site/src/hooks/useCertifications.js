@@ -1,5 +1,17 @@
 // Certifications the reader is considering, pursuing, or has passed.
 //
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE, KEY STILL REGISTERED
+// ---------------------------------------------------------------------------
+// Nothing imports this hook. Certifications is one of the six career-specific
+// views this curriculum deliberately does not have. See docs/DECISIONS.md →
+// D-008, which already names this hook and `useSchedule` as unreferenced.
+//
+// Why it is kept: `vibecoding:certifications:v1` is registered in
+// `lib/transfer.js` and named in `labelFor` as "Certifications (not used in this
+// app)". Deleting the key would silently drop that field from a reader's backup
+// on the next restore (D-008, D-016).
+//
 // WHY THIS EXISTS
 // Cybersecurity Phase 07 ("Certifications") is 8,929 words that end by asking the
 // reader to produce a decision document with a target certification, a cost

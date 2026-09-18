@@ -1,5 +1,23 @@
 // Job applications, persisted in localStorage.
 //
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE, KEY STILL REGISTERED
+// ---------------------------------------------------------------------------
+// Nothing imports this hook. Applications is one of the six career-specific
+// views this curriculum deliberately does not have. See docs/DECISIONS.md →
+// D-008.
+//
+// ⚠️ D-008 SAYS THE OPPOSITE. Its "Correction to the count" claims
+// `DataTransfer.jsx` imports `useApplications` and `usePortfolio` to validate
+// what a backup contains. It does not: `useApplications` and `usePortfolio`
+// appear in that file only inside a prose comment on line 22. Verified by
+// reachability walk from `src/main.jsx` — both hooks have no importers at all.
+//
+// Why it is kept: `vibecoding:applications:v1` is registered in
+// `lib/transfer.js`, and deleting either the key or the hook would silently drop
+// that field from a reader's backup on the next restore (D-008, D-016). See
+// `labelFor` in `lib/transfer.js` for the reader-facing explanation.
+//
 // Same shape as useProgress and usePortfolio: lazy load, persist on change,
 // useCallback mutators. Its own key, so clearing one tracker never touches
 // another.

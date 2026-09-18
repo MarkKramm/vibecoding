@@ -1,5 +1,20 @@
 // The questions a reader got wrong, gathered from every phase into one list.
 //
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE
+// ---------------------------------------------------------------------------
+// Nothing renders this component. It is the view half of `lib/review.js`, which
+// is dead for the same reason: the Review surface is not one of this site's
+// views. See docs/DECISIONS.md → D-008.
+//
+// Note the stale reference below: this comment says it is "Reached from the
+// 'Your work' page, which already exists". Neither that page nor that route
+// exists in this app — YourWork is dead too (`lib/yourWork.js`). Read the
+// sentence as a description of the sibling project, not of this one.
+//
+// It is kept rather than deleted because removal would have to be redone if the
+// career views return. See D-008.
+//
 // WHY THIS EXISTS
 // The curriculum produces 380 quiz questions. Each one carries a `**Why:**` line
 // that names the misconception its distractors represent -- the single most

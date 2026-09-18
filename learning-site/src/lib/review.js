@@ -1,5 +1,29 @@
 // Collect the quiz questions the reader got wrong into one revisitable list.
 //
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE
+// ---------------------------------------------------------------------------
+// Nothing imports this module. It was ported from the sibling CS Roadmap
+// project as the read side of its Review surface, which is not a view in this
+// site. See docs/DECISIONS.md → D-008.
+//
+// It is kept rather than deleted because removal would also touch the transfer
+// KEYS list, the validators and the tests, and would have to be redone if the
+// career views return. See D-008 for that trade-off. It is also the file that
+// carries D-019, D-020 and the no-shame rule into the code rather than only into
+// the decision log — deleting it would not delete the principles, but it would
+// delete the comments that explain them.
+//
+// ⚠️ THE HAZARD THIS MODULE CARRIES
+// Line 57 reads `phase.quiz || []`. `quiz` is a FULL projection field; on the
+// light index the same phase carries only `quizIds`, so against the light index
+// this module silently returns an empty list — no crash, but "no questions to
+// revisit" for a reader who has missed several. That is the same defect shape as
+// the Tools-library bug (`phase.tools` read off the light projection rendered
+// "0 tools" while 433 rows existed): a wrong answer that looks like a real one.
+// Feed this module full phase records from `loadTrackPhases`, never the light
+// index. See the header of src/data/roadmaps.js.
+//
 // WHY THIS IS A PURE MODULE AND NOT PART OF THE PAGE
 // The same reason lib/yourWork.js is: this is data transformation, not rendering,
 // so it runs under plain Node with no React, no DOM and no build step. The quiet

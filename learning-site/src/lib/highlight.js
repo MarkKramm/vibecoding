@@ -1,9 +1,21 @@
 // Query highlighting for search snippets.
 //
-// Kept out of Search.jsx so the matching rules can be tested without React.
-// The logic is the risky part of the feature: a bad pattern either throws on a
-// term like "c++" or silently marks the wrong span, and neither failure is
-// visible until a reader sees a result with the wrong word underlined.
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE
+// ---------------------------------------------------------------------------
+// Nothing imports this module; `pages/Search.jsx` does its own highlighting via
+// `lib/lessonSearch.js`. It was ported from the sibling CS Roadmap project along
+// with the rest of the search surface. See docs/DECISIONS.md → D-008.
+//
+// It is kept rather than deleted because removal would have to be redone if the
+// sibling's search rendering returns. See D-008.
+//
+// No projection hazard: every function here takes plain strings and returns
+// strings or arrays, so it reads no phase fields at all. Note the name collision
+// with the live `queryTerms` export in `hooks/useSearch.js` — the two are
+// different implementations of similar ideas, and only the hook's is reachable.
+//
+// WHY THIS IS ITS OWN MODULE
 
 /**
  * The index matches stems, so a search for "timestomping" finds module 11's

@@ -1,5 +1,21 @@
 // Portfolio entries, persisted in localStorage.
 //
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE, KEY STILL REGISTERED
+// ---------------------------------------------------------------------------
+// Nothing imports this hook. Portfolio is one of the six career-specific views
+// this curriculum deliberately does not have. See docs/DECISIONS.md → D-008.
+//
+// ⚠️ D-008 SAYS THE OPPOSITE. Its "Correction to the count" claims
+// `DataTransfer.jsx` imports `usePortfolio` to validate what a backup contains.
+// It does not: the name appears in that file only inside a prose comment on line
+// 22. Verified by reachability walk from `src/main.jsx`. See the same note in
+// `useApplications.js`.
+//
+// Why it is kept: `vibecoding:portfolio:v1` is registered in `lib/transfer.js`,
+// and deleting either the key or the hook would silently drop that field from a
+// reader's backup on the next restore (D-008, D-016).
+//
 // Same shape as useProgress: lazy load, persist on change, useCallback
 // mutators. Separate key, because these are artifacts you made, not tasks you
 // finished — resetting progress must not delete your portfolio.

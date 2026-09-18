@@ -1,3 +1,25 @@
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE
+// ---------------------------------------------------------------------------
+// Nothing imports this module. PathOrder is one of the six career-specific views
+// the sibling project had and this curriculum deliberately does not — see
+// docs/DECISIONS.md → D-008, and `App.jsx`'s "WHAT IS DELIBERATELY NOT HERE"
+// comment.
+//
+// It is kept rather than deleted because removal would have to be redone if the
+// career views return. See D-008.
+//
+// The no-shame wording rule below is still live elsewhere — D-019, D-020 and
+// `components/ProgressRing.jsx` carry the same constraint — so deleting this
+// file would not delete the principle, only this statement of it.
+//
+// ⚠️ PROJECTION NOTE. Line 58 reads `phase.checklist || []`. `checklist` is a
+// FULL projection field; the light index carries only `checklistIds`. The `|| []`
+// means this cannot throw, but against the light index every phase would classify
+// as `untouched` — a wrong answer that looks like a real one, the same shape as
+// the Tools-library bug. Feed it full phase records from `loadTrackPhases`. See
+// the header of src/data/roadmaps.js.
+//
 // Which phases have no work recorded yet — stated as where things are, never as
 // what is missing.
 //

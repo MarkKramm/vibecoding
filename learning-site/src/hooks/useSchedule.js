@@ -1,5 +1,21 @@
 // The start date for a track's plan. One preference, one key.
 //
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE, KEY STILL REGISTERED
+// ---------------------------------------------------------------------------
+// Nothing imports this hook. Schedule is one of the six career-specific views
+// this curriculum deliberately does not have. See docs/DECISIONS.md → D-008,
+// which already names this hook as unreferenced.
+//
+// Note the coupling: this hook is the only writer of the start dates that
+// `lib/pace.js` reads, and `pace.js` is dead too. The two are a matched pair —
+// neither is useful without the other and without a view that renders them.
+//
+// Why it is kept: `vibecoding:schedule:v1` is registered in `lib/transfer.js` and
+// named in `labelFor` as "Schedule start dates (not used in this app)". Deleting
+// the key would silently drop that field from a reader's backup on the next
+// restore (D-008, D-016).
+//
 // Kept separate from progress and from energy mode for the same reason those are
 // separate from each other: resetting progress must not forget when you started,
 // and changing the start date must not touch a single completed task.

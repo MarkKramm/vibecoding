@@ -1,5 +1,32 @@
 // The time-aware half of "What should I do today?".
 //
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE
+// ---------------------------------------------------------------------------
+// Nothing live imports this module. Its only importer is
+// `components/TimeBudgetSelector.jsx`, which is itself unreachable — so
+// `bandInfo` is not actually reached from `main.jsx` either. See
+// docs/DECISIONS.md → D-008.
+//
+// Note this corrects a claim in D-004, which says `today.js` "is still imported
+// for its `BANDS` labels". The import exists, but the importing component is
+// dead, so the labels do not render. The import line is what a naive check sees;
+// reachability from `main.jsx` is what matters.
+//
+// It is kept rather than deleted because removal would also touch the transfer
+// KEYS list, the validators and the tests, and would have to be redone if the
+// career views return. See D-008.
+//
+// ⚠️ THE HAZARD THIS MODULE CARRIES
+// `addressedTaskIds` reads `phase.checklist` (line 125) and `phase.tasks`
+// (line 127). Both are FULL projection fields; the light index carries only
+// `checklistIds` and `taskIds`. Both reads are defended with `|| []`, so this
+// module does not throw — but on the light index the "phase is fully checked
+// off" rule silently never fires and no practice task is ever marked addressed,
+// so the picker would keep offering work the reader has already done. Feed it
+// full phase records from `loadTrackPhases`. See the header of
+// src/data/roadmaps.js for the two projections.
+//
 // WHY THIS IS A PURE MODULE
 // Same reason lib/yourWork.js and lib/transfer.js are: this is a decision over
 // data, not a rendering concern, and its failure modes are quiet ones — a task

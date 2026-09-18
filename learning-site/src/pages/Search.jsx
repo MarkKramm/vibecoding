@@ -72,7 +72,13 @@ export default function Search({ initialQuery, onOpenPhase }) {
 
       {status === "ready" && query && (
         <>
-          <p className="muted searchmeta">
+          {/* This count changes on every keystroke, and nothing announced it.
+              A screen-reader user typed a query and got no feedback that the
+              result list had changed at all — the text is updated visually and
+              silently. `polite` rather than `assertive` because the reader is
+              still typing and interrupting them on every character would be
+              worse than the original silence. */}
+          <p className="muted searchmeta" role="status" aria-live="polite">
             {results.length === 0
               ? "No matches."
               : `${results.length} match${results.length === 1 ? "" : "es"}.`}

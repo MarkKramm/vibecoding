@@ -1,6 +1,27 @@
 // How long the reader has today. Changes which practice task the dashboard
 // offers as the next action.
 //
+// ---------------------------------------------------------------------------
+// DEAD CODE — PORTED BUT UNREACHABLE
+// ---------------------------------------------------------------------------
+// Nothing renders this component, so the reader cannot set a time budget. This
+// is the one file the dead-code audit is easiest to get wrong about: it is the
+// ONLY importer of `lib/today.js`, so a check that asks "is `today.js` imported?"
+// answers yes and concludes `today.js` is live. It is not — the importer is
+// itself unreachable from `src/main.jsx`, and `bandInfo` (the single symbol it
+// pulls) never renders. Reachability, not an import grep, is what settles it.
+// See docs/DECISIONS.md → D-008.
+//
+// This also contradicts D-004, which says `today.js` "is still imported for its
+// `BANDS` labels". The import line exists; the labels do not reach the screen.
+//
+// ⚠️ The claim in the first paragraph is therefore not true of this app. See the
+// same note in `EnergyModeSelector.jsx`: `App.jsx` calls `useTimeBudget()` and
+// prints the value in the footer, but no dashboard offers a task by budget.
+//
+// It is kept rather than deleted because removal would have to be redone if the
+// career views return. See D-008.
+//
 // WHY THREE OPTIONS AND NOT A NUMBER
 // The bands in lib/today.js are coarse because the underlying data is coarse —
 // 82% of the 183 practice tasks sit between 20 and 90 minutes, so a minute
