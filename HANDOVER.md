@@ -7,15 +7,19 @@
 
 ---
 
-## 0. READ THIS FIRST — the seven things that matter most
+## 0. READ THIS FIRST — the eight things that matter most
 
-1. **Git is clean as of this session.** The learning site is committed (`7d4c8bd`) and documented (`b1278d7`). Line endings are watched on every file written — see §7.3, and `learning-site/scripts/audit-encoding.mjs` now enforces it mechanically across 76 files.
-2. **ALL GUARDS ARE GREEN.** Content: build (`42 phases / 6 tracks`), quiz audit, and AST audit all exit 0, with 0 minted IDs and 0 unbanded tasks. Site: `npm test` (4 offline checks) and `npm run test:browser` (25 checks) both pass. Two earlier defect classes are fixed and documented: the answer-position skew (§7.1) and the AST character gain, which is **explained and benign** (§7.2).
-3. **⭐ THE LEARNING SITE IS DONE AND RENDERS ALL 42 PHASES.** Verified in a real browser against **both** the dev server and the production build. See §6.3. **But note the hard-won lesson there: `vite build` passing did NOT mean the app worked.** It passed while every phase page threw. There is now a 4th guard, `audit-shapes.mjs`, because no build check knows what the components expect.
-4. **At most 1 subagent is permitted** (user instruction: *"you can always use 1 sub agent to maximize our concurrency"*). Two were used this session: one to port the site's components verbatim, one to write the four site docs — both appropriate, both their reports verified at the detail level before being trusted. For **content authoring** the original advice stands: write the phases directly, by hand; do not fan out.
-5. **The plan is 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases). See §6.0.
-6. **Six of ten tracks are complete; four remain empty — 21 of 63 phases.** Done: `foundations` (8), `model-internals` (6), `prompting` (7), `rag` (7), `cost` (7), `agents` (7). Remaining: `finetuning` (6), `vibecoding` (8), `safety-career` (5), `career` (4). **Content is now the only thing between this project and "done"** — the site, its guards and its docs all exist. See §6.
-7. **`web_search` is BROKEN in this environment.** It returns HTTP 404 for every query. `web_fetch` works. Only the user can fix it (Settings > Plugins). All research in `docs/research/` was done by fetching primary sources directly, and every literature citation added this session was checked against its arXiv abstract page before being written.
+1. **⭐ `web_search` WORKS NOW — and this is the biggest change since the last session.** For most of this project's life it returned HTTP 404 for every query, and the entire 42-phase corpus was authored **without it**. Research was done by `web_fetch` on known URLs and arXiv abstract pages. That constraint is **gone**: `web_search` returns real results and `web_fetch` still works. Two consequences, one good and one urgent:
+   - **Good:** the four unwritten tracks can be researched properly, and undated/uncertain claims can finally be checked.
+   - **Urgent:** **every volatile claim in the 42 already-written phases has never been verified against the live world.** The first thing this capability found was a real defect — see §0.2.
+   - **⚠️ It is quota-limited.** Mid-audit this session it began returning **HTTP 429, "you have reached your web search hourly request limit."** It is a scarce resource, not an unlimited one. Prioritise: **`cost/` pricing and model facts first**, `web_fetch` for anything with a known URL (not limited the same way), and batch your questions into fewer, denser queries. Do not burn searches on things already verified in §8.
+2. **🔴 A REAL CONTENT DEFECT WAS FOUND AND FIXED, AND IT IS THE TEMPLATE FOR WHAT TO HUNT.** `agents/07` said the MCP spec "carries dated revisions such as `2026-07-28`" and framed the matter as *"it has evolved."* Both dates are real, but they mean very different things — `2025-11-25` is the current **stable, stateful** revision (initialize handshake, `Mcp-Session-Id` sessions, SSE) while `2026-07-28` is a **stateless rewrite** that removes the handshake and sessions entirely and replaces server→client requests with Multi Round-Trip Requests. The lesson was not false; it was **materially misleading**, implying a cosmetic difference where there is an architectural one. **That is the defect class to hunt: claims that are technically true but mislead.** Do not stop at "the date exists" — establish what it *means*. Commit `e44a726` and the fix that follows it.
+3. **Git is clean as of this session.** The learning site is committed (`7d4c8bd`) and documented (`b1278d7`). Line endings are watched on every file written — see §7.3, and `learning-site/scripts/audit-encoding.mjs` enforces it mechanically across 76 files.
+4. **ALL GUARDS ARE GREEN.** Content: build (`42 phases / 6 tracks`), quiz audit, and AST audit all exit 0, with 0 minted IDs and 0 unbanded tasks. Site: `npm test` (4 offline checks) and `npm run test:browser` (25 checks) both pass. Two earlier defect classes are fixed and documented: the answer-position skew (§7.1) and the AST character gain, which is **explained and benign** (§7.2).
+5. **⭐ THE LEARNING SITE IS DONE AND RENDERS ALL 42 PHASES.** Verified in a real browser against **both** the dev server and the production build. See §6.3. **But note the hard-won lesson there: `vite build` passing did NOT mean the app worked.** It passed while every phase page threw. There is now a 4th guard, `audit-shapes.mjs`, because no build check knows what the components expect.
+6. **At most 1 subagent is permitted** (user instruction: *"you can always use 1 sub agent to maximize our concurrency"*, reaffirmed as *"you can use 1 subagent rn if you need"*). Used well, a subagent is a real concurrency win — but **verify its report at the detail level before trusting it.** Last session one subagent caught a genuine bug in my rename script while being wrong about another claim. For **content authoring** the standing advice is: write the phases directly, by hand; do not fan out.
+7. **The plan is 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases).
+8. **Six of ten tracks are complete; four remain empty — 21 of 63 phases.** Done: `foundations` (8), `model-internals` (6), `prompting` (7), `rag` (7), `cost` (7), `agents` (7). Remaining: `finetuning` (6), `vibecoding` (8), `safety-career` (5), `career` (4). **Content is now the only thing between this project and "done"** — the site, its guards and its docs all exist. See §6.
 
 ---
 
@@ -288,6 +292,8 @@ A ```` ``` ```` opener **must be on its own line**. If it is glued to the end of
 
 **Teach durable mechanisms. Date and flag every volatile specific. Never let a lesson's conclusion depend on a volatile number.**
 
+> **Now enforceable, and now quota-limited.** `web_search` works (§0.1) but returns **HTTP 429 once an hourly request limit is hit** — observed directly this session, mid-audit, after a handful of queries. So the rule below is no longer "flag it and hope": you can actually check volatile claims. But you cannot check 45 markers in one sitting. **Spend searches deliberately, highest-risk first** — `cost/` pricing and model facts before anything else — and fall back to `web_fetch` on a known URL, which is not rate-limited the same way.
+
 | Durable (teach freely) | Volatile (date + flag + non-load-bearing) |
 |---|---|
 | Attention is quadratic in sequence length | Any specific context window size |
@@ -296,7 +302,7 @@ A ```` ``` ```` opener **must be on its own line**. If it is glued to the end of
 | Prompt caching works by prefix reuse | Any specific discount percentage |
 | LoRA: `W = W0 + B*A` | Any specific GPU hour cost |
 
-The provider landscape **has already moved past the original brief** (live docs showed `gpt-6-astra`, Claude Fable 5.1 / Opus 5 / Sonnet 5, Gemini 3.8 Flash, Assistants API sunset 26 Aug 2026). **Do NOT hardcode a model matrix** — concepts are stable for years, model names and prices are not stable for months.
+The provider landscape **has already moved past the original brief** (live docs showed `gpt-6-astra`, Claude Fable 5.1 / Opus 5 / Sonnet 5, Gemini 3.8 Flash, Assistants API sunset 26 Aug 2026). ⚠️ **These specific model names were transcribed from live docs during an earlier session and have NOT been independently re-verified — and as of this session `web_search` hit its rate limit before they could be.** Treat the list as an illustration of *how fast the landscape moves*, which is its actual purpose, **not as a fact table to propagate into a lesson.** If you need a model name in content, verify it fresh and date it. **Do NOT hardcode a model matrix** — concepts are stable for years, model names and prices are not stable for months.
 
 ---
 
@@ -690,6 +696,8 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
 ## 9. Immediate next steps, in order
 
+> **⚠️ THE ORDER CHANGED THIS SESSION. Read §0.1 and §0.2 first.** `web_search` now works, which makes a **re-audit of the already-written 42 phases** both possible and higher-priority than it looks. The reasoning: writing 4 new tracks on top of a corpus that has never been checked against the live world compounds any drift, and the first search found a real defect in minutes. **Do the audit before the new authoring** — see step 8a below, which is now the true resume point. A subagent was dispatched to produce the defect list; check for its findings before starting.
+
 1. **✅ DONE.** Git committed (`3f1cab4`, 52 files) and two CRLF files converted to LF. See §7.3. Generated JSON is gitignored, so a fresh clone must run `node scripts/build-content.mjs` before the site tests can run.
 
 2. **✅ DONE (Stage A).** The 4 quiz-skew files are fixed; `node scripts/audit-quiz.mjs` exits **0** and the corpus distribution improved (C 33.7%→28.2%, A 15.5%→18.2%). See §7.1. **All three guards are now green.**
@@ -710,9 +718,16 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
    (c) **`agent/06` states the instruction-hierarchy result accurately**: Wallace et al. (arXiv:2404.13208) identify that LLMs treat system prompts as the same priority as untrusted user/third-party text, and their method drastically increased robustness even against unseen attack types with minimal capability degradation — applied to **GPT-3.5**. It is framed throughout as a **mitigation, not an enforcement mechanism**. The injection paper's own conclusion (arXiv:2302.12173) that **effective mitigations are currently lacking** is quoted as the honest framing. Do not let a future edit upgrade either into "solved".
 
-   (d) **`agent/07` frames MCP as versioned** (the spec revision fetched was dated `2026-07-28`) and explicitly separates `pass@k` from `pass^k`. The MCP "USB-C" analogy is pushed on deliberately: it standardises the **connector, not the device** — no better tools, no safety, no evaluation, no capability upgrade.
+   (d) **`agent/07` frames MCP as versioned.** ⚠️ **THIS NOTE WAS WRONG AND HAS BEEN CORRECTED — read this before revising the phase.** The original text said the revision fetched was "dated `2026-07-28`" and left it there, treating the difference between revisions as cosmetic. Verified with `web_search`: `2025-11-25` is the current **stable, stateful** revision (initialize handshake, `Mcp-Session-Id` sessions, SSE) and `2026-07-28` is a **stateless rewrite** — no handshake, no sessions, server→client requests replaced by Multi Round-Trip Requests, `roots`/`sampling`/`logging` deprecated. The phase now carries that comparison table. **Preserve it.** Also preserved: `pass@k` is explicitly separated from `pass^k`, and the MCP "USB-C" analogy is pushed on deliberately — it standardises the **connector, not the device** — no better tools, no safety, no evaluation, no capability upgrade.
 
-8. **Write the Finetuning track (6 phases)** from §6.1. **← RESUME HERE.** Folder `ai-roadmaps/finetuning/` already exists and is empty.
+8a. **⭐ RE-AUDIT THE 42 WRITTEN PHASES AGAINST THE LIVE WORLD — this is the true resume point.** `web_search` was broken for the entire authoring of this corpus (§0.1), so **no volatile claim in it has ever been checked against a live source.** Steps:
+    - **Wait for or read the subagent's audit report** (dispatched this session; it was hunting stale pricing, model facts, protocol versions and arXiv mismatches across all 42 phases). Its defect table is the worklist.
+    - **Fix defects in severity order.** `cost/` is the highest-risk track: per-million-token prices change constantly and are the most likely to be outright stale.
+    - **Treat "materially misleading" as a defect, not a quibble.** The MCP case (§0.2) passed every guard while being wrong in substance.
+    - **Re-verify the `**Unverified**` markers** in `docs/research/*.md` — those were items that *could not* be checked without search. Some can now be resolved; others may now be checkable and wrong.
+    - Consider adding a standing **research/verification pass** as its own step in the workflow, since nothing in the guard suite can detect semantic drift (§12.22–23).
+
+8. **Write the Finetuning track (6 phases)** from §6.1. Folder `ai-roadmaps/finetuning/` already exists and is empty. (Was the resume point; step 8a now comes first.)
 
    Four tracks remain after Agents, and their folder state was verified at the time of writing:
    - `finetuning` — folder **exists**, empty (6 phases)
@@ -721,6 +736,26 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
    - `career` — folder **MISSING**, must be created (4 phases)
 
    As of the Agents completion, `node scripts/build-content.mjs` reports "no phase files yet" for exactly `finetuning`, `vibecoding`, `safety-career` and `career`. If a note names a track you believe is finished, that is the signal a folder went missing — the same defect that was present for `agents` at the start of the Agents track.
+
+   **The 21 phases still to write, in order:**
+   - `finetuning` (6): folder exists, empty
+   - `vibecoding` (8): folder must be created
+   - `safety-career` (5): folder must be created — this is the **Safety & Ethics** track; its track key is `safety-career` (not `safety`)
+   - `career` (4): folder must be created
+
+   **While writing them, `web_search` is available from the start** — so every volatile claim can be dated and checked as it is authored, rather than accumulated as debt. That is the difference between these 21 phases and the 42 that came before.
+
+### 9a. The verification debt, quantified (so it is not hand-waved)
+
+Measured, not estimated:
+
+| Debt | Count | Where |
+| --- | --- | --- |
+| `Volatile` markers in phase files | **45** | `cost` 11, `model-internals` 11, `agents` 9, `prompting` 5, `foundations` 3, `rag` 3, `shared` 2 |
+| `**Unverified**` markers in phase files | **0** | none — every marker was resolved *in the phase text* |
+| "unverified / could not verify" mentions in research notes | **~107** | `llm-reference-document.md` 36, `fact-check-embeddings…` 29, `fact-verification-report.md` 23, `tokenization-fact-check.md` 19 |
+
+**Read that table carefully, because the numbers mean different things.** The 45 `Volatile` markers are *correct practice* — each one is a dated, flagged claim that says "check this." They are a **worklist, not a defect list.** The `**Unverified**` count of 0 in the phases is genuinely good news: no phase shipped a claim it admitted it could not check. The ~107 research-note mentions are the real backlog — those are the items the missing search tool *forced* into an unresolved state, and they are the ones to re-check first.
 
 9. **Write the Vibecoding track (8 phases)** from §6.1.
 
@@ -837,6 +872,14 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 19. **Prefer an existing browser over installing a test dependency.** Edge was already on the machine, so browser verification runs over the Chrome DevTools Protocol with a `WebSocket` and `fetch` — both built into Node 24. Zero packages added. `--headless=old` was required; `--headless=new` refused with "Multiple targets are not supported".
 20. **Environment traps that cost real time, now written into `vite.config.js`:** (a) a headless-browser profile or an editor temp directory created *inside* the project makes Vite's watcher hit a locked handle and die with `EBUSY` — the config ignores `**/.*.tmpdir/**`; (b) Vite binds IPv6, so `http://localhost:5173` works and `http://127.0.0.1:5173` does **not**; (c) `new URL(x, import.meta.url).pathname` yields `/C:/...` on Windows — use `fileURLToPath`, since the regex workaround breaks on a lowercase drive letter or a UNC path.
 21. **A subagent's report is a claim, not a fact — check the specific ones that matter.** The port subagent flagged that my rename script had missed a fourth form (`transfer.js:729` had a bare `"cs-roadmap-"` string concat). It was right, and it was a genuine bug I had introduced. It also flagged the missing `src/data/tools.js`. Both confirmed by reading the files before acting. It was simultaneously wrong about one detail (it guessed `L283` came from a rule that does not match it), which is exactly why detail-level claims get verified rather than trusted wholesale.
+
+22. **⭐ A TOOL CONSTRAINT CAN BE A BLIND SPOT, NOT JUST AN INCONVENIENCE — AND WHEN IT LIFTS, RE-AUDIT WHAT IT HID.** `web_search` was broken for the entire authoring of the 42-phase corpus, and that was handled well: research used `web_fetch` on primary sources, and every arXiv citation was checked against its abstract page. But "we worked around it carefully" is not the same as "we verified everything." Working around a missing tool changes *which* claims get checked, and it does so invisibly.
+
+    The first search run after it was fixed found a real defect within minutes (see §0.2): `agents/07` was not wrong about a date, it was wrong about **what the date meant** — presenting two MCP revisions as a cosmetic difference when one is a stateless rewrite of the other. No amount of careful `web_fetch` would have surfaced that, because nothing was being fetched *wrong*; the gap was in knowing **which questions to ask**.
+
+    The generalisable rule: **when a research capability is missing, record what it prevented you from checking — not merely how you coped.** A workaround log tells the next session the work is sound; a blind-spot log tells it where to look. Then, the moment the capability returns, treat every previously-unverifiable claim as unaudited rather than as previously-verified.
+
+23. **A "technically true but materially misleading" claim is a distinct defect class, and the existing guards cannot see it.** All three content guards passed on `agents/07` before and after the MCP fix, because no guard checks whether a *true* statement misleads. That is not a reason to distrust the guards — it is the boundary of what they can do. Semantic drift is caught by re-reading against the live world, on a schedule the guards cannot enforce. Budget for it explicitly rather than assuming green means current.
 
 ---
 

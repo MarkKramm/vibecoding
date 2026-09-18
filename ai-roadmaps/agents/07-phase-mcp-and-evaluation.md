@@ -165,7 +165,27 @@ The analogy is a good one and it repays being pushed on, because it tells you pr
 | Upgrade capability | It is the same tool code, in an agreed shape |
 | Remove the need to read specs | The protocol is **versioned** and has changed between revisions |
 
-**That last row deserves emphasis.** MCP is a versioned specification — the documentation carries dated revisions such as `2026-07-28` — and it has evolved. This is the curriculum's volatility rule applied at the protocol level: **check the current specification rather than any tutorial, including summaries in lessons like this one.** Anything you learn about transports, capabilities or extensions should be verified against the live documentation, because a standard that is actively developing is exactly where stale instructions cost the most time.
+**That last row deserves emphasis.** MCP is a versioned specification, and the versions are not cosmetic. As of this writing the documentation carries revisions including `2024-11-05` (deprecated), `2025-06-18`, `2025-11-25` (**the current stable release**) and `2026-07-28` (**the modern, stateless revision**). Knowing that a protocol is versioned is worth less than knowing *what changed* — so here is the difference that matters.
+
+**`2025-11-25` is stateful. `2026-07-28` is stateless, and that is a rewrite rather than an iteration.**
+
+| Concern | `2025-11-25` (stateful) | `2026-07-28` (stateless) |
+| --- | --- | --- |
+| Handshake | `initialize` + `notifications/initialized` | none — context travels in `_meta` on every request |
+| Discovery | learned from the `initialize` result | a callable `server/discover` method |
+| Sessions | `Mcp-Session-Id`, pinned by the server | none; `DELETE /mcp` is gone |
+| Server→client requests | SSE-based (elicitation, sampling, roots) | Multi Round-Trip Requests (MRTR) |
+| Long-lived stream | `GET /mcp` (SSE) | `subscriptions/listen` |
+| Tasks | experimental, in core | an official extension with its own lifecycle |
+| `roots` / `sampling` / `logging` | core | deprecated |
+
+**The one shift that drives all the others: the protocol became stateless.** Sessions are gone, the handshake is gone, and every request is self-contained. That is why the rest of the table changes — and it is why a tutorial written against one revision can quietly mislead you about the other.
+
+**Why this matters to you concretely.** In the stateful revision, a tool that needs input mid-call — an elicitation, an LLM sampling request, a `roots/list` — sends a server-initiated request over the session's SSE channel and waits. With no session to hold paused state, the stateless revision replaces that with **MRTR**: the call returns an "input required" result carrying an opaque `requestState`, the client answers, and the call resumes. The state has to be persisted somewhere by *you*, because the protocol no longer holds it.
+
+**And the operational payoff is real:** stateless requests mean a load balancer can plain round-robin. No sticky sessions, no shared session store — each request stands alone. If you have ever wondered why a protocol would remove its own handshake, that is the answer.
+
+**The curriculum's volatility rule applies at the protocol level here.** Check the current specification rather than any tutorial, including this table, because a standard that is actively developing is exactly where stale instructions cost the most time. Confirm two things before you build: **which revision your SDK targets**, and **which revision the server you are calling speaks**. A server pinned to one revision and a client expecting another is a class of bug that produces confusing transport errors rather than a clear "wrong version" message. Protocol version negotiation exists precisely because both parties can be right and still not understand each other.
 
 **Where MCP stops helping.** For a single agent calling three tools you wrote yourself, MCP is overhead: you have added a protocol, a server process and a discovery step to replace a function call. Its value appears when tools are **shared** — across agents, across projects, across a team, or with clients you did not write. Phase 1's leftmost-position rule applies here as everywhere: adopt the standard when the reusability it buys exceeds the indirection it costs.
 
@@ -375,7 +395,7 @@ The phase ends where honest engineering always ends: with the limits of your evi
 
 **Treating MCP as a capability upgrade.** It standardises the interface, not the tools. A badly described tool is badly described whether it is reached by a function call or an MCP server, and Phase 2's rules apply unchanged. The payoff is reusability across clients, and it is worth paying for only when tools are genuinely shared.
 
-**Following a stale MCP tutorial.** The specification is versioned and has evolved. Anything about transports, capabilities or extensions should be checked against the current documentation rather than a blog post, including summaries in lessons like this one.
+**Following a stale MCP tutorial.** The specification is versioned and has genuinely diverged — the `2025-11-25` and `2026-07-28` revisions differ on whether the protocol is stateful at all, so a tutorial written against one can be actively wrong about the other rather than merely out of date. Anything about transports, capabilities or extensions should be checked against the current documentation rather than a blog post, including summaries in lessons like this one.
 
 **Assuming a trusted caller when you publish a server.** Exposing tools to unknown clients moves the trust boundary. Validate as though the caller might be hostile, because with a shared server it might be — and Phase 5's provenance and Phase 6's gates apply to what the server exposes.
 
@@ -569,7 +589,7 @@ Three things, and the first changes your headline number directly.
 
 **What money does not buy** is the evaluation itself. Whether your checks assert on state or on the agent's report, whether your task set is versioned, whether you have a held-out set, whether you included impossible tasks, and whether you verified your checks can fail are all practices. A frontier model evaluated with self-reported success and no held-out set gives you an impressive number that means nothing — and it will be more convincing, which makes it more dangerous.
 
-**Volatile, dated: as of early 2026, the MCP specification is versioned and actively developing, agent evaluation benchmarks are an active research area, and model reliability on agentic tasks changes on the order of months. Your own suite is the only number that describes your own system, so measure rather than cite.**
+**Volatile, dated: as of early 2026, the MCP specification is versioned and actively developing — `2025-11-25` is the current stable, stateful revision and `2026-07-28` is a modern stateless revision that removes the handshake and sessions entirely. Agent evaluation benchmarks are an active research area, and model reliability on agentic tasks changes on the order of months. Your own suite is the only number that describes your own system, so measure rather than cite.**
 
 ### When it's worth paying
 

@@ -1,8 +1,14 @@
 # Fact-Verification Report: Transformer Architecture, Attention, KV Cache, Inference Serving
 
-Method note: the `web_search` tool is broken in this environment (404 model error). Every fact below was
+Method note: at the time of this audit, the `web_search` tool was broken in this environment (404 model error). Every fact below was
 verified by direct `web_fetch` of a primary source (arXiv abstract/HTML page, USENIX page, vendor model card,
 or HF docs/config file). Every URL listed was actually fetched during this session.
+
+> **Update (later session):** `web_search` now works. This note is kept as an accurate record of how *this* audit was
+> performed, not as a statement about the current environment. The findings below were verified by direct fetch, which
+> remains a stronger standard than a search snippet — so nothing here is invalidated. But the "could not verify"
+> items listed in these research notes **have never been re-checked now that search is available**, and are worth
+> revisiting. See `HANDOVER.md` §0.1.
 
 ---
 
