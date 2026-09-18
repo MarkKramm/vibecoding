@@ -5,7 +5,7 @@
 A structured, self-paced curriculum for learning how modern AI systems actually work, how to
 build with them without shipping things you cannot verify, and how to get hired doing it.
 
-**65 phases across 10 tracks · 549 quiz questions · ~35,600 lines of authored Markdown ·
+**65 phases across 10 tracks · 549 quiz questions · 35,383 lines of authored Markdown ·
 written for a $0 budget.**
 
 Written for someone starting from beginner-to-intermediate, working remotely, with no
@@ -153,14 +153,20 @@ All 10 tracks are written. This is a complete first pass, not a finished product
 
 **Known gaps, stated plainly:**
 
+- **The live page has never been observed.** `*.github.io` resolves IPv6-only and is
+  unreachable from the environment this was built in. The deploy is verified at the *artifact*
+  level — deployment `state=success`, expected artifact size, the built bundle contains the
+  expected strings, and that same bundle renders correctly **locally**. That is not the same as
+  having loaded the live URL, and the difference is worth stating.
 - A number of volatile facts — free-tier terms, context-window sizes, model availability —
   are dated rather than continuously verified, because verifying them requires network
   access this project budgets carefully. Each is stamped with its date.
 - The browser verification suite covers a sample of phases, not all 65.
-- Search, highlighting and a "Today" view have no unit tests yet. The pure search library
-  is the next target; a Today view does not exist as a page at all.
 - The rendered site has never been checked on a real mobile device — only emulated
   viewports in a headless browser.
+- **No accessibility audit has been automated.** A skip link, `:focus-visible` styling,
+  `useFocusTrap` for modals and live regions exist and are hand-checked, but nothing
+  automatically verifies contrast ratios, heading order, or keyboard reachability.
 
 **Fixed since this section was first written** (kept here because a gaps list that only
 shrinks silently is not honest either):
@@ -169,11 +175,20 @@ shrinks silently is not honest either):
   The one remaining OpenAI link (`…/playground`) is left stale on purpose: it is not under
   `/docs`, so the mechanical rewrite rule does not cover it and no confirmed destination
   exists. Three retargeted links are flagged for review in `docs/SEARCH-REQUESTS.md`.
-- ✅ Unit suites written for inline markdown rendering, quiz logic and lesson-block
-  coverage — 135 assertions, and each was proved capable of failing by deliberate mutation.
+- ✅ Unit suites for inline markdown rendering, quiz logic, lesson-block coverage and
+  in-lesson search — **315 assertions**, each suite proved capable of failing by deliberate
+  mutation and then restored byte-identical.
 - ✅ The site was rendering **completely unstyled** (40 layout classes with no CSS rule)
   while every content check stayed green. Fixed, and now guarded by
   `learning-site/scripts/audit-css.mjs`, which fails CI if any class used in JSX has no rule.
+- ✅ The Tools library rendered *"0 tools across 10 written tracks"* while the corpus held
+  433 tool rows — it read the light projection, which carries no `tools` field. Now loads the
+  full track files, and a new guard (`audit-projections.mjs`) fails if any component reads a
+  field the projection it imports does not carry.
+- ✅ 40 tool cards emitted `<a href="—">`, a link to nowhere, because an em-dash placeholder
+  was passed through as data. Placeholder dashes are now normalised at the parse boundary.
+- ✅ A quiz question written without `energy:` built cleanly and shipped as `null`, making it
+  invisible to the time-budget picker. Now a build error.
 
 `HANDOVER.md` documents the engineering history, including mistakes made and fixed. It is
 unusually frank, deliberately: a project teaching verification should be candid about its own.
