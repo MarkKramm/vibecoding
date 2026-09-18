@@ -397,15 +397,18 @@ Naive cost estimation is `calls per day × average tokens × price`. That formul
 
 **Five: background and scheduled jobs.** Enrichment, nightly summarisation, embedding backfills, cache warming. Each is small; together they form a floor of spend that runs whether or not anyone uses the product, and because nobody is watching, a fault can persist for weeks.
 
-**Cost per call is a supplier's metric. Cost per successful task is yours.** Take a call costing $0.004 that succeeds 60% of the time at the quality you need. A stronger model at $0.010 per call succeeding 95% of the time is two and a half times the price per call and cheaper per successful task, because you are not paying for the failures.
+**Cost per call is a supplier's metric. Cost per successful task is yours.** Take a call costing $0.004 that succeeds 35% of the time at the quality you need. A stronger model at $0.010 per call succeeding 95% of the time is two and a half times the price per call and still cheaper per successful task, because you are not paying for the failures.
 
 | | Cheap model | Strong model |
 |---|---|---|
 | Cost per call | $0.004 | $0.010 |
-| Attempts per successful task | 2.4 | 1.05 |
-| Cost per successful task | ~$0.0096 | ~$0.0105 |
+| Success rate per attempt | 35% | 95% |
+| Attempts per successful task | 2.86 | 1.05 |
+| Cost per successful task | ~$0.0114 | ~$0.0105 |
 
-Change the cheap model's success rate by a few points and the ordering flips. **You cannot know which is cheaper without measuring success, and measuring success requires instrumenting tasks, not calls.**
+**Check that arithmetic yourself before you trust the conclusion** — it is the whole lesson in four numbers. Cost per successful task is cost per call divided by the success rate, which is why a model that is 2.5× dearer per call comes out *cheaper* per task. The cheap model burns $0.004 on every failed attempt, and at a 35% success rate most attempts fail.
+
+Change the cheap model's success rate by a few points and the ordering flips — at 40% the two are level, and above that the cheap model wins. **You cannot know which is cheaper without measuring success, and measuring success requires instrumenting tasks, not calls.**
 
 So your schema needs a notion of a **task** that can succeed or fail independently of any HTTP call: a `run_id` shared by every call in one logical unit of work. Without it you can compute cost per call and nothing else.
 
