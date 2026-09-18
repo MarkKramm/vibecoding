@@ -206,7 +206,15 @@ Three practical consequences, and this is a control rather than a fix:
 
 **Keep a human in the loop for irreversible actions.** Pushing, deploying, deleting, and anything touching credentials or money. The pattern is the same as Part 3's commit habit: bound the failure so a mistake is cheap and visible rather than expensive and silent.
 
-**⚠️ Volatile, dated: as of 2026-09, agent sandboxing and permission defaults change with every release, and specific incidents are not something I have verified for this lesson.** Twelve numbered requests covering agent defaults, sandboxing and documented injection incidents are recorded in `docs/SEARCH-REQUESTS.md` for confirmation from a sourced answer. **Treat the mechanism as established and the specifics as open** — the structural problem is a property of how these systems work, while which tool is safe today is a fact that will date within months.
+**This is no longer a theoretical mechanism — there is a research literature, and it is not reassuring.** A **Systematization of Knowledge** paper by Maloyan and Namiot, *"Prompt Injection Attacks on Agentic Coding Assistants: A Systematic Analysis of Vulnerabilities in Skills, Tools, and Protocol Ecosystems"* ([arXiv:2601.17548](https://arxiv.org/abs/2601.17548), January 2026), meta-analyses **78 studies from 2021–2026** and catalogues **42 distinct attack techniques** across input manipulation, tool poisoning, protocol exploitation, multimodal injection and cross-origin context poisoning. It covers Claude Code, GitHub Copilot, Cursor and skill-based architectures built on the Model Context Protocol.
+
+**Two findings from it are worth carrying:**
+
+**Attack success rates exceed 85% against state-of-the-art defenses** when the attacker adapts. And of **18 defense mechanisms** the authors reviewed, **most achieve under 50% mitigation** against sophisticated adaptive attacks.
+
+**Read those together and the conclusion is uncomfortable but clear: filtering does not solve this.** The authors' own recommendation is that prompt injection must be treated as a **first-class vulnerability class needing architectural mitigation, not ad-hoc filtering**. What that means for you in practice is that **the controls below are about limiting damage, not preventing the attack** — you are choosing blast radius, not immunity. If someone tells you a particular agent "handles" prompt injection, that is a claim to check against this paper rather than accept.
+
+**⚠️ Still dated and partly open.** The *mechanism* and the *research* are now sourced. What remains unverified for this lesson is the **current per-tool default behaviour** — sandboxing, approval prompts, and what each agent does without asking. Those change every release. The specifics are recorded in `docs/SEARCH-REQUESTS.md` as open requests, and the numbers in that paper describe the state of the field in **early 2026**.
 
 ### Part 7 — Reviewing the diff
 

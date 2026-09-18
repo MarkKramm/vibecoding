@@ -1,83 +1,28 @@
-I am writing a technical curriculum about building software with AI coding tools, and I
-need answers accurate as of **September 2026**. **Please use web search.**
+Search the web now and answer these 12 questions. I need a source URL for each answer.
 
-**How to reply:**
-- Answer under the **same number** as the question.
-- Give the answer **and a source URL** for each.
-- **If you cannot find a reliable source, say "could not verify" — do not estimate.** An
-  acknowledged gap is genuinely useful to me. A confident guess is worse than nothing,
-  because I will publish it.
-- **Partial answers are fine.** Answer what you can and mark the rest.
+If you cannot find a source for one, write "could not verify" and move on. Do not guess.
+Answer as many as you can. Number your answers to match.
 
-**Two questions are already partly answered — please do not redo them:**
-- **Q8:** I already have Anthropic's commercial terms
-  (https://www.anthropic.com/legal/commercial-terms) — the indemnity covers *"paid use"*,
-  so free tiers are excluded. I need **the other three vendors only**.
-- **Q12:** I already have the Philippine Data Privacy Act statute text
-  (https://lawphil.net/statutes/repacts/ra2012/ra_10173_2012.html). I need **only the
-  free-tier availability half**.
+1. What context window do these coding tools use, as of September 2026: Claude Code, OpenAI Codex, GitHub Copilot agent mode, Google Antigravity, Cursor, Devin Desktop (formerly Windsurf)? Which of them do not publish the number?
 
-Twelve questions.
+2. When a coding agent runs a task unattended, what does it do without asking permission — run tests, install packages, edit files outside the task, make network calls, commit, push? Answer per tool, citing official docs.
 
----
+3. Which coding agents run commands in a sandbox by default? Which ask for approval on each command? Which run with full user permissions? This is a separate question from #2.
 
-**1. Coding-agent context windows.** For Claude Code, OpenAI Codex, GitHub Copilot's agent
-mode, Google Antigravity, Cursor, and Devin Desktop (formerly Windsurf) — what context
-window does each use? Which vendors **do not publish** this number?
+4. Find documented incidents or research papers where malicious content in a repository (a README, an issue, a dependency file) caused a coding agent to do something harmful. Primary sources only.
 
-**2. Coding-agent default behaviour.** When a coding agent runs unattended, what will it
-typically **do without asking** — run tests, install packages, edit files outside the
-requested scope, make network calls, commit, push? I want observable behaviour, per tool,
-from official docs.
+5. Is there official vendor documentation or a well-known engineering write-up recommending you commit before running an agent, or review diffs instead of the agent's summary?
 
-**3. How those defaults are enforced.** Which coding agents run commands in a sandbox,
-which ask for approval per command, and which run with full user permissions? **This is the
-mechanism behind Q2's behaviour, so please answer it separately** rather than reusing Q2.
+6. Find a study or documented case showing a coding agent's summary of its own work was inaccurate — claiming more verification than it did.
 
-**4. Prompt injection through repository content.** Are there documented incidents, vendor
-advisories, or research papers where malicious content in a repository — a README, an issue,
-a dependency's file — caused a coding agent to take an unwanted action? Primary sources
-preferred, not blog commentary.
+7. Besides hallucinated package names, what security flaws are over-represented in AI-generated code (SQL injection, hardcoded secrets, missing authorization, weak crypto)? Find papers or vendor advisories.
 
-**5. Git as an agent safety net.** Is there authoritative guidance — vendor documentation or
-well-known engineering write-ups — recommending committing before an agent run, or reviewing
-diffs rather than the agent's summary? I want to cite something real rather than assert it.
+8. Do GitHub, Google, and OpenAI indemnify users against copyright claims on AI-generated code? Does the indemnity cover free tiers or paid tiers only? Find the actual terms pages. (I already have Anthropic's — skip them.)
 
-**6. Accuracy of agent self-reports.** Is there any study or documented case of a coding
-agent's summary of its own work being inaccurate — claiming more verification than it
-performed, or omitting what it did not check?
+9. Is free-tier code used for training by default on GitHub Copilot Free, Google Antigravity, Cursor Hobby, and Codex Free? Is there an opt-out? (I already know Copilot's default changed on 2026-04-24.)
 
-**7. Security defects in AI-generated code.** Beyond hallucinated package names (I already
-have arXiv 2406.10279), what does research or vendor guidance say about other security
-defects over-represented in generated code — SQL injection, hardcoded secrets, missing
-authorisation checks, weak cryptography? Papers or official advisories with URLs.
+10. Is there any emerging standard — employer policy, professional guidance, or conference/open-source policy — on disclosing that code was AI-generated?
 
-**8. Indemnity on free tiers.** Do GitHub, Google, and OpenAI indemnify users against
-copyright claims on AI-generated code, and **does that indemnity apply to free tiers or only
-paid ones**? I need the actual terms pages. (I have already verified Anthropic's commercial
-terms, which specify "paid use" — so I need the other three, and I specifically need to know
-where the free tier is excluded.)
+11. Find documented cases where AI-assisted code caused a real production outage or security incident. Specific incidents with post-mortems or news coverage.
 
-**9. Training on free-tier code.** For **GitHub Copilot Free**, **Google Antigravity**,
-**Cursor Hobby**, and **Codex Free**: is free-tier code used for training by default, and is
-there an opt-out? (I have a partial answer for Copilot: default since 2026-04-24. I need the
-others confirmed.)
-
-**10. Disclosure norms for AI-assisted code.** Is there any emerging standard — employer
-policy, professional-body guidance, conference or open-source project policy — on disclosing
-that code was AI-generated? I would rather teach something real than invent a rule.
-
-**11. Real incidents.** Are there documented, sourced cases of AI-assisted code causing a
-production outage or security incident? I need specific cases with post-mortems or news
-coverage, not general warnings about risk.
-
-**12. Availability from the Philippines.** Do these free tiers work from the Philippines
-without a VPN or a foreign payment method — **Google Antigravity CLI, GitHub Copilot Free,
-the Gemini API free tier, and Groq**? Are any region-restricted? Pricing or availability
-pages preferred. *(The statute text itself is already sourced — I need only this
-availability half.)*
-
----
-
-*If you can only answer some of these, that is fine — please just say which ones you could
-not verify rather than filling the gap.*
+12. Do these free tiers work from the Philippines without a VPN or foreign payment method: Google Antigravity CLI, GitHub Copilot Free, Gemini API free tier, Groq? Are any region-restricted? (I already have the Philippine Data Privacy Act covered — skip it.)
