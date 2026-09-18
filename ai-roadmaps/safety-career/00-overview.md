@@ -1,6 +1,6 @@
 # Safety & Ethics — Track Overview
 
-> **Status: not started.** None of this track's five phases are written yet. This overview describes what the track **will** contain, based on the agreed plan. There is no phase content to read today.
+> **Status: complete.** All five phases are written and available now.
 
 ## What this track is for
 
@@ -32,11 +32,11 @@ No paid tool is required. Nothing in this track costs money, and the security pr
 
 | # | Phase | Status | What it will establish |
 |---|---|---|---|
-| 1 | How Models Go Wrong | Planned | A builder's taxonomy: hallucination, sycophancy, representational harm, failure to know what it does not know, and distributional shift. For each: mechanism, how it shows up, how to detect it, and what mitigation works |
-| 2 | Security, Privacy and Data | Planned | Indirect prompt injection taken seriously, instruction hierarchy as a mitigation rather than a guarantee, provider retention and training terms, secrets management, and the Philippine Data Privacy Act as a real obligation |
-| 3 | Alignment, Capability and Honest Limits | Planned | What alignment means technically, RLHF and why the KL penalty exists, Constitutional AI, reward hacking, and — most importantly — how not to over-claim about your own results |
-| 4 | Using AI Honestly | Planned | What is actually cheating versus efficient use, the "could I explain, debug and extend this myself?" test, skill atrophy, and a personal policy you write for yourself |
-| 5 | Career in the AI Era | Planned | What differentiates people now that generation is cheap, the durable-versus-volatile distinction applied to skills, how to keep learning without drowning, and an honest self-assessment |
+| 1 | How Models Go Wrong | Written | A builder's taxonomy: hallucination, sycophancy, representational harm, failure to know what it does not know, and distributional shift. For each: mechanism, how it shows up, how to detect it, and what mitigation works |
+| 2 | Security, Privacy and Data | Written | Indirect prompt injection taken seriously, instruction hierarchy as a mitigation rather than a guarantee, provider retention and training terms, secrets management, and the Philippine Data Privacy Act as a real obligation |
+| 3 | Alignment, Capability and Honest Limits | Written | What alignment means technically, RLHF and why the KL penalty exists, Constitutional AI, reward hacking, and — most importantly — how not to over-claim about your own results |
+| 4 | Using AI Honestly | Written | What is actually cheating versus efficient use, the "could I explain, debug and extend this myself?" test, skill atrophy, and a personal policy you write for yourself |
+| 5 | Career in the AI Era | Written | What differentiates people now that generation is cheap, the durable-versus-volatile distinction applied to skills, how to keep learning without drowning, and an honest self-assessment |
 
 **Read them in order.** Phase 1 establishes the failure modes, Phase 2 the security and privacy frame, Phase 3 the wider debate, and Phases 4 and 5 turn all of it inward onto your own practice.
 
@@ -96,6 +96,6 @@ Second, and more important: **this is the one track where the durable content is
 1. There is no prerequisite. Read [`../shared/study-rules.md`](../shared/study-rules.md) first if you have not.
 2. Track your progress in [`checklist-master.md`](checklist-master.md).
 3. If you have already built something with AI, read Phase 4 first — it is the phase that changes how you work, and it is short.
-4. Watch this folder for phase files as they are written.
+4. Read [Phase 1](01-phase-how-models-go-wrong.md) next. Every later phase assumes you can name a failure mode and explain its mechanism, and Phase 1 is where that vocabulary is built.
 
 > **If you only read one phase.** Phase 4, *Using AI Honestly*. It is the one whose absence does real damage: it is entirely possible to finish this curriculum with strong technical skills and a habit of accepting output you cannot explain, and that combination is worse than knowing less and understanding it.
