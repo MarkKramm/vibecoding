@@ -179,6 +179,12 @@ const STEPS = [
     why: "the other browser step checks FOUR views and the other thirteen read data, so nothing has ever opened a phase page except the six in one track. This walks all 65 across all 10 tracks, clicking through them the way a reader does, and asserts each one renders its title, all six sections, a tappable checklist and a working quiz explanation. It found the Previous/Next buttons silently doing nothing — a defect no data check can see, because the data was right and the buttons looked right. Without it, a page can break for one phase out of 65 and every other check stays green",
   },
   {
+    name: "mixed practice sets",
+    cmd: "node",
+    args: [join(HERE, "test-practice.mjs")],
+    why: "the Practice view samples questions across phases and tracks, which no other check touches — and its first version crashed on render with React error #31 because it read the GENERATED question shape while the app is handed the NORMALISED one (options as {text, correct}, why renamed to explanation). The unit tests all passed, because they read the same JSON files the bug did: the tests agreed with the bug. This suite now builds its pool through the app's own shape and asserts the normaliser's source still matches, so the two cannot drift apart silently again",
+  },
+  {
     name: "reachability (nothing is dead)",
     cmd: "node",
     args: [join(HERE, "check-reachability.mjs")],

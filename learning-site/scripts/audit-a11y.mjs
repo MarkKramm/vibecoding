@@ -85,7 +85,7 @@ const bad = (m) => { failures.push(m); console.log(`  \u2716 ${m}`); };
 const note = (m) => { notes.push(m); console.log(`  \u2022 ${m}`); };
 
 // The four topbar views, matched by button TEXT because there is no route.
-const VIEWS = ["Curriculum", "Tools", "Reference", "Search"];
+const VIEWS = ["Curriculum", "Practice", "Tools", "Reference", "Search"];
 
 // --- precondition: is a preview server actually serving? -------------------
 //
@@ -589,8 +589,15 @@ if (mounted) ok("app mounted (#root has children)");
 else bad("app did not mount — #root is empty, so every result below is meaningless");
 
 const navCount = await evalJs("document.querySelectorAll('.navbtn').length");
-if (navCount === 4) ok(`all 4 topbar view buttons found (${navCount})`);
-else bad(`expected 4 .navbtn view buttons, found ${navCount} — views cannot be reached, so the audit cannot see them`);
+// DERIVED FROM VIEWS, not hardcoded.
+//
+// This read `=== 4`, so adding the Practice view failed the assertion. The failure
+// was useful — an unexpected change to the navigation SHOULD be noticed — but the
+// number belonged in one place. Comparing against `VIEWS.length` means this can only
+// fail when the DOM and the audit's own list of views genuinely disagree, which is
+// the thing actually worth failing for.
+if (navCount === VIEWS.length) ok(`all ${VIEWS.length} topbar view buttons found (${navCount})`);
+else bad(`expected ${VIEWS.length} .navbtn view buttons, found ${navCount} — views cannot be reached, so the audit cannot see them`);
 
 // --- 2..5. per-view: contrast, names, headings, landmarks -------------------
 // One expression, driven per view. Returns the worst offenders rather than a

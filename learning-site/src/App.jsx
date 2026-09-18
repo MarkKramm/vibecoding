@@ -39,11 +39,15 @@ import PhaseDetail from "./pages/PhaseDetail.jsx";
 import ToolsLibrary from "./pages/ToolsLibrary.jsx";
 import Search from "./pages/Search.jsx";
 import Shared from "./pages/Shared.jsx";
+import Practice from "./pages/Practice.jsx";
 import ShortcutHelp from "./components/ShortcutHelp.jsx";
 import DataTransfer from "./components/DataTransfer.jsx";
 
 const VIEWS = [
   { id: "dashboard", label: "Curriculum" },
+  // Practice sits beside the curriculum rather than inside it: it draws from every
+  // phase, so it belongs at the top level where it can be reached from anywhere.
+  { id: "practice", label: "Practice" },
   { id: "tools", label: "Tools" },
   { id: "reference", label: "Reference" },
   { id: "search", label: "Search" },
@@ -303,6 +307,8 @@ export default function App() {
         {view === "tools" && <ToolsLibrary onOpenPhase={openPhase} />}
 
         {view === "reference" && <Shared />}
+
+        {view === "practice" && <Practice onOpenPhase={openPhase} />}
 
         {view === "search" && (
           <Search

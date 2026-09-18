@@ -175,6 +175,13 @@ const FULL_DATA_PHASES = new Map([
     "exports a transfer/summary helper over FULL phases; called with " +
       "`detail.phase`, never with a light record",
   ],
+  [
+    "lib/practice.js",
+    "takes FULL phases: its whole purpose is to collect `phase.quiz` across " +
+      "phases, and the light projection carries only `quizIds` (ids without " +
+      "questions), so a light record could not build a practice set at all. Fed by " +
+      "pages/Practice.jsx -> loadTrackPhases() -> the FULL track file",
+  ],
   // The ported sibling-project modules. They are dead code today (see
   // DEAD_EXPECTED), and they read `phase.checklist` / `phase.tasks` / `phase.quiz`
   // — full-only names — so if they were ever wired to the light index this guard
