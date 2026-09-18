@@ -84,6 +84,16 @@ export function summarise(questions, picked) {
   // 1-based question numbers, taken from position in the source list rather
   // than from the id, because the id's suffix is an authoring detail while the
   // position is what the reader counts on screen.
+  //
+  // THIS ONLY AGREES WITH THE SCREEN BECAUSE Quiz.jsx NUMBERS THE SAME WAY. The
+  // component renders `{qi + 1}` next to each question, so a summary saying
+  // "question 3" points at the third block the reader can see. If the component
+  // ever switched to printing the id's numeric suffix, these two would disagree
+  // for the 7 phases whose id prefix is the short form (`found-01-q01`) while the
+  // phase id is long (`found-01-what-a-model-is`) -- and the reader would be sent
+  // to the wrong question with nothing failing. `scripts/test-quiz.mjs` asserts
+  // that position and the id suffix agree across all 65 phases, so that switch
+  // cannot land silently.
   const numbers = missed.map((m) => questions.indexOf(m) + 1);
   if (numbers.length === 1) {
     return { kind: "review", numbers, text: `One to look at again — question ${numbers[0]}.` };
