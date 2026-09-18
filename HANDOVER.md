@@ -9,10 +9,10 @@
 
 ## 0. READ THIS FIRST — the five things that matter most
 
-1. **Git has ZERO commits.** The repo is initialised but nothing has ever been committed. Everything on disk is untracked. **Commit before doing anything else** — see §9.
-2. **The quiz audit is currently FAILING on 4 files, and all 4 were written this session.** I authored most correct answers in position C. This is a real defect, not a guard bug. **Never edit the guard to agree.** See §7.1.
+1. **Git is committed as of this session** (`3f1cab4`, 52 files, clean tree). Two CRLF files were found and fixed during the commit — see §7.3, and watch for this recurring.
+2. **The quiz audit is currently FAILING on 4 files, and all 4 were written this session.** I authored most correct answers in position C. This is a real defect, not a guard bug. **Never edit the guard to agree.** See §7.1. This is the only red guard; build and AST audit are green.
 3. **No subagents, no workflows.** The user explicitly instructed: *"please dont use subagents"*. Author every remaining file directly, by hand, in the main session. Two workflow runs were attempted earlier and both were cancelled. Do not reintroduce fan-out.
-4. **Five tracks are still empty:** `agents`, `finetuning`, `vibecoding`, `safety-career`, and `rag` is 4/7 done. See §6 for the full remaining-work list.
+4. **Five tracks are still empty:** `agents`, `finetuning`, `vibecoding`, `safety-career`, and `rag` is 4/7 done. See §6 for the full remaining-work list — 29 phases, plus track files, the site, tests, CI, and docs.
 5. **`web_search` is BROKEN in this environment.** It returns HTTP 404 for every query. `web_fetch` works. Only the user can fix it (Settings > Plugins). All research in `docs/research/` was done by fetching primary sources directly.
 
 ---
@@ -420,13 +420,39 @@ Still to build: `package.json`, `vite.config.js`, `index.html`, `src/main.jsx`, 
 
 **Action:** investigate before treating it as clean. Read `scripts/audit-lesson-ast.mjs`, determine whether the gain is expected synthesis (in which case document that in `docs/CONTENT-SCHEMA.md` and consider a baseline threshold) or a real duplication bug. It was **9,818** at 26 phases and **11,104** at 31, so it scales with content — consistent with per-block synthesis, but the per-lesson rate should be checked for outliers.
 
-### 7.3 ⚠️ Git has zero commits
+### 7.3 ✅ RESOLVED — Git commit made, and two CRLF files fixed
+
+**Commit created:** `3f1cab4` — "Add content pipeline, 31 phase lessons, schema and fact-check docs". 52 files, working tree clean.
+
+While committing, git surfaced a **real violation of the project's LF-only hard rule**:
 
 ```
-fatal: your current branch 'master' does not have any commits yet
+ai-roadmaps/foundations/06-phase-embeddings-and-similarity.md  (538 CRLF)
+ai-roadmaps/prompting/05-phase-context-engineering.md          (650 CRLF)
 ```
 
-Nothing is version-controlled. 6 top-level entries are untracked. Fix first (§9).
+These two files had CRLF endings. **Fixed** by rewriting as UTF-8 no BOM with LF-only:
+
+```powershell
+$t=[System.IO.File]::ReadAllText($p)
+$t2=$t.Replace("`r`n","`n")
+[System.IO.File]::WriteAllText($p,$t2,(New-Object System.Text.UTF8Encoding $false))
+```
+
+A full byte-level scan of all `*.md` and `*.mjs` now finds **zero CRLF files**. Build and audits were re-verified after the conversion and are unchanged (31 phases, AST loss 0), then the commit was amended.
+
+**Watch for this recurring.** The `edit`/`write` tooling can introduce CRLF. After authoring, scan with:
+
+```powershell
+Get-ChildItem -Recurse -File -Include *.md,*.mjs |
+  Where-Object { $_.FullName -notmatch '\\\.git\\' } |
+  ForEach-Object {
+    $b=[System.IO.File]::ReadAllBytes($_.FullName)
+    for($i=1;$i -lt $b.Length;$i++){
+      if($b[$i] -eq 10 -and $b[$i-1] -eq 13){ Write-Host "CRLF: $($_.Name)"; break }
+    }
+  }
+```
 
 ### 7.4 ⚠️ `.research/` is an empty directory
 
@@ -514,33 +540,25 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 
 ## 9. Immediate next steps, in order
 
-1. **Commit everything.** Zero commits exist.
-   ```powershell
-   cd "C:\Users\zaman\Desktop\CSKramm\Vibecoding"
-   git add -A
-   git commit -m "Add content pipeline, 31 phase lessons, schema and fact-check docs"
-   ```
-   Confirm `.gitignore` keeps `node_modules/`, `learning-site/dist/`, `learning-site/src/data/generated/`, `.cache/`, `scratch/`, `tmp/` out. **Note:** generated JSON is gitignored, so a fresh clone must run the build.
+1. **✅ DONE this session.** Git committed (`3f1cab4`, 52 files) and two CRLF files converted to LF. See §7.3. Generated JSON is gitignored, so a fresh clone must run `node scripts/build-content.mjs` before the site tests can run.
 
-2. **Fix the 4 quiz-skew files** (§7.1) by reordering options. Re-run `node scripts/audit-quiz.mjs` until it exits 0.
+2. **Fix the 4 quiz-skew files** (§7.1) by reordering options. Re-run `node scripts/audit-quiz.mjs` until it exits 0. **This is the only failing guard right now.**
 
 3. **Investigate the AST character gain** (§7.2) and settle whether it is expected synthesis.
 
-4. **Verify or fix the `tracks.json` mojibake** (§7.5).
+4. **Write `rag/05`, `rag/06`, `rag/07`** from §6.1. Keep the quiz answer positions spread.
 
-5. **Write `rag/05`, `rag/06`, `rag/07`** from §6.1. Keep the quiz answer positions spread.
+5. **Write the Agents track (7 phases)** from §6.1.
 
-6. **Write the Agents track (7 phases)** from §6.1.
+6. **Write the Finetuning track (6 phases)** from §6.1.
 
-7. **Write the Finetuning track (6 phases)** from §6.1.
+7. **Write the Vibecoding track (8 phases)** from §6.1.
 
-8. **Write the Vibecoding track (8 phases)** from §6.1.
+8. **Write the Safety & Career track (5 phases)** from §6.1.
 
-9. **Write the Safety & Career track (5 phases)** from §6.1.
+9. **Write the 18 track files** (9 × `00-overview.md`, 9 × `checklist-master.md`) plus the 2 missing shared docs, registering new shared docs in `scripts/shared-content.mjs`.
 
-10. **Write the 18 track files** (9 × `00-overview.md`, 9 × `checklist-master.md`) plus the 2 missing shared docs, registering new shared docs in `scripts/shared-content.mjs`.
-
-11. **Build the learning site**, then tests, then CI, then the meta-docs and root files (§6.3–6.7).
+10. **Build the learning site**, then tests, then CI, then the meta-docs and root files (§6.3–6.7).
 
 **After every phase file:** run the three commands and confirm all green before moving on.
 
@@ -605,6 +623,8 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 5. **A ```` ```python ```` glued to the end of a prose sentence** broke fence pairing in `cost/05`, which silently hid every following section from the parser and produced a confusing "missing mandatory sections" error. **Fence openers go on their own line.**
 6. **JS-style regex literals do not work in PowerShell `-match`.** Use `[regex]::Match` or read lines.
 7. **`build-content.mjs` writes notes to stderr**, which PowerShell shows as a red error block. **Not a failure** — check `$LASTEXITCODE`.
+8. **Two files silently acquired CRLF line endings.** Only git's commit warning surfaced it; the build and audits both passed happily, because neither checks line endings. Found and fixed in §7.3. **Scan for CRLF after authoring** — the project's LF rule is a hard rule but nothing enforces it automatically yet, and adding that check to CI would be worthwhile.
+9. **Apparent mojibake was a console artifact, not corruption** (§7.5). Check raw bytes before "fixing" a non-ASCII character that looks wrong in PowerShell.
 
 ---
 
