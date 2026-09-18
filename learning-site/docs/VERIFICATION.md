@@ -24,23 +24,33 @@ strings. All of those produce a green build and a blank page.
 | Content | `scripts/build-content.mjs --check` | nothing | the Markdown is well-formed |
 | Shapes | `learning-site/scripts/audit-shapes.mjs` | generated JSON | the JSON matches what the renderers assume |
 | Semantics | `learning-site/scripts/test-cost-tone.mjs` | generated JSON | cost classification is right *on this corpus* |
+| Encoding | `learning-site/scripts/audit-encoding.mjs` | nothing | LF, UTF-8 without BOM, no mojibake, no tabs |
 | Runtime | `learning-site/scripts/verify-site.mjs` | dev server + Edge/Chrome | the app renders, 15 checks |
 | Runtime, deep | `learning-site/scripts/verify-deep.mjs` | dev server + Edge | all six written tracks, search, 8 checks |
 | Correctness | `learning-site/scripts/verify-quiz-correctness.mjs` | dev server + Edge | the quiz marks the *source-correct* option correct |
 | Diagnostics | `debug-phase.mjs`, `debug-tracks.mjs` | dev server + Edge | *why* something failed |
 
-The offline three are chained by `npm test` → `scripts/check-all.mjs`. The three
-browser scripts are chained by `npm run test:browser`, which is separate because
-it requires a running dev server and a browser binary — a dependency the offline
-checks must not acquire, or they stop being the fast loop.
+Two notes on that table. The **Content** row is the repo-root guard
+(`node scripts/build-content.mjs --check`, plus `audit-quiz.mjs` and
+`audit-lesson-ast.mjs`), which runs against the Markdown and needs no install at
+all — it is the only layer that works on a fresh clone before `npm install`. The
+**`npm test` → `check-all.mjs`** chain actually begins by running the full content
+*build* (not `--check`) so the generated JSON exists for the steps after it; the
+repo-root `--check` form is what the content pipeline's own workflow uses.
+
+The **four** offline checks are chained by `npm test` → `scripts/check-all.mjs`.
+The three browser scripts are chained by `npm run test:browser`, which is separate
+because it requires a running dev server and a browser binary — a dependency the
+offline checks must not acquire, or they stop being the fast loop.
 
 `check-all.mjs` runs them in a deliberate order and states the reason in its own
 header: the content build writes the JSON every later check reads, so it goes
 first (auditing shapes against a *stale* generated directory would pass happily
 while the Markdown it came from was broken); `audit-shapes` goes next because it
 catches the cheap class of bug in under a second, before a ~30-second browser run
-is worth starting; `test-cost-tone` goes last because it also depends on the
-generated cost strings.
+is worth starting; `test-cost-tone` follows because it also depends on the
+generated cost strings; and `audit-encoding` runs last because it is the cheapest
+of all and only fails on rules that no other step can see.
 
 **The limit of the whole offline layer:** none of it can observe a React render.
 It can tell you the data is shaped correctly and the content parses; it cannot
@@ -413,6 +423,10 @@ from character codes rather than written as literals, so the audit file contains
 no mojibake of its own and needs no self-exemption.
 
 **One honest gap:** no CI workflow exists yet (there is no `.github/` directory),
-so none of this runs automatically. Everything below is run by hand. Adding the
-offline three plus `audit-encoding.mjs` to CI is the highest-value unchecked item
-on this project.
+so none of this runs automatically. Everything is run by hand. Wiring `npm test`
+and `audit-encoding.mjs` into CI is the highest-value unchecked item on this
+project.
+
+`audit-encoding.mjs` is already the **fourth** step of `npm test` →
+`check-all.mjs`, so it does run whenever the suite does — but only because a human
+types `npm test`. Nothing enforces it on a push.

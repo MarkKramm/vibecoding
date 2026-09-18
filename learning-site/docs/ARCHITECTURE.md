@@ -6,6 +6,26 @@ This document is written for someone maintaining the site months from now, who
 remembers the code but not the reasoning. Nearly every decision here has a
 measurable cost attached, and the cost is stated rather than hidden.
 
+### Where the docs live, because `docs/` is ambiguous
+
+There are **two** `docs/` directories and comments in `src/` cite both without
+saying which:
+
+| Cited as | Actually means | Contains |
+| --- | --- | --- |
+| `docs/CONTENT-SCHEMA.md` | **repo root** `docs/` | the authored-Markdown contract: phase template, front-matter, ID rules, verified facts |
+| `docs/DESIGN-SYSTEM.md` | **repo root** `docs/` | tokens, component rules, accessibility, anti-patterns |
+| `docs/DECISIONS.md` | **`learning-site/docs/`** | the decision log for the site |
+
+The split follows ownership. Repo-root `docs/` describes the **content pipeline**
+and is meaningful to an author working in `ai-roadmaps/` who never opens the site;
+`learning-site/docs/` describes the **application** and is only meaningful to
+someone working in React. Both were also cited by the ported source before either
+existed.
+
+If you add a citation, prefer the unambiguous form (`learning-site/docs/DECISIONS.md`
+or repo-root `docs/CONTENT-SCHEMA.md`) rather than bare `docs/`.
+
 ---
 
 ## 1. The pipeline: Markdown is the source of truth, JSON is a build artifact
@@ -292,11 +312,21 @@ correct.
 
 ---
 
-## 8. Untested claim in the verified numbers
+## 8. Reading the bundle numbers (two conventions, one file)
 
-Measured on this machine with `gzip -9`, `dist/assets/index-*.js` is **295.9 KB
-raw / 83.8 KB gzipped**. The verified figures quoted throughout these documents
-are **303 KB / 85.6 KB**, which correspond to a 1000-byte KB and a default-level
-gzip. Both describe the same file; the KB convention and gzip level differ. The
-**5.1× ratio is what matters and is convention-independent** — it holds under
-either measurement.
+The entry chunk is quoted throughout these documents as **303 KB / 85.6 KB gzipped**,
+because that is what `vite build` prints. Vite prints **decimal** kB (1000 bytes),
+and so does `gzip` at its default level.
+
+Measured a second way — actual file size, and `gzip -9` — the same chunk is
+**296 KiB raw / 84 KiB gzipped**. Different convention, marginally stronger
+compression, same file.
+
+Neither figure is wrong and the discrepancy is not a defect. What matters is that
+the **5.1× reduction** (from 1,639 KB to 303 KB in Vite's own units) is
+convention-independent, so the load-bearing claim — that moving phase prose out of
+the entry bundle cut first-paint cost roughly fivefold — holds either way.
+
+**If you quote a bundle size here, say which convention you used.** A future
+reader comparing your number against `vite build` output and finding a 2.5%
+difference should not have to work out why.
