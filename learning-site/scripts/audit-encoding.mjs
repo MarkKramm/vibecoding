@@ -5,7 +5,13 @@
 // (em dash as U+2014, not "--"). Those rules are invisible in review: a CRLF file
 // looks identical to an LF one in an editor, and a mojibake em dash only shows up
 // as garbage in a console that may itself be lying about encoding. The failure
-// mode is a diff that rewrites a whole file, or a page showing "â€”" to a reader.
+// mode is a diff that rewrites a whole file, or a page showing the em dash's
+// corrupted form to a reader. That form is deliberately NOT written literally
+// here: this file is inside its own SCAN list, so a literal would make the audit
+// fail on itself -- and the tempting "fix" is an exemption for this filename,
+// which would create a file the check cannot police. Naming the codepoints
+// instead keeps the file clean, so it needs no exemption: the corrupted em
+// dash is U+00E2 U+20AC U+201D after a UTF-8 file is misread as Latin-1.
 //
 // So it is checked mechanically, and it reports the FILE AND LINE so a fix is
 // a one-line edit rather than an afternoon.
@@ -22,6 +28,13 @@ const REPO = join(SITE, "..");
 // Source text we own. Generated JSON is excluded on purpose: it is a build
 // artifact, regenerated from the Markdown, so checking it here would only
 // re-report whatever the Markdown already determines.
+//
+// `ai-roadmaps` and the repo-root `docs` were ADDED after a gap was found: this
+// script previously scanned only learning-site/*, so it reported "all clean"
+// while never once looking at the 48 curriculum phases, which are the files
+// most likely to carry a mis-encoded character and the ones where a stray
+// character is most damaging (it lands in rendered lesson text). The curriculum
+// is the reason this project exists; the guard should cover it.
 const SCAN = [
   join(SITE, "src"),
   join(SITE, "scripts"),
@@ -29,6 +42,10 @@ const SCAN = [
   join(SITE, "vite.config.js"),
   join(SITE, "index.html"),
   join(SITE, "package.json"),
+  join(REPO, "ai-roadmaps"),
+  join(REPO, "docs"),
+  join(REPO, "scripts"),
+  join(REPO, "HANDOVER.md"),
 ];
 
 const EXTS = new Set([".js", ".jsx", ".mjs", ".css", ".html", ".json", ".md"]);
@@ -69,17 +86,54 @@ function walk(p) {
 // police. Building the patterns from character codes means the file contains no
 // mojibake at all and needs no exemption.
 //
-// Each entry is the UTF-8 bytes of a typographic character that has been
-// misread as Latin-1, decoded back into the string it wrongly produces.
-// U+2014 em dash -> E2 80 94 -> "â€”", and so on.
+// ⚠️ THE CODEPOINTS BELOW ARE THE *DECODED* ONES, WHICH IS THE WHOLE POINT AND
+// WAS ONCE THE BUG. An earlier version built these with the raw UTF-8 byte
+// values, e.g. `String.fromCharCode(0xe2, 0x80, 0x94)` for an em dash. That
+// produces U+00E2 U+0080 U+0094 — characters, NOT bytes — while `check()` below
+// searches text already decoded as UTF-8, where the same corruption surfaces as
+// U+00E2 U+20AC U+201D. The two never matched, so the audit was structurally
+// incapable of finding mojibake and reported clean on a file that had it. The
+// proof is recorded in HANDOVER §12: injecting a real corrupted em dash into a
+// phase left this guard passing.
+//
+// The correct transform is what a UTF-8 decoder does with the raw bytes:
+//   E2 80 94 (em dash)             -> U+00E2 U+20AC U+201D
+//   E2 80 99 (right single quote)  -> U+00E2 U+20AC U+2122
+//   E2 80 9C (left double quote)   -> U+00E2 U+20AC U+0153
+//   C3 A9    (e-acute)             -> U+00C3 U+00A9
+//   C2 A0    (non-breaking space)  -> U+00C2 U+00A0
 const MOJIBAKE = [
-  [String.fromCharCode(0xe2, 0x80, 0x94), "em dash"],
-  [String.fromCharCode(0xe2, 0x80, 0x99), "right single quote"],
-  [String.fromCharCode(0xe2, 0x80, 0x9c), "left double quote"],
-  [String.fromCharCode(0xe2, 0x80, 0x9d), "right double quote"],
+  [String.fromCharCode(0xe2, 0x20ac, 0x201d), "em dash"],
+  [String.fromCharCode(0xe2, 0x20ac, 0x2122), "right single quote"],
+  [String.fromCharCode(0xe2, 0x20ac, 0x153), "left double quote"],
+  [String.fromCharCode(0xe2, 0x20ac, 0x9d), "right double quote"],
+  [String.fromCharCode(0xe2, 0x20ac, 0x201c), "left double quote or en dash"],
+  [String.fromCharCode(0xe2, 0x20ac, 0x2013), "en dash"],
+  [String.fromCharCode(0xe2, 0x2020, 0x90), "left arrow"],
   [String.fromCharCode(0xc3, 0xa9), "e-acute"],
   [String.fromCharCode(0xc2, 0xa0), "non-breaking space"],
 ];
+
+// A corrupted em dash can also arrive as the "cp1252 read as latin-1" variant,
+// where the euro sign is missing entirely. Checked separately because it shares
+// a prefix with the table above and would otherwise be shadowed by it.
+const MOJIBAKE_ALT = [
+  [String.fromCharCode(0xe2, 0x80, 0x9d), "em dash (cp1252 variant)"],
+];
+
+// ── WHY THIS TABLE IS LONGER THAN IT LOOKS ───────────────────────────────────
+// Every extra entry was added in response to a variant ACTUALLY FOUND in the
+// corpus, not guessed in advance. `foundations/01-phase-what-a-model-is.md`
+// alone carried em dashes, en dashes, left double quotes and a left arrow, in
+// four different corrupted spellings — because the same underlying bytes decode
+// differently depending on which single-byte codepage the reader wrongly applied
+// (Latin-1, cp1252 and MacRoman each map the 0x80–0x9F range differently).
+//
+// The generalisable point: a mojibake table is never finished by reasoning. It
+// grows by finding real damage. If a new variant appears, add it here AND fix the
+// file — then prove the new entry fails by injecting that exact sequence, because
+// an entry that never matches is indistinguishable from a working one until a
+// reader sees the garbage.
 
 function check(file) {
   files++;
@@ -117,7 +171,12 @@ function check(file) {
   for (let i = 0; i < lines.length; i++) {
     for (const [bad, what] of MOJIBAKE) {
       if (lines[i].includes(bad)) {
-        problems.push(`${rel}:${i + 1}: mojibake ${what} (found "${bad}")`);
+        problems.push(`${rel}:${i + 1}: mojibake ${what}`);
+      }
+    }
+    for (const [bad, what] of MOJIBAKE_ALT) {
+      if (lines[i].includes(bad)) {
+        problems.push(`${rel}:${i + 1}: mojibake ${what}`);
       }
     }
     if (lines[i].includes("\t")) {

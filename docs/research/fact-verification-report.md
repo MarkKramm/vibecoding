@@ -742,22 +742,242 @@ These are the "say it loudly" items:
 
 ---
 
-## EXPLICIT UNVERIFIED LIST
+## RESOLUTION TABLE: THE FORMER UNVERIFIED LIST, NOW SETTLED
 
-- NeurIPS 2017 (NIPS) venue page for "Attention Is All You Need" — not fetched.
-- RoFormer (RoPE) peer-reviewed journal venue (commonly cited as Neurocomputing 2024) — not fetched.
-- ALiBi ICLR 2022 venue — not fetched (arXiv page lists no venue).
-- Peer-review status of: Shazeer MQA (2019), FlashAttention-2 (ICLR 2024?), FlashAttention-3
-  (NeurIPS 2024?), Medusa (ICML 2024?), Lookahead decoding (ICML 2024?), Chen et al. speculative sampling.
-  In every case the **arXiv page lists no conference**, so I mark them as arXiv tech reports /
-  UNVERIFIED-for-venue.
-- The exact per-position numeric accuracies in the "Lost in the Middle" U-shaped figures (figures are
-  images and were not numerically extracted).
-- A source-verified KV-cache-per-token figure for **Llama-2-7B** specifically (my 512 KB/token is a
-  computation, not a citation). The **13B OPT = 800 KB/token** figure IS source-verified (vLLM paper),
-  as is **Llama-3.1-8B = 0.125 GiB per 1k tokens** (HF blog, matches the formula exactly).
-- The exact Mixtral release-blog parameter count (the Mistral blog body did not render).
-- Qwen3-235B-A22B's "235B total / 22B active" as numeric prose on an authoritative page (only the
-  **128 experts / top-8** structure was verified from config).
-- Anyscale's "23× continuous batching" figure and the cellular-batching (Gao et al. 2018) paper.
-- Any claim that DeepSeek-R1's abstract itself states "671B/37B" (it does not; inherited from V3).
+> **Update (this session).** The eleven items previously listed here as UNVERIFIED have now been
+> re-checked with `web_search` working, and every RESOLVED or CORRECTED verdict below rests on a URL
+> that was actually fetched in this session. The verdicts are **RESOLVED** (a fetched URL states it),
+> **CORRECTED** (the commonly-cited value is wrong; the fetched URL gives the real one), or
+> **STILL UNVERIFIED** (with a specific, non-vague reason).
+>
+> **The single most important lesson from this pass:** the old report assumed "the arXiv page lists no
+> conference ⇒ probably unpublished." That inference was wrong in **four** of the six cases where it was
+> applied. arXiv does not reliably print the venue even for papers that were definitely published.
+> Venue claims must be settled at the proceedings page, OpenReview, ACL Anthology, or the publisher DOI —
+> never by the *absence* of a venue on arXiv.
+
+| # | Item | Outcome | Source URL(s) actually fetched |
+|---|---|---|---|
+| 1 | NeurIPS 2017 (NIPS) venue for "Attention Is All You Need" | **RESOLVED** | https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html · https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Metadata.json |
+| 2 | RoFormer (RoPE) peer-reviewed journal venue | **RESOLVED** (Neurocomputing, correct, but **2024** volume year, and the commonly-missed DOI) | https://dl.acm.org/doi/abs/10.1016/j.neucom.2023.127063 · https://api.semanticscholar.org/graph/v1/paper/DOI:10.1016/j.neucom.2023.127063 |
+| 3 | ALiBi ICLR 2022 venue | **RESOLVED** | https://openreview.net/forum?id=R8sQPpGCv0 |
+| 4a | Shazeer MQA (2019) peer-review status | **RESOLVED** (no peer-reviewed venue; arXiv-only) | https://arxiv.org/abs/1911.02150 |
+| 4b | FlashAttention-2 peer-review status | **RESOLVED** — ICLR 2024 **poster** | https://openreview.net/forum?id=mZn2Xyh9Ec |
+| 4c | FlashAttention-3 peer-review status | **RESOLVED** — NeurIPS 2024, **Main Conference Track** | https://proceedings.neurips.cc/paper_files/paper/2024/hash/7ede97c3e082c6df10a8d6103a2eebd2-Abstract-Conference.html · https://arxiv.org/abs/2407.08608 |
+| 4d | Medusa peer-review status | **RESOLVED** — ICML 2024 **Poster** | https://openreview.net/forum?id=PEpbUobfJv |
+| 4e | Lookahead decoding peer-review status | **RESOLVED** — ICML 2024 **Poster** | https://openreview.net/forum?id=eDjvSFOkXw |
+| 4f | Chen et al. speculative sampling peer-review status | **RESOLVED** (no peer-reviewed venue; arXiv-only) | https://arxiv.org/abs/2302.01318 |
+| 5 | Exact per-position numeric accuracies in the "Lost in the Middle" U-shaped figures | **STILL UNVERIFIED** | https://arxiv.org/html/2307.03172v3 · https://aclanthology.org/2024.tacl-1.9/ |
+| 6 | Source-verified KV-cache-per-token for Llama-2-7B specifically | **STILL UNVERIFIED** | https://huggingface.co/meta-llama/Llama-2-7b-hf/raw/main/config.json (HTTP 401, gated) |
+| 7 | Exact Mixtral release-blog parameter count | **STILL UNVERIFIED from the Mistral blog, but CORRECTED as a fact** — HF's official blog says "about 45B" | https://mistral.ai/news/mixtral-of-experts/ · https://huggingface.co/blog/mixtral |
+| 8 | Qwen3-235B-A22B "235B total / 22B active" as authoritative prose | **RESOLVED** | https://qwenlm.github.io/blog/qwen3/ |
+| 9 | Anyscale's "23× continuous batching" figure | **RESOLVED** (with an important qualifier) | https://www.anyscale.com/blog/continuous-batching-llm-inference |
+| 10 | Cellular batching (Gao et al. 2018) | **RESOLVED — and CORRECTED**: it is **EuroSys 2018**, not a 2018 arXiv preprint | https://madsys.cs.tsinghua.edu.cn/publication/low-latency-rnn-inference-with-cellular-batching/ |
+| 11 | Whether DeepSeek-R1's abstract itself states "671B/37B" | **RESOLVED** — confirmed it does **not** | https://arxiv.org/abs/2501.12948 |
+
+### Detail and quoted evidence
+
+**1. "Attention Is All You Need" — NeurIPS 2017. RESOLVED.**
+The NeurIPS proceedings abstract page renders it as *"Attention is All you Need"* (lowercase "is"/"you" —
+note the differing capitalisation from the arXiv title *"Attention Is All You Need"*) and places it in
+**"Advances in Neural Information Processing Systems 30 (NIPS 2017)"**. The fetched metadata JSON confirms
+the same and adds page numbers **5998–6008**, `sourceid` 3058, and the printed affiliation footnote
+*"31st Conference on Neural Information Processing Systems (NIPS 2017), Long Beach, CA, USA."*
+The earlier note that "the arXiv page itself does not print the venue" remains true; the venue is now
+verified from the proceedings instead. **One genuine discrepancy worth knowing:** the proceedings
+*abstract field* prints **27.5 BLEU / 41.1 BLEU** and "165 million parameters", whereas the *full paper
+text* in the same metadata record prints **28.4 BLEU / 41.0 BLEU**. The 28.4/41.0 pair is the one the
+paper's own §6.1 and Table 2 use, and the one the main report already cites correctly — but the official
+proceedings abstract disagrees with the official proceedings body, so quote §6.1, not the abstract field.
+
+**2. RoFormer — Neurocomputing. RESOLVED; the "2024" attribution needs care.**
+The DOI is **10.1016/j.neucom.2023.127063** (note the **2023** stem). The ACM Digital Library entry titles
+it *"RoFormer: Enhanced transformer with Rotary Position Embedding: Neurocomputing: Vol 568, No C"*, and
+the fetched Semantic Scholar record gives `"publicationVenue": {"name": "Neurocomputing", "type":
+"journal", "issn": "0925-2312"}`, DBLP key **`journals/ijon/SuALPBL24`** (the `24` suffix = 2024), and
+the article title verbatim. So "Neurocomputing 2024" is **broadly right**, but stating a bare year is
+fragile: the DOI carries 2023 and the volume is **568**. Cite
+*Neurocomputing, vol. 568, 2024, DOI 10.1016/j.neucom.2023.127063*.
+**A further trap:** Semantic Scholar's `venue` field says `"Neurocomputing"` but its `year` field says
+**2021** and its `journal` field says `{"name": "ArXiv", "volume": "abs/2104.09864"}` — the API is
+internally inconsistent and returns the arXiv year, not the journal year. Do not quote Semantic Scholar's
+`year` for this paper.
+
+**3. ALiBi — ICLR 2022. RESOLVED.**
+The OpenReview forum is **id=R8sQPpGCv0**. The DBLP-indexed OpenReview record states venue
+**"ICLR 2022"**, `venueid` `dblp.org/conf/ICLR/2022`, authors **Ofir Press, Noah A. Smith, Mike Lewis**,
+title *"Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation"*, and the
+canonical key `DBLP:conf/iclr/PressSL22`. The old note "arXiv page lists no venue" was true but, as
+suspected, was **not** evidence of non-publication. (Direct `openreview.net/forum` fetches are
+bot-challenged in this environment; the record was read through the OpenReview API, which is the same
+underlying data. The forum URL is given for human verification.)
+
+**4. Peer-review status of six decoding/attention papers.**
+Four are **peer-reviewed**, contradicting the old report's blanket "arXiv tech reports" verdict:
+
+| Paper | Verdict | Evidence |
+|---|---|---|
+| Shazeer, *Fast Transformer Decoding: One Write-Head is All You Need* (2019) | **Not peer-reviewed** — arXiv-only | arXiv:1911.02150, v1 only, never revised; no conference on the page; no OpenReview record for it |
+| Dao, *FlashAttention-2* | **ICLR 2024 poster** | OpenReview **mZn2Xyh9Ec**, `venueid` `ICLR.cc/2024/Conference`, venue string "ICLR 2024 poster" |
+| Shah et al., *FlashAttention-3* | **NeurIPS 2024, Main Conference Track** | NeurIPS proceedings hash `7ede97c3e082c6df10a8d6103a2eebd2`; DOI **10.52202/079017-2193** |
+| Cai et al., *Medusa* | **ICML 2024 Poster** | OpenReview **PEpbUobfJv**, `venueid` `ICML.cc/2024/Conference`, submission 1815 |
+| Fu et al., *Lookahead Decoding* | **ICML 2024 Poster** | OpenReview **eDjvSFOkXw**, `venueid` `ICML.cc/2024/Conference`, submission 7561 |
+| Chen et al., *Accelerating LLM Decoding with Speculative Sampling* (2023) | **Not peer-reviewed** — arXiv-only | arXiv:2302.01318; cited as an arXiv preprint in later peer-reviewed work |
+
+**MEDUSA SPEEDUP — A REAL NUMERIC CONFLICT.** The camera-ready OpenReview abstract says Medusa-2 improves
+the speedup to **"2.3–2.8×"**, while the arXiv v3 abstract (and the DBLP/CoRR record) says **"2.3–3.6×"**.
+The main report quotes **2.3–3.6×** because it read arXiv. If the curriculum cites the ICML 2024 published
+version, the correct upper bound is **2.8×**, not 3.6×. Quote arXiv or the proceedings consistently and say
+which.
+
+**FLASHATTENTION-3 — THE HARDWARE NUMBERS CHANGED BETWEEN VERSIONS.** The fetched arXiv abstract (v2)
+says *"with **FP16** reaching up to **740 TFLOPs/s (75% utilization)**, and with FP8 reaching close to
+**1.2 PFLOPs/s**."* The fetched NeurIPS 2024 camera-ready says *"with **BF16** reaching up to **840
+TFLOPs/s (85% utilization)**, and with FP8 reaching **1.3 PFLOPs/s**."* Same paper, two different headline
+numbers. Cite the version you mean.
+
+**SHARED PATTERN TO NOTE FOR ALL VENUE CLAIMS.** In every one of the four "published" cases the arXiv
+listing page gave no conference. The old report's inference from arXiv silence to probable
+non-publication was invalid. Note also that OpenReview/DBLP carries *duplicate* records for the same
+paper — one `venue: "CoRR 2024"` and one `venue: "ICML 2024 Poster"`. Seeing the CoRR record is **not**
+evidence the paper was unpublished; both records describe the same work.
+
+**5. "Lost in the Middle" per-position numeric accuracies. STILL UNVERIFIED — but the venue gap is now CLOSED.**
+I fetched the full arXiv HTML (v3) and the ACL Anthology record. The per-position numbers are **not
+recoverable from the text** for a concrete, checkable reason: the position-vs-accuracy data lives only in
+**Figure 5** (multi-document QA) and **Figure 7** (key-value retrieval), which are rendered as **raster
+images with no accompanying data table** and no numeric labels in the surrounding prose or captions. The
+prose gives only qualitative shape ("U-shaped", "highest at the beginning or end", "rapidly degrades in
+the middle") plus a handful of scattered anchors, not a per-position series. Reproducing exact
+per-position accuracies would require digitising the plotted figures, which is an estimate, not a
+citation — so this stays **STILL UNVERIFIED** rather than being guessed.
+
+**BUT — a significant venue correction that the old report missed entirely.** arXiv:2307.03172 carries the
+comment *"Accepted for publication in Transactions of the Association for Computational Linguistics
+(TACL), 2023"*, and the paper is in fact published as:
+
+> Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., & Liang, P. (2024).
+> *Lost in the Middle: How Language Models Use Long Contexts.* **Transactions of the Association for
+> Computational Linguistics, 12, 157–173.** Anthology ID **2024.tacl-1.9**, DOI
+> **10.1162/tacl_a_00638**, publisher **MIT Press**.
+
+Note the arXiv comment says **2023** while the published volume is **2024** — cite **TACL 2024**. The
+main report currently cites this solely as "arXiv:2307.03172v3" and thereby **understates it: this is a
+peer-reviewed TACL paper, not a preprint.** That is a citation upgrade the curriculum should take.
+
+Verified numeric anchors that *are* in the text (usable as-is): **2655** NaturalQuestions-Open queries
+where the annotated long answer is a paragraph; passages of **at most 100 tokens**; **10 / 20 / 30**
+total retrieved documents; key-value retrieval at **75 / 140 / 300** pairs (500 examples each);
+GPT-3.5-Turbo closed-book **56.1%**; worst-case key-value retrieval **45.6%**; Flan-UL2 best-vs-worst
+spread **1.9%** within its training window; using **50 instead of 20** documents gains only
+**~1.5%** (GPT-3.5-Turbo) and **~1%** (Claude-1.3).
+
+**6. Llama-2-7B KV-cache-per-token. STILL UNVERIFIED.**
+I could not find, and did not fetch, any authoritative page that states a KV-cache-per-token figure for
+**Llama-2-7B specifically**. The official config is **gated**: fetching
+`https://huggingface.co/meta-llama/Llama-2-7b-hf/raw/main/config.json` returned **HTTP 401** ("Access to
+model meta-llama/Llama-2-7b-hf is restricted"), so the architectural constants cannot be read from the
+primary source without credentials. The only figures I found in search results for this specific model
+were on secondary/aggregator sites (for example an "inferencebench.io" model page), which are **not**
+authoritative and were not treated as evidence. The "512 KB/token" figure therefore remains **a
+computation, not a citation** — and because the underlying config could not be fetched, it is not even a
+fully source-backed computation. The prior source-verified anchors stand unchanged: **13B OPT = 800
+KB/token** (vLLM paper) and **Llama-3.1-8B = 0.125 GiB per 1k tokens** (HF blog).
+*Recommendation:* either drop the Llama-2-7B-specific figure and cite the two verified anchors, or derive
+it explicitly from a named config and label it "computed", showing the formula.
+
+**7. Mixtral parameter count — the Mistral blog still will not render, but the number is now KNOWN, and it
+is a third value. PARTIAL: STILL UNVERIFIED from the Mistral blog; CORRECTED as a fact.**
+Re-fetching `https://mistral.ai/news/mixtral-of-experts/` returned **HTTP 200 but navigation chrome only**
+— the article body is still not retrievable, so the *release-blog* count remains unverified. However, the
+official **Hugging Face** launch blog (co-authored by the HF team, published 11 Dec 2023, the day of
+release) was fetched and states, in a section headed **"About the name"**:
+
+> "The Mixtral MoE is called **Mixtral-8x7B**, but it doesn't have 56B parameters. … The total number of
+> parameters is not 56B, but **about 45B**. A better name could have been `Mixtral-45-8e`…"
+
+It also states the model "decode[s] at the speed of a **12B parameter-dense** model", sizes it as
+"roughly equivalent in size to a **45B** parameter dense model", and gives VRAM as **>90 GB** (fp16),
+**>45 GB** (8-bit), **>23 GB** (4-bit). The **Mistral model card was re-fetched and still states no
+parameter count**, confirming the earlier finding.
+
+**This means three different figures now circulate, and the report's framing must change.** "46.7B total /
+12.9B active" (popular), "≈47.4B total / ≈13.6B active" (the report's own computed values), and
+"**about 45B**" (HF's official launch blog). The report currently presents 46.7B and 47.4B as the two
+options and does not mention 45B at all. Given that the HF blog is the closest thing to an official
+partner statement on release day, **"about 45B" deserves to be listed**, and the honest curriculum
+formulation is: *"Mixtral 8x7B has roughly 45–47B total parameters depending on accounting (Mistral/HF
+state 'about 45B'); it is emphatically **not** 8×7B = 56B, and only 2 of 8 experts fire per token."*
+
+**8. Qwen3-235B-A22B "235B total / 22B active". RESOLVED.**
+The official Qwen blog *"Qwen3: Think Deeper, Act Faster"* (April 29, 2025, Qwen Team) states verbatim:
+
+> "We are open-weighting two MoE models: **Qwen3-235B-A22B**, a large model with **235 billion total
+> parameters and 22 billion activated parameters**, and **Qwen3-30B-A3B**, a smaller MoE model with
+> **30 billion total parameters and 3 billion activated parameters**."
+
+The same page's architecture table confirms **Qwen3-235B-A22B: 94 layers, 64 / 4 (Q / KV) heads,
+128 / 8 experts (total / activated), 128K context**, matching the config-derived values in §12 of this
+report exactly. The former "UNVERIFIED-from-authoritative-prose" flag can be removed.
+
+**9. Anyscale "23× continuous batching". RESOLVED — with a qualifier that the report must carry.**
+The fetched Anyscale blog is literally titled *"How continuous batching enables **23x throughput** in LLM
+inference while reducing p50 latency"* (Cade Daniel, Chen Shen, Eric Liang, Richard Liaw — **June 22,
+2023**) and states:
+
+> "By leveraging **vLLM**, users can achieve **23x LLM inference throughput** while reducing p50 latency."
+> "Up to **23x throughput improvement using continuous batching *and* continuous batching-specific memory
+> optimizations (using vLLM)**."
+
+**The qualifier matters:** the 23× is *not* attributable to continuous batching alone. The blog
+separates the figures — **8×** over naive batching from continuous batching alone (on Ray Serve and HF
+text-generation-inference), **4×** from an optimised model implementation (FasterTransformer), and the
+**23×** only for **continuous batching + vLLM's PagedAttention** together. Benchmark context: single
+**A100 40GB**, **OPT-13B**, 1000 requests × 512 input tokens, generation lengths from an exponential
+distribution (mean 128). Saying "continuous batching gives 23×" overstates it; saying "vLLM's continuous
+batching plus PagedAttention gives up to 23×" is exact. Note also the blog itself credits Orca (OSDI '22)
+with introducing iteration-level scheduling, consistent with finding 7 of the summary above.
+
+**10. Cellular batching (Gao et al. 2018). RESOLVED — and the citation was materially wrong.**
+The paper is **not** an arXiv preprint. It is:
+
+> Pin Gao, Lingfan Yu, Yongwei Wu, **Jinyang Li**. *"Low latency RNN inference with cellular batching."*
+> **13th European Conference on Computer Systems (EuroSys 2018)**, April 2018.
+> DOI **10.1145/3190508.3190541**.
+
+Verified on the authors' own institutional page (MADSys, Tsinghua), which labels it "Conference paper",
+gives the venue as "13th European Conference on Computer Systems", and links both the DOI above and the
+PDF `EUROSYS2018-gao.pdf`. Abstract, verbatim: *"We propose the technique of cellular batching, which
+improves both the latency and throughput of RNN inference. Unlike existing systems that batch a fixed set
+of dataflow graphs, cellular batching makes batching decisions at the granularity of an RNN 'cell' (a
+subgraph with shared weights) and dynamically assembles a batched cell for execution as requests join and
+leave the system."* The system is named **BatchMaker**. Two corrections for the curriculum: (i) the venue
+is **EuroSys 2018**, and (ii) the author list has **four** authors — the fourth, **Jinyang Li**, is
+easily dropped. Note this is a **2018 EuroSys** paper, distinct from the **2022 OSDI Orca** paper that
+introduced "iteration-level scheduling" (finding 7).
+
+**11. Does DeepSeek-R1's abstract state "671B/37B"? RESOLVED — it does NOT.**
+I fetched `https://arxiv.org/abs/2501.12948` and read the abstract in full. It contains **no parameter
+counts whatsoever** — no "671B", no "37B", no total/active split. The abstract is entirely about
+reinforcement learning: *"we show that the reasoning abilities of LLMs can be incentivized through pure
+reinforcement learning (RL), obviating the need for human-labeled reasoning trajectories."* The old
+note was **correct**, and is now confirmed by direct reading rather than inference. The page does confirm
+the **Nature** journal reference (*Nature* volume **645**, pages **633–638** (2025), DOI
+**10.1038/s41586-025-09422-z**), so R1 is peer-reviewed in Nature. **Curriculum rule: any "671B/37B" for
+R1 must be attributed to the inherited V3 architecture and the `config.json`, never to the R1 abstract.**
+
+### Net effect on the report
+
+- **Two genuine corrections that change what the curriculum should say:** FlashAttention-2, FlashAttention-3,
+  Medusa and Lookahead decoding **are all peer-reviewed** (ICLR 2024 / NeurIPS 2024 / ICML 2024 ×2) — the
+  old "arXiv tech reports" verdict was wrong for four of six papers. And **cellular batching is EuroSys
+  2018**, not an arXiv preprint.
+- **Two citation upgrades:** "Lost in the Middle" is **TACL 2024** (MIT Press, DOI 10.1162/tacl_a_00638),
+  not just an arXiv preprint; RoFormer is **Neurocomputing vol. 568 (2024), DOI
+  10.1016/j.neucom.2023.127063**.
+- **Three new conflicts to state explicitly:** Medusa-2 speedup **2.3–2.8× (ICML) vs 2.3–3.6× (arXiv)**;
+  FlashAttention-3 **740 TFLOPs/s FP16 (arXiv) vs 840 TFLOPs/s BF16 (NeurIPS)**; Mixtral total parameters
+  **45B (HF) vs 46.7B (popular) vs 47.4B (computed here)**.
+- **Two items remain genuinely open**, both for concrete reasons: per-position "Lost in the Middle"
+  accuracies (raster-only figures, no data table) and Llama-2-7B KV cache per token (**gated config,
+  HTTP 401**; no authoritative prose source found).

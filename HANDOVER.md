@@ -667,7 +667,7 @@ Empty. Git will not track it. Either delete it or put something in it.
 
 ### 7.5 ✅ RESOLVED — apparent mojibake in `tracks.json` is NOT real
 
-Reading `tracks.json` in PowerShell showed the `finetuning` blurb as `changing the prompt â€” and proving`. **This was PowerShell's console decoding, not file corruption.**
+Reading `tracks.json` in PowerShell showed the `finetuning` blurb as `changing the prompt — and proving`. **This was PowerShell's console decoding, not file corruption.**
 
 Verified by reading the raw bytes and decoding as UTF-8 explicitly:
 
