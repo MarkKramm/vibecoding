@@ -25,30 +25,12 @@ through headless Edge over CDP. Every guard has been proved capable of failing.
 
 ## P0 — things that are actually wrong or missing
 
-### The live page has never been observed
-
-`*.github.io` resolves IPv6-only and is **unreachable from the environment this was built in**.
-The deploy is verified at the **artifact** level: the deployment reports `state=success`, the
-artifact is the expected size, the built bundle contains the expected strings, and the
-same bundle was verified to render correctly **locally** on port 4173.
-
-**That is not the same as having loaded the live URL.** If you are reading this, the single
-most valuable thing you can do is open the site and confirm it renders. It should.
-
 ### Mobile has been emulated, never touched
 
 The layout is verified at 1440px and 390px in a headless browser. It has never been opened on
 a real phone. Emulated viewports do not reproduce real touch targets, real font rendering,
 real scroll behaviour, or iOS Safari's specific quirks. If you have a phone, open the site on
 it.
-
-### No test covers the components themselves
-
-Search, highlighting and the pure libraries now have unit tests (their absence in the README
-is stale as of this writing). What has **no** test is the React layer: no test mounts
-`<Quiz>`, `<LessonBlock>` or `<ToolCard>` and asserts on rendered output. The lesson-block and
-inline-markdown tests render through `react-dom/server`, which is a genuine check but not a
-component test.
 
 ### The browser suite samples, it does not sweep
 
@@ -57,23 +39,52 @@ to phase 61.
 
 ---
 
+## The lesson from the first live-site visit
+
+The site was loaded for the first time and **immediately** surfaced a serious defect: the
+Reference view was visibly leaking raw Markdown. Following it down found that **325 authored
+items — 254 glossary terms and 71 catalogued resources — were rendering into an empty `<div>`**
+and had been invisible in every deployment.
+
+The data was correct. The component mapped one of the three document shapes and ignored the
+other two. **Every check passed**, because every check verified the data.
+
+That is now the **fourth** instance of one shape in this project:
+
+| Shipped defect | Data | Screen | Checks |
+|---|---|---|---|
+| Unstyled layout | correct | 40 classes had no rule | green |
+| Tools library | 433 rows | "0 tools" | green |
+| Tool card links | 40 dashes | `<a href="—">` | green |
+| Glossary + resources | 325 items | empty div | green |
+
+> **Correct source, wrong screen, and every test green.**
+
+Component tests and the browser now cover much of this, but not all of it — the browser suite
+still samples rather than sweeps. **Visual inspection is not redundant here; it catches a class
+the automated checks structurally cannot.**
+
+---
+
 ## P1 — worth doing, in rough priority order
 
-### 1. A real component test layer
+### 1. ✅ A real component test layer — DONE
 
-The highest-value gap. Every defect that reached the rendered page this project — a page
-showing "0 tools", 40 dead links, a completely unstyled layout — was invisible to content
-checks and would have been caught by *rendering the component and asserting on the output*.
+Delivered as `test-components.mjs`: **92 assertions**, now `npm test` step 8. It mounts the
+components through `react-dom/server` with esbuild transforming JSX in memory — no new
+dependency, no test framework, as planned.
 
-The infrastructure already exists: **esbuild is on disk** as a Vite dependency, and the
-existing tests already transform JSX in memory and render with `react-dom/server`. No new
-dependency and no test framework is needed. Add:
+It covers `ToolCard` URL handling (including every placeholder spelling and non-string value,
+plus a sweep over all 433 corpus rows), `PhaseCard` against the real light projection and its
+degradation behaviour, and `Quiz` normalisation against all 549 real questions.
 
-- mount `<Quiz>` and assert the correct option is marked, the `**Why:**` renders, and keyboard
-  navigation moves focus
-- mount `<ToolCard>` with and without a URL, and assert **no anchor** is emitted when there is
-  none — the exact regression that shipped
-- mount the dashboard with the light projection and assert it does not read a missing field
+**It found a real defect before it was finished**: my earlier em-dash fix was a *blocklist*, and
+two tool rows carried the prose `"in this repository"` in the URL column. The parser now
+requires `^https?://`.
+
+**What it does not cover**, stated in the file rather than glossed: `Quiz`'s own JSX and every
+click handler, because those need a DOM and jsdom was deliberately not added. What is asserted
+is everything those handlers compute from.
 
 ### 2. An accessibility audit, automated
 
@@ -82,10 +93,10 @@ Current a11y work has been **manual and partial**: a skip link, `:focus-visible`
 backup-import messaging. There is **no automated** check of contrast ratios, heading order, or
 that every interactive element is reachable by keyboard.
 
-⚠️ One specific gap worth naming: **the search result count is not announced.** The live-region
-roles exist in `DataTransfer.jsx` and `PhaseTransfer.jsx`, but nothing in the search view uses
-`aria-live`, `role="status"` or `role="alert"` — so a screen-reader user typing a query gets no
-feedback that the result list changed. That is a small, concrete, high-value fix.
+⚠️ Fixed since this was written: the search result count now uses
+`role="status" aria-live="polite"`, verified in the browser announcing "30 matches." The
+remaining gap is that **none of this is automated** — the audit is being built as
+`audit-a11y.mjs`.
 
 The highest-value automated check: **walk every view, tab through it, and assert focus never
 lands on an element with no visible focus indicator.** That is testable with the existing CDP
