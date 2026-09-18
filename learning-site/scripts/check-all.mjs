@@ -89,6 +89,12 @@ const STEPS = [
     why: "the parser rejects an unknown block type but the renderer only reports one, so widening the vocabulary leaves lessons rendering 'Unsupported block type: ...' while the build, the shape audit and the AST character audit all stay green",
   },
   {
+    name: "in-lesson search",
+    cmd: "node",
+    args: [join(HERE, "test-search.mjs")],
+    why: "lessonSearch.js is the only module whose OUTPUT the reader is scrolled to: LessonFinder jumps to hit.blockIndex and paints hit.snippet.match inside a <mark>. An h5 wrongly counted as a section, a flipped ranking comparison or a match that is not a verbatim slice of its own block all produce results that render, highlight and jump — to the wrong place — so every content check stays green while the finder quietly lies about where the text is",
+  },
+  {
     name: "cost classification",
     cmd: "node",
     args: [join(HERE, "test-cost-tone.mjs")],

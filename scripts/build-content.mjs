@@ -375,6 +375,28 @@ function sectionNumbered(section) {
 }
 
 /**
+ * A cell that carries no value, written as a dash.
+ *
+ * The tools tables are hand-authored prose, and an empty cell reads as a mistake
+ * in a rendered table, so the convention across the corpus is to write `—`. That
+ * is correct TYPOGRAPHY and it was being passed through as DATA: 40 of the 433
+ * tool rows carried `url: "—"`, which `ToolCard`'s `tool.url &&` guard accepts as
+ * truthy, so the tools library rendered a live `<a href="—">Official site</a>`
+ * pointing at nothing.
+ *
+ * Normalised at the parse boundary rather than in the component, because the
+ * component cannot distinguish "no URL" from "a URL that looks odd" and should not
+ * have to know the corpus's placeholder convention. Anything consuming `tools`
+ * then gets a clean empty string.
+ */
+const PLACEHOLDER_CELL = /^(?:—|–|-|n\/?a|none|null|tbd)$/i;
+
+const cellValue = (raw) => {
+  const s = String(raw == null ? '' : raw).trim();
+  return PLACEHOLDER_CELL.test(s) ? '' : s;
+};
+
+/**
  * Parse one row of a `## Tools for This Phase` table.
  *
  * Positional, not header-driven, and that is deliberate: a header-driven parse
@@ -388,7 +410,18 @@ function sectionNumbered(section) {
 export function parseToolRow(cells) {
   if (cells.length < 6) return null;
   const [name, purpose, cost, url, task, freeAlternative] = cells;
-  return { name, purpose, cost, url, task, freeAlternative };
+  return {
+    name: cellValue(name),
+    purpose: cellValue(purpose),
+    cost: cellValue(cost),
+    // `url` and `freeAlternative` are the two columns where a dash means "there
+    // is none". Only these are blanked: a dash in `name` or `purpose` is a
+    // genuinely broken row and should survive to be rejected by the guard below,
+    // not be quietly emptied here.
+    url: cellValue(url),
+    task: cellValue(task),
+    freeAlternative: cellValue(freeAlternative),
+  };
 }
 
 /**
