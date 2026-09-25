@@ -1,6 +1,6 @@
 # HANDOVER — Vibecoding / AI Era Learning Site
 
-**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-19**.
+**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-25**.
 **Purpose:** Everything a fresh session needs to resume this project without re-deriving anything.
 **Current repo root:** `C:\Users\zaman\Desktop\vibecoding` (re-cloned after the owner's NVMe SSD failure).
 **Historical repo root in old logs:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`.
@@ -8,7 +8,51 @@
 
 ---
 
-## START HERE — current handoff (2026-09-19)
+## START HERE — current handoff (2026-09-25, second pause)
+
+**State: SAFE. `main` is pushed and in sync; the working tree has three UNCOMMITTED changes described in §9.5. Nothing is lost and nothing is half-broken.**
+
+Last pushed commit: **`25173ba`** — "Add Foundations phase 9: Multimodal and Vision". `origin/main` and `HEAD` are identical (`git rev-list --left-right --count origin/main...HEAD` → `0  0`). Both CI and the Pages deploy for that commit concluded **success**, and `found-09-multimodal-and-vision` is confirmed present in the deployed bundle.
+
+### What is uncommitted right now
+
+| Path | State | Safe? |
+|---|---|---|
+| `.gitignore` | Modified — secret rules added | ✅ Complete and **proven** (see §9.5) |
+| `learning-site/src/hooks/useNotes.js` | Modified — unmount flush added | ⚠️ Builds clean, **not yet proven to fix the bug** |
+| `learning-site/scripts/verify-notes-flush.mjs` | **Untracked** — new verification script | ⚠️ Works, but has a **known selector bug** (see below) |
+
+### The one thing to know before resuming
+
+**The `verify-notes-flush.mjs` script is at 4/5 passing, and its one failure is a BUG IN THE SCRIPT, not in `useNotes.js`.**
+
+The script currently does `document.querySelector('textarea')`. On a real phase that returns the **first** textarea on the page, which is a practice-task answer box with class **`task__area`**, not the note field. The note field has id `note-<phaseId>` and class **`notes__area`** (`NotesPanel.jsx:81-83`). Fix the selector to `'textarea.notes__area'` and re-run.
+
+**Do not conclude from the current failure that the `useNotes` fix is broken.** The test never wrote to the note field, so it proved nothing either way. Two other things were confirmed working by that run: the note panel opens via a button matching `/write|note/i`, and a Next-phase control exists.
+
+### Exact resume steps
+
+1. `cd C:\Users\zaman\Desktop\vibecoding` and run `git status -sb`. Expect exactly the three rows above. **Do not reset or revert them.**
+2. Fix the selector in `learning-site/scripts/verify-notes-flush.mjs` (lines ~166 and ~187): `'textarea'` → `'textarea.notes__area'`.
+3. Start a preview server **on a unique port** and run the script against it:
+   - `cd learning-site; npx vite preview --port 4199 --strictPort` (background)
+   - `node scripts/verify-notes-flush.mjs http://localhost:4199`
+4. **It must pass 5/5. Then prove it can fail**: temporarily revert the `useRef` flush effect in `useNotes.js`, rebuild, re-run, and confirm it drops to 4/5. Restore the fix. A test that cannot fail is not evidence — that is this project's own rule (§0 / AGENTS.md).
+5. Run the full battery from root and `cd learning-site; npm test` (18 checks). Expect all pass, with the two browser checks skipping if no preview is running.
+6. Commit and push. Suggested message is drafted in §9.5.
+
+### Two cautions learned the hard way this session
+
+- **Do not kill browser processes.** This machine had ~15 `msedge.exe` processes running that were the owner's own windows. The way to tell mine from theirs is the `--user-data-dir` argument: mine always point at a `%TEMP%` scratch profile. Check `Win32_Process` CommandLine before killing anything.
+- **PowerShell mangles inline `node -e` with quotes and regexes.** It failed four separate times this session (once mid-edit). Write a temp `.mjs` file instead, run it, delete it. The failed edit did **not** corrupt the target file — it errored before writing — but the risk is real.
+
+### Also still open (unchanged, not started)
+
+The four defects found by the code audit in the previous session are listed in **§9.6**. `.gitignore` is done. The other three (notes flush — in progress; focus-trap `paddingRight`; dead branch at `Exam.jsx:322`) are **not yet addressed**. And the mobile-device P0 in `ROADMAP.md` still needs a real phone.
+
+---
+
+## START HERE — previous handoff (2026-09-19) — SUPERSEDED
 
 The owner paused mid-feature request to start a new chat. **The exam work is implemented in the working tree, fully tested, but not committed or pushed.** Start here, then read §9 for the feature details and current Git state.
 
@@ -1184,7 +1228,165 @@ can detect semantic drift (§12.22–23). A phase can be stale in substance and 
 
 ---
 
-## 9b. The authoring loop, if you do write more content
+## 9.5 The uncommitted changes in detail (2026-09-25 pause)
+
+Added because §START HERE must stay short while these details are what a resuming
+session actually needs. Everything here was verified in this session unless marked.
+
+### `.gitignore` — DONE, complete, proven
+
+Added a `# Secrets` block before the logs section:
+
+```
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets.json
+credentials.json
+```
+
+**Why it matters:** this project's own Phase 8 checklist calls a leaked secret the
+one defect on the list **with no undo** — `git rm` does not remove it from history
+and rotation is the only real fix. The site needs no secrets at all today (static,
+two runtime dependencies, no server), which is exactly why the rule belongs there
+now: it costs nothing and the failure it prevents is unrecoverable.
+
+**Proven both directions, not assumed:**
+- Created fake `.env`, `.env.local`, `server.pem`, `credentials.json` → `git status`
+  showed **none** of them, and `git check-ignore -v` named the matching rule for each.
+- Created `.env.example` → `git status` **did** show it (`?? .env.example`), so the
+  negation works.
+- All fake files deleted; no residue.
+
+**Gotcha for the next person:** `git check-ignore -v .env.example` **prints the
+negation rule and exits 0** even though the file is *not* ignored. Exit 0 from that
+command does not mean "ignored". Use `git status --porcelain` to test this
+question, because that is what actually decides whether a file would be committed.
+I got this wrong first and briefly reported the rule as broken when it was correct.
+
+### `learning-site/src/hooks/useNotes.js` — fix written, NOT YET PROVEN
+
+**The defect it addresses.** `useNotes` writes to localStorage in a
+`useEffect(..., [notes])`, which runs after paint. `useNotes()` is instantiated
+inside `PhaseDetail`, which unmounts on every phase navigation. So a reader who
+types and then immediately clicks "Next phase" **in the same interaction frame**
+can have the last keystrokes dropped: the state update is scheduled, the component
+goes away, the write effect never runs.
+
+**The fix.** Mirror `notes` into a ref (`latest`), and add a second effect with an
+empty dep list whose cleanup writes `latest.current` once more on unmount. The ref
+is assigned during render in the same commit as the state, so the cleanup sees the
+current value rather than a stale closure over the first render. `useRef` was added
+to the existing React import.
+
+**Honest status.** The app **builds clean** (`npm run build` exit 0) and the import
+is correct. But the behavioural claim — that the last keystrokes now survive — is
+**not yet demonstrated**. See the START HERE note: the verification script failed on
+a selector bug, so it never exercised the note field.
+
+**Design constraint to preserve.** The original effect must stay the primary write
+path. The unmount flush is a safety net only; if it ever becomes the sole writer, a
+reader who stays on one phase would never save at all.
+
+### `learning-site/scripts/verify-notes-flush.mjs` — new, untracked, has a known bug
+
+A CDP-driven browser test that reproduces the race faithfully: it types into the
+note field via a native value setter plus a real `input` event, then navigates away
+inside a **`requestAnimationFrame`** so the write effect cannot have flushed. A
+`sleep` here would let the effect run and prove nothing — the timing is the test.
+
+**Current result: 4/5.** Passing: Foundations reachable from the dashboard, note
+panel opens, a textarea exists, a Next control exists. Failing: the marker is not
+found in localStorage.
+
+**Cause is the script, not the app.** It queries `'textarea'`, which on a real
+phase resolves to a **practice-task answer box (`task__area`)**, not the note field
+(`notes__area`, id `note-<phaseId>`). It therefore typed the marker into the wrong
+element and the assertion was meaningless. Fix the selector at **lines ~166 and
+~187** to `'textarea.notes__area'`.
+
+**Two useful things this test discovered while failing**, both worth keeping in the
+script because they encode real app behaviour:
+- A phase has **no URL route**. `App.jsx` deliberately has no router and no hash
+  handling; the app always opens on the dashboard. The only honest way to reach a
+  phase is to click a track, so deep-linking in a test is not available.
+- The note textarea is **collapsed by default** (`NotesPanel.jsx:76`, `{open && (`)
+  so a 20,000-word lesson is not pushed down by an always-open box. A test must
+  click a button matching `/write|note/i` first.
+
+**Suggested commit message** (the house style is prose explaining *why*, per
+`CHANGELOG.md`):
+
+```
+Close three audit findings, and add the .env rule this repo's own Phase 8 calls
+un-undoable
+
+.gitignore: add a Secrets block. Nothing here needs a key today -- static site,
+two runtime dependencies, no server -- which is exactly why the rule costs nothing
+now and is unrecoverable later. Proved both ways: fake .env/.env.*/*.pem/
+credentials.json are all ignored and do not appear in git status, while
+.env.example is still visible so a template can be committed.
+
+useNotes: flush on unmount. The write effect runs after paint, and useNotes lives
+inside PhaseDetail, which unmounts on every phase navigation -- so typing and then
+clicking Next in the same frame could drop the last keystrokes. A ref mirrors the
+latest value and the cleanup writes it once more. The existing effect remains the
+primary path.
+
+scripts/verify-notes-flush.mjs: reproduce the race in a real browser, navigating
+inside requestAnimationFrame so the effect cannot have flushed. A sleep would let
+it run and prove nothing.
+```
+
+---
+
+## 9.6 The remaining audit findings (from the code audit, all still open)
+
+A read-only adversarial review of `learning-site` (22 guards, 571 assertions,
+~13.6k lines) found **no HIGH-severity defects**. The reviewer explicitly withdrew
+four of its own candidate findings after tracing them — the exam expiry guard and
+the `renderInline` key collision were both correct as written, and the `useQuizAnswers`
+stale-closure worry dissolved. Two more of its open questions were closed by hand in
+this session and **also dissolved**:
+
+- **`offsetParent` keyboard trap — DISMISSED.** `.modal-backdrop`/`.shortcuts-backdrop`
+  are `position: fixed`, which is the classic trap: `offsetParent` is `null` for
+  fixed elements, so `focusableWithin` would return zero items and hold Tab on the
+  panel. But `panelRef` attaches to `.shortcuts`/`.modal` — the **inner panel** —
+  and those rules set **no `position`** at all, so their `offsetParent` is the
+  positioned backdrop and is not null. The trap does not fire.
+- **Notes merge discarding data — DISMISSED.** `mergeValue`'s boolean-map predicate
+  is `kind.startsWith("map of 'phaseId")`, which does *not* match
+  `"map of phaseId -> { note, answers }"`, so notes fall past it. That looked like a
+  stray apostrophe causing data loss. It is not: `"map of 'phaseId#sectionId' -> true"`
+  is a **real key** (reading progress), the predicate is intentional and precise, and
+  the notes case is handled correctly further down at `transfer.js:550` under its own
+  `isNotesMap()` guard, with existing-wins on the note and per-task union on answers.
+
+**Still genuinely open — three defects, none severe:**
+
+1. **`useNotes` unmount race** — fix written, verification incomplete. See §9.5.
+2. **`useFocusTrap` leaks `paddingRight` on stacked overlays**
+   (`src/hooks/useFocusTrap.js:104-112`). Cleanup hard-sets `paddingRight = ""`
+   instead of restoring the captured previous value, so opening a second overlay
+   over the first clears padding the outer one set. Cosmetic layout shift only.
+   Fix: capture the previous value alongside `prevOverflow` and restore it.
+3. **Dead branch at `Exam.jsx:322`.** The handler tests
+   `active?.mode === "comprehensive"` but the button lives inside the `if (!active)`
+   branch at line 300, so `active` is always `null` and the body is unreachable. The
+   `writeResumeSnapshot(null)` on the following line does the real work. Harmless;
+   delete for clarity.
+
+**One item is cosmetic and may not be worth fixing:** the capstone "questions seen"
+counter saturates once a track's unseen pool empties, so it over-reports relative to
+what a reader might expect. The reviewer downgraded it to LOW after confirming the
+number is honest as a *unique* count — it is a label question, not a correctness one.
+
+---
+
 
 Kept because it is still correct and was hard-won.
 
@@ -1376,6 +1578,20 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
 36. **Measure the backlog before accepting its size.**
     The task was scoped as "~107 unverified claims". The real number was **11**. The earlier figure counted **mentions of the word** "unverified" across `docs/research/`, not distinct unresolved claims — an easy and self-flattering error, because a bigger backlog justifies a bigger effort. Counting the actual list took one command and changed the plan: 11 items is a sweep, not a project.
+
+37. **⭐ A keyword scan finds SPELLINGS, not TOPICS. Ours reported five false gaps at once.**
+    A coverage sweep over all 65 phases flagged **FlashAttention, Mixture-of-Experts, jailbreaking, GraphRAG and PII** as absent, and each looked like a serious hole in a curriculum this mature. **All five were already covered** — under different spelling. The corpus said "FlashAttention" (one word), "Mixture-of-Experts" (hyphenated and capitalised), and cited *instruction hierarchy* research for what the scan called "jailbreak"; GraphRAG had a **whole phase** (`rag/07`); "PII" is taught as **RA 10173**, the Philippine statute, which is correct localisation rather than an omission.
+
+    **The procedure that caught it:** for every "absent" term, grep the *concept* rather than the token — alternate spellings, the abbreviation and the expansion, and the neighbouring vocabulary. Only then does an absence mean anything. Of five reported gaps exactly **one survived** (multimodal input, 7 mentions in 65 phases with a single substantive one), and that became `foundations/09`. **This was the eighth time in this project that an implausible result was the instrument rather than the corpus**, which is why the sweep was treated as a hypothesis and not a finding.
+
+38. **An exit code of 0 from `git check-ignore` does not mean the file is ignored.**
+    Testing the new `.env.example` negation, `git check-ignore -v .env.example` **printed the negation rule and exited 0**, and I briefly reported the rule as broken. It was correct: `check-ignore` reports *which rule matched*, and a leading `!` means "do not ignore". **The authoritative test for "would this be committed?" is `git status --porcelain`** — create the file and see whether git offers it. Prefer the tool that answers the actual question over the tool whose name sounds like it does.
+
+39. **A verification script that fails is not yet evidence about the thing it tests — check which element it touched.**
+    `verify-notes-flush.mjs` reported the marker missing from localStorage and read as "the `useNotes` fix does not work". It had queried `'textarea'`, which on a real phase resolves to the **practice-task answer box (`task__area`)**, and there is a second textarea (`.notes__area`). **The marker was never typed into the field under test**, so the run proved nothing in either direction. A failing test has three possible authors — the code, the test, or the environment — and the cheap discriminator is to log *what the test actually selected* before believing its verdict. Leaving this recorded rather than fixed is deliberate: the next session must not repeat my inference from it.
+
+40. **⚠️ Before killing any process, prove it is yours — this machine runs the owner's own browsers.**
+    A process check showed ~15 `msedge.exe` entries during a CDP test. **None were mine.** The discriminator is the command line: a test browser carries `--user-data-dir=<temp>\...`, and the owner's normal windows never do. Verified with `Get-CimInstance Win32_Process | Where CommandLine -like "*<my-profile>*"`, which returned nothing, so **nothing was killed**. On a machine where the owner has previously lost data to an agent, "which of these is mine?" must be answered from evidence every time, not from a process name that looks plausible. The same rule already governs servers: never kill one you did not start.
 
 37. **⚠️ A commit message is testimony, not evidence — and a bad "correction" is worse than an open question.**
     `agents/07` stated that **`2025-11-25` was the current stable MCP revision** and `2026-07-28` merely "modern". **The truth is the reverse:** the spec's own versioning page says in bold that *"the current protocol version is 2026-07-28"*, the site header renders **"2026-07-28 (latest)"**, and `2025-11-25` is filed under *"handshake-based protocol revisions (`2025-11-25` and earlier)"* — superseded. A learner was being told to target a **dead** revision.
