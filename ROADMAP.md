@@ -18,7 +18,7 @@ items. Every phase passes a machine-verified 14-section contract.
 **The site works and is deployed.** Live at **https://markkramm.github.io/vibecoding/**, built
 and published by GitHub Actions, with CI green.
 
-**Verification is real.** `npm test` runs 17 checks, including offline guards and two browser checks
+**Verification is real.** `npm test` runs 18 checks, including offline guards and two browser checks
 (accessibility and a sweep of **all 65 phases**) when a production preview is available. The
 accessibility audit covers 60 assertions across six views; separate browser checks verify quiz
 correctness and track rendering. Every guard has been proved capable of failing.
@@ -114,22 +114,37 @@ link. Its documented gaps remain meaningful: it does not assert focus order, tes
 trapping, inspect phase-detail pages, or observe screen-reader output. A passing audit is therefore
 good evidence, not a complete accessibility certification.
 
-### 3. Keep the project handoff docs current
+### 3. ✅ Keep the project handoff docs current — DONE
 
-`CHECKPOINT.md` and `WORKFLOW.md` now exist, alongside `SETUP.md`, `TROUBLESHOOTING.md` and
-`CHANGELOG.md`. Their counts and procedures need to track the actual scripts: in particular,
-`npm test` contains browser checks that can skip without a preview server, so avoid describing
-all 17 steps as offline-only.
+`CHECKPOINT.md`, `WORKFLOW.md`, `SETUP.md`, `TROUBLESHOOTING.md` and `CHANGELOG.md` all exist and
+now carry current counts. The specific hazard this item named — describing all 17 `npm test`
+steps as offline-only, when several need a preview server and skip without one — is recorded in
+`CHECKPOINT.md` and `WORKFLOW.md` (Trap 3).
 
-### 4. `docs/free-toolkit.md`
+**The counts drifted anyway, and that is worth remembering.** By the time anyone re-read them the
+corpus said 891 practice tasks against a documented 886, and 24,035 lines against 24,033. The
+practice-task gap was five lettered sub-items (`15b`–`15f` in `vibecoding/08`, carrying ids
+`t19`–`t23`) that a `\d+\.` scrape misses. **Prose that states a number will go stale; the only
+durable fix is a guard that reads the number back.** That is what item 4 below now has.
 
-A single reader-facing page of the free-tier limits and free tools, generated from the
-curriculum's own `## Tools for This Phase` tables (**433 rows, 237 after de-duplication**).
-The data already exists and the Tools library already renders it; this would be a printable
-extract.
+### 4. ✅ `docs/free-toolkit.md` — DONE, and now guarded
 
-⚠️ Free tiers are **volatile**. Whatever this page says must carry dates, and the curriculum's
-existing `**Unverified**` convention applies.
+The page exists and is reader-facing: the whole tool list with costs, generated from the
+curriculum's `## Tools for This Phase` tables, with the `**Unverified**` and volatility
+conventions applied.
+
+**But it said it was generated while nothing generated it.** No script read those tables for this
+page; it was hand-written once and drifted. It claimed **229 distinct tools, 198 free, and 31
+things you already have** against a corpus of **237 distinct (219 free, 16 freemium, 2 paid)** —
+and the 31 sat directly above a list of seven items. The "31" was never derived from anything:
+the corpus has no field marking an entry as "not software", so any total was a hand tally wearing
+the costume of data.
+
+`scripts/audit-free-toolkit.mjs` now reads the figures on the page and fails if they disagree
+with the corpus, using the site's own `costTone()` classifier so the two cannot diverge. It runs
+in `npm test` and in the Pages deploy gate, and it builds the JSON itself when absent, because
+that gate deliberately runs on a bare checkout before `npm ci`. The page now states no count for
+the "not software" category at all — the list is the honest form of that claim.
 
 ### 5. `netlify.toml`
 

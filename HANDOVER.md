@@ -20,7 +20,7 @@ The owner paused mid-feature request to start a new chat. **The exam work is imp
 
 Verified in the current worktree before handoff: build passed; root content/quiz/AST/arithmetic/encoding/shape audits passed; `npm test` passed all 17 checks with preview; `npm run test:browser` passed (smoke, deep, quiz correctness, focused track and exam-mode visibility). AST audit still prints a non-failing 20,951-character gain / zero loss warning; historical analysis says likely retained Markdown markup, not confirmed specifically for the updated full corpus. Existing Vite warning about the generated index being both statically and dynamically imported and a React test-only `javascript:` URL warning remain non-blocking.
 
-The GitHub account was re-authenticated after setting DSH to Full Access. `git fetch origin` works normally now. Last pushed commit remains `d34045a`; feature changes listed in §9 are not committed.
+The GitHub account was re-authenticated after setting DSH to Full Access. `git fetch origin` works normally now. **Superseded 2026-09-25:** the paragraph above described `d34045a` as the last pushed commit with §9's feature changes uncommitted. Both are long resolved — those changes shipped, and `main` is now 8 commits further on (`9fa1d44`), with the working tree clean and in sync with `origin/main`. The verification paragraph above is retained as the dated record of what that session actually ran; the check count it cites has since grown from 17 to 18.
 
 ---
 

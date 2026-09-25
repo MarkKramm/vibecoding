@@ -100,7 +100,7 @@ cd learning-site
 npm run dev          # content rebuild + dev server on 5173
 npm run build        # content rebuild + bundle to dist/
 npm run preview      # serve dist/ on 4173
-npm test             # 17 checks; 2 need a preview server or skip
+npm test             # 18 checks; 2 need a preview server or skip
 npm run test:browser # needs a running server
 ```
 

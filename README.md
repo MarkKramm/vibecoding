@@ -107,7 +107,7 @@ node learning-site/scripts/audit-arithmetic.mjs # numbers stated in prose
 node learning-site/scripts/audit-encoding.mjs   # LF, UTF-8 no BOM, no mojibake, no tabs
 ```
 
-For all 17 site checks, build and start the production preview before `npm test`; two browser checks may skip if it is unavailable:
+For all 18 site checks, build and start the production preview before `npm test`; two browser checks may skip if it is unavailable:
 
 ```bash
 cd learning-site

@@ -72,6 +72,7 @@ jobs:
           node scripts/audit-lesson-ast.mjs
           node learning-site/scripts/audit-arithmetic.mjs
           node learning-site/scripts/audit-encoding.mjs
+          node scripts/audit-free-toolkit.mjs
 
       - name: Install dependencies
         working-directory: learning-site
