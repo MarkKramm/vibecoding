@@ -102,7 +102,7 @@ Few high-signal sources beats many low-signal ones. Read these monthly rather th
 - Hugging Face Course — https://huggingface.co/learn
 - Hugging Face blog — https://huggingface.co/blog
 - arXiv cs.CL — https://arxiv.org/list/cs.CL/recent
-- Papers with Code — https://paperswithcode.com/
+- Hugging Face papers — https://huggingface.co/papers
 - Andrej Karpathy, Neural Networks: Zero to Hero — https://karpathy.ai/zero-to-hero.html
 - Anthropic engineering blog — https://www.anthropic.com/engineering
 - OpenAI Cookbook — https://cookbook.openai.com/

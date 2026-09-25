@@ -95,7 +95,7 @@ No GPU is required. Every task in this phase runs on a laptop CPU in Python, bec
 | Python 3 | Simulate a batching scheduler and compute the token wall | Free | https://www.python.org/downloads/ | Tasks t01, t03, t04, t09 | Any Python 3 from your OS package manager |
 | vLLM documentation | Read the real continuous-batching and PagedAttention design | Free | https://docs.vllm.ai/ | Tasks t03, t05, t10 | Read the source on GitHub; it is Apache-2.0 |
 | vLLM paper (PagedAttention) | The primary source for block-based KV memory | Free | https://arxiv.org/abs/2309.06180 | Task t05 and Part 3 | The SOSP 2023 PDF, also free |
-| Hugging Face `transformers` docs | Learn how a batch is actually built: padding, position ids, attention masks | Free | https://huggingface.co/docs/transformers/main/en/padding_truncation_strategies | Tasks t01 and t02 | Read the library source on GitHub |
+| Hugging Face `transformers` docs | Learn how a batch is actually built: padding, position ids, attention masks | Free | https://huggingface.co/docs/transformers/main/en/pad_truncation | Tasks t01 and t02 | Read the library source on GitHub |
 | Hugging Face model cards | Read real architecture numbers to compute parameter memory | Free to browse | https://huggingface.co/models | Tasks t01 and t09 | Any published model report or config file |
 | Google Colab free tier | Optionally load a tiny model and measure real per-token latency | Freemium | https://colab.research.google.com/ | Optional extension to t09 | Your laptop CPU; a 100M-parameter model runs fine |
 | Speculative decoding paper page | Read the algorithm and its stated guarantee in the original words | Free | https://arxiv.org/abs/2211.17192 | Part 5 and Task t06 | The arXiv HTML version; no account required |
@@ -112,7 +112,7 @@ No GPU is required. Every task in this phase runs on a laptop CPU in Python, bec
 - **Accelerating Large Language Model Decoding with Speculative Sampling (Chen et al., 2023)** — https://arxiv.org/abs/2302.01318
 - **Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads** — https://arxiv.org/abs/2401.10774
 - **Orca: A Distributed Serving System for Transformer-Based Generative Models (Yu et al., OSDI 2022)** — https://www.usenix.org/conference/osdi22/presentation/yu
-- **Hugging Face documentation on padding and truncation strategies** — https://huggingface.co/docs/transformers/main/en/padding_truncation_strategies
+- **Hugging Face documentation on padding and truncation strategies** — https://huggingface.co/docs/transformers/main/en/pad_truncation
 - **Hugging Face documentation on text generation strategies** — https://huggingface.co/docs/transformers/main/en/generation_strategies
 - **NVIDIA, Mastering LLM Techniques: Inference Optimization** — https://developer.nvidia.com/blog/mastering-llm-techniques-inference-optimization/
 - **Andrej Karpathy, Let's build GPT from scratch (for the decode loop itself)** — https://www.youtube.com/watch?v=kCc8FmEb1nY

@@ -633,6 +633,68 @@ the KV-cache derivation element by element; Anthropic's retrieval figures; 13 ci
 largely about building that habit into a workflow" is **correct** — Track 8 is Vibecoding, whose
 curriculum does cover verification habits. Suspected, checked, cleared.
 
+---
+
+### 6. Link rot — 311 URLs checked, 4 dead and 6 mis-describing — 2026-09-25
+
+**Method:** every unique URL across the corpus, checked for final status **after redirects** and
+for the **final URL**, because a link that resolves and lands somewhere else is a different
+defect from a link that 404s. arXiv and YouTube were skipped (arXiv already verified in §4;
+YouTube is bot-hostile and produces false negatives).
+
+**311 checked: 291 OK (223 direct + 68 benign redirect), 4 DEAD, 6 mis-describing, 4 uncheckable.**
+
+**There is no systemic rot.** Everything on `platform.claude.com`, `developers.openai.com`,
+`modelcontextprotocol.io`, `www.anthropic.com` and `ollama.com` is alive and correct. The MCP and
+Claude prompt-engineering URL changes are same-site version pins and content merges, not losses.
+
+**⚠️ The most useful result is a methodological one — `ai.google.dev` failed for ALL 8 URLs**
+with `fetch failed` / redirect-loop. Tracing the chain by hand showed an **OAuth sign-in loop**,
+not rot: the site 302s to `oauth2authorize`, to `accounts.google.com`, back with
+`error=interaction_required`, forever. `web_fetch` proved all 8 return HTTP 200 and correct
+content. **A scripted client that follows redirects will report this whole host as dead.** The
+same applies to `privacy.gov.ph`, `dl.acm.org`, `openstat.psa.gov.ph` and `www.npmjs.com` (403
+Cloudflare/Akamai) and one `docs.vllm.ai` page (429). **None of those are defects** and none were
+"fixed". This is the fifth recorded instance of *suspect the instrument before the subject*.
+
+**DEAD — 4, each confirmed through two independent HTTP stacks:**
+
+| URL | Cited at | Replaced with (verified 200) |
+|---|---|---|
+| `github.com/ollama/ollama/blob/main/docs/openai.md` | `cost/04:126`, `foundations/08:116`, `prompting/06:113` | `docs.ollama.com/api/openai-compatibility` |
+| `github.com/ollama/ollama/blob/main/docs/modelfile.md` | `foundations/05:110` | `docs.ollama.com/api/create` |
+| `github.com/ggml-org/llama.cpp/blob/master/examples/main/README.md` | `foundations/05:111` | `.../tools/server/README.md` |
+| `huggingface.co/docs/transformers/main/en/padding_truncation_strategies` | `model-internals/05:98,115` | `.../main/en/pad_truncation` |
+
+All four are "docs moved out of the repository", and Ollama's docs now live on their own host.
+
+**MIS-DESCRIBING — the link resolves but no longer shows what the curriculum says.** The worst
+was **`docs.vllm.ai/.../design/kernel/paged_attention.html`**, cited in `cost/02:100` as *"vLLM
+PagedAttention design (the KV cache foundation)"*: after two hops it landed on
+**`/en/latest/contributing/`** — a reader following the KV-cache foundation arrived at a
+contributing guide. Now `/design/paged_attention/`, which was verified 200.
+
+Also corrected: **Papers with Code** (defunct; now a trending-papers feed — replaced with
+`huggingface.co/papers` in `model-internals/06` and `shared/resource-list.md`); **LangChain text
+splitters** (the concept page is gone; the API reference is now `reference.langchain.com`);
+**Lakera's Gandalf** (`gandalf.lakera.ai` → `play.lakera.ai`, four citations, relabelled as
+"formerly Gandalf" rather than silently swapped); **`openai.com/api/pricing/`** (four citations,
+now `developers.openai.com/api/docs/pricing`); **the Hugging Face LLM course**, cited in
+`foundations/04:94` as the *attention* chapter but landing on the course intro — now
+`/chapter1/4`, "How do Transformers work?"; and **`lmarena.ai`** (rebranded host, now `arena.ai`).
+
+**Two of my own replacement URLs were wrong on the first attempt** (`docs.ollama.com/api/modelfile`
+and `docs.langchain.com/oss/python/langchain/splitters` both 404). Each was verified before
+being written, which is the only reason neither shipped — **a fix applied from memory is a new
+defect with better intentions.**
+
+**Also checked and CLEAN, because it looks alarming and is not:** 46 table cells outside the
+`## Tools for This Phase` tables have a non-URL in the URL column — 44 are the em-dash
+placeholder meaning "no link needed", and 2 are a bits-per-format table that merely has 8 columns.
+`build-content.mjs` requires `/^https?:\/\/\S+$/i`, so an em-dash parses to **no URL** and
+`ToolCard` renders no anchor. The previously-shipped `<a href="—">` defect cannot recur, and
+391 tool rows carry a valid `https://` URL.
+
 **Source:** https://api.github.com/repos/modelcontextprotocol/modelcontextprotocol/releases
 (fetched 2026-09-18; `web_fetch` — not `web_search`)
 

@@ -10,6 +10,42 @@ The full commit history is the authoritative record: `git log --oneline`.
 
 ## Unreleased
 
+### Every citation checked, and a guard that could not see its own blind spot
+
+- **All 48 arXiv IDs verified against the arXiv Atom API — 48 correct, 0 wrong.** The failure
+  mode this project was bitten by before (`2202.11903`, the Chain-of-Thought paper cited as an
+  *astrophysics* paper) does not occur anywhere in the corpus. Two of the IDs looked most like
+  fabrications and were both genuine: `2601.17548` (prompt injection in agentic coding
+  assistants, Jan 2026) and `2406.10279` (package hallucinations, USENIX Security 2025), each
+  independently corroborated down to its statistics. **"A recent ID is probably invented" is
+  recorded as the wrong instinct** — fetch, do not discount on plausibility.
+- **GitHub's documentation was recorded as un-fetchable and never was.** The log said three
+  fetches returned only navigation and concluded that requests 8 and 9 were blocked "by any route
+  we have". Appending `.md` to the article URL returns the full body, verified in both forms for
+  the same page. The blocker sat on the books while a one-character fix went untried: *"this page
+  truncates"* does not support *"this source is unreachable"*.
+- **The Copilot training claim was confirmed and its scope corrected.** `2026-04-24` is right,
+  but the corpus framed it as a free-tier cost. GitHub applies it to **Free, Pro, Pro+ and Max**,
+  excluding only Business and Enterprise — the line is **individual-versus-business, not
+  free-versus-paid**, so "I pay, therefore my code is not used" is false. Three phases corrected.
+- **Six internal-consistency defects fixed, including a live duplicate of one already "fixed".**
+  The earlier check grepped for `Prompting Phase 10`; the file also said *"Phase 10 of
+  Prompting's framing"*, which that pattern cannot match — and the re-check searched for the same
+  literal string and reported clean. **The fix reproduced the false confidence that created it.**
+  Also fixed: two references to the wrong phase (resolving, but to the wrong subject), a reference
+  past the end of a track, a concept attributed to a phase that never taught it, a 40-vs-41%
+  disagreement inside one file, and **`README.md` claiming 63 phases when the corpus has held 65**.
+- **A port collision that made browser checks read two websites at once.** Two `vite preview`
+  servers can bind 4173 together; the sweep then failed all ten tracks while reporting "0 phase(s)
+  with problems". The content was fine. Recorded in `WORKFLOW.md` as trap 3, with the rules:
+  count the listeners, never kill a server you did not start, use a private port with
+  `--strictPort`.
+- **The exam feature from the previous session landed, with a data-loss bug found in review.**
+  The backup merge for the rotating capstone rebuilt the record from `seenIds`/`best`/`attempts`
+  and **dropped `comprehensive`**, so restoring a backup destroyed a passed comprehensive result
+  silently. Every existing fixture used `comprehensive: { best: null }`, so no assertion read the
+  dropped field. Seven assertions now cover it and were proved to fail for the right reason.
+
 ### The first person to open the live site found what eleven green checks had missed
 
 - **325 authored items were rendering into an empty `<div>`.** The Reference view showed raw

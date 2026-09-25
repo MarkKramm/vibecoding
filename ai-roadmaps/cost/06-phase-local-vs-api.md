@@ -110,7 +110,7 @@ If you only have three hours this week, do tasks 1, 3, 5 and 9. Those four produ
 | llama.cpp | The inference engine underneath most local runners, with the quantization details in the open | Free/open-source | https://github.com/ggml-org/llama.cpp | Task t05 — read the quant names, then measure your own tokens/second | Any other local runner that reports tokens/second |
 | LiteLLM | One Python interface across providers, so you can compare cost per call | Free/open-source | https://github.com/BerriAI/litellm | Task t11 — route one call to two providers and diff the reported cost | Provider SDKs, or plain `requests` against each one |
 | OpenRouter | Reach many models behind one compatible endpoint, with a model list and per-call cost reporting | Freemium — takes a fee on credit purchases | https://openrouter.ai/models | Task t11 — run the same prompt through two models and log both costs | Each provider's own free tier, called directly |
-| A provider pricing page | The only source that is not stale; prices change without notice | Free to read | https://openai.com/api/pricing/ | Task t06 — price your month of usage at today's rates | Any other provider's pricing page; read two and compare |
+| A provider pricing page | The only source that is not stale; prices change without notice | Free to read | https://developers.openai.com/api/docs/pricing | Task t06 — price your month of usage at today's rates | Any other provider's pricing page; read two and compare |
 | `psutil` (Python) | Measure your own machine's power draw proxy and memory headroom | Free/open-source | https://github.com/giampaolo/psutil | Task t02 — log RAM and CPU during a local generation | Your OS's own task manager or `top` |
 | `requests` | Call provider APIs directly, so no abstraction hides the fields | Free/open-source | https://requests.readthedocs.io/ | Task t09 — build the thin interface on raw HTTP | Python's built-in `urllib.request` |
 | A spreadsheet (LibreOffice Calc) | Model the crossover: fixed cost, variable cost, volume | Free/open-source | https://www.libreoffice.org/discover/calc/ | Tasks t03, t06, t08 — the crossover table and chart | Google Sheets free tier, or a Python script that prints the table |
@@ -126,7 +126,7 @@ If you only have three hours this week, do tasks 1, 3, 5 and 9. Those four produ
 - **LiteLLM — documentation** — https://docs.litellm.ai/
 - **LiteLLM — repository** — https://github.com/BerriAI/litellm
 - **OpenRouter — model list and current per-model pricing** — https://openrouter.ai/models
-- **OpenAI — API pricing** — https://openai.com/api/pricing/
+- **OpenAI — API pricing** — https://developers.openai.com/api/docs/pricing
 - **Anthropic — pricing** — https://www.anthropic.com/pricing
 - **Google — Gemini API pricing** — https://ai.google.dev/gemini-api/docs/pricing
 - **Google — Gemini API rate limits** — https://ai.google.dev/gemini-api/docs/rate-limits

@@ -72,7 +72,7 @@ The first week is parsing and splitting, which is mostly mechanical. The second 
 |---|---|---|---|---|---|
 | PyMuPDF / pdfplumber | Extract text from PDFs with layout awareness | Free/open-source | https://github.com/jsvine/pdfplumber | Parse a real PDF and read the output carefully | `pdftotext` from poppler |
 | BeautifulSoup | Extract readable text from HTML | Free/open-source | https://www.crummy.com/software/BeautifulSoup/ | Strip navigation and boilerplate from a web page | Python's `html.parser` |
-| LangChain text splitters | Recursive and structure-aware chunking | Free/open-source | https://python.langchain.com/docs/concepts/text_splitters/ | Split a document recursively and inspect the boundaries | Write the splitter yourself in 40 lines |
+| LangChain text splitters | Recursive and structure-aware chunking | Free/open-source | https://reference.langchain.com/python/langchain-text-splitters/ | Split a document recursively and inspect the boundaries | Write the splitter yourself in 40 lines |
 | tiktoken | Count tokens per chunk | Free/open-source | https://github.com/openai/tiktoken | Verify your chunks are the size you think they are | Provider token-count endpoints |
 | Ollama | Generate chunk context locally at no cost | Free/open-source | https://ollama.com/ | Prepend a generated summary to each chunk | Any free model tier |
 | SQLite + FTS5 | Store chunks with full-text search for the lexical half | Free/open-source | https://sqlite.org/fts5.html | Index your chunks for BM25 alongside embeddings | A plain inverted index in Python |
@@ -80,7 +80,7 @@ The first week is parsing and splitting, which is mostly mechanical. The second 
 ## Free/cheap resources
 
 - **Anthropic — Contextual Retrieval** — https://www.anthropic.com/news/contextual-retrieval
-- **LangChain — Text splitters** — https://python.langchain.com/docs/concepts/text_splitters/
+- **LangChain — Text splitters** — https://reference.langchain.com/python/langchain-text-splitters/
 - **Pinecone — Chunking strategies** — https://www.pinecone.io/learn/chunking-strategies/
 - **pdfplumber documentation** — https://github.com/jsvine/pdfplumber
 - **SQLite FTS5** — https://sqlite.org/fts5.html

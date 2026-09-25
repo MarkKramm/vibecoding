@@ -80,7 +80,7 @@ You do not need a GPU, a paid API key, or an account anywhere to finish this pha
 | Hugging Face model cards | Read real architecture numbers (layers, heads, head dim) | Free to browse | https://huggingface.co/models | Task t05 | Any published model report or paper page |
 | Hugging Face `transformers` docs | See `num_key_value_heads` and cache config in real APIs | Free | https://huggingface.co/docs/transformers | Task t04 and t06 | Read the source on GitHub; it is open |
 | Google Colab | Free notebook with a small GPU, if you want to measure real memory | Freemium | https://colab.research.google.com/ | Optional extension to t04 | Your own laptop CPU with NumPy, which is enough |
-| An LLM provider pricing page | Compare cached vs uncached input pricing | Free to read | https://openai.com/api/pricing/ | Task t06 and the Free vs Paid section | Any provider's docs page; read at least two |
+| An LLM provider pricing page | Compare cached vs uncached input pricing | Free to read | https://developers.openai.com/api/docs/pricing | Task t06 and the Free vs Paid section | Any provider's docs page; read at least two |
 | draw.io or pen and paper | Draw the attention data flow | Free | https://app.diagrams.net/ | Task t03 | Paper. Paper is genuinely better here |
 
 ## Free/cheap resources
@@ -91,7 +91,7 @@ You do not need a GPU, a paid API key, or an account anywhere to finish this pha
 - **Andrej Karpathy, Let's build GPT from scratch (video)** — https://www.youtube.com/watch?v=kCc8FmEb1nY
 - **Andrej Karpathy, nanoGPT repository** — https://github.com/karpathy/nanoGPT
 - **3Blue1Brown, Attention in transformers (visual)** — https://www.youtube.com/watch?v=eMlx5fFNoYc
-- **Hugging Face, LLM course chapter on attention** — https://huggingface.co/learn/llm-course
+- **Hugging Face, LLM course chapter on attention** — https://huggingface.co/learn/llm-course/chapter1/4
 - **Hugging Face blog on KV cache and generation strategies** — https://huggingface.co/blog/not-lain/kv-caching
 - **RoFormer paper page (rotary position embeddings)** — https://arxiv.org/abs/2104.09864
 - **EleutherAI, transformer maths walkthrough** — https://blog.eleuther.ai/transformer-math/

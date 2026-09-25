@@ -111,7 +111,7 @@ This phase is deliberately the lightest in the track. Most of it is writing and 
 | A stopwatch and a spreadsheet | Measure your own rate-limit ceiling and cost-per-task in pesos | Free | https://www.libreoffice.org/discover/calc/ | Tasks t06, t12 — convert limits and prices into what you can actually run per day | Google Sheets free tier |
 | Git and a local notes file | Keep the workflow written down where you will re-read it | Free/open-source | https://git-scm.com/ | Task t14 — version the playbook so you can see your own judgment change | Any text editor and a folder |
 | Colab or Kaggle notebooks | Free GPU time for the experiments a laptop cannot run | Free tier | https://colab.research.google.com/ | Task t11 optional — run one small fine-tune or embedding job you could not run locally | Kaggle notebooks, which grant a separate free GPU quota |
-| A provider's pricing page | The only pricing source that is not stale | Free to read | https://openai.com/api/pricing/ | Task t13 — price the one experiment you would fund, before you fund it | Any provider's pricing page; read two and compare |
+| A provider's pricing page | The only pricing source that is not stale | Free to read | https://developers.openai.com/api/docs/pricing | Task t13 — price the one experiment you would fund, before you fund it | Any provider's pricing page; read two and compare |
 
 ## Free/cheap resources
 

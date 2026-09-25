@@ -123,7 +123,7 @@ Do the measurement while your free access still works. A three-way comparison (c
 - **JSON Schema — getting started** — https://json-schema.org/learn/getting-started-step-by-step — the vocabulary your structural gate is written in.
 - **Pydantic — models** — https://docs.pydantic.dev/latest/concepts/models/ — the shortest path from an output contract to a gate that raises.
 - **scikit-learn — model evaluation** — https://scikit-learn.org/stable/modules/model_evaluation.html — confusion matrices, precision, recall and their definitions, so you name the gate's two error types correctly.
-- **Ollama — OpenAI compatibility** — https://github.com/ollama/ollama/blob/main/docs/openai.md — point the same cascade code at two local models and run the comparison a hundred times for free.
+- **Ollama — OpenAI compatibility** — https://docs.ollama.com/api/openai-compatibility — point the same cascade code at two local models and run the comparison a hundred times for free.
 - **LiteLLM routing documentation** — https://docs.litellm.ai/docs/routing — what a production routing layer looks like when someone else has built it, including the failure handling you would otherwise write yourself. Read it to decide whether to build your own or not.
 
 ## Lesson: The cheap model is right more often than you think, and wrong in a way you cannot see

@@ -110,7 +110,7 @@ Budget an extra half hour if you have never written a regular expression or pars
 - **JSON Schema — understanding JSON Schema** — https://json-schema.org/understanding-json-schema — the vocabulary for the validation step between calls.
 - **Pydantic — documentation** — https://docs.pydantic.dev/ — the shortest path from "the model should return this shape" to "and here is what happens when it does not".
 - **pytest — getting started** — https://docs.pytest.org/en/stable/getting-started.html — how to prove your code steps are correct without spending a token.
-- **Ollama — OpenAI compatibility layer** — https://github.com/ollama/ollama/blob/main/docs/openai.md — point a chain at a local model and run it a hundred times for free.
+- **Ollama — OpenAI compatibility layer** — https://docs.ollama.com/api/openai-compatibility — point a chain at a local model and run it a hundred times for free.
 
 ## Lesson: The chain is mostly not a prompt
 

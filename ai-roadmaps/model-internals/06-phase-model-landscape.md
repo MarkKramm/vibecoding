@@ -104,7 +104,7 @@ Every tool in this table has a free path, and the free path is enough to complet
 |---|---|---|---|---|---|
 | Hugging Face Hub | Inspect model cards, parameter counts, configuration files and licences | Freemium | https://huggingface.co/models | Look up the exact config of two models on your shortlist and record their parameter counts | Browsing and downloading public model cards, configs and files requires no account and no payment |
 | Hugging Face Open LLM Leaderboard | See how evaluation on standard benchmarks is presented, and its caveats | Free | https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard | Read the methodology section and note one thing it does not measure | Open weights and local inference |
-| LMArena | Observe preference-based ranking and how it differs from benchmark scoring | Free | https://lmarena.ai | Compare its ordering of two models you shortlisted against your own eval results | Direct pairwise assessment on your own eval set |
+| LMArena | Observe preference-based ranking and how it differs from benchmark scoring | Free | https://arena.ai | Compare its ordering of two models you shortlisted against your own eval results | Direct pairwise assessment on your own eval set |
 | Artificial Analysis | Compare latency, throughput and price across providers in one place | Freemium | https://artificialanalysis.ai | Record independent throughput and price measurements for two candidates in one sitting | Provider pricing pages, your own timing script |
 | OpenRouter | Reach many models through one compatible endpoint, useful for running a shortlist | Freemium | https://openrouter.ai/models | Send the same eval prompt to three candidate models with one script | Providers' own free tiers, or local models via Ollama |
 | Ollama | Run open-weight models locally with no key and no per-token cost | Free | https://ollama.com | Run your eval set against a local model as the zero-cost baseline | It is the free alternative |
@@ -113,7 +113,7 @@ Every tool in this table has a free path, and the free path is enough to complet
 | OpenAI token counting endpoint | Count tokens for a specific model exactly, before you spend anything | Freemium | https://developers.openai.com/api/docs/guides/token-counting | Measure the real token cost of one eval item rather than estimating it | Any local tokeniser library for the model family you are testing |
 | Google AI Studio | Free-tier access to hosted models for building evals | Freemium | https://aistudio.google.com | Run a hosted model through your eval set without funding an account | Any provider free tier, or a local model |
 | EleutherAI lm-evaluation-harness | Run standard benchmarks yourself instead of trusting a reported number | Free | https://github.com/EleutherAI/lm-evaluation-harness | Run one small benchmark on a model you can host and read the raw output | Reading the model card's reported numbers, with the caveats in Part 6 |
-| Papers with Code | Trace a benchmark back to its paper and its stated protocol | Free | https://paperswithcode.com | Find the original paper for one benchmark on your shortlist's card | arXiv directly |
+| Hugging Face papers | Trace a benchmark back to its paper and its stated protocol | Free | https://huggingface.co/papers | Find the original paper for one benchmark on your shortlist's card | arXiv directly |
 
 ## Free/cheap resources
 

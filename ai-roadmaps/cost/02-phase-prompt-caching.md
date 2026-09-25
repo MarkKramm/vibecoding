@@ -97,7 +97,7 @@ The reading is about half of it. The phase only becomes real when you have taken
 - **Google Cloud, Vertex AI context cache overview** — https://cloud.google.com/vertex-ai/generative-ai/docs/context-cache/context-cache-overview
 - **AWS, Amazon Bedrock prompt caching** — https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html
 - **vLLM, Automatic prefix caching** — https://docs.vllm.ai/en/latest/features/automatic_prefix_caching.html
-- **vLLM, PagedAttention design (the KV cache foundation)** — https://docs.vllm.ai/en/latest/design/kernel/paged_attention.html
+- **vLLM, PagedAttention design (the KV cache foundation)** — https://docs.vllm.ai/en/latest/design/paged_attention/
 - **tiktoken (local token counting)** — https://github.com/openai/tiktoken
 - **Tiktokenizer (browser tokenizer)** — https://tiktokenizer.vercel.app/
 - **Anthropic, Introducing Contextual Retrieval (prompt-caching-friendly chunking)** — https://www.anthropic.com/news/contextual-retrieval

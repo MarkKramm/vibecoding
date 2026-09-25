@@ -107,8 +107,8 @@ Roughly 5–8 hours total. The conceptual material is about two hours of genuine
 - **OpenAI — API reference: chat completions parameters** — https://developers.openai.com/api/docs/api-reference/chat
 - **OpenAI — Cookbook: using logprobs** — https://cookbook.openai.com/examples/using_logprobs
 - **Google AI Studio — prompting and parameters docs** — https://ai.google.dev/gemini-api/docs/prompting-strategies
-- **Ollama — model file and parameter documentation** — https://github.com/ollama/ollama/blob/main/docs/modelfile.md
-- **llama.cpp — sampler documentation** — https://github.com/ggml-org/llama.cpp/blob/master/examples/main/README.md
+- **Ollama — model creation and parameter documentation** — https://docs.ollama.com/api/create
+- **llama.cpp — server and sampler documentation** — https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md
 - **Andrej Karpathy — Let's build the GPT Tokenizer** — https://www.youtube.com/watch?v=zduSFxRajkE
 - **Andrej Karpathy — Deep Dive into LLMs** — https://www.youtube.com/watch?v=7xTGNNLPyMI
 
