@@ -12,6 +12,17 @@
 **The authoring rule that follows from this:** before writing a specific claim into a lesson, check it here. If it is in the debunked list, teach the correction. If it is in the volatile list, date it and make the lesson's point survive the number being wrong. If it is unverified, mark it `**Unverified**` rather than asserting it.
 
 > **Sourcing note.** The research behind this document was gathered without a working web-search endpoint, by fetching primary sources directly. That creates a **selection bias**: sources reachable by direct URL were checkable, while paywalled, JavaScript-rendered, or unlinked material was not. Several items therefore remain `**Unverified**` rather than guessed. A future pass with search access should revisit that list specifically.
+>
+> **Update, 2026-09-25 — that pass was done, without search access, and it worked anyway.** The
+> bias above turned out to be beatable: every §2.2 tokenizer claim was confirmed by fetching the
+> counting code itself, and the §4 WordPiece entry was *resolved* by reading two public
+> implementations (see §4.1). The lesson is that **`**Unverified**` often means "we had not yet
+> looked in the right place," not "this cannot be known," and that source code is a more
+> decisive primary source than prose documentation — it cannot paraphrase. Two of the remaining
+> unverified items (OSAID clause text, some model licences) genuinely require the unreachable
+> document and stay open. §4.1 also records the more useful outcome: the reason WordPiece's merge
+> criterion was unfindable is that **two algorithms share the name and only the inference one was
+> ever released** — a finding that could only be stated after failing to find it.
 
 ---
 
@@ -120,20 +131,42 @@ These are true as of the date noted and **change often**. Every appearance in a 
 
 **As of the research date, the provider landscape had moved well past what this curriculum's brief assumed:** frontier models observed included an OpenAI model with a ~1,050,000-token context, Anthropic's 1M-context family, and a Gemini 3.x Flash generation — plus a documented Assistants API sunset date.
 
+**Re-checked 2026-09-25, and the landscape has moved again — which is the point of this section.**
+OpenAI's own model index now leads with a **GPT-6 "Astra"** flagship and **GPT-5.6 Terra/Luna**
+tiers, with pricing pages listing long-context variants and per-model cache-write rates. The names
+recorded above are already historical. **This is a live demonstration, not a failure:** the section
+predicted exactly this, and the reason it reads as outdated is that it is *supposed* to age
+visibly. Nothing in the curriculum depends on it.
+
 **The rule this implies — and it is the most important authoring instruction in this document:**
 
 > **Do not hardcode a model matrix into the curriculum.** Model names, prices, context sizes, and feature support do **not** stay stable for months. Concepts stay stable for years.
 
 No lesson may conclude anything from a specific model name, version, or context size. Where an example is useful, use it as an illustration, date it, and state what to check instead.
 
+**Enforcement status — independently verified 2026-09-25, and it holds.** A scan of all 65 phase
+files for hardcoded frontier identifiers (`gpt-4/5/6`, `claude-3/4`, `gemini-N`, `o1-`, `o3-`)
+returns **exactly one hit**: `cost/05:787`, `model="gpt-4"` as a string argument in example
+`log_call()` usage. That is a placeholder in illustrative code, not a claim about the landscape,
+and it is correctly non-load-bearing — a reader copying the snippet loses nothing when that model
+retires. **One placeholder across 65 phases is the rule working, not a near miss.**
+
 ### 2.2 Tokenizer and API details
 
 | Item | Status | Note |
 |---|---|---|
 | OpenAI token-count endpoint | **Exists** | `POST /v1/responses/input_tokens` — a public endpoint. (An early draft of the brief wrongly said this did not exist.) |
-| Chat overhead per message | **3 tokens** per message (+3 priming) | The widely-cited figure of **4 is stale**. This number changes; verify before using it in arithmetic. |
+| Chat overhead per message | **3 tokens** per message (+3 priming) — **now verified in source** | The widely-cited figure of **4 is stale**. Confirmed 2026-09-25 against the OpenAI cookbook's own function: `tokens_per_message = 3`, `tokens_per_name = 1`, and `num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>`. This number changes; verify before using it in arithmetic. |
 | tiktoken | **Still current** | `gpt-5` → `o200k_base`. But OpenAI now steers users toward the count API rather than local tokenisation, because local encodings can drift from server behaviour. |
-| A sixth encoding | **Exists** | `o200k_harmony`, used for gpt-oss models. Easy to miss when listing encodings. |
+| A sixth encoding | **Exists — confirmed in source** | `o200k_harmony`, used for gpt-oss models. Easy to miss when listing encodings — and confirmed 2026-09-25 by reading `tiktoken_ext/openai_public.py`, where it is a real `ENCODING_CONSTRUCTORS` entry sharing `o200k_base`'s mergeable ranks but adding harmony control tokens (`<\|start\|>`, `<\|message\|>`, `<\|channel\|>`). The "easy to miss" warning is well founded: the cookbook's public encoding table lists only **four** encodings and omits it. |
+
+> **How §2.2 was verified (2026-09-25).** Three of the four rows are now confirmed against
+> primary source rather than noted: the cookbook's `num_tokens_from_messages`, and tiktoken's
+> `openai_public.py`. The general rule this demonstrates is worth keeping — **a claim about
+> token counts is arithmetic, so it is checkable, and reading the counting code settles it in a
+> way that reading the prose never will.** One correction to this document's earlier framing:
+> the cookbook table is not wrong, it is simply narrower than the library, which is exactly the
+> gap that makes `o200k_harmony` easy to omit.
 
 ### 2.3 Free-tier quotas
 
@@ -190,12 +223,61 @@ Each of these was checked and **could not be confirmed** against a primary sourc
 
 | Claim | Why it is unverified |
 |---|---|
-| WordPiece's exact merge criterion | The widely-repeated formulation could not be confirmed against a primary source. Describe the mechanism qualitatively instead. |
+| ~~WordPiece's exact merge criterion~~ — **RESOLVED, see §4.1** | Was: "the widely-repeated formulation could not be confirmed against a primary source." It now can be, and the reason it could not before is the finding. |
 | "Roughly 1.3 tokens per word" | A rule of thumb with no citable source. Our own guidance (~0.75 words per token, ~4 characters per token for English) should also be presented as approximate and measured per tokenizer. |
 | The "strawberry" letter-counting phenomenon as a tokenization fact | Frequently asserted as *the* explanation for letter-counting failures. Tokenization plausibly contributes, but the causal claim as usually stated is **not** established. Present it as a hypothesis, not a fact. |
 | Llama-2-7B KV cache bytes per token | Could not confirm the specific figure. Teach the **formula** instead (see below), which is durable and lets the reader compute any model's value. |
 | OSAID clause text | Body text not fetchable. Do not quote clauses. |
 | Several model licences | Not all were verifiable. **LM Studio is proprietary (ToS) — verified.** Do not assert licences for models that were not checked; tell the reader to read the licence themselves. |
+
+### 4.1 WordPiece — why the merge criterion was unfindable, and what is true instead
+
+**Resolved 2026-09-25.** The reason this entry sat here unresolved is not obscurity. It is that
+**two different algorithms share the name "WordPiece", and only one of them was ever released.**
+
+**1. The inference algorithm — public, and it does not use a merge criterion at all.**
+`google-research/bert`'s `tokenization.py` runs `WordpieceTokenizer`, documented in its own
+docstring as *"a greedy longest-match-first algorithm."* For each whitespace token it takes the
+longest prefix present in the vocabulary, emits it (prefixing `##` for continuations), and
+advances. There is **no score, no probability, and no merge step** — it is a greedy lookup
+against a vocabulary someone else already built. Reading it settles the question: a search for
+WordPiece's "merge criterion" in the only released implementation finds nothing, because in the
+inference path there is nothing to find.
+
+**2. The vocabulary-building algorithm — never released, which is the actual answer.**
+BERT's README says so explicitly, and this is the sentence that resolves the entry:
+
+> "This repository does not include code for *learning* a new WordPiece vocabulary. The reason is
+> that the code used in the paper was implemented in C++ with dependencies on Google's internal
+> libraries."
+
+So the widely-repeated merge formula (the `freq(pair) / (freq(left) × freq(right))` score)
+describes a training procedure whose reference implementation is **not public**. That is why it
+could not be confirmed against a primary source, and the honest statement is not "this formula is
+wrong" but **"this formula is unattributable — no released implementation is its source."**
+
+**3. The nearest public relative is a different algorithm, and knowing that prevents a second
+error.** BERT's WordPiece descends from tensor2tensor's `SubwordTextEncoder`, which BERT's README
+links as the basis. That class *does* contain a real vocabulary-building loop — it counts
+substrings along current boundaries and keeps those above `min_count` — but it is **frequency
+thresholding with count-decrementing of prefixes, not a ratio-scored merge**. Its `encode` path
+is separately documented as greedy and explicitly *"won't necessarily produce the best list of
+subtotokens."* Treating tensor2tensor's builder as "the WordPiece algorithm" would be a
+misattribution, which is presumably why the earlier pass declined to do it.
+
+**What to teach, and what this curriculum already does.** WordPiece is not mentioned anywhere in
+the 65-phase corpus, so no lesson is currently wrong. If it is ever added, teach the qualitatively
+correct and fully-sourced mechanism — **greedy longest-match-first against a fixed vocabulary,
+with `##` marking continuations** — and describe vocabulary construction only as
+"frequency-driven subword selection, whose reference implementation was never released." Do not
+print the ratio formula as fact. Note also that modern open models overwhelmingly use **BPE or
+Unigram/SentencePiece**, both of which *are* public, and `foundations/03` already teaches BPE
+correctly from that footing; WordPiece is a historical special case, not the general case.
+
+**Primary sources read:** `google-research/bert` `tokenization.py` (WordpieceTokenizer docstring
+and loop, lines ~308–357) and `README.md` (the "Learning a new WordPiece vocabulary" section);
+`tensorflow/tensor2tensor` `text_encoder.py` (`SubwordTextEncoder` class docstring and
+`build_from_token_counts`).
 
 ### The formula to teach instead of a table of numbers
 
@@ -243,10 +325,14 @@ Anthropic's own official documentation now uses the term **"context rot"** in it
 1. **Is it in §1 (debunked)?** → Teach the correction, and consider teaching *why the wrong version is so widespread*. That is often more instructive than the fact itself.
 2. **Is it in §2 (volatile)?** → Date it, flag it, and make sure removing it would not change the lesson's conclusion.
 3. **Is it in §3 (verified citations)?** → Use the exact identifier. Note the venue.
-4. **Is it in §4 (unverified)?** → Mark it `**Unverified**` or teach the underlying relationship instead.
+4. **Is it in §4 (unverified)?** → Mark it `**Unverified**` or teach the underlying relationship instead. Note that §4.1 has since been **resolved**, so check there before treating a §4 row as closed — an entry leaving this list is the system working.
 5. **Is it in none of them?** → It has not been checked. Either verify it, mark it, or find a durable way to make the point that does not depend on it.
 
 **The last case is the one that matters most**, because it is the default state of a fact you just thought of. A number that feels familiar is not a number that has been checked — and the familiarity is exactly what makes it dangerous to write down.
+
+**And a sixth case, added 2026-09-25 because it is the one that actually resolved the WordPiece entry:**
+
+6. **Is the claim about an *algorithm*?** → Read the source code, not the description of it. Code cannot paraphrase, and the WordPiece case shows why this matters: the merge criterion was unfindable through prose because the released implementation never had one (see §4.1). A search that returns nothing is a result — record *why* it returned nothing, because "two things share this name and only one was published" is more useful to a reader than the formula would have been.
 
 **One closing principle, which is the reason this file exists at all:**
 

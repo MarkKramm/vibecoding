@@ -62,7 +62,7 @@ not diagnose the configuration — the configuration is right.
 better practice anyway — an official pricing page is authoritative where a snippet is not.
 
 **⚠️ The cost estimate that used to be printed here was wrong.** It said "roughly $0.001 per
-search… a few dollars covers years". Reading the provider source, one search request really
+search... a few dollars covers years". Reading the provider source, one search request really
 is tiny — the body is literally `{"text": "Perform a web search for the query: <q>"}` with
 `max_tokens: 4096` and `max_uses: 5`, so roughly 30 input tokens. **Yet the balance still
 went negative in a single session.** The per-search figure was measured against *my* searches
@@ -189,7 +189,7 @@ to match.**
 
 ### ✅ FORMERLY "BLOCKED" — GitHub docs — SOLVED 2026-09-25, and the block was never real
 
-**The claim that was here:** *"GitHub's docs truncate their article body when fetched… This
+**The claim that was here:** *"GitHub's docs truncate their article body when fetched... This
 blocks requests 8 (GitHub part) and 9 (Copilot training default) from this direction."*
 
 **That conclusion was WRONG, and the cause is worth stating precisely.** The truncation is
@@ -722,3 +722,55 @@ Copy this when adding a request:
 
 **Outcome:** <what changed in the repo, with a commit if applicable>
 ```
+
+---
+
+### 7. The `docs/VERIFIED-FACTS.md` §2.2 and §4 pass — done, no search needed — 2026-09-25
+
+**Status: complete. Nothing was requested from the search relay, because none of it needed search.**
+
+The §4 table carried a standing instruction to "revisit that list with search access." That
+assumption turned out to be wrong in a useful way: **three of the four §2.2 tokenizer claims and
+the hardest §4 row were settled by fetching source code directly**, which `web_fetch` can do.
+
+**§2.2 — three rows moved from "noted" to "confirmed against source":**
+
+| Claim | How it was settled |
+|---|---|
+| "3 tokens per message, not 4" | The OpenAI cookbook's own `num_tokens_from_messages`: `tokens_per_message = 3`, `tokens_per_name = 1`, and `num_tokens += 3  # every reply is primed with <\|start\|>assistant<\|message\|>`. The "+3 priming" was independently correct too. |
+| `o200k_harmony` exists and is easy to miss | Confirmed in `tiktoken_ext/openai_public.py` as a real `ENCODING_CONSTRUCTORS` entry. The warning is well founded: the cookbook's public table lists **four** encodings and omits it. |
+| `tiktoken` still current | README fetched; unchanged in substance. |
+
+**§4 WordPiece — RESOLVED, and the resolution is more interesting than the original claim.**
+The merge criterion was not obscure; **two algorithms share the name and only one was ever
+released.** BERT's `tokenization.py` runs a *greedy longest-match-first* inference loop with **no
+merge criterion at all**, and BERT's README states plainly that the vocabulary-*learning* code
+"was implemented in C++ with dependencies on Google's internal libraries" and is not in the repo.
+tensor2tensor's `SubwordTextEncoder` — the linked ancestor — uses frequency thresholding with
+prefix decrementing, **not** a ratio-scored merge, so citing it as "the WordPiece algorithm" would
+be a second misattribution. The honest formulation is **"unattributable, not wrong."**
+Written up as §4.1 in `docs/VERIFIED-FACTS.md`. **WordPiece appears in zero phase files**, so no
+lesson was ever wrong here — this was purely a research-note correction.
+
+**§2.1 — re-checked, and it had aged, exactly as designed.** OpenAI's index now leads with GPT-6
+"Astra" and GPT-5.6 tiers, so the names in §2.1 are already historical. That is the section
+demonstrating its own thesis. **Enforcement independently verified:** a scan of all 65 phase files
+for frontier identifiers returns **one** hit — `cost/05:787`'s `model="gpt-4"` in example code, a
+placeholder, correctly non-load-bearing. The no-hardcoded-models rule is working across the corpus.
+
+**Also checked and correct:** `foundations/03:430`'s "~1.3 tokens per word" is flagged unsourced in
+§4, and the corpus handles it correctly — it sits inside a procedure whose Step 5 reads *"Confirm
+the estimate with a real tokenizer before you ship."* Not load-bearing.
+
+**Still genuinely open, and staying that way:** OSAID clause text (body not fetchable) and several
+model licences. Both need the unreachable document itself, not better tooling.
+
+**Sources:** `openai/openai-cookbook` `How_to_count_tokens_with_tiktoken.ipynb`;
+`openai/tiktoken` `README.md` and `tiktoken_ext/openai_public.py`; `google-research/bert`
+`tokenization.py` + `README.md`; `tensorflow/tensor2tensor` `text_encoder.py`;
+`developers.openai.com/api/docs/models.md` and `/pricing.md`.
+
+**The transferable lesson, now in §6 as a sixth rule:** when a claim is about an *algorithm*, read
+the source, not the description of it. Code cannot paraphrase — and a search that returns nothing
+is itself a result worth recording, because "two things share this name and only one was
+published" teaches a reader more than the formula would have.
