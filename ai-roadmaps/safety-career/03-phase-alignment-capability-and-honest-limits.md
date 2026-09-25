@@ -59,7 +59,7 @@ The through-line is that **a number that goes up is not evidence that the thing 
 - **A plain text file for the rewriting exercise.** You will draft a claim, then attack it.
 - **Any model you have access to** — you will use it to criticise your own writing, which is a use where a model is genuinely strong because you are asking it to find problems rather than to agree.
 - **Your own project or writing so far.** The exercise needs a real claim you actually made.
-- **`docs/DECISIONS.md`** in `learning-site/`, if you want to see how one project recorded decisions with their reasoning and their uncertainty attached. It is a working example of the habit this phase teaches.
+- **`learning-site/docs/DECISIONS.md`** in this repository, if you want to see how one project recorded decisions with their reasoning and their uncertainty attached. It is a working example of the habit this phase teaches. (Note the path: it lives under `learning-site/`, not at the repo root — an ambiguity this repository's own `AGENTS.md` warns about.)
 
 Nothing in this phase needs money.
 

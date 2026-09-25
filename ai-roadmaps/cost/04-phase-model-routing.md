@@ -548,7 +548,7 @@ Write `portfolio/cost/04-model-routing.md` containing:
 
 **Why:** Without labels you cannot measure a gate's false-accept rate, and an unmeasured gate ships quality regressions that nothing in your telemetry reveals — so a cascade here is a decision made blind. Routing the development loop to the cheap model captures the largest share of the saving, because most calls happen during iteration where only the information matters. The strong model still earns its price as an oracle over a bounded sample, which is a use you can afford without any routing machinery.
 
-### Q9. Your cascade matched the strong model's accuracy at 40% of its cost. What should you check before calling it a win? <!-- id: cost-04-model-routing-q09 energy: normal -->
+### Q9. Your cascade matched the strong model's accuracy at 41% of its cost. What should you check before calling it a win? <!-- id: cost-04-model-routing-q09 energy: normal -->
 
 - [ ] Whether the cheap model's provider offers a free tier
 - [ ] Whether the labelled set had exactly 100 cases

@@ -215,7 +215,7 @@ Three reasons it can still vary:
 2. **Batching.** Providers process many requests together for efficiency. What else is in the batch affects the arithmetic.
 3. **Version changes underneath you.** A provider may update the model, the system prompt, or the serving stack at any time, and your "same request" now hits a different system.
 
-**Design consequence:** never build anything that depends on getting the exact same string twice. Validate structure, not text. This is why Phase 8's structured-output work matters more than it first appears.
+**Design consequence:** never build anything that depends on getting the exact same string twice. Validate structure, not text. This is why the structured-output work in Prompting Phase 4 (*The Model Has No Parser*) matters more than it first appears.
 
 #### It is not "reasoning" in the human sense
 
@@ -230,7 +230,7 @@ But it differs from human reasoning in ways that matter operationally:
 - **The "reasoning" is not inspectable in the way it appears.** A model can produce a chain of steps that reads as valid and did not drive the answer, or that was constructed after the fact to justify an answer already reached. The chain is generated text, like everything else.
 - **It does not know when it does not know** — not in the way a person does. It has no reliable internal signal that separates "I recall this" from "I am constructing something plausible."
 
-**Practical upshot:** reasoning-style prompting is a real and effective technique (Phase 10), and it should be used. It is not a guarantee. The check on a model's reasoning is external — you verify the answer, you test it, you check it against a source. Track 8 is largely about building that habit into a workflow.
+**Practical upshot:** reasoning-style prompting is a real and effective technique (Track 3, Prompting), and it should be used. It is not a guarantee. The check on a model's reasoning is external — you verify the answer, you test it, you check it against a source. Track 8 is largely about building that habit into a workflow.
 
 ---
 

@@ -213,7 +213,7 @@ The child was instructed to write the summary and then state its confidence in e
 
 Honesty at the source is not protection, because the loss happens at the *boundary* rather than at the origin. This is why verification is the parent's job and cannot be delegated to the child's good intentions — and it is the same failure that makes "I cited my uncertainty" insufficient in any summarisation chain.
 
-**And note what the child could not have done.** It had no tool access and no instruction to search, so it genuinely could not verify the ratio. The flag was the best available behaviour, and it was the right one. **The design error was upstream**: a brief that presents unverified claims as "established facts" has already corrupted the child's work, and no amount of downstream diligence repairs it. This is Phase 10 of Prompting's framing returning at the architecture level — the brief is a specification, and a specification containing a false constraint cannot produce a correct result.
+**And note what the child could not have done.** It had no tool access and no instruction to search, so it genuinely could not verify the ratio. The flag was the best available behaviour, and it was the right one. **The design error was upstream**: a brief that presents unverified claims as "established facts" has already corrupted the child's work, and no amount of downstream diligence repairs it. This is Prompting Phase 1's framing (*An Instruction Is Not a Command*) returning at the architecture level — the brief is a specification, and a specification containing a false constraint cannot produce a correct result.
 
 ### Part 4 — Verifying what comes back
 

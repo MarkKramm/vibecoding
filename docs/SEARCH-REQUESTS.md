@@ -577,6 +577,62 @@ and it belongs in the pre-commit battery rather than being rediscovered by hand:
 when phases are added, and a reference into a track is silently invalidated when its target
 moves.** The guard cost one inline command; the defect had been shipped.
 
+### 5b. ⚠️ The check above was INCOMPLETE, and that is the more useful lesson — 2026-09-25
+
+**A full internal-consistency pass found SIX more defects that the §5 check missed** — including
+**a second live occurrence of the very defect §5 claimed to have fixed.**
+
+**Why §5 missed them: the grep pattern was too specific.** §5 searched for the literal string
+`Prompting Phase 10`. The file also contained *"Phase 10 of Prompting's framing"* — **the same
+defect with the words in the other order** — which that pattern cannot match. §5 then checked
+"is `Prompting Phase 10` gone?" and reported clean.
+
+> **A guard's blind spot is exactly as wide as the pattern it uses.** This is the fifth recorded
+> instance of that shape in this project (see `CHECKPOINT.md`), and the first where the *fix
+> itself* reintroduced the false confidence: the re-check was written to match the same phrasing
+> as the original search, so it could only ever confirm the fix it was told about.
+
+**A bare `Phase N` reference has no track in it, so it must be resolved against the containing
+track — and that is what every missed instance had in common.** The corrected, general check is:
+
+```bash
+grep -rn "Phase 1[0-9]" ai-roadmaps/            # ANY two-digit phase number
+grep -rn "Track [0-9]" ai-roadmaps/             # "Track N" is REAL; see the mapping below
+```
+
+**"Track N" is a second, independent numbering scheme** — 40 uses across the corpus, ordered by
+`ai-roadmaps/README.md`: **1** Foundations, **2** Model Internals, **3** Prompting, **4** Retrieval
+& RAG, **5** Agents, **6** Finetuning, **7** Cost, **8** Vibecoding, **9** Safety, **10** Career.
+It is not the folder order and not the `order` field. Any check for dangling references that only
+understands `"<Track> Phase N"` will miss all 40 of these.
+
+**All six further defects, now fixed:**
+
+| File | Defect | Corrected to |
+|---|---|---|
+| `agents/04:216` | "Phase 10 of Prompting's framing" — Prompting has 7 | Prompting Phase 1 (*An Instruction Is Not a Command*) |
+| `foundations/01:233` | "(Phase 10)" — Foundations has 8 | Track 3 (Prompting) |
+| `foundations/01:218` | "Phase 8's structured-output work" — resolves, wrong subject (Phase 8 is the API call) | Prompting Phase 4 (*The Model Has No Parser*) |
+| `prompting/02:273` | "Phase 8's usage logging" — track ends at 7; no prompting phase covers it | Foundations Phase 3 + Cost Phase 5 |
+| `rag/01:226` | "Foundations Phase 2 introduced the idea" of a calculator — Phase 2 is training runs, no tools content | Foundations Phase 8 (*The Request Is the Program*) |
+| `cost/04:551` | quiz stem said "40% of its cost"; the file's own table says `0.41s` vs `1.00s` = **41%** | 41% |
+
+Plus one **stale count in the reader-facing track index**: `ai-roadmaps/README.md:25` claimed
+**"63 phases"** when the corpus has held **65** since the vibecoding and safety/career tracks were
+completed. A count claim in the file a learner reads first is worth the most of these, and it was
+invisible to every guard because guards do not compare prose to the corpus.
+
+**Also checked and CLEAN** (recorded so the work is not repeated): 54 track-qualified
+cross-references; 663 total `Phase N` mentions; forward-reference ordering (both hits correctly
+point backward); dating (41 × `2026-09`, no outliers); Lost-in-the-Middle's 56.1% anchor across
+five files; compounding tables; cost arithmetic including the previously-fixed 38% break-even;
+the KV-cache derivation element by element; Anthropic's retrieval figures; 13 cited repo paths
+(the one failure is fixed above).
+
+**Not a defect, and worth stating because it looks like one:** `foundations/01:233`'s "Track 8 is
+largely about building that habit into a workflow" is **correct** — Track 8 is Vibecoding, whose
+curriculum does cover verification habits. Suspected, checked, cleared.
+
 **Source:** https://api.github.com/repos/modelcontextprotocol/modelcontextprotocol/releases
 (fetched 2026-09-18; `web_fetch` — not `web_search`)
 

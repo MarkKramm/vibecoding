@@ -22,7 +22,7 @@ That second half is not a soft skill. With AI assistance, producing plausible ou
 
 ## The ten tracks
 
-Ten tracks, **63 phases** in total. They are numbered in reading order, but you do not have to walk them strictly in sequence — see [How to use these tracks](#how-to-use-these-tracks) below.
+Ten tracks, **65 phases** in total. They are numbered in reading order, but you do not have to walk them strictly in sequence — see [How to use these tracks](#how-to-use-these-tracks) below.
 
 Every phase in every track is completable **without spending money**. Where a paid mechanism is genuinely unavailable on a free tier, the phase teaches the mechanism and gives you a local or simulated substitute — see [`cost/07`](cost/) for the full zero-budget playbook.
 

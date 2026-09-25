@@ -270,7 +270,7 @@ The mitigation is diversity-aware selection (Part 5) and, above all, drawing you
 
 **Mechanism 4: cost and latency, forever.** This one is not a correctness bug, and it is the one that actually stops people.
 
-Examples are input tokens. They sit in the prefix of **every single call**. They are not paid once at development time; they are paid on call one, call ten thousand, and call one million. Phase 3's token material and Phase 8's usage logging both apply directly here, and the arithmetic is unforgiving:
+Examples are input tokens. They sit in the prefix of **every single call**. They are not paid once at development time; they are paid on call one, call ten thousand, and call one million. Foundations Phase 3's token material and Cost Phase 5's usage-logging discipline (*The Bill Is a Measurement Problem*) both apply directly here, and the arithmetic is unforgiving:
 
 ```python
 # Cost of one example block, measured rather than assumed.

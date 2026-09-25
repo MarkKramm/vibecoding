@@ -223,7 +223,7 @@ Typical capability failures that get misdiagnosed as knowledge problems:
 - Following a complex constraint set
 - Any task where the model must hold several things in mind at once
 
-For the arithmetic case specifically, the fix is a **tool**, not retrieval: give the model a calculator. Foundations Phase 2 introduced the idea; the Agents track covers the mechanics. Dates, arithmetic, and string formatting should be code.
+For the arithmetic case specifically, the fix is a **tool**, not retrieval: give the model a calculator. Foundations Phase 8 (*The Request Is the Program*) introduces calling out to code; the Agents track covers the mechanics. Dates, arithmetic, and string formatting should be code.
 
 #### The data is structured and should be queried
 
