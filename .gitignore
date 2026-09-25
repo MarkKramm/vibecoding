@@ -13,6 +13,25 @@ dist/
 # regenerates them before running any site test.
 learning-site/src/data/generated/
 
+# Secrets. This project has none today and does not need any: it is a static site
+# with two runtime dependencies and no server. That is exactly why the rule belongs
+# here now — the cost of adding it is zero, and the cost of needing it and not
+# having it is the one defect in this repository's own Phase 8 checklist with no
+# undo. A key committed and pushed stays in the history after `git rm`, and
+# rotation is the only real fix.
+#
+# `.env.example` is deliberately NOT ignored, because a committed template with
+# placeholder values is the documented way to tell a contributor which variables
+# exist. Anything with real values in it must never be committed.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets.json
+credentials.json
+
 # Logs and caches
 *.log
 npm-debug.log*
