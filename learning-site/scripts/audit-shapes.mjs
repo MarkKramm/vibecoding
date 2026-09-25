@@ -12,13 +12,14 @@
 // It asserts, per field, the shape each renderer assumes, and reports any field
 // whose items do not match. Run: node scripts/audit-shapes.mjs
 
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // fileURLToPath rather than `new URL(...).pathname` — see scripts/check-all.mjs.
 const GEN = fileURLToPath(new URL("../src/data/generated/", import.meta.url));
-const TRACKS = ["foundations", "model-internals", "prompting", "rag", "agents", "cost"];
+const INDEX = JSON.parse(readFileSync(join(GEN, "index.json"), "utf8"));
+const TRACKS = INDEX.tracks.map((track) => track.id);
 
 /**
  * The contract each field must satisfy, as understood by the components.
@@ -49,7 +50,9 @@ for (const trackId of TRACKS) {
   let data;
   try {
     data = JSON.parse(readFileSync(join(GEN, `${trackId}.json`), "utf8"));
-  } catch {
+  } catch (error) {
+    console.log(`MISSING  generated/${trackId}.json for declared track ${trackId}: ${error.message}`);
+    problems++;
     continue;
   }
 
@@ -103,7 +106,7 @@ for (const trackId of TRACKS) {
   }
 }
 
-console.log(`\n${checked} array elements checked across ${TRACKS.length} tracks`);
+console.log(`\n${checked} array elements checked across ${TRACKS.length} declared tracks`);
 console.log("\nNested shapes seen:");
 for (const [k, n] of [...seen].sort()) console.log(`  ${String(n).padStart(4)}x  ${k}`);
 

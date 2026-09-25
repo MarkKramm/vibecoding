@@ -9,12 +9,12 @@
  * Uses Edge (Chromium) over CDP with Node's built-in WebSocket and fetch, so
  * there are no test dependencies to install.
  *
- *   node scripts/check-browser.mjs <baseUrl>
+ *   node scripts/check-browser.mjs [baseUrl]
  */
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
 
-const BASE = process.argv[2] || 'http://localhost:4173';
+const BASE = process.argv[2] || process.env.VITE_PREVIEW_URL || 'http://localhost:4173';
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const PORT = 9333;
 

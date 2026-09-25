@@ -11,16 +11,17 @@ project, which is why this one names its own uncertainty.
 
 ## Where the project is now
 
-**The curriculum is complete.** 65 phases across 10 tracks, 35,383 lines of authored Markdown,
-549 quiz questions, 886 practice tasks, 1054 checklist items. Every phase passes a machine-
-verified 14-section contract.
+**The curriculum is complete.** 65 phases across 10 tracks, 24,033 lines across 90 authored Markdown
+files (22,244 lines in the phase files), 549 quiz questions, 886 practice tasks, and 1,054 checklist
+items. Every phase passes a machine-verified 14-section contract.
 
 **The site works and is deployed.** Live at **https://markkramm.github.io/vibecoding/**, built
 and published by GitHub Actions, with CI green.
 
-**Verification is real.** 17 offline checks, 759 assertions, driving headless Edge over CDP for
-the accessibility audit and for a sweep of **all 65 phases**. Every guard has been proved
-capable of failing.
+**Verification is real.** `npm test` runs 17 checks, including offline guards and two browser checks
+(accessibility and a sweep of **all 65 phases**) when a production preview is available. The
+accessibility audit covers 60 assertions across six views; separate browser checks verify quiz
+correctness and track rendering. Every guard has been proved capable of failing.
 
 **The live site has been seen rendering**, by the project owner, and that check found a serious
 defect a fully green suite had missed — see below. A later browser sweep of every phase found a
@@ -76,9 +77,10 @@ That is now the **fourth** instance of one shape in this project:
 
 > **Correct source, wrong screen, and every test green.**
 
-Component tests and the browser now cover much of this, but not all of it — the browser suite
-still samples rather than sweeps. **Visual inspection is not redundant here; it catches a class
-the automated checks structurally cannot.**
+Component tests and the browser now cover much of this, including a browser sweep of every
+phase. They do not replace visual inspection of layouts and interactions on real devices.
+**Visual inspection is not redundant here; it catches a class the automated checks structurally
+cannot.**
 
 ---
 
@@ -102,29 +104,21 @@ requires `^https?://`.
 click handler, because those need a DOM and jsdom was deliberately not added. What is asserted
 is everything those handlers compute from.
 
-### 2. An accessibility audit, automated
+### 2. Accessibility — automated, with known limits
 
-Current a11y work has been **manual and partial**: a skip link, `:focus-visible` styling,
-`useFocusTrap` for modals, a `<main>` landmark, and `role="alert"`/`role="status"` on the
-backup-import messaging. There is **no automated** check of contrast ratios, heading order, or
-that every interactive element is reachable by keyboard.
+`learning-site/scripts/audit-a11y.mjs` runs as part of `npm test` when a production preview is
+available. It covers six views, including contrast, accessible names, heading order, landmarks,
+control-kind keyboard reachability, focus visibility, live search announcements, and the skip
+link. Its documented gaps remain meaningful: it does not assert focus order, test modal focus
+trapping, inspect phase-detail pages, or observe screen-reader output. A passing audit is therefore
+good evidence, not a complete accessibility certification.
 
-⚠️ Fixed since this was written: the search result count now uses
-`role="status" aria-live="polite"`, verified in the browser announcing "30 matches." The
-remaining gap is that **none of this is automated** — the audit is being built as
-`audit-a11y.mjs`.
+### 3. Keep the project handoff docs current
 
-The highest-value automated check: **walk every view, tab through it, and assert focus never
-lands on an element with no visible focus indicator.** That is testable with the existing CDP
-harness.
-
-### 3. `CHECKPOINT.md` and `WORKFLOW.md`
-
-Still owed. `SETUP.md`, `TROUBLESHOOTING.md` and `CHANGELOG.md` are done.
-
-- `WORKFLOW.md` — how a session actually runs: the rebuild sequence, the guard order, and why
-  `dist` must be rebuilt after content
-- `CHECKPOINT.md` — a short state-of-the-project snapshot that can be re-read cold
+`CHECKPOINT.md` and `WORKFLOW.md` now exist, alongside `SETUP.md`, `TROUBLESHOOTING.md` and
+`CHANGELOG.md`. Their counts and procedures need to track the actual scripts: in particular,
+`npm test` contains browser checks that can skip without a preview server, so avoid describing
+all 17 steps as offline-only.
 
 ### 4. `docs/free-toolkit.md`
 

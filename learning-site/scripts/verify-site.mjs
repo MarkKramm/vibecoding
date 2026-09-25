@@ -54,7 +54,9 @@ const EXPECTED = (() => {
 
 const URL_BASE = (() => {
   const i = process.argv.indexOf("--url");
-  return i !== -1 && process.argv[i + 1] ? process.argv[i + 1] : "http://localhost:4173";
+  return i !== -1 && process.argv[i + 1]
+    ? process.argv[i + 1]
+    : process.env.VITE_PREVIEW_URL || "http://localhost:4173";
 })();
 
 const EDGE_CANDIDATES = [

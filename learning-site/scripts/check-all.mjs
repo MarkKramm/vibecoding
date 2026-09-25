@@ -1,4 +1,4 @@
-// Runs every site check that does NOT need a browser, in dependency order.
+// Runs the site checks in dependency order: offline first, rendered-page checks last.
 //
 // WHY THIS IS A SCRIPT AND NOT A CHAIN OF `&&` IN package.json
 // The order matters and the reason is not obvious from the command list:
@@ -6,9 +6,9 @@
 //   1. The content must build first, because every later check reads the JSON it
 //      emits. Auditing shapes against a stale generated directory would happily
 //      pass while the Markdown it came from was broken.
-//   2. audit-shapes runs before the browser tests, because it catches the cheap
+//   2. audit-shapes runs before the browser checks, because it catches the cheap
 //      class of bug (a field whose element type changed) in under a second. A
-//      browser run is ~30 seconds; failing fast keeps the loop tight.
+//      browser run takes longer; failing fast keeps the loop tight.
 //   3. The three renderer/logic tests follow the shape audit: they also read the
 //      generated JSON, and they check the SITE's behaviour rather than the
 //      content's shape. They are separate steps from audit-shapes because they
@@ -25,17 +25,17 @@
 // also buries which step failed behind exit-code noise. This script reports each
 // step by name and stops at the first real failure.
 //
-// The browser checks are NOT here. They need a dev server running and a browser
-// binary, so they live in `npm run test:browser`.
+// Two rendered-page checks run in this suite after the fast checks: accessibility
+// and the all-phase sweep. They require a browser and production preview, and each
+// reports an explicit skip when no preview server responds.
 //
-// The logic tests ARE here, because they do not. test-render-inline.mjs and
+// The unit logic tests run here because they do not need a browser. test-render-inline.mjs and
 // test-lesson-blocks.mjs load the real .jsx components by transpiling them in
 // memory with esbuild — already on disk as a dependency of Vite — and render
 // them with react-dom/server, which needs no DOM. That is what keeps the unit
 // tests inside the fast suite instead of behind a browser.
 
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -52,6 +52,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // content pipeline rather than owned by the site.
 const SITE = join(HERE, "..");
 const REPO = join(SITE, "..");
+// Browser-dependent steps use the built production preview. Override this when
+// the default port is occupied or serves another project.
+const PREVIEW_URL = process.env.VITE_PREVIEW_URL || "http://localhost:4173";
 
 const STEPS = [
   {
@@ -72,9 +75,9 @@ const STEPS = [
     args: [join(HERE, "audit-projections.mjs")],
     why: "the build emits the curriculum TWICE — a light index.json and full per-track files — and a component that reads a field the projection it actually imports does not carry gets `undefined`, not an error. The Tools library shipped reading `phase.tools` off the light index and told the reader '0 tools across 10 written tracks' while the corpus held 433 tool rows; every other check in this suite reads the SOURCE data or the FULL projection, where `tools` is present and correctly shaped, so all of them stayed green while the rendered page was empty. This is the only step that compares what a component ACCESSES against the projection that SUPPLIES it",
   },
-  // The three below test the site's OWN logic rather than the content. They are
-  // pure — no browser, no dev server — which is why they belong here and not in
-  // `npm run test:browser`, and they read the same generated JSON the steps
+  // The following logic tests check the site's OWN behavior rather than content.
+  // They need no browser, unlike the rendered-page checks later in the suite, and
+  // read the same generated JSON as the surrounding steps, so they must run after
   // above do, so they must run after the build for the same reason.
   {
     name: "inline markdown rendering",
@@ -134,9 +137,8 @@ const STEPS = [
     // ⚠️ THIS STEP IS DIFFERENT FROM EVERY OTHER ONE ABOVE, AND THE DIFFERENCE
     // IS THE POINT.
     //
-    // It needs a BROWSER and a PREVIEW SERVER, which is why the browser checks
-    // normally live in `npm run test:browser` instead of here. It is in this
-    // list anyway because accessibility is the one category where a source-level
+    // It needs a BROWSER and a PREVIEW SERVER. It is in this suite because
+    // accessibility is the one category where a source-level
     // check is structurally incapable of telling the truth: `role="status"` in
     // Search.jsx does not prove the count is announced after a query runs,
     // `.skip` in App.jsx does not prove the skip link moves focus, and
@@ -159,15 +161,15 @@ const STEPS = [
     // makes the audit claim a fixed thing is still broken.
     name: "accessibility (rendered page)",
     cmd: "node",
-    args: [join(HERE, "audit-a11y.mjs"), "http://localhost:4173", "--strict"],
+    args: [join(HERE, "audit-a11y.mjs"), PREVIEW_URL, "--strict"],
     why: "every a11y claim in this project was hand-checked, and a hand-check of accessibility has one specific failure mode: the attribute is in the SOURCE and the rendered page does something else. Twelve other steps read data; this is the only one that asks a browser what a keyboard-only or screen-reader user actually gets. It catches the class nothing else can see — a skip link that scrolls without moving focus (shipped), placeholder text at 3.27:1 because ::placeholder was styled for one input and not another (shipped), an icon control with no accessible name, a heading level skipped, or a control that takes focus with no visible indicator. Without it, all of those reach the reader silently, and the suite stays green",
   },
   {
-    // The precondition is handled by the script itself, exactly as above: with no
-    // server answering it reports that it could not run and exits 0 with a loud
-    // notice, rather than failing for an unrelated reason.
+    // The precondition is handled by the script itself: with no server answering
+    // it reports that it could not run and exits 0 with a loud notice, rather
+    // than failing for an unrelated reason.
     //
-    // This is the ONLY step that opens every page of the corpus. Its reason for
+    // This is the ONLY step in the npm test suite that opens every page of the corpus. Its reason for
     // existing is in its own header, but the short version is that it found the
     // Previous/Next phase buttons doing nothing at all — a defect that is
     // invisible to every other check here, because the data was correct and the
@@ -175,8 +177,8 @@ const STEPS = [
     // clicking them revealed that they had no effect.
     name: "every phase renders (browser, all 65)",
     cmd: "node",
-    args: [join(HERE, "sweep-phases.mjs"), "http://localhost:4173"],
-    why: "the other browser step checks FOUR views and the other thirteen read data, so nothing has ever opened a phase page except the six in one track. This walks all 65 across all 10 tracks, clicking through them the way a reader does, and asserts each one renders its title, all six sections, a tappable checklist and a working quiz explanation. It found the Previous/Next buttons silently doing nothing — a defect no data check can see, because the data was right and the buttons looked right. Without it, a page can break for one phase out of 65 and every other check stays green",
+    args: [join(HERE, "sweep-phases.mjs"), PREVIEW_URL],
+    why: "The accessibility check covers six views, but data checks and sampled page checks cannot prove that every phase works. This walks all 65 phases across all 10 tracks, clicking through them the way a reader does, and asserts each renders its title, all six sections, a tappable checklist and a working quiz explanation. It found the Previous/Next buttons silently doing nothing — a defect no data check can see, because the data was right and the buttons were correctly rendered, labelled, enabled and focusable. Only clicking them revealed that they had no effect. Without it, one broken phase page can reach readers while every data check stays green",
   },
   {
     name: "mixed practice sets",
@@ -214,22 +216,8 @@ for (const step of STEPS) {
   }
 }
 
-// The browser scripts are listed so a reader knows they exist and why they are
-// separate, rather than assuming this suite is the whole story.
-const browserScripts = [
-  "verify-site.mjs",
-  "verify-deep.mjs",
-  "verify-quiz-correctness.mjs",
-].filter((f) => existsSync(join(HERE, f)));
-
 if (!failed) {
-  console.log(`\n✓ all ${STEPS.length} offline checks passed`);
-  if (browserScripts.length) {
-    console.log(
-      `\nNOT RUN HERE (need a dev server + a browser): ${browserScripts.join(", ")}`
-    );
-    console.log("  start the dev server, then: npm run test:browser");
-  }
+  console.log(`\n✓ all ${STEPS.length} checks passed (browser-dependent checks pass or explicitly skip)`);
 }
 
 process.exit(failed ? 1 : 0);

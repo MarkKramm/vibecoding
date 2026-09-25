@@ -130,9 +130,9 @@ the selector it uses to find its input.
 
 ## Earlier — the curriculum
 
-- **65 phases across 10 tracks**, **35,383 lines** of authored Markdown across 89 files
-  (32,970 in the 65 phase files, 2,413 in the per-track overviews, master checklists and
-  shared reference documents), 549 quiz questions, 886 practice tasks, 1054 checklist items.
+- **65 phases across 10 tracks**, **24,033 lines** across 90 authored Markdown files in the
+  current corpus (22,244 in the 65 phase files; the remaining lines are in overviews, checklists,
+  and shared reference documents), 549 quiz questions, 886 practice tasks, 1,054 checklist items.
 - Tracks: Foundations (8), Model Internals (6), Prompting (7), RAG (7), Agents (7),
   Fine-tuning (6), Cost & Efficiency (7), Vibecoding Craft (8), Safety & Career (5),
   Career & Getting Hired (4), plus shared reference documents.

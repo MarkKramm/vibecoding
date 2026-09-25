@@ -18,11 +18,10 @@
 // SOURCE says is correct for every question, and assert the app reports a
 // perfect score. Then click a deliberately wrong option and assert it does NOT.
 //
-// Run: node scripts/verify-quiz-correctness.mjs
+// Run: node scripts/verify-quiz-correctness.mjs [--url http://localhost:4173]
 
-import { readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,10 +35,13 @@ const PORT = 9666;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // --url lets these checks run against the dev server or the built output.
-// See the longer note in scripts/verify-deep.mjs for why both matter.
+// Default to the production preview so the entire browser suite targets one
+// known server and cannot accidentally drive an unrelated project on port 5173.
 const SITE_URL = (() => {
   const i = process.argv.indexOf("--url");
-  return i !== -1 && process.argv[i + 1] ? process.argv[i + 1] : "http://localhost:5173";
+  return i !== -1 && process.argv[i + 1]
+    ? process.argv[i + 1]
+    : process.env.VITE_PREVIEW_URL || "http://localhost:4173";
 })();
 
 // ---- Source of truth -------------------------------------------------------

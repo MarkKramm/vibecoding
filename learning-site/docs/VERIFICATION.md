@@ -25,9 +25,11 @@ strings. All of those produce a green build and a blank page.
 | Shapes | `learning-site/scripts/audit-shapes.mjs` | generated JSON | the JSON matches what the renderers assume |
 | Semantics | `learning-site/scripts/test-cost-tone.mjs` | generated JSON | cost classification is right *on this corpus* |
 | Encoding | `learning-site/scripts/audit-encoding.mjs` | nothing | LF, UTF-8 without BOM, no mojibake, no tabs |
-| Runtime | `learning-site/scripts/verify-site.mjs` | dev server + Edge/Chrome | the app renders, 15 checks |
-| Runtime, deep | `learning-site/scripts/verify-deep.mjs` | dev server + Edge | all six written tracks, search, 8 checks |
-| Correctness | `learning-site/scripts/verify-quiz-correctness.mjs` | dev server + Edge | the quiz marks the *source-correct* option correct |
+| Runtime | `learning-site/scripts/verify-site.mjs` | production preview + Edge/Chrome | the app renders, 15 checks |
+| Runtime, deep | `learning-site/scripts/verify-deep.mjs` | production preview + Edge | all written tracks, corpus-sized dashboard, search, 8 checks |
+| Correctness | `learning-site/scripts/verify-quiz-correctness.mjs` | production preview + Edge | the quiz marks the *source-correct* option correct |
+| All-phase sweep | `learning-site/scripts/sweep-phases.mjs` | production preview + Edge | all 65 phase screens and navigation; explicitly skips without a responding preview |
+| Accessibility | `learning-site/scripts/audit-a11y.mjs` | production preview + Edge | six views; 60 assertions, with explicit scope limits |
 | Diagnostics | `debug-phase.mjs`, `debug-tracks.mjs` | dev server + Edge | *why* something failed |
 
 Two notes on that table. The **Content** row is the repo-root guard
@@ -38,29 +40,25 @@ all — it is the only layer that works on a fresh clone before `npm install`. T
 *build* (not `--check`) so the generated JSON exists for the steps after it; the
 repo-root `--check` form is what the content pipeline's own workflow uses.
 
-The **four** offline checks are chained by `npm test` → `scripts/check-all.mjs`.
-The three browser scripts are chained by `npm run test:browser`, which is separate
-because it requires a running dev server and a browser binary — a dependency the
-offline checks must not acquire, or they stop being the fast loop.
+`npm test` chains 17 checks in `scripts/check-all.mjs`. Fifteen are offline; the rendered
+accessibility audit and all-phase browser sweep use a real browser against the production
+preview at port 4173. Both print a loud skip and exit successfully if no server responds, so
+run them with a freshly built preview to get full coverage. `npm run test:browser` separately
+chains the smoke, deep, quiz-correctness, and focused Finetuning checks, also targeting the
+production preview by default.
 
-`check-all.mjs` runs them in a deliberate order and states the reason in its own
-header: the content build writes the JSON every later check reads, so it goes
-first (auditing shapes against a *stale* generated directory would pass happily
-while the Markdown it came from was broken); `audit-shapes` goes next because it
-catches the cheap class of bug in under a second, before a ~30-second browser run
-is worth starting; `test-cost-tone` follows because it also depends on the
-generated cost strings; and `audit-encoding` runs last because it is the cheapest
-of all and only fails on rules that no other step can see.
+`check-all.mjs` runs checks in a deliberate order: the content build writes the JSON every later
+step reads; shape and projection checks catch data/render mismatches; logic and component tests
+exercise behavior; and encoding/CSS/reachability checks catch failures no data test can see.
+The browser-dependent checks run after these cheaper checks.
 
-**The limit of the whole offline layer:** none of it can observe a React render.
-It can tell you the data is shaped correctly and the content parses; it cannot
-tell you the app displays any of it.
+The offline checks cannot observe a React render. The two browser-dependent steps in `npm test` do observe the production page when its preview is available; they print an explicit skip if it is not.
 
 ---
 
 ## 2. `audit-shapes.mjs` — the static field-shape audit
 
-**What it does.** Walks all 42 phases in the six written tracks and asserts, per
+**What it does.** Walks all phases in the written tracks and asserts, per
 field, the type of one element: `skills` and `deliverableItems` must be strings;
 `topics`, `tasks`, `checklist`, `quiz`, `tools` and `resources` must be objects.
 It also records the nested key set of every object field, so a field that
@@ -133,13 +131,13 @@ number of classifications checked.
 
 **What it does.** Launches headless Edge (or Chrome) with a fresh temporary
 profile, connects over the **Chrome DevTools Protocol** using nothing but Node’s
-built-in `WebSocket` and `fetch`, navigates to the dev server, walks the DOM, and
-asserts fifteen things:
+built-in `WebSocket` and `fetch`, navigates to the production preview by default,
+walks the DOM, and asserts fifteen things:
 
 1. the document title,
 2. that React mounted (≥500 characters of text under `#root`),
-3. the dashboard shows **42** phases,
-4. the dashboard shows the **706** checklist total,
+3. the dashboard shows the phase count read from the generated index,
+4. the dashboard shows the checklist total read from the generated index,
 5. the dashboard lists all ten tracks,
 6. phase cards rendered,
 7. a phase page rendered (>1000 characters),
@@ -167,19 +165,16 @@ package to the tree.
   precisely why `verify-deep.mjs` exists.
 - It checks for the *presence* of things, not their correctness. “The quiz
   section is present” is true of a quiz that marks every wrong answer right.
-- It asserts against **baked-in numbers** (42 phases, 706 checklist items). Those
-  are drift detectors, not invariants: they will fail the moment a track is
-  authored, which is a *correct* failure but a noisy one, and they must be
-  updated deliberately.
+- It reads the expected phase and checklist totals from the generated index, so
+  additions to the corpus do not create false failures from stale constants.
 - If no Edge or Chrome binary is found it exits **2**, not 1 — “could not run” is
   a different outcome from “ran and failed”, and the exit code says which.
 - It waits with fixed `sleep()` calls rather than waiting for conditions. On a
   slow machine 4000 ms may not be enough, and a timeout would read as an app
   failure.
 
-**Run:** start the dev server, then `node scripts/verify-site.mjs`
-(optionally `--url http://localhost:5173`). Default URL is
-`http://localhost:5173`.
+**Run:** build and start `npm run preview`, then run `node scripts/verify-site.mjs`.
+The default URL is `http://localhost:4173`; pass `--url` to use another host or port.
 
 ---
 
@@ -192,9 +187,9 @@ package to the tree.
 2. **option 0 is not always the correct answer** — it clicks the first option of
    every question and asserts the summary does *not* say “Every answer correct”,
    which is what an inverted or off-by-one normalisation would produce,
-3. the dashboard has all **42** cards after navigating back,
+3. the dashboard has the corpus-sized phase-card count after navigating back,
 4. **every written track renders a full phase** — it opens the first phase of
-   each of the six written tracks and requires >3000 characters and no
+   every track with authored phases and requires >3000 characters and no
    “Loading this phase…”,
 5. **no unsupported content blocks anywhere** — the literal string
    `Unsupported block type` must not appear in any of them,
@@ -213,19 +208,18 @@ to tell the two cases apart.
 
 **Its limits.**
 
-- It checks **the first phase of each track**, not all 42. A single broken phase
+- It checks **the first phase of each written track**, not every phase. A single broken phase
   in the middle of a track passes.
 - Check 2 is a **one-question-position** heuristic: if by coincidence every
   question’s correct answer happened to be option 0, it would report a false
   failure. It is a smoke test for the normalisation, not a proof of it — that is
   `verify-quiz-correctness.mjs`.
-- Check 4 skips tracks with zero cards, so it proves “six tracks render”, not “ten
-  tracks render”. Four tracks are unwritten and this script is honest about that,
-  but it means the check silently narrows if a track regresses to zero phases.
+- Check 4 skips tracks with zero cards, so the expected written-track count is
+  read from the generated corpus. If a formerly populated track loses all phases,
+  this count shrinks too; the content/build checks must catch that regression.
 - Search is checked with a single known-good term, `attention`. It proves the
   index loads and returns *something*; it does not prove ranking quality.
-- It hardcodes `http://localhost:5173` — unlike `verify-site.mjs` it accepts no
-  `--url`.
+- It accepts `--url` and defaults to the production preview at `http://localhost:4173`.
 
 **Run:** `node scripts/verify-deep.mjs`.
 
@@ -273,7 +267,7 @@ prints each question’s `answerIndex`, then drives the real UI:
 - It exercises `normaliseQuestion` **as reached through `loadTrackPhases`**. A
   change that moved normalisation somewhere else would need this test re-pointed.
 
-**Run:** `node scripts/verify-quiz-correctness.mjs`.
+**Run:** start the production preview, then run `node scripts/verify-quiz-correctness.mjs` (or pass `--url` to override `http://localhost:4173`).
 
 ---
 
@@ -316,11 +310,10 @@ well-formed — front-matter fields present, mandatory sections present, exactly
 React component downstream expected `topics` to be an array of strings. The
 component compiled, the bundle built, and the page threw on first render.
 
-**Only the browser test found it.** `verify-site.mjs` collects
-`Runtime.exceptionThrown` from the moment the page loads, which is the only
-instrument in the suite that can observe a render-time failure at all. Without
-that listener, a blank page and a working page are the same set of passing
-assertions.
+**Only a rendered-page check could find it.** `verify-site.mjs` collects
+`Runtime.exceptionThrown` from the moment the page loads, so it observes render-time
+failures that static checks cannot. The current suite also runs a full phase sweep
+and accessibility checks against a real browser when the production preview is up.
 
 The sequence that followed is the right pattern to copy:
 
@@ -338,7 +331,7 @@ Two rules follow from it, and both are worth applying to any future guard:
   to the build guard would have shown immediately that it had no opinion about
   render shapes. The corollary is harsher: **a guard that has never failed may
   never have run.** `audit-shapes.mjs` and `audit-encoding.mjs` are new enough
-  that their first real failure is still ahead of them.
+  their mutation tests verify that deliberately broken inputs fail.
 - **Never edit a guard to agree with the code.** If an audit fails, the data or
   the component is wrong. Adjusting the assertion makes the failure permanent and
   invisible — and the failure it hides is the one that reaches a reader.
@@ -399,13 +392,13 @@ families, and mixing them up produces a confusing failure in either direction.
 ## 10. Running everything
 
 ```powershell
-cd C:\Users\zaman\Desktop\CSKramm\Vibecoding\learning-site
+cd learning-site
 
-npm test              # offline: content build, shapes, cost tone
-npm run check         # content guard, quiz audit, AST audit — from package.json
-
-npm run dev           # in another terminal, port 5173
-npm run test:browser  # verify-site && verify-deep && verify-quiz-correctness
+npm run build         # builds content and production bundle
+npm run preview       # in another terminal, port 4173
+npm test              # 17 checks; 2 browser checks use the preview
+npm run test:browser  # smoke, deep, quiz correctness, focused track check
+npm run check         # content guard, quiz audit, AST audit
 ```
 
 Two PowerShell notes that have cost time before. `build-content.mjs` writes

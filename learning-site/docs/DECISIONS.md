@@ -48,7 +48,7 @@ light phase metadata and the **IDs** of checklist/task/quiz items, imported
 eagerly; and per-track files (~1,304 KB across six) with everything a phase page
 renders, imported lazily via `import.meta.glob` with `eager: false`.
 
-**Why.** The dashboard draws ten track sections and 42 phase cards, and a card
+**Why.** The dashboard draws ten track sections and a phase card per authored phase, and a card
 needs a title, a duration, a goal and a count. Before the split, the shell
 imported the full track files to draw that, pulling 1.3 MB of curriculum prose
 into the entry chunk. The entry chunk measured **1,639 KB (501 KB gzipped)**. After

@@ -47,7 +47,7 @@ From `learning-site/`:
 | `npm run dev` | rebuild content, then start the dev server on **5173** |
 | `npm run build` | rebuild content, then bundle into `dist/` |
 | `npm run preview` | serve `dist/` on **4173** |
-| `npm test` | **11 offline checks** — no browser, no server, no network |
+| `npm test` | **17 checks**; 15 offline plus 2 preview/browser checks that skip if no server answers |
 | `npm run check` | the three content-contract guards only |
 | `npm run test:browser` | browser checks; **needs a running server** |
 
@@ -72,13 +72,13 @@ node scripts/build-content.mjs --check; echo "exit=$?"
 ⚠️ **Always check the exit code.** The pass summary goes to **stdout** and failures to
 **stderr**, so `| tail` can display a pass line from a run that failed.
 
-**2. Everything offline** — the full guard suite:
+**2. Full guard suite** — offline checks plus the preview-backed browser checks:
 
 ```bash
 cd learning-site && npm test
 ```
 
-Runs 11 checks in order:
+Runs 17 checks in order. Fifteen run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
 
 | # | Check | Catches |
 |---|---|---|
@@ -88,11 +88,18 @@ Runs 11 checks in order:
 | 4 | inline markdown rendering | `renderInline` regressions |
 | 5 | quiz correctness | all 549 questions: one correct option, `**Why:**`, valid energy |
 | 6 | lesson block renderer coverage | a block type with no `case` |
-| 7 | in-lesson search | `lessonTerms`/`buildEntries`/`searchLesson` |
-| 8 | cost classification | every distinct `cost:` string is classified |
-| 9 | worked-example arithmetic | the corpus's own sums |
-| 10 | encoding and line endings | LF, UTF-8 no BOM, no tabs, no mojibake |
-| 11 | css wiring | every JSX class has a rule; every token is defined |
+| 7 | component rendering | real React markup and projection degradation behavior |
+| 8 | in-lesson search | `lessonTerms`/`buildEntries`/`searchLesson` |
+| 9 | cost classification | every distinct `cost:` string is classified |
+| 10 | worked-example arithmetic | the corpus's own sums |
+| 11 | encoding and line endings | LF, UTF-8 no BOM, no tabs, no mojibake |
+| 12 | CSS wiring | every JSX class has a rule; every token is defined |
+| 13 | accessibility (rendered page) | six-view rendered a11y, with a loud skip if preview is unavailable |
+| 14 | every phase renders | all 65 phases in a real browser, with a loud skip if preview is unavailable |
+| 15 | mixed practice sets | pool shape and sampling behavior |
+| 16 | section exams | scoring, pass mark, and result persistence |
+| 17 | reachability | every `src/` module is reachable from `main.jsx` |
+
 
 Read the list from the source rather than trusting this table if the count matters —
 `check-all.mjs`'s `STEPS` array is authoritative, and the count has changed five times.
@@ -100,9 +107,14 @@ Read the list from the source rather than trusting this table if the count matte
 **3. Browser** — only after 1 and 2 pass:
 
 ```bash
-npm run build && npm run preview   # in another shell
-npm run test:browser
+npm run build
+npm run preview                      # in another shell, serves 4173
+npm test                             # includes a11y + all-65 browser checks
+npm run test:browser                 # smoke + deeper interaction checks
 ```
+
+If another local project already uses port 4173, start preview on a free port and set
+`$env:VITE_PREVIEW_URL='http://localhost:4174'` in PowerShell (or `export VITE_PREVIEW_URL=...` in a POSIX shell) before running either test command. Browser checks default to 4173; `npm test` passes this override to its preview-dependent audits.
 
 ---
 

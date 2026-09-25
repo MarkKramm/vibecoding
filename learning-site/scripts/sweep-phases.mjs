@@ -39,7 +39,9 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const BASE = process.argv[2]?.startsWith("http") ? process.argv[2] : "http://localhost:4173";
+const BASE = process.argv[2]?.startsWith("http")
+  ? process.argv[2]
+  : process.env.VITE_PREVIEW_URL || "http://localhost:4173";
 const PORT = 9412;
 const EDGE = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 

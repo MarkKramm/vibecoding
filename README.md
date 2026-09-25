@@ -5,8 +5,8 @@
 A structured, self-paced curriculum for learning how modern AI systems actually work, how to
 build with them without shipping things you cannot verify, and how to get hired doing it.
 
-**65 phases across 10 tracks · 549 quiz questions · 35,383 lines of authored Markdown ·
-written for a $0 budget.**
+**65 phases across 10 tracks · 549 quiz questions · 24,033 lines across 90 authored Markdown
+files · written for a $0 budget.**
 
 Written for someone starting from beginner-to-intermediate, working remotely, with no
 professional network and no budget. Every phase is designed to be completed with free tools.
@@ -105,10 +105,13 @@ node learning-site/scripts/audit-arithmetic.mjs # numbers stated in prose
 node learning-site/scripts/audit-encoding.mjs   # LF, UTF-8 no BOM, no mojibake, no tabs
 ```
 
-Or all of the site checks at once:
+For all 17 site checks, build and start the production preview before `npm test`; two browser checks may skip if it is unavailable:
 
 ```bash
-cd learning-site && npm test
+cd learning-site
+npm run build
+npm run preview      # in another terminal, http://localhost:4173
+npm test
 ```
 
 CI runs all of these on every push. The Pages deploy refuses to publish if any of them fail —
@@ -153,20 +156,18 @@ All 10 tracks are written. This is a complete first pass, not a finished product
 
 **Known gaps, stated plainly:**
 
-- **The live page has never been observed.** `*.github.io` resolves IPv6-only and is
-  unreachable from the environment this was built in. The deploy is verified at the *artifact*
-  level — deployment `state=success`, expected artifact size, the built bundle contains the
-  expected strings, and that same bundle renders correctly **locally**. That is not the same as
-  having loaded the live URL, and the difference is worth stating.
+- **The live page was observed by the project owner on 2026-09-18**, and the check found the
+  Reference-view rendering defect documented below and in `CHECKPOINT.md`. We did not independently
+  re-check the live URL during this repository audit.
 - A number of volatile facts — free-tier terms, context-window sizes, model availability —
   are dated rather than continuously verified, because verifying them requires network
   access this project budgets carefully. Each is stamped with its date.
-- The browser verification suite covers a sample of phases, not all 65.
-- The rendered site has never been checked on a real mobile device — only emulated
-  viewports in a headless browser.
-- **No accessibility audit has been automated.** A skip link, `:focus-visible` styling,
-  `useFocusTrap` for modals and live regions exist and are hand-checked, but nothing
-  automatically verifies contrast ratios, heading order, or keyboard reachability.
+- Browser verification includes an automated sweep of all 65 phases, but visual checks on a real
+  mobile device have not been done; only emulated viewports in a headless browser were checked.
+- An automated accessibility audit runs against a rendered production preview as part of
+  `npm test`. It covers six views, but does not test modal focus trapping, phase-detail pages,
+  focus order, or actual screen-reader output; see `learning-site/scripts/audit-a11y.mjs` for
+  its exact scope and limits.
 
 **Fixed since this section was first written** (kept here because a gaps list that only
 shrinks silently is not honest either):
@@ -178,9 +179,9 @@ shrinks silently is not honest either):
 - ✅ Unit suites for inline markdown rendering, quiz logic, lesson-block coverage, component
   rendering and in-lesson search — **407 assertions**, each suite proved capable of failing by
   deliberate mutation and then restored byte-identical.
-- ✅ An automated **accessibility audit** (`audit-a11y.mjs`, the 13th check) drives a real browser
-  and asserts **44** things across all four views — contrast, accessible names, heading order,
-  landmarks, keyboard reachability, focus visibility, live regions, and the skip link. It found
+- ✅ An automated **accessibility audit** (`audit-a11y.mjs`) drives a real browser and asserts
+  **60** things across all six views — contrast, accessible names, heading order, landmarks,
+  keyboard reachability by control kind, focus visibility, live regions, and the skip link. It found
   three genuine defects on its first run: a skip link that scrolled without moving focus, and two
   placeholders at 3.27:1 where `::placeholder` had been styled for one input and not another.
   Making it reliable also uncovered a browser-process leak that had been making browser checks

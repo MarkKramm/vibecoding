@@ -1,14 +1,14 @@
 # Checkpoint
 
-A cold-start snapshot: what this project is, where it stands, and what is true right now.
+A dated cold-start snapshot: what the project state was at the recorded verification point.
 
-**Last verified:** all 17 offline checks green, all 759 assertions passing (699 offline + 60 in
-the accessibility audit), local and remote `main` identical at `a570682`, working tree clean.
+**Snapshot recorded:** 2026-09-18 at commit `a570682`; local and remote `main` were identical and
+the working tree was clean. At that time, the recorded result was 17 checks and 759 assertions
+(699 offline + 60 in the accessibility audit). These are historical results, not a claim about the
+current checkout; rerun the checks before relying on them.
 
-⚠️ **GitHub Pages was unreachable at the time of this checkpoint** — `*.github.io` timed out
-while `github.blog` and `raw.githubusercontent.com` answered normally, so the fault is GitHub's
-Pages service, not this site. The commits are pushed; the deploy publishes when Pages recovers.
-Re-check before concluding anything is wrong with the deployment.
+GitHub Pages was reported unreachable during the 2026-09-18 checkpoint. This is a historical
+service observation, not verified current status; check the live URL before diagnosing deployment.
 
 ---
 
@@ -48,7 +48,9 @@ checklistIds, taskIds, quizIds` — **no tools, resources or prose**. Full data 
 
 ---
 
-## Current state
+## State recorded 2026-09-18
+
+Historical snapshot; the opening note records the commit and verification baseline. Re-run checks before treating these counts or statuses as current.
 
 | | |
 |---|---|
@@ -60,8 +62,8 @@ checklistIds, taskIds, quizIds` — **no tools, resources or prose**. Full data 
 | Tool rows | 433 (237 after de-duplication) |
 | Glossary terms | 254 across 10 categories |
 | Catalogued resources | 71 across 14 groups |
-| Offline checks | 17 |
-| Test assertions | 759 (699 offline + 60 accessibility) |
+| `npm test` checks at snapshot | 17 total, including 2 preview/browser-dependent checks |
+| Recorded assertions | 759 (699 offline + 60 accessibility) |
 | Guards proved to fail | all of them |
 | `src/` modules | 48 — **every one reachable from `main.jsx`** |
 | Views | 6 — Curriculum, Practice, Exams, Tools, Reference, Search |
@@ -101,11 +103,11 @@ cd learning-site
 npm run dev          # content rebuild + dev server on 5173
 npm run build        # content rebuild + bundle to dist/
 npm run preview      # serve dist/ on 4173
-npm test             # 17 offline checks
+npm test             # 17 checks; 2 need a preview server or skip
 npm run test:browser # needs a running server
 ```
 
-⚠️ Exactly two of the 15 — `accessibility (rendered page)` and `every phase renders (browser,
+⚠️ Exactly two of the 17 `npm test` steps — `accessibility (rendered page)` and `every phase renders (browser,
 all 65)` — need `npm run preview` on 4173. They **skip with a loud notice rather than failing**
 when no server answers, because a guard that fails for an unrelated reason gets disabled, and a
 disabled guard is worse than none.

@@ -72,7 +72,7 @@ import { rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const BASE = process.argv[2] || "http://localhost:4173";
+const BASE = process.argv[2] || process.env.VITE_PREVIEW_URL || "http://localhost:4173";
 const EDGE = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const PORT = 9403;
 

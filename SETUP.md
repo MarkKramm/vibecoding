@@ -108,17 +108,22 @@ http://127.0.0.1:5173      ✗ may refuse the connection
 
 ## Trap 4 — the browser checks need a server, and the preview port differs
 
-`npm test` runs only the **offline** checks. The browser checks are separate because
-they need a running server and a browser binary:
+`npm test` runs 17 checks. Most are offline, but the rendered accessibility audit and
+the all-65-phase sweep need a browser and a production preview server on port 4173. If
+nothing responds there, those two checks explicitly skip; start the preview to get the
+full audit:
 
 ```bash
+npm run build          # refresh content and production bundle
 npm run preview        # in one terminal, port 4173
-npm run test:browser   # in another
+npm test               # in another; runs all checks including the two browser checks
+npm run test:browser   # additional smoke, deep, quiz and focused-track checks
 ```
 
-They read the **built** output in `dist/`, not your source. If you edited a component
-and did not rebuild, a browser check can pass against the old build and tell you
-something false. This has happened twice.
+The browser checks read the **built** output in `dist/`, not your source. If you edited a
+component and did not rebuild, a browser check can pass against the old build and tell you
+something false. This has happened twice. If port 4173 is occupied, choose a different
+preview port and set `VITE_PREVIEW_URL` to that URL before running tests.
 
 ---
 
@@ -158,11 +163,13 @@ Zero means the file is fine and your console is lying to you.
 
 ```bash
 cd learning-site
-npm test             # 6 offline checks, no browser or server needed
+npm test             # 17 checks; browser checks skip if preview is unavailable
 npm run check        # the content contract only: build, quiz, lesson AST
 ```
 
-`npm test` runs `scripts/check-all.mjs`, which chains:
+For all 17 checks, build the site, start `npm run preview` in another terminal (default port 4173), then run `npm test`. The accessibility and all-phase browser checks report an explicit skip when no preview answers. If 4173 is occupied by another project, choose a free preview port and set `VITE_PREVIEW_URL` to that URL before running checks.
+
+`npm test` runs `scripts/check-all.mjs`, which chains 17 checks; this table lists representative coverage rather than every individual step:
 
 | Check | Catches |
 |---|---|
@@ -171,9 +178,11 @@ npm run check        # the content contract only: build, quiz, lesson AST
 | cost classification | a new cost phrase that would be mis-tiered |
 | worked-example arithmetic | stated numbers that contradict the surrounding prose |
 | encoding | CRLF, BOM, tabs, mojibake |
-| CSS wiring | a class used in JSX that no stylesheet defines |
+| CSS wiring + reachability | a class used in JSX with no CSS rule or a source module disconnected from the app |
+| rendered accessibility audit | six-view contrast, names, headings, landmarks, keyboard reachability, focus, live regions and skip link |
+| all-phase browser sweep | all 65 phase screens, controls, explanations, navigation and runtime errors |
 
-That last one exists because the site once shipped with **40 layout classes that no
+The CSS check exists because the site once shipped with **40 layout classes that no
 stylesheet defined** — the page rendered completely unstyled while every content check
 stayed green. A missing CSS rule changes no text and breaks no JSON field, so nothing
 that reads content could see it.

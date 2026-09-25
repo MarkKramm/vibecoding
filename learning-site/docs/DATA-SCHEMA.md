@@ -108,7 +108,7 @@ plus:
 | `freeVsPaid` | `{ freeEnough, paidUpgrade, whenWorthPaying }` | each a multi-paragraph string, split on `\n\n` by the renderer |
 | `sourcePath` | `string` | e.g. `ai-roadmaps/foundations/01-phase-what-a-model-is.md` |
 
-All 42 written phases have a `lessonPath`; none has an empty `quiz`.
+All 65 written phases have a `lessonPath`; none has an empty `quiz`.
 
 ---
 
@@ -341,18 +341,18 @@ its `toc` entry’s `id`, which is what makes anchors and search-result jumps wo
 
 ### The six block types
 
-Every block carries a `type`. Across the 42 lessons there are **3,671 blocks**
-and exactly six types, with these key sets — no others appear anywhere in the
-corpus:
+Every block carries a `type`. In the recorded 42-lesson snapshot there were **3,671 blocks**.
+The current generated corpus has 65 lessons and 5,019 blocks. It contains exactly six block
+types, with these key sets — no others appear anywhere in the corpus:
 
 | Type | Count | Keys besides `type` |
 | --- | --- | --- |
-| `para` | 2,694 | `text` |
-| `heading` | 427 | `level`, `text`, `id` |
-| `code` | 219 | `lang`, `text` |
-| `list` | 130 | `ordered`, `items` |
-| `table` | 103 | `head`, `rows` |
-| `quote` | 98 | `paras` |
+| `para` | 3,755 | `text` |
+| `heading` | 600 | `level`, `text`, `id` |
+| `code` | 246 | `lang`, `text` |
+| `list` | 182 | `ordered`, `items` |
+| `table` | 122 | `head`, `rows` |
+| `quote` | 114 | `paras` |
 
 **`heading`**
 
@@ -426,7 +426,7 @@ specific material from both the renderer and the in-lesson search.
 An item may also carry an optional `checked` boolean, which makes `LessonBlock`
 draw a **non-interactive** checkbox glyph (a styled `<span>`, deliberately not an
 `<input>`) for the weekly-tracker template. **No item in the current corpus
-carries `checked`** — all 42 lessons have zero — so that path renders nothing
+carries `checked`** — all 65 lessons have zero — so that path renders nothing
 today. It exists for the shared tracker document.
 
 **`table`**
