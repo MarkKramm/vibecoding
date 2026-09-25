@@ -1,33 +1,26 @@
 # HANDOVER — Vibecoding / AI Era Learning Site
 
-**Written:** end of session, 2026-09-18 — **updated 2026-09-18 (later session: `web_search` restored)**
+**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-19**.
 **Purpose:** Everything a fresh session needs to resume this project without re-deriving anything.
-**Repo root:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`
+**Current repo root:** `C:\Users\zaman\Desktop\vibecoding` (re-cloned after the owner's NVMe SSD failure).
+**Historical repo root in old logs:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`.
 **Sibling project (source of the proven architecture):** `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`
 
 ---
 
-## HOW TO START A NEW SESSION — read in this order
+## START HERE — current handoff (2026-09-19)
 
-Do these five things and you will know everything that matters. Do not skip step 1.
+The owner paused mid-feature request to start a new chat. **The exam work is implemented in the working tree, fully tested, but not committed or pushed.** Start here, then read §9 for the feature details and current Git state.
 
-1. **Read §0 below.** Eight items; items 1 and 2 tell you what changed most recently and what to hunt.
-2. **Run the guards before touching anything**, so you know the baseline is green rather than assuming it:
-   ```powershell
-   cd C:\Users\zaman\Desktop\CSKramm\Vibecoding
-   node scripts/build-content.mjs --check 2>$null; Write-Host "build: $LASTEXITCODE"
-   node scripts/audit-quiz.mjs 2>$null; Write-Host "quiz: $LASTEXITCODE"
-   node scripts/audit-lesson-ast.mjs 2>$null; Write-Host "ast: $LASTEXITCODE"
-   cd learning-site; npm test; cd ..
-   ```
-   Expect `48 phase(s) across 7 track(s)` and exit 0 three times, then `all 5 offline checks passed`.
-   **A fresh clone needs `node scripts/build-content.mjs` first** — the generated JSON is gitignored.
-   **Verified baseline, measured 2026-09-18 after the Finetuning track landed:** 48 phases / 7 tracks · 630 authored practice-task IDs · 0 minted from position · quiz positions A 20.1% / B 25.2% / C 27.9% / D 26.7% (all inside the ceilings) · `shared docs: 4`. **The pre-Finetuning baseline was 42 phases / 6 tracks with 533 banded tasks, 706 checklist items and 401 quiz questions.** If your run differs, something changed — find out what before you continue.
-3. **Read §9, and start at step 8a**, not step 8. The order changed: re-auditing the written phases now precedes writing more. **Step 8 is done** — the Finetuning track (6 phases) is complete as of this session.
-4. **Check `git log --oneline -8`** and `git status` so you know what the last session actually left behind.
-5. **Only then** read §4 (the content contract — the build fails without it) and §10 (the per-file authoring checklist) before writing any phase.
+1. Working directory: `C:\Users\zaman\Desktop\vibecoding`.
+2. Run `git status -sb` and `git diff --stat`; expect the exam feature changes listed in §9. Do not reset/revert them.
+3. Rebuild before browser checks: from `learning-site/`, run `npm run build`.
+4. Run repo integrity checks from root and `cd learning-site; npm test`; full browser coverage requires preview running. See `SETUP.md`/`WORKFLOW.md` for port override.
+5. Review the uncommitted diff, commit only after review, then push `main` and verify with `git fetch origin`.
 
-**Two things that will cost you real time if you miss them:** the research tools are **hourly quota-limited and share one budget** (§0.1), and **a green build does not mean the app works** (§0.5). Both are lessons this project paid for.
+Verified in the current worktree before handoff: build passed; root content/quiz/AST/arithmetic/encoding/shape audits passed; `npm test` passed all 17 checks with preview; `npm run test:browser` passed (smoke, deep, quiz correctness, focused track and exam-mode visibility). AST audit still prints a non-failing 20,951-character gain / zero loss warning; historical analysis says likely retained Markdown markup, not confirmed specifically for the updated full corpus. Existing Vite warning about the generated index being both statically and dynamically imported and a React test-only `javascript:` URL warning remain non-blocking.
+
+The GitHub account was re-authenticated after setting DSH to Full Access. `git fetch origin` works normally now. Last pushed commit remains `d34045a`; feature changes listed in §9 are not committed.
 
 ---
 
@@ -40,7 +33,7 @@ Do these five things and you will know everything that matters. Do not skip step
    - **What actually broke it:** `C:\Users\zaman\.dsh\settings.yaml` → `web-search-deepseek.baseURL` was set to `https://beta.singularityapi.tech/v1`. Singularity's beta serves `/v1/chat/completions` but **not `/v1/messages`** (404 confirmed on both GET and POST), so every search 404'd. **Two layers can set that base URL** — the profile's `cordis.patch.yml` and `settings.yaml` — and **`settings.yaml` wins.** The earlier session edited only the profile layer and therefore never actually changed the endpoint in use. *This is the trap: fixing the layer that looks authoritative while a higher layer silently overrides it.*
    - **⭐ The lesson is about the size of a wrong conclusion.** "This cannot work here" is a much stronger claim than "I could not make it work", and it needs proportionally stronger evidence. A 404 on one endpoint proves exactly one thing — that *that* endpoint lacks the path. It does **not** prove the provider is unusable, that no correct endpoint exists, or that the capability is structurally impossible. The check that would have settled it in one step: **read the provider package's own defaults** (`DEEPSEEK_DEFAULT_BASE_URL`), which names the intended target explicitly, and was sitting in 40 lines of source the whole time.
    - **Still true and worth keeping:** a **shim/proxy would not fix this.** Forwarding to `/v1/chat/completions` drops the server-side search tool, so the model answers from memory with no sources — output that *looks* like search and is not. The correct fix was always to reach an endpoint that genuinely implements server-side search, which DeepSeek's does.
-   - **Current state (as of this session's end): search is still OFF, for two mundane reasons, both the user's to resolve.** (a) `settings.yaml` still points at Singularity. (b) The `DEEPSEEK_API_KEY` in the credential store was **revoked** after it was pasted into chat. **To enable: put a valid key in the credential store, set `settings.yaml → web-search-deepseek.baseURL` to `https://api.deepseek.com/anthropic/v1`, then run one search — a 404 means the URL is wrong, a 401 means the key is.** Cost is about **$0.001 per search** (Flash, off-peak, ~3k in + ~1k out), so a few dollars covers years at this project's usage.
+   - **Historical state only: an earlier session recorded search disabled; this handoff did not inspect current DSH search settings or credentials, for two mundane reasons, both the user's to resolve.** (a) `settings.yaml` still points at Singularity. (b) The `DEEPSEEK_API_KEY` in the credential store was **revoked** after it was pasted into chat. **To enable: put a valid key in the credential store, set `settings.yaml → web-search-deepseek.baseURL` to `https://api.deepseek.com/anthropic/v1`, then run one search — a 404 means the URL is wrong, a 401 means the key is.** Cost is about **$0.001 per search** (Flash, off-peak, ~3k in + ~1k out), so a few dollars covers years at this project's usage.
    - **⚠️ Quota note, no longer applicable but worth remembering:** when a hosted search provider is used through a shared gateway, search and fetch can draw on **one hourly budget** and return HTTP 429. Direct DeepSeek keys are pay-per-token instead, so there is no hourly cap to manage.
    - **✅ Misconfiguration found and fixed this session — read this if a web tool breaks.** `web_fetch` failed with `configured web provider "builtin" is not registered`. `C:\Users\zaman\.dsh\profiles\web\cordis.patch.yml` named two providers that **do not exist**: `searchProvider: ollama`, `fetchProvider: builtin`. The real registered ids are **`deepseek-official`** (search) and **`http`** (fetch) — they are `DEEPSEEK_PROVIDER_ID` and `LOCAL_FETCH_PROVIDER_ID` inside the provider packages and **neither matches its plugin or package name**, so guessing from names fails. That file now carries the full history, including the **third and final** cause — the `settings.yaml` base-URL override above, which is the one that actually mattered.
    - **⭐ Three separate faults stacked in one file, and each hid the next.** Worth internalising as a pattern: (1) **wrong provider ids**, so both tools failed "not registered" — a missing-install error that was really a typo; (2) **a third-party plugin disabling the provider** via its *own* patch file — the same "not registered" message, but the cause was a neighbour switching it off; (3) **a higher-priority settings layer overriding the endpoint** — which looked like a protocol impossibility. **Each diagnosis was locally correct and globally wrong**, and the error messages did not distinguish the cases. When a config tool misbehaves, walk **every layer** that can set the value (profile patch → settings.yaml → env var → package default) before concluding anything about what is possible.
@@ -229,7 +222,7 @@ Vibecoding/
 ### Commands
 
 ```powershell
-cd "C:\Users\zaman\Desktop\CSKramm\Vibecoding"
+cd "C:\Users\zaman\Desktop\vibecoding"
 node scripts/build-content.mjs           # full build + report
 node scripts/build-content.mjs --check   # validate only
 node scripts/audit-quiz.mjs              # quiz structure + position balance
@@ -485,20 +478,18 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 
 ### 6.2 Track-level files — ✅ WRITTEN, but ⚠️ NOT RENDERED (new defect found this session)
 
-**All 22 files are now written** (committed in `22547b4` and the finetuning commits): 10 × `00-overview.md`, 10 × `checklist-master.md`, `shared/resource-list.md` (156 lines, 71 resources in 14 groups) and `shared/glossary.md` (295 lines, 254 terms across exactly 10 track categories). The `vibecoding/`, `safety-career/` and `career/` folders were created. The build now reports `shared docs: 4`.
+**Historical milestone:** all 22 overview/checklist/shared files were written in the commits below; the current corpus and rendering status are verified by the live build/tests in the 2026-09-19 handoff at the top. The build now reports `shared docs: 4`.
 
-- **⚠️ THE REAL FINDING: `findExtraDocs()` at `scripts/build-content.mjs:849` is DEAD CODE — it is never called.** `main()` calls only `findPhaseFiles()` (L877), whose glob is `/^\d+-phase-.*\.md$/`. Verified directly: the only two hits for the identifier in the whole build are the definition itself.
-- **Consequence: all 20 track files are invisible to the build, the guards and the site.** They cannot break the build, cannot be positionally minted, and **cannot be rendered** — nothing in `learning-site/src` (57 files) mentions `overview` or `checklist-master` at all. So `ai-roadmaps/README.md` L195–199, which documents both files as part of every track folder, **is currently false**.
-- **This was invisible until now** because §6.2 tracked *writing* these files and nothing tracked *surfacing* them. It took a subagent reading the parser to notice, which is the argument for having one read the code rather than trusting the plan.
-- **To fix, two things are needed, and the second is why it was not rushed into this session:** (a) call `findExtraDocs` in `main()` and emit the docs into the track JSON and `index.json`; (b) add a view to the React app that renders them, with the browser check this project requires for anything in the site. That touches the build pipeline and the component tree, so it wants its own session with real verification rather than a patch bolted onto the end of a large authoring run.
+- **Historical defect, since resolved:** an older build left `findExtraDocs()` unused, so track overviews/checklists were initially absent from the site. Do not follow the old proposed fix below without rechecking the current parser/build; shared documents now build/render through the current pipeline.
+- The incident is preserved as engineering history. The previous proposed fix is obsolete; inspect current code/tests rather than applying it again.
 
 > The two shared docs are in the `SHARED_DOCS` registry in `scripts/shared-content.mjs`. **That parser hard-fails** on unregistered `.md` files, unlike phase build notes. Three quirks were found empirically and cost 7 real failures before they were fixed — see §12 lesson 26. **The phase-side parse is the opposite: it silently ignores what it does not recognise**, which is exactly how the dead-code gap stayed hidden.
 
 > **A third shared doc was suggested and not written:** a `free-toolkit.md` — the running list of free-tier-safe tools, local model options, and free substitutes for paid mechanisms. It would serve the freemium theme across every track. If added, register it in `SHARED_DOCS`.
 
-### 6.3 ✅ COMPLETE — The learning site (commit `7d4c8bd`, docs `b1278d7`)
+### 6.3 Historical milestone — initial learning site
 
-**The site renders all 42 authored phases across all 6 written tracks.** Verified in a real browser, not just by a successful build.
+At the time of the original site implementation it rendered 42 phases across six tracks. Current status is 65 phases across 10 tracks; see the 2026-09-19 handoff at the top and rerun tests before relying on current counts.
 
 | | |
 |---|---|
@@ -1115,29 +1106,46 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 > no step list, because it is the first thing a new session reads and it is confident.
 > Steps that were completed are gone; what remains is what is actually still open.
 
-**The project is at a clean, verified stopping point.** Every commit is pushed, the tree is
-clean, `npm test` is 17 checks / 759 assertions green, and the site builds from Markdown at
-10 tracks / 65 phases. Nothing below is half-finished.
+### Exam feature — IMPLEMENTED, UNCOMMITTED (2026-09-19)
 
-### The two queued features
+The two queued features below are now built in the working tree. They are **not committed or
+pushed**; last pushed commit is `d34045a`. Review the diff, then commit.
 
-1. **A capstone exam across all 10 tracks.** One final assessment over the whole curriculum,
-   beside the 10 per-track exams. Two design questions are already settled and should not be
-   re-litigated:
-   - **It samples rather than includes all 549.** A 549-question sitting is not an exam, it is
-     a marathon, and the pass mark stops meaning anything when fatigue is the dominant term.
-     A fixed sample of roughly 50–60, drawn across all tracks, keeps the sitting comparable
-     between attempts.
-   - **It must be weighted per track, or the largest track wins.** Foundations has 82
-     questions and Career 24; a uniform sample over the pooled list would make the capstone
-     mostly a Foundations exam. Draw a fixed number *per track* instead.
-   - `buildExam(questions, trackId, ...)` already takes a question list and filters by
-     `trackId`, so this is a new **pool** plus a **sampling rule**, not a new scoring path.
-     `gradeExam`, `resultText` and `weakPhases` are all reusable unchanged.
+**1. Rotating balanced capstone.** 10 questions sampled per written track (10 tracks → 100
+questions at full corpus). Unseen-question priority: questions answered in a prior submitted
+capstone are recorded as seen (`vibecoding:capstone:v1`) and deprioritized on the next attempt.
+Timed, 80% pass mark. Built by `buildCapstone()` in `src/lib/exam.js`.
 
-2. **Surface exam results on the dashboard.** A track shows its phases; it should also show
-   whether its exam is passed, so a result is visible where the reader actually navigates.
-   `useExamResults` already exposes `results[trackId].best.passed`; the work is display only.
+**2. Comprehensive exam.** Every question in the corpus (currently 549), untimed, resumable.
+Session state (`vibecoding:exam-session:v1`) stores stable question IDs, shuffled option order
+and selected original option indexes — never question text or the answer key. Local-wins merge;
+**excluded from backup export** by an explicit skip in `exportAll`. Built by
+`buildExhaustiveExam()`.
+
+**3. Dashboard results.** `Dashboard.jsx` now shows the per-track section-exam best result, plus
+a rotating-capstone / comprehensive summary card. App passes `examResults` down via
+`useExamResults`.
+
+**New/changed files:**
+- `learning-site/src/lib/examState.js` (new) — persistence, validation, resume snapshot
+- `learning-site/src/hooks/useCapstoneState.js` (new) — React state + cross-hook sync
+- `learning-site/src/lib/exam.js` — `buildExamFromQuestions`, `buildCapstone`, `buildExhaustiveExam`, `optionOrder`
+- `learning-site/src/pages/Exam.jsx` — three modes, resume/autosave, untimed UI
+- `learning-site/src/pages/Dashboard.jsx` — result display
+- `learning-site/src/lib/transfer.js` — capstone validator + merge; session excluded from export
+- `learning-site/src/hooks/useExamResults.js` — stricter validation, cross-hook sync events
+- `learning-site/scripts/test-exam.mjs` — 205 assertions (capstone, comprehensive, resume, storage failure)
+- `learning-site/scripts/check-browser.mjs`, `verify-site.mjs`, `verify-deep.mjs` — exam-mode and dashboard-result checks
+- `learning-site/scripts/check-all.mjs` — step renamed; now 17 checks with exam step
+- Docs: `CHECKPOINT.md`, `README.md`, `ROADMAP.md`, `SETUP.md`, `WORKFLOW.md`, `docs/DECISIONS.md`, `docs/VERIFICATION.md`
+
+**Verification (all green before handoff):** `npm run build`; root content/quiz/AST/arithmetic/
+encoding/shape audits; `npm test` all 17 checks (with preview running); `npm run test:browser`
+all suites. Non-blocking warnings only: AST 20,951-char gain / zero loss; Vite static+dynamic
+import of `index.json`; a React `javascript:` URL warning from a test fixture.
+
+**Next steps:** review diff → commit by explicit path → push `main` → `git fetch origin` to
+confirm. Optionally investigate the AST gain specifically against the full 65-lesson corpus.
 
 **Not queued, and deliberately so:** the share-link (progress in a URL fragment). It was
 offered twice and passed over both times. Do not start it unasked.

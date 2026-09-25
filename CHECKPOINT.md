@@ -28,7 +28,7 @@ It ships as a React site that reads compiled JSON from hand-authored Markdown.
 ## The shape of it
 
 ```
-ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (65 files, 22,244 lines)
+ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (65 files, 22,246 lines)
         |
         |  scripts/build-content.mjs
         v
@@ -55,9 +55,9 @@ Historical snapshot; the opening note records the commit and verification baseli
 | | |
 |---|---|
 | Phases | 65 across 10 tracks |
-| Authored Markdown | 24,033 lines in `ai-roadmaps/` across 90 files |
+| Authored Markdown | 24,035 lines in `ai-roadmaps/` across 90 files |
 | Quiz questions | 549 |
-| Practice tasks | 886 |
+| Practice tasks | 891 |
 | Checklist items | 1,054 |
 | Tool rows | 433 (237 after de-duplication) |
 | Glossary terms | 254 across 10 categories |
@@ -74,25 +74,22 @@ Cost 7, Vibecoding Craft 8, Safety & Career 5, Career 4.
 
 ---
 
-## The three ways to test yourself
+## Ways to test yourself
 
-The 549 questions are reachable three ways, and the difference between them is the point:
+The 549 questions are available through four distinct modes:
 
-| | Draws from | Order | Graded? | Explanation |
-|---|---|---|---|---|
-| **Phase quiz** | that phase | as authored | no | immediately |
-| **Practice** | a whole track, or everything | shuffled | no | immediately |
-| **Exam** | a whole track, **every** question | shuffled, options too | **yes, 80%** | only in the review |
+| Mode | Coverage | Graded? | Persistence |
+|---|---|---|---|
+| **Phase quiz** | One phase | no | chosen options may be saved for revisit |
+| **Practice** | A track or the full question bank | no | no score |
+| **Track exam** | Every question in one track | yes, 80% | best result only; timed answers are not stored |
+| **All-track capstone** | 10 questions per written track; unseen questions are prioritized on later attempts | yes, 80% | best score and seen question IDs |
+| **Comprehensive exam** | Every question across the current corpus | yes, 80% | untimed; current question and answers are resumable locally |
 
-**Practice and the exam are not redundant.** Practice answers *"what should I study next?"*
-and the exam answers *"do I actually know this track?"* — the second cannot be answered
-without a threshold, which is why the exam is the documented exception to D-020 (see D-020a).
-Practice stays ungraded because a score there would turn it into a performance and the reader
-who most needs to practise would start avoiding it.
-
-⚠️ **Exam answers are never stored.** They live in memory for the duration, so reloading
-mid-exam restarts it. That is deliberate: a resumable exam with saved answers is not a timed
-assessment. Only the *result* persists (`vibecoding:exams:v1`).
+Practice answers *"what should I study next?"* and remains ungraded. Exams answer whether the
+reader can demonstrate mastery. The comprehensive exam is deliberately untimed and resumable;
+its local session stores question IDs, shuffled option order and selected option indexes, not the
+question text or answer key. Active sessions stay local and are not included in backups.
 
 ---
 
@@ -288,19 +285,9 @@ checks here; it catches a class they structurally cannot.
 
 ---
 
-## Queued for next session
+## Exam feature decision — implemented in the current worktree
 
-Asked for and agreed, **not yet built** — nothing below is half-done, the tree is clean:
-
-1. **A capstone exam across all 10 tracks.** One long final assessment covering the whole
-   curriculum, alongside the 10 per-track exams. Design questions already settled: it should
-   sample rather than include all 549 (a 549-question sitting is not an exam, it is a
-   marathon), and it should be weighted per track so a large track cannot dominate the score.
-   `buildExam` already takes a question list, so a capstone is a new pool plus a sampling
-   rule, not a new scoring path.
-2. **Surface exam results on the dashboard.** A track currently shows its phases; it should
-   also show whether its exam has been passed, so the result is visible where the reader
-   actually navigates rather than only inside the Exams view.
+The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 549 current questions, and track-exam result summaries on the dashboard. Verify and refresh this snapshot after the implementation is committed.
 
 Deliberately **not** queued: the share-link (progress in a URL fragment). It was offered and
 passed over twice — do not start it without being asked again.

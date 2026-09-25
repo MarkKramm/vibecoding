@@ -11,8 +11,8 @@ project, which is why this one names its own uncertainty.
 
 ## Where the project is now
 
-**The curriculum is complete.** 65 phases across 10 tracks, 24,033 lines across 90 authored Markdown
-files (22,244 lines in the phase files), 549 quiz questions, 886 practice tasks, and 1,054 checklist
+**The curriculum is complete.** 65 phases across 10 tracks, 24,035 lines across 90 authored Markdown
+files (22,246 lines in the phase files), 549 quiz questions, 891 practice tasks, and 1,054 checklist
 items. Every phase passes a machine-verified 14-section contract.
 
 **The site works and is deployed.** Live at **https://markkramm.github.io/vibecoding/**, built
@@ -23,9 +23,10 @@ and published by GitHub Actions, with CI green.
 accessibility audit covers 60 assertions across six views; separate browser checks verify quiz
 correctness and track rendering. Every guard has been proved capable of failing.
 
-**The live site has been seen rendering**, by the project owner, and that check found a serious
+**The live site was previously observed by the project owner**, and that check found a serious
 defect a fully green suite had missed — see below. A later browser sweep of every phase found a
-second one, in the navigation between them.
+second one, in the navigation between them. The new capstone/comprehensive modes and dashboard
+result display are implemented in the current worktree and still require final regression review.
 
 ---
 
@@ -223,9 +224,10 @@ For the stated goal — building real skill, and being able to show it:
 
 1. **The curriculum is already there.** 65 phases is more than enough; more content is not the
    bottleneck.
-2. **Work the tasks.** 886 practice tasks exist. Reading them is not the same as doing them.
+2. **Work the tasks.** 891 practice tasks exist. Reading them is not the same as doing them.
 3. **Build the three portfolio pieces** the career track specifies, and put them on GitHub.
-4. **The site is one of them.** It is a real, deployed, CI-verified application with a content
+4. **The queued assessment features are now implemented:** per-track results surface on the dashboard, with a balanced rotating capstone and a resumable comprehensive mode. Keep their tests and result storage in sync if the quiz corpus changes.
+5. **The site is one of them.** It is a real, deployed, CI-verified application with a content
    pipeline, 11 guards and a test suite — and it renders a curriculum that is itself
    machine-verified. That is a legitimate thing to show someone.
 
