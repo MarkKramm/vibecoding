@@ -36,6 +36,49 @@ bundle until restarted.**
 
 If a change appears to have no effect, check these two before debugging anything else.
 
+### ⚠️ Trap 3 — TWO SERVERS ON PORT 4173, and the browser checks silently average them
+
+**This one is worse than the other two, because the failure looks like a content defect.**
+
+Two `vite preview` processes *can* both bind 4173 on Windows, and the OS then hands successive
+connections to whichever one it likes. A browser check pointed at `http://localhost:4173` reads
+**a different site on some requests than on others.** The result is not an error — it is a
+nonsense result:
+
+> `✖ every track: could not open the track (no-heading) — its 8 phase(s) are unverified`
+> for **all ten tracks**, ending in `0 phase(s) with problems`.
+
+**"All ten tracks broken, but zero problems found" is the signature.** So is *any* total failure
+that contradicts its own summary. Suspect the port before the content.
+
+**How this actually happens here.** The sibling project `cs-roadmap` is a separate checkout with
+its own `vite preview`, and **it defaults to the same port 4173**. On 2026-09-25 a `cs-roadmap`
+preview was already listening when this repo's checks ran, and the sweep failed on every track
+while the app was completely fine.
+
+**The rules that follow — and they matter more than usual when more than one agent or terminal is working:**
+
+1. **Never assume 4173 is yours.** Before any browser check, run
+   `Get-NetTCPConnection -State Listen -LocalPort 4173` and **count the listeners**. More than
+   one means the result is unreliable — stop and use a private port.
+2. **Do not kill a server you did not start.** It may be another checkout's, or another
+   session's mid-verification run. Use a different port instead; that costs nothing and breaks
+   nobody.
+3. **Use a private port for your own runs.** `npm run preview -- --port 4199 --strictPort`, then
+   point every check at it:
+   ```powershell
+   $env:VITE_PREVIEW_URL="http://127.0.0.1:4199"
+   node scripts/sweep-phases.mjs http://127.0.0.1:4199
+   ```
+4. **`--strictPort` is what tells you the truth.** Without it, Vite silently increments to the
+   next free port, your checks keep hitting the *other* server, and the summary looks fine while
+   testing nothing. With it, a taken port fails loudly.
+
+**The general lesson, which is this project's most repeated one:** when a guard reports something
+implausible — especially a total failure with a clean summary — **suspect the instrument before
+the subject.** Here the content was correct all along, and the only real defect was two servers
+sharing a port.
+
 ---
 
 ## Commands
@@ -97,7 +140,7 @@ Runs 17 checks in order. Fifteen run without a server; the rendered accessibilit
 | 13 | accessibility (rendered page) | six-view rendered a11y, with a loud skip if preview is unavailable |
 | 14 | every phase renders | all 65 phases in a real browser, with a loud skip if preview is unavailable |
 | 15 | mixed practice sets | pool shape and sampling behavior |
-| 16 | section exams | scoring, pass mark, and result persistence |
+| 16 | exams | per-track scoring, balanced capstone rotation, exhaustive resume and backup rules |
 | 17 | reachability | every `src/` module is reachable from `main.jsx` |
 
 

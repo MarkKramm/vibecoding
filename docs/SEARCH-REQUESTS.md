@@ -502,6 +502,81 @@ other vendors.
 the "free-tier" framing needs the individual-vs-business correction. **No phase may claim GitHub
 trains only on free-tier data.**
 
+---
+
+### 4. Full arXiv citation audit — 48/48 correct, 0 defects — 2026-09-25
+
+**Asked:** Does any arXiv ID in the corpus resolve to the wrong paper, as `2202.11903` did
+(Chain-of-Thought cited as an astrophysics paper in `cost/01`, fixed in `45f4940`)?
+
+**Method:** every ID extracted from `ai-roadmaps/**/*.md`, resolved through the **arXiv Atom
+API** (`https://export.arxiv.org/api/query?id_list=<ids>`, comma-separated, 12 per request).
+**Four fetches covered all 48 IDs.** Each returned `<title>` was compared against the claim in
+the surrounding prose — *not* merely checked for resolving, because HTTP 200 with a real but
+different paper is the failure mode.
+
+**Result: 48 MATCH, 0 MISMATCH, 0 DEAD, 0 UNVERIFIED.** The `2202.11903`-class defect does not
+occur anywhere in the corpus.
+
+**The two IDs that looked most like fabrications are both real, and are the best-corroborated
+citations in the set:**
+
+- **`2601.17548`** — "Prompt Injection Attacks on Agentic Coding Assistants: A Systematic
+  Analysis of Vulnerabilities in Skills, Tools, and Protocol Ecosystems" (Maloyan & Namiot,
+  Jan 2026). Its abstract independently confirms every number the corpus cites: 78 studies,
+  42 attack techniques, >85% attack success, 18 defences, most under 50% mitigation.
+- **`2406.10279`** — "We Have a Package for You! A Comprehensive Analysis of Package
+  Hallucinations by Code Generating LLMs" (USENIX Security 2025). Confirms 576,000 samples,
+  16 models, 5.2% commercial / 21.7% open-source, 205,474 unique names — all matching verbatim.
+
+**A 2026-dated ID is not prima facie suspect, and that is worth recording.** Both of the above
+were flagged internally as "unusual, verify extra carefully" before fetching. Both were fine.
+The lesson matches this file's existing rule: **fetch, do not discount on plausibility.**
+
+**Also checked — every numeric claim mapping to a fetched abstract, all supported:** Lost in the
+Middle's 56.1% closed-book anchor; Reflexion's 91% vs GPT-4's 80%; ReAct's 34%/10% *including
+the corpus's correct scoping of them to interactive benchmarks*; vLLM's 2–4×; Medusa's
+2.3–3.6× and the lossless Medusa-1 distinction; AWQ's 1%; Petrov's up to 15×; GraphRAG's
+"1 million token range"; LLM-as-judge's "over 80% agreement". **No CLAIM-QUESTIONABLE findings.**
+
+**Two cosmetic title truncations found and FIXED** (correct paper, incomplete title — the
+fetched title includes the words the corpus dropped):
+
+- `agents/06` and `agents/07` rendered AgentDojo (`2406.13352`) without "**Prompt Injection**".
+  The real title is *"AgentDojo: A Dynamic Environment to Evaluate **Prompt Injection** Attacks
+  and Defenses for LLM Agents"*. Verified by direct fetch of the API, twice.
+
+**One dangling cross-reference found and FIXED, from a separate check** (see §5).
+
+**Not covered by this audit:** non-arXiv citations (vendor docs, blog posts, standards), and
+whether each cited paper *supports* the argument it is attached to beyond the numbers checked.
+The audit was citation-identity, not citation-relevance.
+
+---
+
+### 5. Internal cross-references — one dangling, FIXED — 2026-09-25
+
+**Not a search request.** Recorded here because it was found by the same pass and is the same
+class of defect: **a claim in the prose that is checkable against the corpus itself.**
+
+**Method:** every `"<Track> Phase <N>"` reference was extracted and compared to the actual phase
+count of the named track (Foundations 8, Model Internals 6, Prompting 7, RAG 7, Agents 7,
+Finetuning 6, Cost 7, Vibecoding 8, Safety 5, Career 4).
+
+**One defect, out of range:** `ai-roadmaps/agents/04-phase-subagents-isolation.md:374` cited
+**"Prompting Phase 10"** — the Prompting track has **7** phases, so the reference pointed at
+nothing. A reader following it finds no such phase.
+
+**Fixed** to *"Prompting Phase 5 (Context Engineering, on handoff notes and state extraction)"*.
+That is the phase the citing sentence actually describes — a brief is a handoff note written for
+a reader with no shared memory — and the name is given inline so the reference survives any
+future reordering.
+
+**Every other cross-track reference is in range.** This is a cheap check with a real hit rate,
+and it belongs in the pre-commit battery rather than being rediscovered by hand: **counts change
+when phases are added, and a reference into a track is silently invalidated when its target
+moves.** The guard cost one inline command; the defect had been shipped.
+
 **Source:** https://api.github.com/repos/modelcontextprotocol/modelcontextprotocol/releases
 (fetched 2026-09-18; `web_fetch` — not `web_search`)
 

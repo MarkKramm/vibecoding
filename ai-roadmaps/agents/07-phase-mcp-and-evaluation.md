@@ -136,7 +136,7 @@ This phase is longer than the others in the track because it is where the track'
 - **Model Context Protocol — documentation and specification** — https://modelcontextprotocol.io/
 - **MCP — Architecture** — https://modelcontextprotocol.io/docs/learn/architecture
 - **MCP — Building servers** — https://modelcontextprotocol.io/docs/develop/build-server
-- **Debenedetti et al. — AgentDojo: A Dynamic Environment to Evaluate Attacks and Defenses for LLM Agents (arXiv:2406.13352)** — https://arxiv.org/abs/2406.13352
+- **Debenedetti et al. — AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents (arXiv:2406.13352)** — https://arxiv.org/abs/2406.13352
 - **Liu et al. — AgentBench: Evaluating LLMs as Agents (arXiv:2308.03688)** — https://arxiv.org/abs/2308.03688
 - **Sharma et al. — Towards Understanding Sycophancy in Language Models (arXiv:2310.13548)** — https://arxiv.org/abs/2310.13548
 

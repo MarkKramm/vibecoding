@@ -118,7 +118,7 @@ The containment work is where most of the practical value is, and it is ordinary
 
 - **Greshake et al. — Indirect Prompt Injection (arXiv:2302.12173)** — https://arxiv.org/abs/2302.12173
 - **Wallace et al. — The Instruction Hierarchy (arXiv:2404.13208)** — https://arxiv.org/abs/2404.13208
-- **Debenedetti et al. — AgentDojo: A Dynamic Environment to Evaluate Attacks and Defenses for LLM Agents (arXiv:2406.13352)** — https://arxiv.org/abs/2406.13352
+- **Debenedetti et al. — AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents (arXiv:2406.13352)** — https://arxiv.org/abs/2406.13352
 - **OWASP — Top 10 for LLM Applications** — https://owasp.org/www-project-top-10-for-large-language-model-applications/
 - **NIST — AI Risk Management Framework** — https://www.nist.gov/itl/ai-risk-management-framework
 - **Anthropic — Building effective agents** — https://www.anthropic.com/engineering/building-effective-agents
