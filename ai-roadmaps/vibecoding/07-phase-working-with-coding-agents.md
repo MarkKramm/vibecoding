@@ -389,7 +389,7 @@ You know what your agent may do without asking, on all four axes, from its own c
 
 ### Free path
 
-Agent work is available at $0 and the phase is written to work that way. The verified brief in this repository records that **Antigravity CLI** (which replaced Gemini CLI on 2026-06-18) and **Copilot Free** are genuinely free with **no credit card**, and that **Claude Code has no free tier**. The two real constraints on free tiers are worth stating plainly: **quotas are unpublished**, so you discover your ceiling by hitting it, and **both tools train on free-tier code**, so anything you would not want indexed belongs elsewhere — a local model, or not in the repository.
+Agent work is available at $0 and the phase is written to work that way. **Antigravity CLI** (which replaced Gemini CLI on 2026-06-18) and **Copilot Free** are genuinely free with **no credit card**, and **Claude Code has no free tier**. The two real constraints are worth stating plainly: **quotas are unpublished**, so you discover your ceiling by hitting it, and **your code may be used for training** — GitHub's documentation ([fetched 2026-09-25](https://docs.github.com/en/copilot/how-tos/manage-your-account/manage-policies)) applies this to **Free, Pro, Pro+ and Max since 2026-04-24**, excluding only Business and Enterprise. So anything you would not want indexed belongs elsewhere — a local model, or not in the repository.
 
 If your machine has **16 GB of RAM**, a local model via Ollama removes per-token cost entirely, which changes agent work materially: long runs become affordable, at the cost of a weaker model that expands scope more and follows briefs less precisely.
 

@@ -187,14 +187,35 @@ specific consequence, and it belongs in phase 8. Note carefully that this is Ant
 commercial terms only; **the other vendors' terms were not reachable and must not be assumed
 to match.**
 
-### BLOCKED — not fetchable, needs search or another route
+### ✅ FORMERLY "BLOCKED" — GitHub docs — SOLVED 2026-09-25, and the block was never real
 
-**GitHub's docs truncate their article body when fetched.** Three attempted:
-`docs.github.com/.../manage-policies` and `.../individuals/billing` both return **HTTP 200
-with the correct page title but only the navigation, no article content** (the response ends
-`(Content truncated. Fetch a more specific URL or section for the full text.)`). A `#fragment`
-does not help — the fragment is client-side and was ignored, which was a wasted fetch. **This
-blocks requests 8 (GitHub part) and 9 (Copilot training default)** from this direction.
+**The claim that was here:** *"GitHub's docs truncate their article body when fetched… This
+blocks requests 8 (GitHub part) and 9 (Copilot training default) from this direction."*
+
+**That conclusion was WRONG, and the cause is worth stating precisely.** The truncation is
+real and reproducible — but it is a property of the **HTML** rendering, not of GitHub's docs.
+**Appending `.md` to any `docs.github.com` article URL returns the complete Markdown source**,
+including the article body that the HTML fetch truncates:
+
+| URL form | Result |
+|---|---|
+| `https://docs.github.com/en/copilot/how-tos/.../manage-policies` | HTTP 200, **title + navigation only**, body truncated |
+| `https://docs.github.com/en/copilot/how-tos/.../manage-policies.md` | HTTP 200, **full article body** ✅ |
+
+Verified twice on 2026-09-25 in both forms for the same page, so the comparison is controlled
+rather than anecdotal. `raw.githubusercontent.com/github/docs/main/content/...` also works, but
+the `.md` suffix is simpler and needs no path translation.
+
+**Why this matters beyond the one request.** The original note generalised from *"this page
+truncates"* to *"this is blocked, and no amount of URL-guessing closes it."* The second claim
+was much stronger than the evidence for it, and it **stayed on the books as a hard blocker**
+while the one-character fix sat untried. This is the same failure shape as the handover's
+`web_search` lesson: **a 404 on one endpoint proves one endpoint lacks a path; it does not prove
+the source is unreachable.** Try the alternate representation (`.md`, `raw.`, the API host)
+before recording a blocker.
+
+**Requests 8 (GitHub half) and 9 are therefore NOT blocked.** The Copilot training claim has
+since been verified from this route — see RESOLVED §3.
 
 **`privacy.gov.ph` returns HTTP 403, Cloudflare-challenged.** See above for the LawPhil
 workaround, which solved the part that mattered.
@@ -440,6 +461,46 @@ project's own release list, which is authoritative:
 
 Both revisions appear as non-prerelease "stable release" entries in the project's
 own repository.
+
+---
+
+### 3. Copilot training on free-tier code — RESOLVED 2026-09-25
+
+**Asked (request 9):** Does Copilot use free-tier users' code for training by default, and
+since when? The corpus asserted **2026-04-24** in three `vibecoding` phases while this file
+listed the claim as unverifiable.
+
+**Source:** https://docs.github.com/en/copilot/how-tos/manage-your-account/manage-policies.md
+— "Managing GitHub Copilot policies as an individual subscriber", fetched in full, HTTP 200.
+
+**Answer: the date is CONFIRMED, and the corpus UNDERSTATES the scope.** Verbatim:
+
+> *"Starting on April 24, 2026, if you have a **Copilot Free**, **Copilot Pro**, **Copilot
+> Pro+**, or **Copilot Max** plan, GitHub may use your interactions with GitHub features and
+> services—including inputs, outputs, code snippets, and associated context—to train and
+> improve AI models."*
+
+Two corrections for the corpus:
+
+1. **`2026-04-24` is correct** — the date the phases carry is right, and is now sourced rather
+   than dated.
+2. **It is not a free-tier-only behaviour.** The phases frame it as a free-tier cost
+   (*"free-tier code"*). GitHub's own wording applies it to **Free, Pro, Pro+ and Max** alike,
+   and the exempt plans are **Business and Enterprise** under the Data Protection Agreement.
+   The real dividing line is **individual vs business**, not free vs paid — which is a
+   materially different claim from the one the corpus makes.
+
+**Also verified, and useful to the reader:** the opt-out exists and is a per-account setting
+(*"Allow GitHub to use my data for AI model training"* → **Disabled**), and the setting is
+**hidden entirely** for Business/Enterprise accounts rather than being off by default.
+
+**Not yet verified from this source, and still open:** the Google/Antigravity half of request 9,
+and the GitHub half of request 8 (IP indemnity by plan tier). Do not extend this finding to
+other vendors.
+
+**Outcome:** pending correction in `ai-roadmaps/vibecoding/06`, `07` and `08` — the date stands,
+the "free-tier" framing needs the individual-vs-business correction. **No phase may claim GitHub
+trains only on free-tier data.**
 
 **Source:** https://api.github.com/repos/modelcontextprotocol/modelcontextprotocol/releases
 (fetched 2026-09-18; `web_fetch` — not `web_search`)

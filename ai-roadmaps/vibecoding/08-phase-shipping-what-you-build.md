@@ -168,7 +168,13 @@ Four questions, and they have different answers:
 
 **1. Who owns the output?** Most vendors assign output to the user. But the terms are what matter, not the general practice, and you should be able to say where you read it.
 
-**2. Is your code used for training?** This is the one that surprises people, and it differs sharply by tier. **The verified brief in this repository records that Copilot Free uses free-tier code for training by default since 2026-04-24, including suggestions, and that Google Antigravity's free tier also trains on free-tier content.** Both offer controls, and the default is not the private one. If your repository contains anything you would not want indexed, this is a decision to make before you point a tool at it.
+**2. Is your code used for training?** This is the one that surprises people, and the division is **not the one most people assume**. GitHub's own documentation ([docs.github.com — Managing GitHub Copilot policies](https://docs.github.com/en/copilot/how-tos/manage-your-account/manage-policies), fetched 2026-09-25) states: *"Starting on April 24, 2026, if you have a Copilot Free, Copilot Pro, Copilot Pro+, or Copilot Max plan, GitHub may use your interactions with GitHub features and services—including inputs, outputs, code snippets, and associated context—to train and improve AI models."*
+
+**Read that clause carefully, because the line it draws is individual-versus-business, not free-versus-paid.** Individual plans at every price point — including **paid** Pro, Pro+ and Max — are in scope. The plans excluded are **Business and Enterprise**, whose data is protected by GitHub's Data Protection Agreement. So "I pay for it, therefore my code is not used" is **false** for GitHub's individual plans, and that is the mistake worth avoiding: the habit of assuming a paid tier settles the question. **Check the plan name against the terms, not the price.**
+
+The control exists and is a per-account setting: **Settings → Copilot → "Allow GitHub to use my data for AI model training" → Disabled.** Note that the setting is *hidden entirely* for Business and Enterprise accounts rather than being off by default — so if you cannot find it, that may be why, and it is not the same as it being disabled.
+
+**This is the individual-plan behaviour of one vendor.** Anthropic's commercial terms state the opposite commitment (*"Anthropic may not train models on Customer Content"*), and the other vendors' terms have not been verified here — so **check the vendor you actually use rather than generalising from this one.** If your repository contains anything you would not want indexed, this is a decision to make before you point a tool at it.
 
 **3. Is there an indemnity, and does it cover you?** Some vendors offer legal protection against copyright claims on generated output. Two things to check rather than assume: **whether it applies to your tier** — indemnities are frequently tied to paid plans, which means a $0-budget user may have none — and **what conditions attach**.
 
@@ -232,7 +238,7 @@ Four obligations that bind a small app:
 
 **How this connects to the rest of the phase, concretely.** §20(c) requires *"reasonable and appropriate"* organisational, physical and technical measures, and §20(d) extends that duty to **third parties processing data on your behalf**. So: if your app sends user data to a model provider's API, that provider is a third party processing personal information for you, and **you remain accountable for it under §21** — *"including information that have been transferred to a third party for processing"*, using *"contractual or other reasonable means to provide a comparable level of protection"*.
 
-Which is where this phase's earlier sections stop being abstract. **The training default on a free tier is a data-protection question, not only a privacy preference.** If free-tier code may be used for training, then sending it personal data is a processing decision with a lawful-basis requirement attached. That is the concrete link between Part 4's terms review and this section, and it is the reason to read both before pointing a tool at anything real.
+Which is where this phase's earlier sections stop being abstract. **The training default is a data-protection question, not only a privacy preference.** If your plan allows your inputs and outputs to be used for training — and on GitHub's individual plans, paid or free, it does — then sending it personal data is a processing decision with a lawful-basis requirement attached. That is the concrete link between Part 4's terms review and this section, and it is the reason to read both before pointing a tool at anything real.
 
 **⚠️ This is not legal advice, and I am not a lawyer.** It is a reading of the statute text, verified from LawPhil, provided so you know which sections apply. For anything with real risk — health data, financial data, children's data — consult someone qualified.
 
@@ -345,7 +351,7 @@ That last line is the one that makes the checklist trustworthy, and it is the di
 
 **Assuming you have an indemnity.** They are commonly tied to paid tiers and carry conditions. If you have not read the terms and confirmed your tier is covered, you do not know that you are protected — and on a free tier the likely answer is that you are not.
 
-**Ignoring the training default on free tiers.** The verified brief in this repository records that Copilot Free trains on free-tier code by default since 2026-04-24, and Antigravity's free tier likewise. Both offer controls. Pointing a free tool at a client's repository without checking is a decision made by default rather than by you.
+**Ignoring the training default on your plan.** Per GitHub's documentation (fetched 2026-09-25), Copilot may train on your inputs and outputs since **2026-04-24** on **Free, Pro, Pro+ and Max** — the division is individual-versus-business, so **paying does not exempt you**. The control exists (Settings → Copilot → "Allow GitHub to use my data for AI model training" → Disabled), but it is a decision you have to make explicitly. Pointing a tool at a client's repository without checking is a decision made by default rather than by you.
 
 **Filling a terms gap with a plausible guess.** OpenAI's terms pages returned 403 during research and Windsurf/Devin's returns 404. **Where the answer is unknown, write Unverified.** A confident statement about a terms page nobody read is exactly the failure this curriculum spent a session learning to detect.
 
@@ -461,7 +467,7 @@ You can state what your project does and how it fails, in one sentence, without 
 
 Every tool this phase needs is free: the package registries, a licence checker, `gitleaks`, and your own tool's terms pages. The verification work is time rather than money, and it is the highest-leverage time in the track — a dependency existence check at ship time costs a minute and prevents a supply-chain compromise.
 
-The honest free-tier position, assembled from the verified brief in this repository: **Antigravity CLI** (which replaced Gemini CLI on 2026-06-18) and **Copilot Free** are genuinely free with no credit card; **both train on free-tier code**, which is a real consideration for anything you would not want indexed; **Claude Code has no free tier**; and indemnities are generally tied to paid plans, so a $0 user should assume they are uncovered and decide what to put through the tool accordingly.
+The honest free-tier position, assembled from what has been fetched and verified rather than assumed: **Antigravity CLI** (which replaced Gemini CLI on 2026-06-18) and **Copilot Free** are genuinely free with no credit card; **GitHub may train on Copilot interactions on Free, Pro, Pro+, and Max since 2026-04-24**, with the exclusion being Business/Enterprise rather than paid — so **checking the plan name, not the price, is the habit that matters**; **Claude Code has no free tier**; and indemnities are generally tied to paid plans, so a $0 user should assume they are uncovered and decide what to put through the tool accordingly. Vendor terms are incorporated by reference and change; read the ones you are actually using.
 
 ### Paid path
 

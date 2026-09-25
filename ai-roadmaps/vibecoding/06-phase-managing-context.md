@@ -362,13 +362,13 @@ You can explain, without reference to model quality, why a long session drifts �
 
 ### Free path
 
-Everything here is free, and this is the phase where a $0 budget has the *least* disadvantage, because context discipline is about habits rather than headroom. The verified brief in this repository records that **Google Antigravity CLI** (which replaced Gemini CLI on 2026-06-18) and **Copilot Free** are genuinely free with no credit card, both train on free-tier code, and neither publishes its quota — so your own observed behaviour is the real limit.
+Everything here is free, and this is the phase where a $0 budget has the *least* disadvantage, because context discipline is about habits rather than headroom. **Google Antigravity CLI** (which replaced Gemini CLI on 2026-06-18) and **Copilot Free** are genuinely free with no credit card, neither publishes its quota — so your own observed behaviour is the real limit — and **Copilot may use your inputs and outputs for training on Free, Pro, Pro+ and Max since 2026-04-24** ([docs.github.com](https://docs.github.com/en/copilot/how-tos/manage-your-account/manage-policies), fetched 2026-09-25).
 
 If your machine has **16 GB of RAM**, a local model via Ollama removes per-token cost entirely. That is the one configuration where session length is limited by quality rather than by budget, and for a long agentic task it is the most forgiving option available at $0.
 
 ### Paid path
 
-A paid tier buys three relevant things. **A larger context window**, which raises the ceiling on how long a session can usefully run — though note Part 2: dilution still arrives before the limit does, so a bigger window helps less than the number suggests. **Published, higher quotas**, so you are not discovering the limit by hitting it. And **no training on your code**, which on free tiers is the default for at least Copilot Free since 2026-04-24 — a real consideration for anything you would not want indexed.
+A paid tier buys two relevant things, not three. **A larger context window**, which raises the ceiling on how long a session can usefully run — though note Part 2: dilution still arrives before the limit does, so a bigger window helps less than the number suggests. And **published, higher quotas**, so you are not discovering the limit by hitting it. It does **not** automatically buy privacy from training: on GitHub's individual plans the training scope runs from Free through Pro, Pro+ and Max, with only **Business and Enterprise** excluded — so if that is your reason for upgrading, change the setting instead, or check the specific vendor's terms before paying.
 
 ### Where the money genuinely matters
 
