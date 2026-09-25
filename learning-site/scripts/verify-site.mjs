@@ -194,6 +194,11 @@ async function main() {
 
     await send("Runtime.enable");
     await send("Page.enable");
+    // Seed a valid sample result in this throwaway browser profile so this smoke
+    // test proves the dashboard actually surfaces a saved exam result.
+    await send("Page.addScriptToEvaluateOnNewDocument", {
+      source: `localStorage.setItem('vibecoding:exams:v1', JSON.stringify({foundations:{best:{percent:88,correct:44,total:50,passed:true,at:'2026-01-01T00:00:00Z'},attempts:1}}));`,
+    });
 
     // Collect page errors. Without this a blank render looks like a pass.
     const pageErrors = [];
@@ -281,6 +286,7 @@ async function main() {
     await sleep(1500);
     const backText = await evaluate(send, "(document.getElementById('root')||{}).innerText || ''");
     check("back navigation works", back && /What is here/.test(backText));
+    check("dashboard shows the best section-exam result", /Section exam: (Passed|Not passed) — \d+%/.test(backText));
 
     // A console error is a real defect even when the page looks right.
     const meaningful = pageErrors.filter(

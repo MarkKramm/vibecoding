@@ -87,6 +87,22 @@ export const KEYS = [
     check: isQuizAnswers,
   },
   {
+    key: "vibecoding:capstone:v1",
+    kind: "rotating capstone state",
+    check: (v) => {
+      const grade = (g) => g === null || Boolean(g && typeof g === "object" &&
+        Number.isFinite(g.percent) && g.percent >= 0 && g.percent <= 100 &&
+        Number.isInteger(g.correct) && Number.isInteger(g.total) && g.total >= 1 &&
+        g.correct >= 0 && g.correct <= g.total && typeof g.passed === "boolean" &&
+        g.passed === (g.correct / g.total >= 0.8) && typeof g.at === "string");
+      return Boolean(v && typeof v === "object" && !Array.isArray(v) &&
+        Array.isArray(v.seenIds) && v.seenIds.every((id) => typeof id === "string") && new Set(v.seenIds).size === v.seenIds.length &&
+        Number.isInteger(v.attempts) && v.attempts >= 0 && grade(v.best) &&
+        v.comprehensive && typeof v.comprehensive === "object" && !Array.isArray(v.comprehensive) && Number.isInteger(v.comprehensive.attempts) && v.comprehensive.attempts >= 0 &&
+        grade(v.comprehensive.best));
+    },
+  },
+  {
     key: "vibecoding:exams:v1",
     kind: "map of trackId -> { best, attempts }",
     // Each entry must carry a `best` object with a numeric percent and a `passed`
@@ -103,7 +119,10 @@ export const KEYS = [
           e.best.percent >= 0 &&
           e.best.percent <= 100 &&
           typeof e.best.passed === "boolean" &&
-          typeof e.attempts === "number" &&
+          Number.isInteger(e.best.correct) && Number.isInteger(e.best.total) && e.best.total > 0 &&
+          e.best.correct >= 0 && e.best.correct <= e.best.total &&
+          e.best.passed === (e.best.correct / e.best.total >= 0.8) &&
+          Number.isInteger(e.attempts) &&
           e.attempts >= 1
       ),
   },
@@ -399,7 +418,8 @@ export function labelFor(key) {
     applications: "Applications",
     certifications: "Certifications (not used in this app)",
     quiz: "Quiz answers",
-    exams: "Exam results",
+    exams: "Track exam results",
+    capstone: "Capstone coverage and result",
     schedule: "Schedule start dates (not used in this app)",
     reading: "Reading position",
     "energy-mode": "Energy mode",
@@ -412,6 +432,7 @@ export function labelFor(key) {
 
 /** How many things a value holds, for the confirmation list. */
 function countOf(value) {
+  if (value && Array.isArray(value.seenIds)) return value.seenIds.length;
   if (Array.isArray(value)) return value.length;
   if (isPlainObject(value)) return Object.keys(value).length;
   return 1;
@@ -453,18 +474,41 @@ export function mergeValue(key, current, incoming) {
     return { ...incoming, ...current };
   }
 
-  // Exam results are accomplishments — a pass is something the reader EARNED — so
-  // they union rather than being treated as this-machine state.
+  // Exam results and rotating coverage are accomplishments; an active comprehensive
+  // session is device-local state with an explicit local-wins merge rule below.
   //
   // Without this branch they would hit the `return current` default and a restore
   // would silently discard every pass recorded on the other machine. That is the
   // worst possible failure for this key: the reader would import a backup, see their
   // results unchanged, and conclude the backup was empty.
   //
-  // Per track, the HIGHER score wins and the earlier date wins a tie — the same rule
-  // `applyAttempt` uses, so importing the same file twice changes nothing. Attempt
-  // counts ADD, because they are a count of events across both machines rather than
-  // a value belonging to either.
+  // Track results retain the higher score and capstone state unions seen IDs. Importing
+  // the same capstone backup twice is idempotent; attempt count uses max because it
+  // cannot be reliably added without double-counting repeated imports.
+  if (kind === "rotating capstone state") {
+    const seenIds = [...new Set([...(current?.seenIds || []), ...(incoming?.seenIds || [])])];
+    const a = current?.best;
+    const b = incoming?.best;
+    const best = !a ? b : !b ? a : a.percent > b.percent ? a : b.percent > a.percent ? b :
+      String(a.at || "") <= String(b.at || "") ? a : b;
+    // `comprehensive` is a SECOND, independent accomplishment in the same record.
+    // Omitting it here silently destroyed a passed comprehensive result on restore
+    // (the reader imports their backup and the result is simply gone). It must be
+    // carried through with its own higher-score-wins rule, exactly as `best` is.
+    const ca = current?.comprehensive || null;
+    const cb = incoming?.comprehensive || null;
+    const ga = ca && ca.best;
+    const gb = cb && cb.best;
+    const cBest = !ga ? gb : !gb ? ga : ga.percent > gb.percent ? ga : gb.percent > ga.percent ? gb :
+      String(ga.at || "") <= String(gb.at || "") ? ga : gb;
+    const comprehensive = {
+      best: cBest || null,
+      // Attempt counts use max, for the same double-counting reason as `attempts`.
+      attempts: Math.max(ca?.attempts || 0, cb?.attempts || 0),
+    };
+    return { seenIds, best: best || null, attempts: Math.max(current?.attempts || 0, incoming?.attempts || 0), comprehensive };
+  }
+
   if (kind.startsWith("map of trackId")) {
     const merged = { ...incoming };
     for (const [trackId, entry] of Object.entries(current || {})) {
@@ -483,7 +527,7 @@ export function mergeValue(key, current, incoming) {
       }
       merged[trackId] = {
         best,
-        attempts: ((entry && entry.attempts) || 0) + ((other && other.attempts) || 0),
+        attempts: Math.max((entry && entry.attempts) || 0, (other && other.attempts) || 0),
       };
     }
     return merged;

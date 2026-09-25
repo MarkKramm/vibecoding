@@ -259,8 +259,10 @@ try {
        return { ok:true };
      })()`
   );
-  await sleep(4000);
-  const searchText = await ev(`(document.getElementById('root')||{}).innerText || ''`);
+  const searchText = await waitFor(
+    `(() => { const text=(document.getElementById('root')||{}).innerText || ''; return /\\d+ matches?\\.|No matches\\./.test(text) ? text : ''; })()`,
+    "search result announcement after submitting attention"
+  );
   check(
     "search returns hits for 'attention'",
     /match/i.test(searchText) && !/No matches/i.test(searchText),

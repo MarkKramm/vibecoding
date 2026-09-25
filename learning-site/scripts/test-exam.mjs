@@ -7,6 +7,9 @@
 // option, producing a believable mark and a confident, incorrect verdict.
 import {
   PASS_MARK,
+  CAPSTONE_QUESTIONS_PER_TRACK,
+  buildCapstone,
+  buildExhaustiveExam,
   timeLimitFor,
   shuffleOptions,
   buildExam,
@@ -20,6 +23,7 @@ import { poolFrom, seededRng } from "../src/lib/practice.js";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import * as examState from "../src/lib/examState.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const GEN = join(HERE, "..", "src", "data", "generated");
@@ -178,6 +182,21 @@ check(
 );
 
 // ---------------------------------------------------------------------------
+// 3b. Balanced capstone and exhaustive comprehensive mode.
+// ---------------------------------------------------------------------------
+const capstone = buildCapstone(everything, tracks.filter((t) => t.phases.length).map((t) => t.id), [], seededRng(77));
+check("capstone contains ten from each of ten written tracks", capstone.total === 100 && new Set(capstone.questions.map((q) => q.trackId)).size === 10);
+check("capstone has no duplicate questions", new Set(capstone.questions.map((q) => q.id)).size === capstone.total);
+check("capstone uses the documented per-track sample size", CAPSTONE_QUESTIONS_PER_TRACK === 10);
+const firstCapstoneIds = new Set(capstone.questions.map((q) => q.id));
+const secondCapstone = buildCapstone(everything, tracks.filter((t) => t.phases.length).map((t) => t.id), [...firstCapstoneIds], seededRng(78));
+check("next capstone prioritizes unseen questions in every track", secondCapstone.questions.every((q) => !firstCapstoneIds.has(q.id)));
+const comprehensive = buildExhaustiveExam(everything, seededRng(79));
+check("comprehensive mode contains all 549 questions", comprehensive.total === everything.length && comprehensive.total === 549);
+check("comprehensive mode has no timer", comprehensive.timed === false && comprehensive.timeLimitMinutes === null);
+check("comprehensive includes each corpus question once", new Set(comprehensive.questions.map((q) => q.id)).size === everything.length);
+
+// ---------------------------------------------------------------------------
 // 4. gradeExam.
 // ---------------------------------------------------------------------------
 const exam = buildExam(everything, "agents", "Agents", seededRng(11));
@@ -318,6 +337,31 @@ for (const { track, pool } of pools) {
 }
 
 // ---------------------------------------------------------------------------
+// 8b. Capstone coverage persistence and comprehensive resume round-trip.
+// ---------------------------------------------------------------------------
+const prior = examState.emptyCapstoneState();
+const capGrade = gradeExam(capstone, Object.fromEntries(capstone.questions.map((q) => [q.id, q.answerIndex])));
+const progressed = examState.updateCapstoneState(prior, capstone.questions, capGrade, "2026-01-01T00:00:00Z");
+check("capstone coverage records answered question IDs", progressed.seenIds.length === capstone.total);
+const blankCapstone = gradeExam(capstone, {});
+const afterBlank = examState.updateCapstoneState(prior, capstone.questions, blankCapstone, "2026-01-02T00:00:00Z");
+check("all-blank capstone does not mark unattempted questions as seen", afterBlank.seenIds.length === 0);
+check("capstone pass is kept separately", progressed.best.passed && progressed.attempts === 1);
+const resumeAnswers = Object.fromEntries(comprehensive.questions.slice(0, 7).map((q) => [q.id, 0]));
+const resume = examState.makeResumeSnapshot(comprehensive, resumeAnswers, 6);
+const restored = examState.restoreResumeSnapshot(resume, everything);
+check("comprehensive paper snapshot validates against current corpus", Boolean(restored));
+check("comprehensive resume restores order, current question and answers", restored && restored.questionIndex === 6 && restored.exam.total === comprehensive.total && Object.keys(restored.answers).length === 7);
+const fakeStorage = { value: null, setItem(_k, v) { this.value = v; }, getItem() { return this.value; }, removeItem() { this.value = null; } };
+check("resume snapshot round-trips through storage", examState.writeResumeSnapshot(resume, fakeStorage) && JSON.stringify(examState.readResumeSnapshot(fakeStorage)) === JSON.stringify(resume));
+const failingStorage = { setItem() { throw new Error("quota"); }, getItem() { return null; } };
+check("resume storage failure is reported instead of claiming saved", !examState.writeResumeSnapshot(resume, failingStorage));
+const corruptStorage = { value: JSON.stringify({ ...resume, questionIndex: 900 }), getItem() { return this.value; }, setItem(_k, value) { this.value = value; }, removeItem() { this.value = null; } };
+check("corrupt stored resume is rejected before use", !examState.restoreResumeSnapshot(examState.readResumeSnapshot(corruptStorage), everything));
+check("resume contains IDs and option order only, no question text or answer key", Object.keys(resume).sort().join() === "answers,mode,questionIndex,questionOrder,version" && resume.questionOrder.every((q) => Object.keys(q).sort().join() === "id,optionOrder"));
+check("corrupt comprehensive snapshot is rejected", examState.restoreResumeSnapshot({ ...resume, questionIndex: 900 }, everything) === null);
+
+// ---------------------------------------------------------------------------
 // 9. Recording results, and carrying them through a backup.
 //
 // The worst failure this feature can have is SILENTLY LOSING A PASS: the reader
@@ -329,8 +373,8 @@ const { mergeValue, KEYS } = await import("../src/lib/transfer.js");
 
 check(
   "the exam key is registered for backup",
-  KEYS.some((k) => k.key === "vibecoding:exams:v1"),
-  "an unregistered key is silently dropped from every backup"
+  ["vibecoding:exams:v1", "vibecoding:capstone:v1"].every((key) => KEYS.some((k) => k.key === key)),
+  "exam results, rotating coverage and resume state must be registered for backups"
 );
 
 const gradeA = { percent: 60, correct: 30, total: 50, passed: false };
@@ -373,7 +417,7 @@ check(
   merged.rag.best.percent === 92 && merged.rag.best.passed === true,
   "the default merge branch returns `current`, so a missing case silently drops passes from the backup"
 );
-check("a restore does not lose the incoming attempt count", merged.rag.attempts === 3);
+check("a restore keeps the highest known attempt count", merged.rag.attempts === 2);
 
 const mergedUp = mergeValue("vibecoding:exams:v1", remote, local);
 check("a HIGHER incoming score wins when this machine is behind", mergedUp.rag.best.percent === 92 && mergedUp.rag.best.passed === true);
@@ -383,13 +427,20 @@ check("a track present only in the backup is taken", mergeValue("vibecoding:exam
 check("importing the same backup twice changes nothing", (() => {
   const once = mergeValue("vibecoding:exams:v1", local, remote);
   const twice = mergeValue("vibecoding:exams:v1", once, remote);
-  return twice.rag.best.percent === once.rag.best.percent;
-})(), "except the attempt count, which is a sum of events and is allowed to grow");
+  return twice.rag.best.percent === once.rag.best.percent && twice.rag.attempts === once.rag.attempts;
+})());
 check("mergeValue tolerates empty maps", Object.keys(mergeValue("vibecoding:exams:v1", {}, {})).length === 0);
 
-// The validator: a malformed record must be REFUSED, not imported as a pass.
+// The validator: malformed exam records and session payloads must be refused, not imported as a pass.
 const examEntry = KEYS.find((k) => k.key === "vibecoding:exams:v1");
-check("a well-formed record validates", examEntry.check({ rag: { best: { percent: 92, passed: true, at: "x" }, attempts: 1 } }));
+const capstoneKey = KEYS.find((k) => k.key === "vibecoding:capstone:v1");
+const completeCapState = { seenIds: ["q1"], best: { percent: 92, correct: 92, total: 100, passed: true, at: "x" }, attempts: 1, comprehensive: { best: null, attempts: 0 } };
+const sessionPayload = { version: 1, mode: "comprehensive", questionOrder: [{ id: "q1", optionOrder: [0,1,2,3] }], answers: { q1: 1 }, questionIndex: 0 };
+check("a well-formed track result validates", examEntry.check({ rag: { best: { percent: 92, passed: true, correct: 9, total: 10, at: "x" }, attempts: 1 } }));
+check("capstone state validates", capstoneKey.check(completeCapState));
+check("resumable exam snapshot validates against full current pool", examState.isResumeSnapshot(resume, everything));
+check("malformed capstone best is refused", !capstoneKey.check({ ...completeCapState, best: { percent: 190 } }));
+check("capstone storage rejects internally inconsistent pass grades", !capstoneKey.check({ ...completeCapState, best: { ...completeCapState.best, passed: false } }));
 check("a record with no best is refused", !examEntry.check({ rag: { attempts: 1 } }));
 check("a record with a non-numeric percent is refused", !examEntry.check({ rag: { best: { percent: "92", passed: true }, attempts: 1 } }));
 check("a record with percent out of range is refused", !examEntry.check({ rag: { best: { percent: 140, passed: true }, attempts: 1 } }));
@@ -397,6 +448,36 @@ check("a record without a passed flag is refused", !examEntry.check({ rag: { bes
 check("a record with zero attempts is refused", !examEntry.check({ rag: { best: { percent: 92, passed: true }, attempts: 0 } }));
 check("an array is refused", !examEntry.check([]));
 check("null is refused", !examEntry.check(null));
+check("resume snapshot with wrong mode is refused", !examState.isResumeSnapshot({ ...resume, mode: "timed" }, everything));
+check("null resume snapshot is rejected", !examState.isResumeSnapshot(null, everything));
+const coverageMerged = mergeValue("vibecoding:capstone:v1", { seenIds: ["a"], best: null, attempts: 1, comprehensive: { best: null, attempts: 0 } }, { seenIds: ["b"], best: null, attempts: 1, comprehensive: { best: null, attempts: 0 } });
+check("capstone backup merge unions seen IDs", coverageMerged.seenIds.includes("a") && coverageMerged.seenIds.includes("b"));
+
+// REGRESSION — the rotating capstone record holds TWO independent accomplishments:
+// `best` (capstone) and `comprehensive.best` (the exhaustive exam). The merge branch
+// originally rebuilt the object from seenIds/best/attempts only, so a passed
+// comprehensive result was SILENTLY DESTROYED by a restore. Every fixture above used
+// `comprehensive: { best: null }`, so no assertion touched the dropped field and the
+// suite stayed green. These assertions exist so that specific loss cannot return.
+const capPass = { percent: 88, correct: 88, total: 100, passed: true, at: "2026-02-02" };
+const capFail = { percent: 40, correct: 40, total: 100, passed: false, at: "2026-01-01" };
+const withComp = { seenIds: ["a"], best: capFail, attempts: 1, comprehensive: { best: capPass, attempts: 3 } };
+const noComp = { seenIds: ["b"], best: null, attempts: 0, comprehensive: { best: null, attempts: 0 } };
+const compKept = mergeValue("vibecoding:capstone:v1", withComp, noComp);
+// Guard every read: when the merge drops `comprehensive`, these must report a clean
+// FAILURE naming the defect — not crash on `undefined.best`. A crash also exits 1, and
+// a crash is indistinguishable from a real finding, so it would hide which merge broke.
+const compKeptBest = compKept && compKept.comprehensive && compKept.comprehensive.best;
+check("a comprehensive result SURVIVES a restore that lacks one", Boolean(compKeptBest));
+check("the surviving comprehensive result keeps its score", Boolean(compKeptBest && compKeptBest.percent === 88));
+check("the surviving comprehensive result keeps its attempt count", Boolean(compKept && compKept.comprehensive && compKept.comprehensive.attempts === 3));
+const compFromBackup = mergeValue("vibecoding:capstone:v1", noComp, withComp);
+const compBackupBest = compFromBackup && compFromBackup.comprehensive && compFromBackup.comprehensive.best;
+check("a comprehensive result in the BACKUP is taken on restore", Boolean(compBackupBest && compBackupBest.percent === 88));
+const compHigher = mergeValue("vibecoding:capstone:v1", withComp, { seenIds: [], best: null, attempts: 0, comprehensive: { best: { ...capPass, percent: 95, correct: 95 }, attempts: 2 } });
+check("the higher comprehensive score wins the merge", Boolean(compHigher && compHigher.comprehensive && compHigher.comprehensive.best && compHigher.comprehensive.best.percent === 95));
+check("comprehensive attempt counts use max, not sum", Boolean(compHigher && compHigher.comprehensive && compHigher.comprehensive.attempts === 3));
+check("the capstone best is merged independently of comprehensive", Boolean(compKept && compKept.best && compKept.best.percent === 40));
 
 // ---------------------------------------------------------------------------
 console.log(`\n  ${pass} assertion(s) passed, ${fails.length} failed`);

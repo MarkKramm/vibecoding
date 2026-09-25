@@ -29,6 +29,7 @@ strings. All of those produce a green build and a blank page.
 | Runtime, deep | `learning-site/scripts/verify-deep.mjs` | production preview + Edge | all written tracks, corpus-sized dashboard, search, 8 checks |
 | Correctness | `learning-site/scripts/verify-quiz-correctness.mjs` | production preview + Edge | the quiz marks the *source-correct* option correct |
 | All-phase sweep | `learning-site/scripts/sweep-phases.mjs` | production preview + Edge | all 65 phase screens and navigation; explicitly skips without a responding preview |
+| Exam logic | `learning-site/scripts/test-exam.mjs` | generated question pool | track scoring, 100-question balanced rotating capstone, 549-question exhaustive pool, resume snapshots and backup rules |
 | Accessibility | `learning-site/scripts/audit-a11y.mjs` | production preview + Edge | six views; 60 assertions, with explicit scope limits |
 | Diagnostics | `debug-phase.mjs`, `debug-tracks.mjs` | dev server + Edge | *why* something failed |
 

@@ -21,15 +21,11 @@
 // ---------------------------------------------------------------------------
 // DESIGN DECISIONS THAT MATTER
 // ---------------------------------------------------------------------------
-// 1. EXAMS DRAW FROM THE WHOLE TRACK, NOT A SAMPLE OF IT. A section exam must be
-//    able to ask anything the section taught. The subset is every question the track
-//    has (24 to 82, depending on the track), not a fixed 20 — a fixed size would
-//    silently make the smaller tracks easier to pass by covering a larger share of
-//    their material.
-//
-// 2. THE ORDER IS SHUFFLED BUT THE QUESTIONS ARE NOT DROPPED. Every question in the
-//    track appears exactly once. This is what makes the pass mark meaningful: two
-//    readers who both score 80% have answered the same set.
+// 1. TRACK EXAMS draw from every question in one track; the all-track capstone
+//    samples a fixed number per written track and prioritizes unseen IDs over time.
+//    The comprehensive mode contains the entire current quiz bank.
+// 2. Question order and option order are shuffled. Track exams retain every track
+//    question exactly once; sample and exhaustive modes follow their explicit pool.
 //
 // 3. OPTION ORDER IS ALSO SHUFFLED, and the stored answer moves with it. Left in
 //    authoring order, the answer key would be memorisable ("the long one is B") and
@@ -41,12 +37,13 @@
 //    there is no penalty and no record of failure kept. A mark that could be scraped
 //    by guessing four questions would make the certificate meaningless.
 //
-// 5. TIME IS A LIMIT, NOT A COUNTDOWN TO FAILURE. When it expires the exam is
-//    submitted with whatever is answered, and unanswered questions count as wrong.
-//    There is no "you ran out of time, come back tomorrow".
+// 5. Track exams and the rotating capstone are timed. The comprehensive exam is
+//    deliberately untimed and resumable because an exhaustive sitting can span many
+//    hours; unanswered questions still count as wrong when it is submitted.
 
 /** Pass mark. See note 4 above — chosen to make guessing insufficient. */
 export const PASS_MARK = 0.8;
+export const CAPSTONE_QUESTIONS_PER_TRACK = 10;
 
 /** Minutes allowed, by how many questions the track has. */
 export function timeLimitFor(questionCount) {
@@ -66,7 +63,7 @@ export function timeLimitFor(questionCount) {
  * plausible — a reader would simply be told they failed.
  */
 export function shuffleOptions(options, answerIndex, rng = Math.random) {
-  const order = options.map((text, i) => ({ text, wasCorrect: i === answerIndex }));
+  const order = options.map((text, i) => ({ text, originalIndex: i, wasCorrect: i === answerIndex }));
   for (let i = 0; i < order.length; i++) {
     const j = i + Math.floor(rng() * (order.length - i));
     const tmp = order[i];
@@ -76,6 +73,7 @@ export function shuffleOptions(options, answerIndex, rng = Math.random) {
   return {
     options: order.map((o) => o.text),
     answerIndex: order.findIndex((o) => o.wasCorrect),
+    optionOrder: order.map((o) => o.originalIndex),
   };
 }
 
@@ -90,6 +88,12 @@ export function shuffleOptions(options, answerIndex, rng = Math.random) {
  */
 export function buildExam(questions, trackId, trackLabel, rng = Math.random) {
   const list = (questions || []).filter((q) => q.trackId === trackId);
+  return buildExamFromQuestions(list, trackId, trackLabel, rng);
+}
+
+/** Build an exam from an explicit question list. */
+export function buildExamFromQuestions(questions, trackId, trackLabel, rng = Math.random, options = {}) {
+  const list = Array.isArray(questions) ? questions : [];
   // Shuffle question order.
   const arr = list.slice();
   for (let i = 0; i < arr.length; i++) {
@@ -101,17 +105,54 @@ export function buildExam(questions, trackId, trackLabel, rng = Math.random) {
   // Shuffle the options inside each question and carry the answer with them.
   const examQuestions = arr.map((q) => {
     const s = shuffleOptions(q.options, q.answerIndex, rng);
-    return { ...q, options: s.options, answerIndex: s.answerIndex };
+    return { ...q, options: s.options, answerIndex: s.answerIndex, optionOrder: s.optionOrder };
   });
 
+  const timed = options.timed !== false;
   return {
     trackId,
     trackLabel,
     questions: examQuestions,
     passMark: PASS_MARK,
-    timeLimitMinutes: timeLimitFor(examQuestions.length),
+    mode: options.mode || "track",
+    timed,
+    timeLimitMinutes: timed ? timeLimitFor(examQuestions.length) : null,
     total: examQuestions.length,
   };
+}
+
+/**
+ * Build a balanced capstone sample, optionally prioritizing unseen questions.
+ * Each written track contributes up to `perTrack` questions; empty tracks are
+ * skipped until authored, so the capstone grows to 100 as tracks land.
+ */
+export function buildCapstone(questions, trackIds, seenIds = [], rng = Math.random, perTrack = CAPSTONE_QUESTIONS_PER_TRACK) {
+  const seen = new Set(seenIds || []);
+  const selected = [];
+  for (const trackId of trackIds || []) {
+    const pool = (questions || []).filter((q) => q.trackId === trackId);
+    const unseen = pool.filter((q) => !seen.has(q.id));
+    // Use all available unseen items first; once that track is exhausted, rotate
+    // through its full pool again so every sitting stays balanced and valid.
+    const ordered = shuffleCopy(unseen, rng).concat(shuffleCopy(pool.filter((q) => seen.has(q.id)), rng));
+    selected.push(...ordered.slice(0, Math.min(perTrack, pool.length)));
+  }
+  return buildExamFromQuestions(selected, "capstone", "Capstone", rng, { mode: "capstone" });
+}
+
+/** Build one exhaustive, untimed exam containing every available question. */
+export function buildExhaustiveExam(questions, rng = Math.random) {
+  const all = Array.isArray(questions) ? questions : [];
+  return buildExamFromQuestions(all, "comprehensive", "Comprehensive", rng, { timed: false, mode: "comprehensive" });
+}
+
+function shuffleCopy(items, rng) {
+  const arr = items.slice();
+  for (let i = 0; i < arr.length; i++) {
+    const j = i + Math.floor(rng() * (arr.length - i));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 /**
@@ -141,11 +182,13 @@ export function gradeExam(exam, answers) {
       id: q.id,
       chosen: answered ? chosen : null,
       answerIndex: q.answerIndex,
+      chosenOriginalIndex: answered && Array.isArray(q.optionOrder) ? q.optionOrder[chosen] : null,
       correct: ok,
       answered,
       phaseId: q.phaseId,
       phaseTitle: q.phaseTitle,
       question: q.question,
+      trackId: q.trackId,
       why: q.why,
     });
   }
@@ -195,7 +238,7 @@ export function weakPhases(grade) {
   for (const r of (grade && grade.missed) || []) {
     const key = r.phaseId;
     if (!key) continue;
-    const entry = counts.get(key) || { phaseId: r.phaseId, phaseTitle: r.phaseTitle, missed: 0 };
+    const entry = counts.get(key) || { phaseId: r.phaseId, phaseTitle: r.phaseTitle, trackId: r.trackId, missed: 0 };
     entry.missed++;
     counts.set(key, entry);
   }

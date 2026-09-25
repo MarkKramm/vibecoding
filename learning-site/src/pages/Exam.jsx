@@ -1,4 +1,4 @@
-// Section exams: a scored, timed assessment over one whole track.
+// Per-track exams, a rotating all-track capstone, and a resumable comprehensive exam.
 //
 // ---------------------------------------------------------------------------
 // THE ONE PLACE IN THIS SITE THAT GRADES THE READER
@@ -21,16 +21,18 @@
 // ---------------------------------------------------------------------------
 // WHY THE EXAM IS IN-MEMORY FOR ITS DURATION
 // ---------------------------------------------------------------------------
-// Nothing is written until the paper is submitted. Reloading mid-exam restarts it.
-// That is a real cost and it is the correct trade: a resumable exam with stored
-// answers is not a timed assessment, and the score would stop meaning anything. Only
-// the RESULT is persisted.
+// Timed track and capstone papers stay in memory and restart on reload. The
+// comprehensive mode is the explicit exception: it stores stable IDs, shuffled
+// option order and chosen original indexes so it can resume, but leaves out the
+// question text and answer key.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { tracks, loadTrackPhases } from "../data/roadmaps.js";
 import { renderInline } from "../lib/renderInline.jsx";
 import { poolFrom } from "../lib/practice.js";
 import {
   buildExam,
+  buildCapstone,
+  buildExhaustiveExam,
   gradeExam,
   resultText,
   weakPhases,
@@ -39,10 +41,13 @@ import {
   PASS_MARK,
 } from "../lib/exam.js";
 import { useExamResults, countPassed } from "../hooks/useExamResults.js";
+import { updateCapstoneState, readResumeSnapshot, writeResumeSnapshot, restoreResumeSnapshot } from "../lib/examState.js";
+import { useCapstoneState } from "../hooks/useCapstoneState.js";
 
 /** The index: pick a track, or review a previous result. */
-function ExamIndex({ onStart, results, poolReady }) {
+function ExamIndex({ onStart, onStartCapstone, onStartComprehensive, onResumeComprehensive, results, capstoneState, resumeAvailable, poolReady, poolCount }) {
   const passedCount = countPassed(results, tracks.map((t) => t.id));
+  const availableTrackCount = tracks.filter((t) => t.phases.length > 0).length;
 
   return (
     <div className="page exam">
@@ -54,13 +59,22 @@ function ExamIndex({ onStart, results, poolReady }) {
           an exam can be failed — that is the point of it. You can retake as often as you like;
           only your best result is kept.
         </p>
-        {passedCount > 0 && (
-          <p className="exam__tally">
-            {/* Stated as a plain fact and never as a target. The site has no streak and no
-                "N of M" anywhere else, and this line is not the place to start. */}
-            Passed {passedCount} of {tracks.length}.
-          </p>
-        )}
+        {passedCount > 0 && <p className="exam__tally">Passed {passedCount} of {availableTrackCount} available track exams.</p>}
+      </section>
+
+      <section className="card exam__card">
+        <h2>All-track capstone</h2>
+        <p className="muted">Ten questions are sampled from each written track (currently {availableTrackCount} tracks, {availableTrackCount * 10} questions). Answered questions from submitted capstones count as seen; blanks and abandoned papers do not change coverage. As more tracks are authored, the capstone grows toward 100 questions. Pass mark {Math.round(PASS_MARK * 100)}%.</p>
+        {capstoneState.best && <p className={"exam__result" + (capstoneState.best.passed ? " is-pass" : " is-fail")}><strong>{capstoneState.best.passed ? "Passed" : "Not passed"}</strong> — {capstoneState.best.percent}% · {capstoneState.attempts} attempt{capstoneState.attempts === 1 ? "" : "s"} · {capstoneState.seenIds.length} questions seen</p>}
+        <button type="button" className="btn" disabled={!poolReady} onClick={onStartCapstone}>Start / retake capstone</button>
+      </section>
+
+      <section className="card exam__card">
+        <h2>Comprehensive exam</h2>
+        <p className="muted">All {poolCount} questions across every written lesson. Untimed and resumable; your answer selections stay in this browser and are not included in backups. If you stop before submitting, your saved responses do not count as a score.</p>
+        {resumeAvailable && <button type="button" className="btn" disabled={!poolReady} onClick={onResumeComprehensive}>Resume comprehensive exam</button>}
+        {capstoneState.comprehensive?.best && <p className={"exam__result" + (capstoneState.comprehensive.best.passed ? " is-pass" : " is-fail")}><strong>{capstoneState.comprehensive.best.passed ? "Passed" : "Not passed"}</strong> — {capstoneState.comprehensive.best.percent}%</p>}
+        <button type="button" className="btn" disabled={!poolReady} onClick={onStartComprehensive}>{resumeAvailable ? "Restart" : "Start"} comprehensive exam</button>
       </section>
 
       <div className="exam__grid">
@@ -105,8 +119,11 @@ function ExamIndex({ onStart, results, poolReady }) {
 
 export default function Exam({ onOpenPhase }) {
   const { results, record, clear } = useExamResults();
+  const { state: capstoneState, save: saveCapstoneState } = useCapstoneState();
 
   const [pool, setPool] = useState([]);
+  const [storedResume, setStoredResume] = useState(null);
+  const [resumeAvailable, setResumeAvailable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
 
@@ -122,15 +139,23 @@ export default function Exam({ onOpenPhase }) {
     let cancelled = false;
     (async () => {
       try {
-        const results_ = await Promise.all(
+        const perTrackPools = await Promise.all(
           tracks.map(async (t) => {
             const res = await loadTrackPhases(t.id);
-            if (res.status !== "ready") return [];
-            return poolFrom(res.phases, t.id, t.label);
+            if (res.status === "empty" && t.phases.length === 0) return { trackId: t.id, pool: [] };
+            if (res.status !== "ready") throw new Error(`Track ${t.id} could not be loaded (${res.status}).`);
+            return { trackId: t.id, pool: poolFrom(res.phases, t.id, t.label) };
           })
         );
         if (cancelled) return;
-        setPool(results_.flat());
+        const pool = perTrackPools.flatMap((entry) => entry.pool);
+        const indexedCount = tracks.reduce((n, track) => n + track.phases.reduce((m, phase) => m + (phase.quizIds || []).length, 0), 0);
+        if (pool.length !== indexedCount) throw new Error(`Loaded ${pool.length} questions, but the curriculum index lists ${indexedCount}.`);
+        setPool(pool);
+        const snapshot = readResumeSnapshot();
+        const restored = restoreResumeSnapshot(snapshot, pool);
+        setStoredResume(restored);
+        setResumeAvailable(Boolean(restored));
         setLoading(false);
       } catch (e) {
         if (cancelled) return;
@@ -147,20 +172,38 @@ export default function Exam({ onOpenPhase }) {
     (exam) => {
       const g = gradeExam(exam, answers);
       setGraded(g);
-      record(exam.trackId, g);
+      if (exam.mode === "track") record(exam.trackId, g);
+      else {
+        const mode = exam.mode === "comprehensive" ? "comprehensive" : "capstone";
+        const next = updateCapstoneState(capstoneState, exam.questions, g, new Date().toISOString(), mode);
+        saveCapstoneState(next);
+        if (mode === "comprehensive") {
+          writeResumeSnapshot(null);
+          setResumeAvailable(false);
+          setStoredResume(null);
+        }
+      }
     },
-    [answers, record]
+    [answers, record, capstoneState, saveCapstoneState]
   );
 
-  // The countdown. Ticks once a second only while an ungraded exam is running, so
-  // the timer costs nothing on the index or after submitting.
+  // Autosave only the untimed comprehensive session. Timed track and capstone
+  // exams intentionally stay in memory and still restart if the page reloads.
   useEffect(() => {
-    if (!active || graded) return undefined;
+    if (!active || active.mode !== "comprehensive" || graded) return;
+    const snapshot = makeResumeSnapshot(active, answers, questionIndex);
+    const saved = writeResumeSnapshot(snapshot);
+    if (saved) setStoredResume(restoreResumeSnapshot(snapshot, pool));
+    setResumeAvailable(saved);
+  }, [active, answers, questionIndex, graded, pool]);
+
+  useEffect(() => {
+    if (!active || graded || !active.timed) return undefined;
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, [active, graded]);
 
-  const left = active && !graded ? secondsLeft(deadlineRef.current, now) : 0;
+  const left = active && !graded && active.timed ? secondsLeft(deadlineRef.current, now) : null;
 
   // TIME EXPIRY SUBMITS RATHER THAN FAILING.
   //
@@ -175,21 +218,56 @@ export default function Exam({ onOpenPhase }) {
     }
   }, [left, active, graded, submit]);
 
-  function start(trackId, trackLabel) {
-    const exam = buildExam(pool, trackId, trackLabel, Math.random);
-    if (exam.total === 0) return;
+  function begin(exam, resumable = false) {
+    if (!exam || exam.total === 0) return;
     setActive(exam);
     setAnswers({});
     setGraded(null);
     setQuestionIndex(0);
-    deadlineRef.current = Date.now() + exam.timeLimitMinutes * 60 * 1000;
+    deadlineRef.current = exam.timed ? Date.now() + exam.timeLimitMinutes * 60 * 1000 : 0;
+    if (resumable) {
+      const snapshot = makeResumeSnapshot(exam, {}, 0);
+      const saved = writeResumeSnapshot(snapshot);
+      setStoredResume(restoreResumeSnapshot(snapshot, pool));
+      setResumeAvailable(saved);
+    }
     setNow(Date.now());
-    // Scroll to the top so the exam starts at question 1 rather than wherever the
-    // index was scrolled to.
     if (typeof window !== "undefined") window.scrollTo(0, 0);
   }
 
+  function start(trackId, trackLabel) {
+    begin(buildExam(pool, trackId, trackLabel, Math.random));
+  }
+
+  function startCapstone() {
+    begin(buildCapstone(pool, tracks.filter((t) => t.phases.length > 0).map((t) => t.id), capstoneState.seenIds, Math.random));
+  }
+
+  function startComprehensive() {
+    begin(buildExhaustiveExam(pool, Math.random), true);
+  }
+
+  function resumeComprehensive() {
+    const restored = restoreResumeSnapshot(readResumeSnapshot(), pool) || storedResume;
+    if (!restored) {
+      writeResumeSnapshot(null);
+      setResumeAvailable(false);
+      setStoredResume(null);
+      return;
+    }
+    setActive(restored.exam);
+    setAnswers(restored.answers);
+    setStoredResume(restored);
+    setQuestionIndex(restored.questionIndex);
+    setGraded(null);
+    deadlineRef.current = 0;
+    setResumeAvailable(true);
+    setNow(Date.now());
+  }
+
   function exit() {
+    // An untimed comprehensive paper is autosaved before every state change;
+    // exiting returns to the index without discarding that resumable session.
     setActive(null);
     setGraded(null);
     setAnswers({});
@@ -222,14 +300,37 @@ export default function Exam({ onOpenPhase }) {
   if (!active) {
     return (
       <>
-        <ExamIndex onStart={start} results={results} poolReady={pool.length > 0} />
+        <ExamIndex
+          onStart={start}
+          onStartCapstone={startCapstone}
+          onStartComprehensive={startComprehensive}
+          onResumeComprehensive={resumeComprehensive}
+          results={results}
+          capstoneState={capstoneState}
+          resumeAvailable={resumeAvailable}
+          poolReady={pool.length > 0}
+          poolCount={pool.length}
+        />
         <section className="card">
           <h2>Your results</h2>
           <p className="muted">
-            Results are stored in this browser only. Back up and restore carries them.
+            Results are stored in this browser only. Back up and restore carries results and capstone coverage. Active comprehensive sessions remain local and are not included.
           </p>
-          {Object.keys(results).length > 0 ? (
-            <button type="button" className="btn btn--ghost" onClick={clear}>
+          {Object.keys(results).length > 0 || capstoneState.attempts > 0 || capstoneState.comprehensive.attempts > 0 || resumeAvailable ? (
+            <button type="button" className="btn btn--ghost" onClick={() => {
+              clear();
+              if (active?.mode === "comprehensive") {
+                setActive(null);
+                setGraded(null);
+                setAnswers({});
+                deadlineRef.current = 0;
+              }
+              writeResumeSnapshot(null);
+              setResumeAvailable(false);
+              setStoredResume(null);
+              const clean = { seenIds: [], best: null, attempts: 0, comprehensive: { best: null, attempts: 0 } };
+              saveCapstoneState(clean);
+            }}>
               Clear my exam results
             </button>
           ) : (
@@ -255,10 +356,19 @@ export default function Exam({ onOpenPhase }) {
           </p>
           <p className="exam__verdict-text">{resultText(graded)}</p>
           <div className="exam__actions">
-            <button type="button" className="btn" onClick={() => start(active.trackId, active.trackLabel)}>
+            <button type="button" className="btn" onClick={() => {
+              if (active.mode === "capstone") startCapstone();
+              else if (active.mode === "comprehensive") startComprehensive();
+              else start(active.trackId, active.trackLabel);
+            }}>
               Retake this exam
             </button>
-            <button type="button" className="btn btn--ghost" onClick={exit}>
+            <button type="button" className="btn btn--ghost" onClick={() => {
+              exit();
+              writeResumeSnapshot(null);
+              setResumeAvailable(false);
+              setStoredResume(null);
+            }}>
               Back to exams
             </button>
           </div>
@@ -276,7 +386,7 @@ export default function Exam({ onOpenPhase }) {
                   <button
                     type="button"
                     className="linkish"
-                    onClick={() => onOpenPhase && onOpenPhase(active.trackId, w.phaseId)}
+                    onClick={() => onOpenPhase && onOpenPhase(w.trackId || active.trackId, w.phaseId)}
                   >
                     {w.phaseTitle}
                   </button>
@@ -329,7 +439,10 @@ export default function Exam({ onOpenPhase }) {
   const q = active.questions[questionIndex];
   const answeredCount = Object.keys(answers).length;
   const isLast = questionIndex === active.questions.length - 1;
-  const low = left <= 60;
+  const low = active.timed && left <= 60;
+  const unansweredHint = active.mode === "comprehensive"
+    ? (resumeAvailable ? "Your unanswered questions are saved and can be completed later." : "Progress is not currently saved; keep this page open.")
+    : `${active.total - answeredCount} question${active.total - answeredCount === 1 ? "" : "s"} still blank — blanks are marked wrong, so answer everything you can.`;
 
   return (
     <div className="page exam">
@@ -338,14 +451,16 @@ export default function Exam({ onOpenPhase }) {
           <h1 className="exam__bar-title">{active.trackLabel} exam</h1>
           <p className="muted exam__bar-meta">
             Question {questionIndex + 1} of {active.total} · {answeredCount} answered
+            {active.mode === "capstone" && ` · ${capstoneState.seenIds.length} unique questions seen`}
           </p>
         </div>
-        <p className={"exam__clock" + (low ? " is-low" : "")} aria-live="off">
-          {/* aria-live is off deliberately: a countdown announced every second would
-              make a screen reader unusable. The expiry is announced by the result. */}
-          <span className="muted">Time left </span>
-          <strong>{formatClock(left)}</strong>
-        </p>
+        {active.timed ? (
+          <p className={"exam__clock" + (low ? " is-low" : "")} aria-live="off">
+            <span className="muted">Time left </span><strong>{formatClock(left)}</strong>
+          </p>
+        ) : (
+          <p className="exam__clock"><strong>Untimed · progress saved on this device</strong></p>
+        )}
       </section>
 
       <section className="card">
@@ -427,16 +542,11 @@ export default function Exam({ onOpenPhase }) {
             Submit exam
           </button>
           <button type="button" className="btn btn--ghost" onClick={exit}>
-            Abandon
+            {active.mode === "comprehensive" ? (resumeAvailable ? "Save and exit" : "Exit (save unavailable)") : "Abandon"}
           </button>
         </div>
-        {answeredCount < active.total && (
-          <p className="muted">
-            {active.total - answeredCount} question
-            {active.total - answeredCount === 1 ? "" : "s"} still blank — blanks are marked
-            wrong, so answer everything you can.
-          </p>
-        )}
+        {answeredCount < active.total && <p className="muted">{unansweredHint}</p>}
+        {active.mode === "comprehensive" && !resumeAvailable && <p role="alert" className="muted">Browser storage could not save this session. Keep this page open or your current answers may be lost.</p>}
       </section>
     </div>
   );

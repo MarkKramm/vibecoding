@@ -41,6 +41,7 @@ import Search from "./pages/Search.jsx";
 import Shared from "./pages/Shared.jsx";
 import Practice from "./pages/Practice.jsx";
 import Exam from "./pages/Exam.jsx";
+import { useExamResults } from "./hooks/useExamResults.js";
 import ShortcutHelp from "./components/ShortcutHelp.jsx";
 import DataTransfer from "./components/DataTransfer.jsx";
 
@@ -65,6 +66,7 @@ export default function App() {
   const budget = useTimeBudget();
   const readingSize = useReadingSize();
   const reading = useReadingState();
+  const { results: examResults } = useExamResults();
 
   const [view, setView] = useState("dashboard");
   const [trackId, setTrackId] = useState(null);
@@ -236,6 +238,7 @@ export default function App() {
             done={done}
             onOpenTrack={openTrack}
             onOpenPhase={openPhase}
+            examResults={examResults}
             saved={
               reading.lastPhaseId
                 ? {

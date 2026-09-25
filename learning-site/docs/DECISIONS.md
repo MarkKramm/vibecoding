@@ -389,8 +389,10 @@ small feature, and should be argued as one.
 ## D-020a — Section exams ARE graded (the documented exception)
 
 **Decision.** The rule above still holds for the phase quiz and the Practice view.
-It does **not** hold for section exams, which are scored, timed, and carry a pass
-mark. There is one exam per track, covering every question that track teaches.
+It does **not** hold for assessment surfaces: per-track exams and both all-track exams
+are scored. Per-track exams cover every question in that track and are timed. The
+rotating capstone samples 10 questions per written track and is timed; the
+comprehensive exam contains every quiz question, is untimed, and can be resumed.
 
 **Why the request was granted, and why it is not a repeal.** The paragraph above says
 a score request "should be argued as one" — so here is the argument.
@@ -401,10 +403,11 @@ But the two surfaces answer different questions:
 - The **phase quiz** and **Practice** answer *"what should I study next?"* A score
   would turn practice into a performance, and a reader who is struggling would start
   avoiding the thing that helps. They keep reporting what to revisit.
-- An **exam** answers *"do I actually know this track?"* — and that question cannot be
-  answered without a threshold. "12 to revisit" tells you what to study. It does not,
-  and cannot, tell you whether you know it. A certificate everyone receives is not a
-  certificate.
+- Exams answer *"do I actually know this material?"* — and that question cannot be
+  answered without a threshold. The timed track exam checks one track; the rotating
+  capstone checks a balanced sample across written tracks; the untimed comprehensive
+  exam trades assessment conditions for complete lesson coverage. A certificate
+  everyone receives is not a certificate.
 
 So the rule is **scope-limited, not repealed**, and the boundary is made visible
 rather than left to be inferred: the exam index states the pass mark before you
@@ -426,9 +429,7 @@ reader rather than limiting the feature survive intact:
 - **The result leads with the next action.** "Not passed — 33%. 12 more correct
   answers would do it" gives a target. A bare number does not, and for a reader who
   failed, the next action matters more than the mark.
-- **`useQuizAnswers` is untouched.** Exam answers live in memory for the duration and
-  are never stored, so the "no ratio, no history" property of that key still holds.
-  Only the *result* is persisted, under its own key (`vibecoding:exams:v1`).
+- **Phase-quiz answer storage is untouched.** Per-track and rotating-capstone answers live in memory only. The comprehensive exam is explicitly different: its resumable session stores question IDs, shuffled option order and selected original option indexes locally, but no question text or answer key. Best results persist under `vibecoding:exams:v1`; rotating coverage under `vibecoding:capstone:v1`.
 
 **Cost, stated honestly.** This is the one place in the product that can tell a reader
 they were not good enough. That is a real risk to a beginner studying alone, and the

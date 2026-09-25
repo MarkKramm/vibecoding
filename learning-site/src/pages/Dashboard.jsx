@@ -18,10 +18,12 @@ import ProgressRing from "../components/ProgressRing.jsx";
 import PhaseCard from "../components/PhaseCard.jsx";
 import { countDoneIds } from "../hooks/useProgress.js";
 import { corpusTotals, tracks } from "../data/roadmaps.js";
+import { useCapstoneState } from "../hooks/useCapstoneState.js";
 import { renderInline } from "../lib/renderInline.jsx";
 
-export default function Dashboard({ done, onOpenTrack, onOpenPhase, saved }) {
+export default function Dashboard({ done, onOpenTrack, onOpenPhase, saved, examResults = {} }) {
   const totals = useMemo(() => corpusTotals(), []);
+  const { state: capstoneState } = useCapstoneState();
 
   // Ticking a box in a phase should move the ring without a reload, so the
   // counts are derived from `done` on every render rather than captured once.
@@ -34,15 +36,18 @@ export default function Dashboard({ done, onOpenTrack, onOpenPhase, saved }) {
       tracks.map((t) => {
         const checklistIds = t.phases.flatMap((p) => p.checklistIds || []);
         const taskIds = t.phases.flatMap((p) => p.taskIds || []);
+        const exam = examResults[t.id];
         return {
           track: t,
           checklistDone: countDoneIds(done, checklistIds),
           checklistTotal: checklistIds.length,
           taskDone: countDoneIds(done, taskIds),
           taskTotal: taskIds.length,
+          examBest: exam?.best || null,
+          capstoneBest: capstoneState.best,
         };
       }),
-    [done]
+    [done, examResults, capstoneState]
   );
 
   const overallDone = perTrack.reduce((n, t) => n + t.checklistDone, 0);
@@ -105,6 +110,18 @@ export default function Dashboard({ done, onOpenTrack, onOpenPhase, saved }) {
           </div>
         </dl>
       </section>
+
+      {(capstoneState.best || capstoneState.comprehensive?.best) && (
+        <section className="card" aria-labelledby="capstone-progress-heading">
+          <h2 id="capstone-progress-heading">All-track exam results</h2>
+          {capstoneState.best && <p className={"exam__result" + (capstoneState.best.passed ? " is-pass" : " is-fail")}>
+            Rotating capstone: <strong>{capstoneState.best.passed ? "Passed" : "Not passed"}</strong> — {capstoneState.best.percent}% · {capstoneState.seenIds.length} unique questions covered
+          </p>}
+          {capstoneState.comprehensive?.best && <p className={"exam__result" + (capstoneState.comprehensive.best.passed ? " is-pass" : " is-fail")}>
+            Comprehensive exam: <strong>{capstoneState.comprehensive.best.passed ? "Passed" : "Not passed"}</strong> — {capstoneState.comprehensive.best.percent}%
+          </p>}
+        </section>
+      )}
 
       {started.length > 0 && (
         <section className="card" aria-labelledby="inprogress-heading">
@@ -173,6 +190,11 @@ export default function Dashboard({ done, onOpenTrack, onOpenPhase, saved }) {
                   done={stats.checklistDone}
                   total={stats.checklistTotal}
                 />
+                {stats.examBest && (
+                  <p className="muted">
+                    Section exam: {stats.examBest.passed ? "Passed" : "Not passed"} — {stats.examBest.percent}%
+                  </p>
+                )}
                 <div className="phasegrid">
                   {t.phases.map((p) => (
                     <PhaseCard

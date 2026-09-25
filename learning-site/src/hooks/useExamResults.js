@@ -25,7 +25,7 @@
 //
 // Registered in lib/transfer.js -> KEYS, so Back up & restore carries results.
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 const KEY = "vibecoding:exams:v1";
 
@@ -36,7 +36,17 @@ export function readExamResults() {
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-    return parsed;
+    const valid = {};
+    for (const [trackId, entry] of Object.entries(parsed)) {
+      const best = entry && entry.best;
+      if (!entry || !best || !Number.isFinite(best.percent) || best.percent < 0 || best.percent > 100 ||
+          !Number.isInteger(best.correct) || !Number.isInteger(best.total) || best.total < 1 ||
+          best.correct < 0 || best.correct > best.total || typeof best.passed !== "boolean" ||
+          best.passed !== (best.correct / best.total >= 0.8) ||
+          !Number.isInteger(entry.attempts) || entry.attempts < 1) continue;
+      valid[trackId] = entry;
+    }
+    return valid;
   } catch {
     return {};
   }
@@ -94,6 +104,7 @@ export function recordExamResult(trackId, grade) {
 export function clearExamResults() {
   try {
     window.localStorage.removeItem(KEY);
+    window.localStorage.removeItem("vibecoding:capstone:v1");
   } catch {
     // Nothing to do — the caller re-reads and will simply see no results.
   }
@@ -102,15 +113,26 @@ export function clearExamResults() {
 
 export function useExamResults() {
   const [results, setResults] = useState(readExamResults);
+  useEffect(() => {
+    const sync = () => setResults(readExamResults());
+    window.addEventListener("storage", sync);
+    window.addEventListener("vibecoding:exam-results", sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("vibecoding:exam-results", sync);
+    };
+  }, []);
 
   const record = useCallback((trackId, grade) => {
     const next = recordExamResult(trackId, grade);
     setResults(next);
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("vibecoding:exam-results"));
     return next;
   }, []);
 
   const clear = useCallback(() => {
     setResults(clearExamResults());
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("vibecoding:exam-results"));
   }, []);
 
   return { results, record, clear };

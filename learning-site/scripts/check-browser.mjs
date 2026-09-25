@@ -199,8 +199,19 @@ for (const h of lessonHeads) {
   else bad(`lesson heading MISSING: ${h} — body may be truncated`);
 }
 
-// --- 5. no runtime errors -------------------------------------------------
-console.log('\n5. Runtime errors');
+// --- 5. the Exams view exposes both all-track modes ----------------------
+console.log("\n5. Capstone and comprehensive exams");
+await goto(BASE);
+await evalJs(`(() => { const b=[...document.querySelectorAll('.navbtn')].find(x=>x.innerText.trim()==='Exams'); if(b) b.click(); return !!b; })()`);
+await sleep(800);
+const examText = await evalJs("document.body.innerText") || "";
+if (/All-track capstone/.test(examText) && /Comprehensive exam/.test(examText)) ok("both all-track exam modes are available");
+else bad("capstone or comprehensive exam mode is missing");
+if (/questions are sampled from each written track/.test(examText) && /Untimed and resumable/.test(examText)) ok("exam coverage and resumability are disclosed before starting");
+else bad("exam scope is not clearly disclosed");
+
+// --- 6. no runtime errors -------------------------------------------------
+console.log('\n6. Runtime errors');
 const real = consoleErrors.filter((e) =>
   !/favicon|DevTools|Download the React DevTools/i.test(e));
 if (real.length === 0) ok('no console errors or uncaught exceptions');
