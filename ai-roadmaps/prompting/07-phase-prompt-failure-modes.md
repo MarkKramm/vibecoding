@@ -142,7 +142,7 @@ Wednesday is the important day and it is not reading. You cannot recognise a fai
 | Ollama | Eliminate the temptation to blame the provider by running locally and without limits | Free, open source | https://ollama.com/ | Task 1 and task 6: repeat every experiment as often as you need | llama.cpp, or LM Studio's free tier |
 | Python with `json` and `urllib` | Verify every cited URL in code, and score schema conformance | Free, open source | https://www.python.org/ | Task 2: extract citations, fetch each one, report which resolve | Any scripting language; a spreadsheet also works but is slower and manual |
 | Pydantic | Validate a model's structured output against a schema before trusting it | Freemium, free tier | https://docs.pydantic.dev/ | Task 8: parse model output and raise on a missing field | Python's standard-library `json` plus hand-written checks |
-| Gandalf (prompt injection demo by Lakera) | Pay the injection lesson in your own time rather than in production | Free | https://gandalf.lakera.ai/ | Task 17: reach the level where a system instruction is being ignored | Any local model plus a hand-written system prompt you try to leak |
+| Prompt injection lab (Lakera — formerly "Gandalf") | Pay the injection lesson in your own time rather than in production | Free | https://play.lakera.ai/ | Task 17: reach the level where a system instruction is being ignored | Any local model plus a hand-written system prompt you try to leak |
 | OWASP GenAI Security Project | The current taxonomy of injection and prompt-related risk | Free | https://genai.owasp.org/ | Task 18: map each successful injection to a named risk | The indirect-injection paper (arXiv:2302.12173) plus vendor safety docs |
 | Google AI Studio | A free API key that reports token usage and supports batch runs | Free tier | https://aistudio.google.com/ | Task 7: measure the cost of a length constraint | Any provider free tier that returns token counts |
 | LibreOffice Calc | Keep one row per experiment so your claims are evidence rather than memory | Free, open source | https://www.libreoffice.org/ | Ongoing: the bug log that becomes your evaluation set | Google Sheets, or a Markdown table in your portfolio file |
@@ -157,7 +157,7 @@ Wednesday is the important day and it is not reading. You cannot recognise a fai
 - **DSPy (Khattab et al., 2023)** — https://arxiv.org/abs/2310.03714
 - **RAGAS (Es et al., 2023)** — https://arxiv.org/abs/2309.15217
 - **OWASP GenAI Security Project** — https://genai.owasp.org/
-- **Gandalf (prompt injection demo by Lakera)** — https://gandalf.lakera.ai/
+- **Prompt injection lab (Lakera — formerly "Gandalf")** — https://play.lakera.ai/
 - **Model Context Protocol** — https://modelcontextprotocol.io/
 - **Anthropic — Reduce hallucinations** — https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations
 - **OpenAI — Prompt engineering guide** — https://developers.openai.com/api/docs/guides/prompt-engineering

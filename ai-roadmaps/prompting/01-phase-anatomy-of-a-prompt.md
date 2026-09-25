@@ -94,7 +94,7 @@ The reading is the smaller half. This phase only becomes real when you have prin
 | Ollama | Run a local model with zero metering so you can iterate on prompt rewrites for hours | Free, open source | https://ollama.com/ | Run task 4 and task 7 without spending anything per attempt | llama.cpp built from source, or LM Studio's free tier |
 | OpenAI Tokenizer playground | Count tokens for the prompt scaffolding you never see | Free | https://developers.openai.com/api/docs/guides/token-counting | Task 2: count the prompt-overhead tokens in a chat payload | Any local tokenizer library, or a tokenizer view inside a provider playground |
 | Google AI Studio | A free API key that reports real input/output token counts on real requests | Free tier | https://aistudio.google.com/ | Task 2: confirm your hand-counted overhead against a real usage report | Any provider free tier that returns usage numbers |
-| Prompt injection lab (Lakera / Gandalf-style public demo) | Feel how injection succeeds against a model, rather than read that it does | Free | https://gandalf.lakera.ai/ | Task 6: get past the level where the model still follows a system instruction, and note what changed | Any local model plus a hand-written injection test in your own loop |
+| Prompt injection lab (Lakera / Gandalf-style public demo) | Feel how injection succeeds against a model, rather than read that it does | Free | https://play.lakera.ai/ | Task 6: get past the level where the model still follows a system instruction, and note what changed | Any local model plus a hand-written injection test in your own loop |
 | OWASP GenAI Security Project | The taxonomy of prompt-injection and prompt-related risks, kept current | Free | https://genai.owasp.org/ | Task 6: map your successful injection to the named risk category | The arXiv paper on indirect prompt injection, plus vendor safety documentation |
 | LibreOffice Calc | Log prompt variants, token counts, and outcomes so your rewrite claims are evidence | Free, open source | https://www.libreoffice.org/ | Task 5 and task 8: keep the variant log for your deliverable | Google Sheets, or a Markdown table in your portfolio file |
 
@@ -107,7 +107,7 @@ The reading is the smaller half. This phase only becomes real when you have prin
 - **Anthropic — Use XML tags to structure your prompts** — https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/use-xml-tags
 - **Google — Prompt design strategies (Gemini API docs)** — https://ai.google.dev/gemini-api/docs/prompting-strategies
 - **OWASP — GenAI Security Project** — https://genai.owasp.org/
-- **Gandalf (prompt injection demo by Lakera)** — https://gandalf.lakera.ai/
+- **Prompt injection lab (Lakera — formerly "Gandalf")** — https://play.lakera.ai/
 - **Andrej Karpathy — Deep Dive into LLMs** — https://www.youtube.com/watch?v=7xTGNNLPyMI
 - **Andrej Karpathy — Let's build the GPT Tokenizer** — https://www.youtube.com/watch?v=zduSFxRajkE
 
