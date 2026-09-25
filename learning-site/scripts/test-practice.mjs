@@ -98,6 +98,16 @@ const tracks = index.tracks.map((t) => {
 const pools = tracks.map((t) => ({ track: t, pool: poolFrom(t.phases, t.id, t.label) }));
 const everything = pools.flatMap((p) => p.pool);
 
+// Count the questions as the corpus actually declares them, so the pool can be
+// compared against its own source rather than against a number typed here.
+// `poolFrom` normalises and may legitimately drop a malformed question; if the
+// two disagree, the pool is lossy and that is worth failing on.
+const corpusQuestionCount = tracks.reduce(
+  (n, t) => n + t.phases.reduce((m, p) => m + (Array.isArray(p.quiz) ? p.quiz.length : 0), 0),
+  0,
+);
+const totalPhases = tracks.reduce((n, t) => n + t.phases.length, 0);
+
 // ---------------------------------------------------------------------------
 // 0. The shape contract itself — the assertions that would have caught the crash.
 // ---------------------------------------------------------------------------
@@ -187,8 +197,21 @@ check("a question with a blank option is dropped", normaliseQuestionShape({ id: 
 
 // ---------------------------------------------------------------------------
 // 1. Pool construction against the real corpus.
+//
+// The corpus size is READ, not hardcoded. It was 549 until Foundations gained a
+// ninth phase (Multimodal and Vision), which made four assertions here fail for
+// the one reason that is never a defect: the content grew. A literal total turns
+// every future phase into four red tests that say nothing about the pool logic
+// they are supposed to be checking. What matters is that the pool is COMPLETE
+// relative to the corpus, so that is what is asserted.
 // ---------------------------------------------------------------------------
-check("the corpus yields 549 questions", everything.length === 549, `got ${everything.length}`);
+const CORPUS_QUESTIONS = corpusQuestionCount;
+check(
+  "the pool contains every question in the corpus",
+  everything.length === CORPUS_QUESTIONS,
+  `pool ${everything.length} of ${CORPUS_QUESTIONS}`,
+);
+check("the corpus is non-trivially large", CORPUS_QUESTIONS > 500, `got ${CORPUS_QUESTIONS}`);
 
 check(
   "every pooled question is complete",
@@ -239,8 +262,8 @@ check(
 );
 check(
   "there are as many id prefixes as phases",
-  prefixToPhases.size === 65,
-  `${prefixToPhases.size} prefixes for 65 phases`
+  prefixToPhases.size === totalPhases,
+  `${prefixToPhases.size} prefixes for ${totalPhases} phases`
 );
 
 check(
@@ -259,16 +282,23 @@ check(
 );
 
 check(
-  "the pool spans all 65 phases",
-  new Set(everything.map((q) => q.phaseId)).size === 65,
-  `${new Set(everything.map((q) => q.phaseId)).size} of 65`
+  "the pool spans every phase",
+  new Set(everything.map((q) => q.phaseId)).size === totalPhases,
+  `${new Set(everything.map((q) => q.phaseId)).size} of ${totalPhases}`
 );
 
 // ---------------------------------------------------------------------------
 // 2. Filtering.
 // ---------------------------------------------------------------------------
 const oneTrack = filterPool(everything, { trackId: "foundations" });
-check("filtering by track narrows the pool", oneTrack.length === 82, `got ${oneTrack.length}`);
+// Compared against the corpus rather than a literal: this assertion is about the
+// FILTER narrowing correctly, not about how large Foundations happens to be.
+const foundationsInCorpus = everything.filter((q) => q.trackId === "foundations").length;
+check(
+  "filtering by track narrows the pool",
+  oneTrack.length === foundationsInCorpus && oneTrack.length < everything.length,
+  `got ${oneTrack.length} of ${foundationsInCorpus}`,
+);
 check("filtering by track keeps only that track", oneTrack.every((q) => q.trackId === "foundations"));
 
 check(
@@ -277,8 +307,8 @@ check(
   "falling back to the whole pool would silently ignore the scope"
 );
 
-check("no filter returns the whole pool", filterPool(everything, {}).length === 549);
-check("null options are safe", filterPool(everything).length === 549);
+check("no filter returns the whole pool", filterPool(everything, {}).length === everything.length);
+check("null options are safe", filterPool(everything).length === everything.length);
 check("a null pool is safe", filterPool(null, {}).length === 0);
 
 // energy is a CEILING, not an equality match.
@@ -293,9 +323,9 @@ check(
     normalUp.length > lowOnly.length,
   "a ceiling, not an equality match"
 );
-check("energy=high is the unfiltered pool", highUp.length === 549, `got ${highUp.length}`);
+check("energy=high is the unfiltered pool", highUp.length === everything.length, `got ${highUp.length}`);
 check("energy filters nest", lowOnly.length < normalUp.length && normalUp.length <= highUp.length);
-check("an unknown energy does not filter", filterPool(everything, { energy: "nonsense" }).length === 549);
+check("an unknown energy does not filter", filterPool(everything, { energy: "nonsense" }).length === everything.length);
 
 const scoped = filterPool(everything, { trackId: "rag", energy: "low" });
 check("scope and energy compose", scoped.length > 0 && scoped.every((q) => q.trackId === "rag" && q.energy === "low"));
@@ -330,8 +360,8 @@ check(
 
 // Asking for more than exists must not pad, duplicate or throw.
 const oversize = buildSet(everything, 5000, seededRng(1));
-check("oversize returns the whole pool", oversize.length === 549, `got ${oversize.length}`);
-check("oversize does not duplicate", new Set(oversize.map((q) => q.id)).size === 549);
+check("oversize returns the whole pool", oversize.length === everything.length, `got ${oversize.length}`);
+check("oversize does not duplicate", new Set(oversize.map((q) => q.id)).size === everything.length);
 
 check("size 0 returns nothing", buildSet(everything, 0, seededRng(1)).length === 0);
 check("a negative size returns nothing", buildSet(everything, -5, seededRng(1)).length === 0);

@@ -10,12 +10,18 @@ current checkout; rerun the checks before relying on them.
 GitHub Pages was reported unreachable during the 2026-09-18 checkpoint. This is a historical
 service observation, not verified current status; check the live URL before diagnosing deployment.
 
+**Corpus totals in this file are current as of the Foundation-phase expansion** (Foundations
+gained a ninth phase, *Multimodal and Vision*): **66 phases**, 555 quiz questions, 903 practice
+tasks, 1,076 checklist items, 442 tool rows. Where this file narrates a past incident it keeps
+the number that was true at the time — those are records of what happened, not claims about the
+current corpus, and rewriting them would destroy the history they exist to preserve.
+
 ---
 
 ## What this is
 
 A free, self-paced curriculum for learning how modern AI systems work and how to get hired
-building with them. **65 phases across 10 tracks**, written for someone with a **$0 budget**
+building with them. **66 phases across 10 tracks**, written for someone with a **$0 budget**
 starting from beginner-to-intermediate.
 
 It ships as a React site that reads compiled JSON from hand-authored Markdown.
@@ -128,7 +134,7 @@ disabled guard is worse than none.
 - CSS wiring — every JSX class has a rule, every token is defined
 - **Accessibility** — 60 assertions across 6 views: contrast, accessible names, focus visibility,
   and keyboard reachability by control *kind*
-- **Every one of the 65 phases renders** — opened in a real browser, not sampled
+- **Every one of the 66 phases renders** — opened in a real browser, not sampled
 - **Mixed practice sets** — sampling, filtering, the no-score contract, and the question
   shape the *app* sees rather than the one the file stores
 - **Reachability** — every module under `src/` is reachable from `main.jsx`
@@ -179,7 +185,7 @@ data to screen. That is what component tests and a browser now cover.
 
 ## The defect that only clicking could find — **the fifth instance, and the purest one**
 
-A new check that opens all 65 phases in a browser found, on its first run, that **the Previous
+A new check that opens every phase in a browser found, on its first run, that **the Previous
 and Next phase buttons did absolutely nothing** — on every phase, in both variants.
 
 `PhaseNav` called `onOpenPhase(prev.id)`: **one argument, a phase id.** But `App`'s handler is

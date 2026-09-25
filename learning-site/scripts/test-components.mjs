@@ -1104,8 +1104,20 @@ const { correctIndex, summarise } = await import("../src/lib/quiz.js");
   // The consequences, stated as what a reader would have seen. These are the
   // numbers the bug produced, reconstructed from the current data so the scale is
   // on the record: 433 rows across the full projection, 0 across the light one.
+  //
+  // The exact total is deliberately NOT asserted. This check exists to prove the
+  // full projection carries tool rows the light one cannot reach, and the literal
+  // 433 turned every future phase that adds a tools table into a red test saying
+  // nothing about the projection it guards (it fired when Foundations gained a
+  // ninth phase: 433 -> 442, all of them legitimate). The floor keeps the
+  // magnitude honest -- an empty or near-empty corpus still fails -- while the
+  // assertion below carries the actual regression signal.
   const fullTools = readCorpusTools().length;
-  check("the full projection holds 433 tool rows that the light one cannot reach", fullTools, 433);
+  assert(
+    "the full projection holds tool rows that the light one cannot reach",
+    fullTools >= 400,
+    `${fullTools} rows (expected the full corpus)`,
+  );
   assert(
     "...and 0 of them are reachable from a light phase, which is what rendered as a fact",
     (light.tools || []).length === 0 && fullTools > 0,

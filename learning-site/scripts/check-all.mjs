@@ -181,10 +181,10 @@ const STEPS = [
     // invisible to every other check here, because the data was correct and the
     // buttons were correctly rendered, labelled, enabled and focusable. Only
     // clicking them revealed that they had no effect.
-    name: "every phase renders (browser, all 65)",
+    name: "every phase renders (browser, all phases)",
     cmd: "node",
     args: [join(HERE, "sweep-phases.mjs"), PREVIEW_URL],
-    why: "The accessibility check covers six views, but data checks and sampled page checks cannot prove that every phase works. This walks all 65 phases across all 10 tracks, clicking through them the way a reader does, and asserts each renders its title, all six sections, a tappable checklist and a working quiz explanation. It found the Previous/Next buttons silently doing nothing — a defect no data check can see, because the data was right and the buttons were correctly rendered, labelled, enabled and focusable. Only clicking them revealed that they had no effect. Without it, one broken phase page can reach readers while every data check stays green",
+    why: "The accessibility check covers six views, but data checks and sampled page checks cannot prove that every phase works. This walks every phase across all 10 tracks, clicking through them the way a reader does, and asserts each renders its title, all six sections, a tappable checklist and a working quiz explanation. It found the Previous/Next buttons silently doing nothing — a defect no data check can see, because the data was right and the buttons were correctly rendered, labelled, enabled and focusable. Only clicking them revealed that they had no effect. Without it, one broken phase page can reach readers while every data check stays green",
   },
   {
     name: "mixed practice sets",

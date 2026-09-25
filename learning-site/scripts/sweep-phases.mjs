@@ -1,5 +1,5 @@
 /**
- * Sweep EVERY phase in a real browser — all 65, across all 10 tracks.
+ * Sweep EVERY phase in a real browser — all 66, across all 10 tracks.
  *
  * WHY THIS EXISTS. `check-browser.mjs` verifies ONE track (Finetuning, 6 phases)
  * and asserts against hardcoded strings from `ft-05`. Everything else in the

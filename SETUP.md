@@ -109,7 +109,7 @@ http://127.0.0.1:5173      ✗ may refuse the connection
 ## Trap 4 — the browser checks need a server, and the preview port differs
 
 `npm test` runs 18 checks. Most are offline, but the rendered accessibility audit and
-the all-65-phase sweep need a browser and a production preview server on port 4173. If
+the all-phase sweep need a browser and a production preview server on port 4173. If
 nothing responds there, those two checks explicitly skip; start the preview to get the
 full audit:
 
@@ -181,7 +181,7 @@ For all 18 checks, build the site, start `npm run preview` in another terminal (
 | encoding | CRLF, BOM, tabs, mojibake |
 | CSS wiring + reachability | a class used in JSX with no CSS rule or a source module disconnected from the app |
 | rendered accessibility audit | six-view contrast, names, headings, landmarks, keyboard reachability, focus, live regions and skip link |
-| all-phase browser sweep + exam logic | all 65 phase screens, navigation, runtime errors, track scoring, rotating capstone coverage, exhaustive mode and resume/backup behavior |
+| all-phase browser sweep + exam logic | every phase screen, navigation, runtime errors, track scoring, rotating capstone coverage, exhaustive mode and resume/backup behavior |
 
 The CSS check exists because the site once shipped with **40 layout classes that no
 stylesheet defined** — the page rendered completely unstyled while every content check

@@ -754,7 +754,7 @@ lesson was ever wrong here — this was purely a research-note correction.
 
 **§2.1 — re-checked, and it had aged, exactly as designed.** OpenAI's index now leads with GPT-6
 "Astra" and GPT-5.6 tiers, so the names in §2.1 are already historical. That is the section
-demonstrating its own thesis. **Enforcement independently verified:** a scan of all 65 phase files
+demonstrating its own thesis. **Enforcement independently verified:** a scan of all 66 phase files
 for frontier identifiers returns **one** hit — `cost/05:787`'s `model="gpt-4"` in example code, a
 placeholder, correctly non-load-bearing. The no-hardcoded-models rule is working across the corpus.
 

@@ -192,7 +192,14 @@ const firstCapstoneIds = new Set(capstone.questions.map((q) => q.id));
 const secondCapstone = buildCapstone(everything, tracks.filter((t) => t.phases.length).map((t) => t.id), [...firstCapstoneIds], seededRng(78));
 check("next capstone prioritizes unseen questions in every track", secondCapstone.questions.every((q) => !firstCapstoneIds.has(q.id)));
 const comprehensive = buildExhaustiveExam(everything, seededRng(79));
-check("comprehensive mode contains all 549 questions", comprehensive.total === everything.length && comprehensive.total === 549);
+// The corpus total is READ from the pool rather than typed, so adding a phase
+// does not turn this into a false failure. What is asserted is that comprehensive
+// mode covers the ENTIRE pool, which is the property that matters.
+check(
+  "comprehensive mode contains every question in the pool",
+  comprehensive.total === everything.length && comprehensive.total > 500,
+  `got ${comprehensive.total} of ${everything.length}`,
+);
 check("comprehensive mode has no timer", comprehensive.timed === false && comprehensive.timeLimitMinutes === null);
 check("comprehensive includes each corpus question once", new Set(comprehensive.questions.map((q) => q.id)).size === everything.length);
 

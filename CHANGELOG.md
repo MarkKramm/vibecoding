@@ -10,6 +10,32 @@ The full commit history is the authoritative record: `git log --oneline`.
 
 ## Unreleased
 
+### Foundations gains a ninth phase: Multimodal and Vision
+
+- **A topic-coverage sweep of all 65 phases found exactly one first-class capability with no
+  phase.** Multimodal input was mentioned 7 times in the whole corpus, and only once
+  substantively — a single subsection of `model-internals/06`. Every other apparent hole the
+  sweep reported (FlashAttention, Mixture-of-Experts, jailbreaking, GraphRAG, PII) turned out to
+  be **covered under different spelling**, which is the eighth time in this project that an
+  implausible result was the instrument's fault rather than the corpus's.
+- **New phase `foundations/09-phase-multimodal-and-vision.md`.** Mechanism-first, in the house
+  style: patching and the lossy projection, why file size does not determine token cost while
+  resolution does, predicting which visual tasks fail before testing them, screenshot-to-schema
+  with a cross-field check, and the privacy duty that no technical mitigation covers. 17 practice
+  tasks, 22 checklist items, 6 quiz questions, 9 tool rows.
+- **Corpus is now 66 phases / 555 quiz questions / 903 practice tasks / 1,076 checklist items /
+  442 tool rows**, across 91 Markdown files.
+- **Four hardcoded corpus counts in the test suite were replaced with values read from the
+  corpus.** `test-practice.mjs` asserted 549 questions and 65 phases, `test-exam.mjs` asserted
+  549, and `test-components.mjs` asserted 433 tool rows. Adding one phase turned all four red for
+  the one reason that is never a defect — the content grew — and each red test said nothing about
+  the logic it guarded. They now assert the *property* (the pool is complete; the full projection
+  carries rows the light one cannot; comprehensive mode covers the pool) with a floor that still
+  fails on an empty corpus.
+- **`docs/free-toolkit.md` drifted the moment the corpus changed, and the guard caught it.** The
+  page written last session said 237 distinct tools; the corpus now said 243. This is the check
+  working exactly as designed, and it is the only check in the suite that reads `docs/` at all.
+
 ### Every citation checked, and a guard that could not see its own blind spot
 
 - **All 48 arXiv IDs verified against the arXiv Atom API — 48 correct, 0 wrong.** The failure

@@ -22,13 +22,13 @@ That second half is not a soft skill. With AI assistance, producing plausible ou
 
 ## The ten tracks
 
-Ten tracks, **65 phases** in total. They are numbered in reading order, but you do not have to walk them strictly in sequence — see [How to use these tracks](#how-to-use-these-tracks) below.
+Ten tracks, **66 phases** in total. They are numbered in reading order, but you do not have to walk them strictly in sequence — see [How to use these tracks](#how-to-use-these-tracks) below.
 
 Every phase in every track is completable **without spending money**. Where a paid mechanism is genuinely unavailable on a free tier, the phase teaches the mechanism and gives you a local or simulated substitute — see [`cost/07`](cost/) for the full zero-budget playbook.
 
 | # | Track | Folder | What it is for | Phases |
 |---|---|---|---|---|
-| 1 | **Foundations** | [`foundations/`](foundations/) | The vocabulary and mental models everything else assumes: what a model is, tokens, context, attention, sampling | 8 |
+| 1 | **Foundations** | [`foundations/`](foundations/) | The vocabulary and mental models everything else assumes: what a model is, tokens, context, attention, sampling, vision | 9 |
 | 2 | **Model Internals** | [`model-internals/`](model-internals/) | How inference actually works and what it costs: architecture, KV cache, quantization, serving, the model landscape | 6 |
 | 3 | **Prompting** | [`prompting/`](prompting/) | Getting what you want on purpose: instruction design, reasoning techniques, structured output, context engineering | 7 |
 | 4 | **Retrieval & RAG** | [`rag/`](rag/) | Giving a model knowledge it was not trained on: chunking, embeddings, vector search, hybrid retrieval, reranking, evaluation | 7 |
@@ -52,7 +52,7 @@ Every phase in every track is completable **without spending money**. Where a pa
                     └────────────────────┬─────────────────────┘
                                          │
                     ┌────────────────────▼─────────────────────┐
-                    │  1. FOUNDATIONS          (8 phases)      │
+                    │  1. FOUNDATIONS          (9 phases)      │
                     │  vocabulary + mental models              │
                     │  tokens · context · attention · sampling │
                     └────────────────────┬─────────────────────┘
@@ -179,7 +179,7 @@ The rhythm assumes **5 days, not 7**. A plan that requires every day is a plan t
 ├── learning-site/             # React + Vite site that renders the curriculum
 └── ai-roadmaps/               # The actual study content
     ├── README.md              # This file — the strategy document
-    ├── foundations/           # 00-overview + 8 phases + checklist
+    ├── foundations/           # 00-overview + 9 phases + checklist
     ├── model-internals/       # 00-overview + 6 phases + checklist
     ├── prompting/             # 00-overview + 7 phases + checklist
     ├── rag/                   # 00-overview + 7 phases + checklist

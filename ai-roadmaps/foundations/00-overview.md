@@ -37,8 +37,9 @@ No paid tool is needed at any point in this track. Where a phase names a hosted 
 | 6 | Embeddings and Similarity | 1 week | Meaning as geometry, cosine similarity, and the foundation the whole RAG track rests on |
 | 7 | Reading Model Outputs Critically | 1 week | Logprobs, confidence, and how to tell fluent output from grounded output |
 | 8 | Your First API Call | 1 week | Making a request in code, controlling the parameters, and counting what it costs |
+| 9 | Multimodal and Vision | 1 week | Sending images, what seeing costs, and which visual tasks fail predictably |
 
-**Read them in order.** Phases 3 through 6 each depend on the one before. Phase 8 is deliberately last because it is where the abstractions become something you can run and measure.
+**Read them in order.** Phases 3 through 6 each depend on the one before. Phase 8 and Phase 9 are deliberately last because they are where the abstractions become something you can run and measure — Phase 9 assumes the working API call from Phase 8.
 
 ## What you will be able to do at the end
 
@@ -50,11 +51,12 @@ Not "understand tokens" — those are the things you will actually be able to do
 - Choose a temperature and sampling strategy deliberately, and explain why identical settings can still give different output.
 - Compute cosine similarity between two embeddings and interpret the number.
 - Make a working API call from Python, read the response object, and account for the tokens it consumed.
+- Send an image to a model, predict its token cost before sending it, and name which visual tasks will fail before you test them.
 - State, for any behaviour you observe, **which mechanism produces it**.
 
 ## Roughly how long it takes
 
-**8 phases, about 8–10 weeks at five sessions a week.** Phase 1 is the longest single read in the whole curriculum; do not let that set your expectation for the rest. Phases 3, 4 and 6 are the ones people revisit, and revisiting is normal rather than a sign of trouble.
+**9 phases, about 9–11 weeks at five sessions a week.** Phase 1 is the longest single read in the whole curriculum; do not let that set your expectation for the rest. Phases 3, 4 and 6 are the ones people revisit, and revisiting is normal rather than a sign of trouble.
 
 At one hour a day, plan on twelve weeks. The material does not compress well below that, because the practice tasks are where the understanding actually forms.
 

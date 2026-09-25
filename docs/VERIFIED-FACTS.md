@@ -144,12 +144,14 @@ visibly. Nothing in the curriculum depends on it.
 
 No lesson may conclude anything from a specific model name, version, or context size. Where an example is useful, use it as an illustration, date it, and state what to check instead.
 
-**Enforcement status — independently verified 2026-09-25, and it holds.** A scan of all 65 phase
+**Enforcement status — independently verified 2026-09-25, and it holds.** A scan of all 66 phase
 files for hardcoded frontier identifiers (`gpt-4/5/6`, `claude-3/4`, `gemini-N`, `o1-`, `o3-`)
 returns **exactly one hit**: `cost/05:787`, `model="gpt-4"` as a string argument in example
 `log_call()` usage. That is a placeholder in illustrative code, not a claim about the landscape,
 and it is correctly non-load-bearing — a reader copying the snippet loses nothing when that model
-retires. **One placeholder across 65 phases is the rule working, not a near miss.**
+retires. **One placeholder across 66 phases is the rule working, not a near miss.** Re-scanned
+when Foundations gained its ninth phase (*Multimodal and Vision*); that phase uses no model name
+at all, so the count is unchanged.
 
 ### 2.2 Tokenizer and API details
 
@@ -266,7 +268,7 @@ subtotokens."* Treating tensor2tensor's builder as "the WordPiece algorithm" wou
 misattribution, which is presumably why the earlier pass declined to do it.
 
 **What to teach, and what this curriculum already does.** WordPiece is not mentioned anywhere in
-the 65-phase corpus, so no lesson is currently wrong. If it is ever added, teach the qualitatively
+the 66-phase corpus, so no lesson is currently wrong. If it is ever added, teach the qualitatively
 correct and fully-sourced mechanism — **greedy longest-match-first against a fixed vocabulary,
 with `##` marking continuations** — and describe vocabulary construction only as
 "frequency-driven subword selection, whose reference implementation was never released." Do not

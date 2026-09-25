@@ -11,15 +11,15 @@ project, which is why this one names its own uncertainty.
 
 ## Where the project is now
 
-**The curriculum is complete.** 65 phases across 10 tracks, 24,035 lines across 90 authored Markdown
-files (22,246 lines in the phase files), 549 quiz questions, 891 practice tasks, and 1,054 checklist
+**The curriculum is complete.** 66 phases across 10 tracks, 24,295 lines across 91 authored Markdown
+files (22,506 lines in the phase files), 555 quiz questions, 903 practice tasks, and 1,076 checklist
 items. Every phase passes a machine-verified 14-section contract.
 
 **The site works and is deployed.** Live at **https://markkramm.github.io/vibecoding/**, built
 and published by GitHub Actions, with CI green.
 
 **Verification is real.** `npm test` runs 18 checks, including offline guards and two browser checks
-(accessibility and a sweep of **all 65 phases**) when a production preview is available. The
+(accessibility and a sweep of **every phase**) when a production preview is available. The
 accessibility audit covers 60 assertions across six views; separate browser checks verify quiz
 correctness and track rendering. Every guard has been proved capable of failing.
 
@@ -41,7 +41,7 @@ it.
 
 ### ✅ The browser suite samples, it does not sweep — DONE
 
-**Resolved.** `scripts/sweep-phases.mjs` (check 14) opens **all 65 phases across all 10 tracks**
+**Resolved.** `scripts/sweep-phases.mjs` (check 14) opens **every phase across all 10 tracks**
 in a real browser, clicking dashboard → track → phase → next phase the way a reader does, and
 asserts per phase: the `h1` is the *right* phase's title, all six section labels rendered, the
 checklist has items **and** tappable controls, four quiz options render, *answering* a question
@@ -237,9 +237,9 @@ There is a `docs/SEARCH-REQUESTS.md` accumulating the specific questions that ne
 
 For the stated goal — building real skill, and being able to show it:
 
-1. **The curriculum is already there.** 65 phases is more than enough; more content is not the
+1. **The curriculum is already there.** 66 phases is more than enough; more content is not the
    bottleneck.
-2. **Work the tasks.** 891 practice tasks exist. Reading them is not the same as doing them.
+2. **Work the tasks.** 903 practice tasks exist. Reading them is not the same as doing them.
 3. **Build the three portfolio pieces** the career track specifies, and put them on GitHub.
 4. **The queued assessment features are now implemented:** per-track results surface on the dashboard, with a balanced rotating capstone and a resumable comprehensive mode. Keep their tests and result storage in sync if the quiz corpus changes.
 5. **The site is one of them.** It is a real, deployed, CI-verified application with a content

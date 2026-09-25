@@ -5,7 +5,7 @@
 A structured, self-paced curriculum for learning how modern AI systems actually work, how to
 build with them without shipping things you cannot verify, and how to get hired doing it.
 
-**65 phases across 10 tracks · 549 quiz questions · 24,035 lines across 90 authored Markdown
+**66 phases across 10 tracks · 555 quiz questions · 24,295 lines across 91 authored Markdown
 files · written for a $0 budget.**
 
 Written for someone starting from beginner-to-intermediate, working remotely, with no
@@ -41,7 +41,7 @@ it would actually add and whether it is worth buying — usually it is not.
 
 | Track | Phases | What it covers |
 |---|---:|---|
-| **Foundations** | 8 | What a model is, tokens, attention, sampling, embeddings, reading output |
+| **Foundations** | 9 | What a model is, tokens, attention, sampling, embeddings, reading output, vision |
 | **Model Internals** | 6 | Inference anatomy, transformers, KV cache, quantization, serving |
 | **Prompting** | 7 | Prompt anatomy, few-shot, reasoning, structured output, failure modes |
 | **Retrieval & RAG** | 7 | Why retrieval, chunking, vector search, reranking, evaluation, debugging |
@@ -123,7 +123,7 @@ a broken phase file cannot reach the live site.
 
 ```
 ai-roadmaps/                 the curriculum — Markdown is the source of truth
-  foundations/               8 phases
+  foundations/               9 phases
   model-internals/           6
   prompting/                 7
   rag/                       7
@@ -167,7 +167,7 @@ All 10 tracks are written. This is a complete first pass, not a finished product
 - A number of volatile facts — free-tier terms, context-window sizes, model availability —
   are dated rather than continuously verified, because verifying them requires network
   access this project budgets carefully. Each is stamped with its date.
-- Browser verification includes an automated sweep of all 65 phases, but visual checks on a real
+- Browser verification includes an automated sweep of all 66 phases, but visual checks on a real
   mobile device have not been done; only emulated viewports in a headless browser were checked.
 - An automated accessibility audit runs against a rendered production preview as part of
   `npm test`. It covers six views, but does not test modal focus trapping, phase-detail pages,

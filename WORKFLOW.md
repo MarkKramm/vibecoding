@@ -138,7 +138,7 @@ Runs 17 checks in order. Fifteen run without a server; the rendered accessibilit
 | 11 | encoding and line endings | LF, UTF-8 no BOM, no tabs, no mojibake |
 | 12 | CSS wiring | every JSX class has a rule; every token is defined |
 | 13 | accessibility (rendered page) | six-view rendered a11y, with a loud skip if preview is unavailable |
-| 14 | every phase renders | all 65 phases in a real browser, with a loud skip if preview is unavailable |
+| 14 | every phase renders | every phase in a real browser, with a loud skip if preview is unavailable |
 | 15 | mixed practice sets | pool shape and sampling behavior |
 | 16 | exams | per-track scoring, balanced capstone rotation, exhaustive resume and backup rules |
 | 17 | reachability | every `src/` module is reachable from `main.jsx` |
