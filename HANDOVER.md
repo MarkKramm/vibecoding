@@ -14,8 +14,15 @@
 (`git rev-list --left-right --count origin/main...HEAD` → `0 0`), the working tree is clean,
 and no scratch files remain in the repo root.**
 
-Last pushed commit: **`d0eb0da`** — "Fix notes/tasks/checkboxes prop mismatch; add
-prop-contract guard" (24 files, +1073/−236). Before it: `237ccf1`.
+**Which commits matter** (deliberately not "the last commit" — that wording goes stale on the
+next push, which is how this paragraph got wrong once already; run `git log --oneline -3` for the
+current tip):
+
+- **`d0eb0da`** — "Fix notes/tasks/checkboxes prop mismatch; add prop-contract guard" (24 files,
+  +1073/−236). **This is the fix.** Everything described below is in it.
+- **`c04380a`** — the docs correction that followed it, which brought this file and
+  `CHANGELOG.md` in line with `d0eb0da`.
+- **`237ccf1`** — the previous handover update, before the fix.
 
 ⚠️ **The previous START HERE (2026-09-25, kept below) was materially wrong and nearly cost a
 session.** See "What the old handover got wrong" at the end of this section.
