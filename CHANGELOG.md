@@ -10,6 +10,45 @@ The full commit history is the authoritative record: `git log --oneline`.
 
 ## Unreleased
 
+### Notes and task answers had never saved — a prop-contract mismatch, not a race
+
+- **`PhaseDetail.jsx` passed three components props they do not declare, so three features were
+  dead rather than flaky.** `NotesPanel` declares `note`/`onChange` and was handed
+  `notes`/`onNote`, so `note` arrived as an **object**, `note.trim()` threw, and the change
+  handler was `undefined` — **notes never saved, not once, since the port.** `TaskList` was handed
+  the checklist's `done`/`onToggle` instead of `answers`/`onAnswer` (task answers never saved),
+  and `ChecklistItem` was handed that same id-map instead of `checked` (no checkbox ever rendered
+  ticked, while the progress ring counted them). All three now use the declared names.
+- **A long-standing misdiagnosis is corrected in the record.** The `useNotes` unmount flush was
+  written to close a *race* where typing and clicking "Next" in the same frame could drop the last
+  keystrokes. The race is real; it was also invisible behind a total failure. The flush is kept —
+  correct on inspection, cheap — but **it is not proven, and the notes defect was never it.**
+- **New guard `learning-site/scripts/audit-props.mjs`, wired into `check-all.mjs`.** It compares
+  every component's declared props against every JSX call site and fails when a declared prop has
+  no caller. It is the only check that reads **both halves** of the prop contract, which is
+  precisely why 22 guards and 571 assertions were green while notes never saved.
+- **The energy/budget footer was removed, not relabelled.** `App.jsx` printed
+  `Energy: … · Budget: …` from `useEnergyMode()`/`useTimeBudget()`, but neither value reached any
+  page and their only controls had been deleted with D-008. Because `check-reachability.mjs`
+  **exits 1** on any module unreachable from `main.jsx`, deleting the line alone would have
+  stranded both hooks and failed the build — so the footer line, both calls, both imports, and
+  `src/hooks/useEnergyMode.js` + `src/hooks/useTimeBudget.js` all went. Both storage keys stay in
+  `lib/transfer.js` → `KEYS`, relabelled as not used in this app, so an old backup still
+  round-trips; that also documented a latent bug, since those keys' `kind` strings match no
+  `mergeValue` branch and were already dropped silently on restore.
+- **Also fixed:** a `useFocusTrap` `paddingRight` leak (cleanup hard-set `""` instead of restoring
+  the captured previous value, so a second overlay cleared padding the outer one had set — now
+  LIFO capture/restore), and a dead branch at `Exam.jsx:322` where `active` is always `null`.
+- **⚠️ The unmount flush remains UNVERIFIED, and the test that "covers" it cannot fail.** After
+  reverting the flush to write React state and rebuilding, `verify-notes-flush.mjs` still passed
+  **9/9**. The CDP harness cannot isolate the unmount path under this timing — the ordinary write
+  effect commits first. The 9/9 proves the note field round-trips; it says **nothing** about the
+  flush. Closing it needs a different technique: a unit test that mounts the hook, calls
+  `setNote`, and unmounts with no intervening render. Recorded as unproven, not claimed.
+- **`DEAD_EXPECTED` emptied.** It still listed fourteen modules deleted long before — a guard
+  describing a state that no longer existed. Nothing is legitimately dead today: `src/` holds 48
+  modules, all reachable.
+
 ### Foundations gains a ninth phase: Multimodal and Vision
 
 - **A topic-coverage sweep of all 65 phases found exactly one first-class capability with no

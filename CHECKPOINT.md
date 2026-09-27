@@ -295,6 +295,11 @@ checks here; it catches a class they structurally cannot.
 
 The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 555 current questions, and track-exam result summaries on the dashboard. Verify and refresh this snapshot after the implementation is committed.
 
+**Resolved 2026-09-28:** the implementation above was committed and shipped long ago; this
+paragraph is the dated record of the decision, not a pending task. The instruction to "verify
+and refresh this snapshot after the implementation is committed" was discharged. The corpus has
+since grown to **66 phases / 555 quiz questions** — see the totals at the top of this file.
+
 Deliberately **not** queued: the share-link (progress in a URL fragment). It was offered and
 passed over twice — do not start it without being asked again.
 

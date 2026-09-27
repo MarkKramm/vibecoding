@@ -10,8 +10,12 @@
 
 ## START HERE — current handoff (2026-09-28, third pause)
 
-**State: SAFE but UNCOMMITTED. `main` is in sync with `origin/main`; the working tree holds a
-large, VERIFIED, uncommitted change set. Nothing is lost and nothing is half-broken.**
+**State: SAFE. Everything from this session is COMMITTED and PUSHED. `main` == `origin/main`
+(`git rev-list --left-right --count origin/main...HEAD` → `0 0`), the working tree is clean,
+and no scratch files remain in the repo root.**
+
+Last pushed commit: **`d0eb0da`** — "Fix notes/tasks/checkboxes prop mismatch; add
+prop-contract guard" (24 files, +1073/−236). Before it: `237ccf1`.
 
 ⚠️ **The previous START HERE (2026-09-25, kept below) was materially wrong and nearly cost a
 session.** See "What the old handover got wrong" at the end of this section.
@@ -89,20 +93,26 @@ cheap, but it is **unverified**. Closing this needs a different technique — e.
 unmount inside the input handler, or a unit test that mounts the hook, calls `setNote`, and
 unmounts with no intervening render.
 
-### Exact resume steps
+### Exact resume steps (next session)
 
-1. `cd C:\Users\zaman\Desktop\vibecoding && git status -sb`. Expect the change set below.
-   **Do not reset or revert it.**
+1. `cd C:\Users\zaman\Desktop\vibecoding && git status -sb` — expect **clean**. If it is not,
+   something changed after `d0eb0da`; read the diff before touching it.
 2. `cd learning-site && npm run build` — browser checks read `dist/`.
-3. Start a preview on **4173** (the default `check-all.mjs` expects):
+3. Start a preview on **4173** (the port `check-all.mjs` expects):
    `npx vite preview --port 4173 --strictPort`. **Verify it serves THIS app** before trusting
    any browser check — 4173 is often occupied by another project, and an HTTP 200 does not
    mean it is yours.
-4. `node scripts/verify-notes-flush.mjs http://localhost:4199` (9/9 — see the caveat above).
-5. `cd learning-site && npm test`, and from root the content battery.
-6. Commit **by explicit path** (never `git add -A`), push, verify with `git fetch origin`.
+4. `cd learning-site && npm test`, and from root the content battery
+   (`node scripts/build-content.mjs --check; echo exit=$?`, then `audit-quiz`,
+   `audit-lesson-ast`, `audit-arithmetic`, `audit-encoding`).
+5. Optional: `node scripts/verify-notes-flush.mjs http://localhost:4199` — 9/9, but read the
+   caveat above first; it is **not** proof of the flush.
+6. **Nothing is blocked.** Pick up whichever real item you want — the **unverified flush**,
+   the **mobile-device P0**, or **content** (§0 item 8).
 
-### Change set as of this writing (22 modified, 2 deleted, 3 untracked)
+### What commit `d0eb0da` contains (24 files, staged by explicit path, never `git add -A`)
+
+This is now **history**, not a working tree — `git show --stat d0eb0da` reproduces it.
 
 ```
  M CHECKPOINT.md, HANDOVER.md, README.md, ROADMAP.md, SETUP.md, TROUBLESHOOTING.md,
@@ -145,25 +155,34 @@ warning for `index.json`. Both are historical and unchanged.
 - `DEAD_EXPECTED` still listed 14 modules that had already been deleted — a guard describing a
   state that no longer existed. **Reload guard state before acting on its verdict.**
 
-### Exact resume steps
+### SUPERSEDED — the 2026-09-25 resume steps (kept as a record; do NOT follow)
 
-1. `cd C:\Users\zaman\Desktop\vibecoding` and run `git status -sb`. Expect exactly the three rows above. **Do not reset or revert them.**
-2. Fix the selector in `learning-site/scripts/verify-notes-flush.mjs` (lines ~166 and ~187): `'textarea'` → `'textarea.notes__area'`.
-3. Start a preview server **on a unique port** and run the script against it:
-   - `cd learning-site; npx vite preview --port 4199 --strictPort` (background)
-   - `node scripts/verify-notes-flush.mjs http://localhost:4199`
-4. **It must pass 5/5. Then prove it can fail**: temporarily revert the `useRef` flush effect in `useNotes.js`, rebuild, re-run, and confirm it drops to 4/5. Restore the fix. A test that cannot fail is not evidence — that is this project's own rule (§0 / AGENTS.md).
-5. Run the full battery from root and `cd learning-site; npm test` (19 checks). Expect all pass, with the two browser checks skipping if no preview is running.
-6. Commit and push. Suggested message is drafted in §9.5.
+This list told a resuming session to expect three uncommitted rows, fix a selector at
+`verify-notes-flush.mjs` lines ~166/~187, expect 5/5 and prove it drops to 4/5, then commit.
+**Every one of those instructions was wrong or already done**, and following them is how the
+last session nearly lost its time: the selector was already fixed, the script has 9 checks not
+5, the "race" was not the defect, and the work is now committed. It is kept here only so the
+next reader can see what a stale handover costs. See "What the old handover got wrong" above.
 
-### Two cautions learned the hard way this session
+### Two cautions learned the hard way (2026-09-25 — both still valid)
 
 - **Do not kill browser processes.** This machine had ~15 `msedge.exe` processes running that were the owner's own windows. The way to tell mine from theirs is the `--user-data-dir` argument: mine always point at a `%TEMP%` scratch profile. Check `Win32_Process` CommandLine before killing anything.
 - **PowerShell mangles inline `node -e` with quotes and regexes.** It failed four separate times this session (once mid-edit). Write a temp `.mjs` file instead, run it, delete it. The failed edit did **not** corrupt the target file — it errored before writing — but the risk is real.
 
-### Also still open (unchanged, not started)
+### Still open after this session (2026-09-28)
 
-The four defects found by the code audit in the previous session are listed in **§9.6**. `.gitignore` is done. The other three (notes flush — in progress; focus-trap `paddingRight`; dead branch at `Exam.jsx:322`) are **not yet addressed**. And the mobile-device P0 in `ROADMAP.md` still needs a real phone.
+Three of the four §9.6 defects are now **fixed and committed**: the notes prop contract (the
+real bug — notes had never saved), the `useFocusTrap` `paddingRight` leak, and the `Exam.jsx`
+dead branch. `.gitignore` was already done. What genuinely remains:
+
+- **The unmount flush is UNVERIFIED** (see the caveat above). It is kept because it is correct
+  on inspection and cheap, but the CDP harness cannot isolate it. It needs a **different
+  technique**, not another run of the same script — e.g. a unit test that mounts the hook,
+  calls `setNote`, and unmounts with no intervening render.
+- **The mobile-device P0 in `ROADMAP.md` still needs a real phone.** Emulation is not a
+  substitute; that is the whole point of the item.
+- **Content is the only thing between this project and "done"** — 3 of 10 tracks remain. See
+  §0 item 8 and §6.
 
 ---
 
@@ -1270,10 +1289,16 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 > no step list, because it is the first thing a new session reads and it is confident.
 > Steps that were completed are gone; what remains is what is actually still open.
 
-### Exam feature — IMPLEMENTED, UNCOMMITTED (2026-09-19)
+### Exam feature — IMPLEMENTED, UNCOMMITTED (2026-09-19) — SHIPPED LONG AGO, kept as history
+
+> **Resolved 2026-09-28:** this paragraph was true on 2026-09-19 and false by the time it was
+> read again — the exam feature was committed and shipped, and `d34045a` is many commits back.
+> It is kept as the dated record of the decision. **Do not look for an uncommitted exam diff.**
 
 The two queued features below are now built in the working tree. They are **not committed or
 pushed**; last pushed commit is `d34045a`. Review the diff, then commit.
+
+*(2026-09-28: this was done long ago. Read the Resolved note above; there is no diff to find.)*
 
 **1. Rotating balanced capstone.** 10 questions sampled per written track (10 tracks → 100
 questions at full corpus). Unseen-question priority: questions answered in a prior submitted
@@ -1348,7 +1373,12 @@ can detect semantic drift (§12.22–23). A phase can be stale in substance and 
 
 ---
 
-## 9.5 The uncommitted changes in detail (2026-09-25 pause)
+## 9.5 The 2026-09-25 change set in detail (HISTORICAL — all of it is now committed)
+
+> ⚠️ **Read the START HERE first.** This section is the *dated record* of the 2026-09-25 pause.
+> Its two verdicts on `useNotes.js` and `verify-notes-flush.mjs` were both superseded on
+> 2026-09-28 and are now marked inline. A resuming session that read this section **instead of**
+> the START HERE is exactly what went wrong last time.
 
 Added because §START HERE must stay short while these details are what a resuming
 session actually needs. Everything here was verified in this session unless marked.
@@ -1387,7 +1417,13 @@ command does not mean "ignored". Use `git status --porcelain` to test this
 question, because that is what actually decides whether a file would be committed.
 I got this wrong first and briefly reported the rule as broken when it was correct.
 
-### `learning-site/src/hooks/useNotes.js` — fix written, NOT YET PROVEN
+### `learning-site/src/hooks/useNotes.js` — SUPERSEDED 2026-09-28: kept, but UNVERIFIED
+
+> **Correction (2026-09-28).** Two things changed since this was written. The flush was **kept**
+> — but the prove-it-can-fail run showed the CDP harness **cannot isolate the unmount path**, so
+> it is **unverified**, not "not yet proven" pending a fixed test. And this was **never the real
+> defect**: `PhaseDetail.jsx` passed `NotesPanel` the wrong prop names, so notes had never saved
+> at all. Read the current START HERE; the paragraph below is history.
 
 **The defect it addresses.** `useNotes` writes to localStorage in a
 `useEffect(..., [notes])`, which runs after paint. `useNotes()` is instantiated
@@ -1411,16 +1447,22 @@ a selector bug, so it never exercised the note field.
 path. The unmount flush is a safety net only; if it ever becomes the sole writer, a
 reader who stays on one phase would never save at all.
 
-### `learning-site/scripts/verify-notes-flush.mjs` — new, untracked, has a known bug
+### `learning-site/scripts/verify-notes-flush.mjs` — SUPERSEDED 2026-09-28: committed, 9 checks, still cannot fail
+
+> **Correction (2026-09-28).** The selector bug described below was **already fixed** before the
+> last session started, so "fix it" was a no-op. The script now runs **9** checks, not 5, and it
+> is **committed**, not untracked. It passes 9/9 — and it **also** passed 9/9 with the flush
+> deliberately reverted, which is why it is not evidence. See the START HERE caveat.
 
 A CDP-driven browser test that reproduces the race faithfully: it types into the
 note field via a native value setter plus a real `input` event, then navigates away
 inside a **`requestAnimationFrame`** so the write effect cannot have flushed. A
 `sleep` here would let the effect run and prove nothing — the timing is the test.
 
-**Current result: 4/5.** Passing: Foundations reachable from the dashboard, note
+**Result at the time: 4/5.** Passing: Foundations reachable from the dashboard, note
 panel opens, a textarea exists, a Next control exists. Failing: the marker is not
-found in localStorage.
+found in localStorage. *(Pre-fix reading. The script now runs 9 checks and passes 9/9 —
+and it also passes with the flush deliberately reverted, which is the whole problem.)*
 
 **Cause is the script, not the app.** It queries `'textarea'`, which on a real
 phase resolves to a **practice-task answer box (`task__area`)**, not the note field
@@ -1436,6 +1478,11 @@ script because they encode real app behaviour:
 - The note textarea is **collapsed by default** (`NotesPanel.jsx:76`, `{open && (`)
   so a 20,000-word lesson is not pushed down by an always-open box. A test must
   click a button matching `/write|note/i` first.
+
+> ⚠️ **This draft was NEVER USED — it was superseded by `d0eb0da`.** It is kept only as an
+> example of the house style. Note what it gets wrong: it presents the `useNotes` flush as *the*
+> fix, which the 2026-09-28 session disproved — the real defect was the prop contract, and the
+> flush is unverified. Do not reuse this text.
 
 **Suggested commit message** (the house style is prose explaining *why*, per
 `CHANGELOG.md`):
@@ -1463,7 +1510,7 @@ it run and prove nothing.
 
 ---
 
-## 9.6 The remaining audit findings (from the code audit, all still open)
+## 9.6 The code-audit findings (all three now FIXED — see the Status block below)
 
 A read-only adversarial review of `learning-site` (22 guards, 571 assertions,
 ~13.6k lines) found **no HIGH-severity defects**. The reviewer explicitly withdrew
@@ -1486,7 +1533,8 @@ this session and **also dissolved**:
   the notes case is handled correctly further down at `transfer.js:550` under its own
   `isNotesMap()` guard, with existing-wins on the note and per-task union on answers.
 
-**Still genuinely open — three defects, none severe:**
+**Still genuinely open — three defects, none severe** *(all three are now fixed — see the
+Status block at the end of this section; kept as the record of what the audit found)* **:**
 
 1. **`useNotes` unmount race** — fix written, verification incomplete. See §9.5.
 2. **`useFocusTrap` leaks `paddingRight` on stacked overlays**
@@ -1499,6 +1547,21 @@ this session and **also dissolved**:
    branch at line 300, so `active` is always `null` and the body is unreachable. The
    `writeResumeSnapshot(null)` on the following line does the real work. Harmless;
    delete for clarity.
+
+### Status (2026-09-28) — resolved, committed in `d0eb0da`
+
+| Finding | Outcome |
+|---|---|
+| 1. `useNotes` unmount race | **Moot, and the flush is UNVERIFIED.** The *real* defect was a prop-contract mismatch in `PhaseDetail.jsx` — notes had **never** saved, so there was no race to lose. The flush is kept but the CDP harness cannot isolate it; see the START HERE caveat. |
+| 2. `useFocusTrap` `paddingRight` leak | **Fixed** — captures and restores the previous value (LIFO overlays), as the finding itself suggested. |
+| 3. Dead branch at `Exam.jsx:322` | **Fixed** — removed. |
+| `.gitignore` Secrets block (previous session) | **Already committed** (`315a7c8`). |
+
+**The finding that mattered was the one the audit did not make.** It found three cosmetic
+defects and missed that `PhaseDetail.jsx` was passing three components props they do not
+declare — notes and task answers never persisted at all. That is why `audit-props.mjs` now
+exists: a static check on the prop contract is the only thing that would have caught it, and
+none of the 22 guards read both sides.
 
 **One item is cosmetic and may not be worth fixing:** the capstone "questions seen"
 counter saturates once a track's unseen pool empties, so it over-reports relative to
