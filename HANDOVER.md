@@ -103,7 +103,8 @@ unmounts with no intervening render.
 ### Exact resume steps (next session)
 
 1. `cd C:\Users\zaman\Desktop\vibecoding && git status -sb` — expect **clean**. If it is not,
-   something changed after `d0eb0da`; read the diff before touching it.
+   something changed after the last push (`git log --oneline -1` names it); read the diff before
+   touching it.
 2. `cd learning-site && npm run build` — browser checks read `dist/`.
 3. Start a preview on **4173** (the port `check-all.mjs` expects):
    `npx vite preview --port 4173 --strictPort`. **Verify it serves THIS app** before trusting
