@@ -422,10 +422,22 @@ export function labelFor(key) {
     capstone: "Capstone coverage and result",
     schedule: "Schedule start dates (not used in this app)",
     reading: "Reading position",
-    "energy-mode": "Energy mode",
+    // The two preference keys below are kept registered but are no longer
+    // written by this app. Their only controls (EnergyModeSelector,
+    // TimeBudgetSelector) were deleted with D-008, and the hooks that persisted
+    // them were removed when the footer line advertising them was deleted --
+    // the reader could never change either setting, so the line described
+    // controls that did not exist. The KEYS entries stay for the same reason
+    // certifications and schedule stay: an old backup may carry them, and
+    // dropping the entries would make those fields arrive as unknown-key rows
+    // (or, for a backup holding only these two, as "no recognised data"). They
+    // are labelled "not used in this app" rather than given a count, so a
+    // reader restoring an old file is told the truth instead of being shown a
+    // feature they cannot find.
+    "energy-mode": "Energy mode (not used in this app)",
     "reading-size": "Reading size",
     notes: "Your notes and answers",
-    "time-budget": "Time available today",
+    "time-budget": "Time available today (not used in this app)",
   };
   return labels[short] || short;
 }

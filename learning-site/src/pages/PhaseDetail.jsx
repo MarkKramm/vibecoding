@@ -229,11 +229,18 @@ export default function PhaseDetail({
       {tasks.length > 0 && (
         <section className="card" aria-labelledby="tasks-heading">
           <h2 id="tasks-heading">Hands-on practice</h2>
+          {/* TaskList destructures { tasks, phaseId, answers, onAnswer } -- NOT
+              `done`/`onToggle`, which are the CHECKLIST's contract. This call
+              site was written with the checklist's vocabulary, so `answers` and
+              `onAnswer` were both undefined: the answer box rendered, accepted
+              keystrokes, and called `onAnswer(...)` on undefined. Task answers
+              were never saved, for the same reason and by the same mistake as
+              the note above. Answers are keyed by the task's minted id. */}
           <TaskList
             tasks={tasks}
-            done={done}
-            onToggle={onToggle}
             phaseId={phase.id}
+            answers={phaseNotes.answers}
+            onAnswer={(taskId, text) => setAnswer(phase.id, taskId, text)}
           />
         </section>
       )}
@@ -255,9 +262,21 @@ export default function PhaseDetail({
       {checklist.length > 0 && (
         <section className="card" aria-labelledby="checklist-heading">
           <h2 id="checklist-heading">Checklist</h2>
+          {/* ChecklistItem destructures { item, checked, onToggle } and reads
+              `checked` directly as a boolean. This call site used to pass
+              `done={done}` -- the id->true MAP -- so `checked` was undefined and
+              every box rendered unchecked forever, however many the reader
+              ticked. Toggling still saved (onToggle happened to match), so the
+              progress ring disagreed with the list: the count said 5, the boxes
+              said 0. `Boolean(done[c.id])` is the value the component wants. */}
           <ul className="checklist">
             {checklist.map((c) => (
-              <ChecklistItem key={c.id} item={c} done={done} onToggle={onToggle} />
+              <ChecklistItem
+                key={c.id}
+                item={c}
+                checked={Boolean(done[c.id])}
+                onToggle={onToggle}
+              />
             ))}
           </ul>
         </section>
@@ -313,13 +332,22 @@ export default function PhaseDetail({
         </section>
       )}
 
+      {/* PROPS MUST MATCH NotesPanel's DECLARED CONTRACT.
+          It destructures { phaseId, note, hasAnswers, onChange, onClear }.
+          This call site previously passed `notes` (an object) as `note`, and
+          `onNote` where the component calls `onChange`. So `note` was an object
+          -- `note.trim()` threw -- and `onChange` was undefined, meaning every
+          keystroke threw inside the handler and React re-rendered the controlled
+          textarea straight back to "". Notes were never saved. Not "sometimes
+          lost": never, since the port. scripts/verify-notes-flush.mjs is what
+          finally caught it, because no data guard renders this component.
+          `onChange` is called as (phaseId, text); `onClear` as (phaseId). */}
       <NotesPanel
         phaseId={phase.id}
-        notes={phaseNotes}
-        onNote={(text) => setNote(phase.id, text)}
-        onAnswer={(taskId, text) => setAnswer(phase.id, taskId, text)}
-        onClear={() => clearPhase(phase.id)}
-        tasks={tasks}
+        note={phaseNotes.note}
+        hasAnswers={Object.keys(phaseNotes.answers || {}).length > 0}
+        onChange={(id, text) => setNote(id, text)}
+        onClear={(id) => clearPhase(id)}
       />
 
       <PhaseTransfer phase={phase} />

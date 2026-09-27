@@ -426,7 +426,7 @@ specific material from both the renderer and the in-lesson search.
 An item may also carry an optional `checked` boolean, which makes `LessonBlock`
 draw a **non-interactive** checkbox glyph (a styled `<span>`, deliberately not an
 `<input>`) for the weekly-tracker template. **No item in the current corpus
-carries `checked`** — all 65 lessons have zero — so that path renders nothing
+carries `checked`** — all 66 lessons have zero — so that path renders nothing
 today. It exists for the shared tracker document.
 
 **`table`**

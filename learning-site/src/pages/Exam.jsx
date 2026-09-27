@@ -318,13 +318,17 @@ export default function Exam({ onOpenPhase }) {
           </p>
           {Object.keys(results).length > 0 || capstoneState.attempts > 0 || capstoneState.comprehensive.attempts > 0 || resumeAvailable ? (
             <button type="button" className="btn btn--ghost" onClick={() => {
+              // `clear()` removes the stored results; the lines below remove the
+              // stored resume snapshot and capstone state, which are separate
+              // keys and would otherwise survive a "clear everything".
+              //
+              // There used to be an `if (active?.mode === "comprehensive")`
+              // branch in here resetting the in-memory exam state. It was
+              // unreachable: this button lives inside the `if (!active)` render
+              // block above, so `active` is always null at this point and the
+              // condition could never be true. Removed rather than left as
+              // decoration, because a dead guard reads like protection.
               clear();
-              if (active?.mode === "comprehensive") {
-                setActive(null);
-                setGraded(null);
-                setAnswers({});
-                deadlineRef.current = 0;
-              }
               writeResumeSnapshot(null);
               setResumeAvailable(false);
               setStoredResume(null);

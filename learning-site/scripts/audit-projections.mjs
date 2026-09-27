@@ -226,22 +226,21 @@ const FULL_DATA_FUNCTIONS = [
 // suppression list — nothing here is excused from checking. It exists so the
 // report can say which ported modules are dead, and so the graph walk has a
 // named place to look when one of them comes back to life.
-const DEAD_EXPECTED = new Set([
-  "components/EmptyState.jsx",
-  "components/EnergyModeSelector.jsx",
-  "components/ReviewQueue.jsx",
-  "components/TimeBudgetSelector.jsx",
-  "hooks/useApplications.js",
-  "hooks/useCertifications.js",
-  "hooks/usePortfolio.js",
-  "hooks/useSchedule.js",
-  "lib/highlight.js",
-  "lib/pace.js",
-  "lib/pathOrder.js",
-  "lib/review.js",
-  "lib/today.js",
-  "lib/yourWork.js",
-]);
+// EMPTY, DELIBERATELY.
+//
+// This set used to list fourteen ported modules that were unreachable but kept.
+// They have all been DELETED (ROADMAP.md -> "Resolve D-008 properly"), and
+// `check-reachability.mjs` now fails the build if any module under src/ becomes
+// unreachable again. So there is nothing left that is legitimately dead, and an
+// entry here would only excuse a module that should not exist.
+//
+// The mechanism is kept rather than removed: this guard's job is to distinguish
+// "dead and excused" from "dead and unexpected", and it still prints that
+// distinction. What changed is that the excuse list is now empty -- dead code
+// is a build failure, not a known state. `revived` below will therefore report
+// any file listed here that becomes reachable, which is the alarm that fires if
+// someone re-adds an entry without deleting the module.
+const DEAD_EXPECTED = new Set([]);
 
 // Names that are real in the FULL projection and are always a bug on a light
 // phase, because the light projection replaced them with an ID array.

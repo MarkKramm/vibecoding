@@ -1,6 +1,6 @@
 # HANDOVER — Vibecoding / AI Era Learning Site
 
-**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-25**.
+**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-28 (third pause)**.
 **Purpose:** Everything a fresh session needs to resume this project without re-deriving anything.
 **Current repo root:** `C:\Users\zaman\Desktop\vibecoding` (re-cloned after the owner's NVMe SSD failure).
 **Historical repo root in old logs:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`.
@@ -8,27 +8,142 @@
 
 ---
 
-## START HERE — current handoff (2026-09-25, second pause)
+## START HERE — current handoff (2026-09-28, third pause)
 
-**State: SAFE. `main` is pushed and in sync; the working tree has three UNCOMMITTED changes described in §9.5. Nothing is lost and nothing is half-broken.**
+**State: SAFE but UNCOMMITTED. `main` is in sync with `origin/main`; the working tree holds a
+large, VERIFIED, uncommitted change set. Nothing is lost and nothing is half-broken.**
 
-Last pushed commit: **`25173ba`** — "Add Foundations phase 9: Multimodal and Vision". `origin/main` and `HEAD` are identical (`git rev-list --left-right --count origin/main...HEAD` → `0  0`). Both CI and the Pages deploy for that commit concluded **success**, and `found-09-multimodal-and-vision` is confirmed present in the deployed bundle.
+⚠️ **The previous START HERE (2026-09-25, kept below) was materially wrong and nearly cost a
+session.** See "What the old handover got wrong" at the end of this section.
 
-### What is uncommitted right now
+### ⚠️ The real bug was a PROP-CONTRACT MISMATCH, not a race
 
-| Path | State | Safe? |
-|---|---|---|
-| `.gitignore` | Modified — secret rules added | ✅ Complete and **proven** (see §9.5) |
-| `learning-site/src/hooks/useNotes.js` | Modified — unmount flush added | ⚠️ Builds clean, **not yet proven to fix the bug** |
-| `learning-site/scripts/verify-notes-flush.mjs` | **Untracked** — new verification script | ⚠️ Works, but has a **known selector bug** (see below) |
+`PhaseDetail.jsx` called three components with the wrong prop names:
 
-### The one thing to know before resuming
+- `NotesPanel` declares `{ phaseId, note, hasAnswers, onChange, onClear }` but was passed
+  `notes` / `onNote` → `note` was an **object**, `note.trim()` threw, `onChange` was
+  `undefined`. **Notes NEVER saved — not "sometimes lost", never, since the port.**
+- `TaskList` declares `{ tasks, phaseId, answers, onAnswer }` but was passed the checklist's
+  `done` / `onToggle` → **task answers never saved.**
+- `ChecklistItem` declares `{ item, checked, onToggle }` but was passed `done` (an id→true
+  map) → **no checkbox ever rendered ticked**, while the ring counted them.
 
-**The `verify-notes-flush.mjs` script is at 4/5 passing, and its one failure is a BUG IN THE SCRIPT, not in `useNotes.js`.**
+The unmount-flush work in `useNotes.js` was fixing a race **masked by a total failure**. It is
+kept (correct on inspection, cheap) but it was never the bug.
 
-The script currently does `document.querySelector('textarea')`. On a real phase that returns the **first** textarea on the page, which is a practice-task answer box with class **`task__area`**, not the note field. The note field has id `note-<phaseId>` and class **`notes__area`** (`NotesPanel.jsx:81-83`). Fix the selector to `'textarea.notes__area'` and re-run.
+**A new guard catches this class:** `learning-site/scripts/audit-props.mjs`, wired into
+`check-all.mjs`. It compares every component's declared props against every JSX call site and
+fails when a declared prop has no caller — the only check that reads both halves of the
+contract.
 
-**Do not conclude from the current failure that the `useNotes` fix is broken.** The test never wrote to the note field, so it proved nothing either way. Two other things were confirmed working by that run: the note panel opens via a button matching `/write|note/i`, and a Next-phase control exists.
+### Completed and verified this session
+
+| Item | State |
+|---|---|
+| `PhaseDetail.jsx` prop mismatches (3 components) | ✅ Fixed — notes, answers, checkboxes work |
+| `useFocusTrap` `paddingRight` leak | ✅ Fixed (captures/restores prev value; LIFO) |
+| `Exam.jsx` dead branch | ✅ Fixed — removed |
+| `verify-notes-flush.mjs` selector + false-pass hole | ✅ Fixed — clears storage first |
+| `audit-props.mjs` (new guard) | ✅ Added + wired into `check-all.mjs` |
+| Tier 2 footer advertising non-existent controls | ✅ Fixed — feature removed (see below) |
+| `DEAD_EXPECTED` stale (listed 14 deleted modules) | ✅ Emptied |
+| `HANDOVER.md` START HERE + §9.6 | ✅ This rewrite |
+
+### Tier 2 — the footer line, and why the hooks went with it
+
+`App.jsx` called `useEnergyMode()` / `useTimeBudget()` and printed `Energy: … · Budget: …` in
+the footer, but **neither value reached any page**, and their only controls
+(`EnergyModeSelector`, `TimeBudgetSelector`) were deleted with D-008.
+
+**Fixed by removing the feature, not just the line.** `check-reachability.mjs` **exits 1** on
+any module unreachable from `main.jsx`, so deleting the footer line alone would have stranded
+both hooks and failed the build. Deleted: the footer line, both hook calls + imports in
+`App.jsx`, and `src/hooks/useEnergyMode.js` + `src/hooks/useTimeBudget.js`.
+
+**Kept deliberately:** both storage keys stay in `lib/transfer.js` → `KEYS`, relabelled
+`"… (not used in this app)"` (the `certifications`/`schedule` precedent — an old backup still
+round-trips). That also documented a latent bug: those keys' `kind` strings match **no**
+`mergeValue` branch, so they were already silently discarded on every restore.
+
+### ⚠️ THE ONE UNPROVEN CLAIM — read before trusting the notes-flush test
+
+**`verify-notes-flush.mjs` passes 9/9, but it CANNOT currently fail, so it is NOT evidence
+that the unmount flush works.**
+
+The prove-it-can-fail run was done properly: the flush effect was reverted to write React
+state (`notes`) instead of the synchronously-written ref (`latest.current`), the site was
+rebuilt, and the script re-run. **It still passed 9/9.**
+
+The cause was found and fixed in the script — an `await sleep(300)` sat between the typing and
+the navigation, letting the ordinary `useEffect([notes])` write persist the text first. The
+sleep and a `requestAnimationFrame` deferral were both removed, so typing and clicking now
+happen in one synchronous block with storage cleared beforehand.
+
+**It still passed 9/9 with the flush reverted.** The honest conclusion: **the CDP harness
+cannot isolate the unmount-flush code path** — under this timing the ordinary write effect
+commits before unmount regardless. The 9/9 pass proves the note field round-trips (real,
+useful) and says **nothing** about the flush itself.
+
+**Do not describe the flush as proven.** It is kept because it is correct on inspection and
+cheap, but it is **unverified**. Closing this needs a different technique — e.g. forcing the
+unmount inside the input handler, or a unit test that mounts the hook, calls `setNote`, and
+unmounts with no intervening render.
+
+### Exact resume steps
+
+1. `cd C:\Users\zaman\Desktop\vibecoding && git status -sb`. Expect the change set below.
+   **Do not reset or revert it.**
+2. `cd learning-site && npm run build` — browser checks read `dist/`.
+3. Start a preview on **4173** (the default `check-all.mjs` expects):
+   `npx vite preview --port 4173 --strictPort`. **Verify it serves THIS app** before trusting
+   any browser check — 4173 is often occupied by another project, and an HTTP 200 does not
+   mean it is yours.
+4. `node scripts/verify-notes-flush.mjs http://localhost:4199` (9/9 — see the caveat above).
+5. `cd learning-site && npm test`, and from root the content battery.
+6. Commit **by explicit path** (never `git add -A`), push, verify with `git fetch origin`.
+
+### Change set as of this writing (22 modified, 2 deleted, 3 untracked)
+
+```
+ M CHECKPOINT.md, HANDOVER.md, README.md, ROADMAP.md, SETUP.md, TROUBLESHOOTING.md,
+   WORKFLOW.md, docs/DESIGN-SYSTEM.md, learning-site/docs/ARCHITECTURE.md,
+   learning-site/docs/DATA-SCHEMA.md, learning-site/docs/VERIFICATION.md
+ M learning-site/scripts/{audit-projections,check-all,verify-site}.mjs
+ M learning-site/src/App.jsx, src/lib/transfer.js, src/pages/{Exam,PhaseDetail}.jsx
+ M learning-site/src/hooks/{useFocusTrap,useNotes}.js
+ D learning-site/src/hooks/{useEnergyMode,useTimeBudget}.js
+?? learning-site/scripts/{audit-props,verify-notes-flush}.mjs
+```
+
+`src/` now holds **48 modules, all reachable** (`check-reachability.mjs` exit 0).
+
+### Verification actually run this session (2026-09-28)
+
+- `npm run build` ✅ — 157 modules, built clean.
+- Content battery ✅ — `build-content.mjs --check` (66 phases/10 tracks, exit 0),
+  `audit-quiz`, `audit-lesson-ast` (exit 0), `audit-arithmetic`, `audit-encoding`.
+- `audit-projections.mjs` ✅ — 19 accesses across 48 modules, exit 0.
+- `check-reachability.mjs` ✅ — 48/48, 0 dead.
+- `audit-props.mjs` ✅ — 35 components.
+- **All 66 phases render** (`sweep-phases.mjs`) ✅, **`verify-site.mjs` 16/16** ✅,
+  `verify-deep`, `verify-quiz-correctness`, `check-browser` ✅.
+- Offline unit suites ✅ — shapes, inline, quiz, lesson-blocks, components, exam, practice,
+  search, cost-tone, free-toolkit.
+- `audit-a11y.mjs` ✅ — all 6 nav buttons found, every view passes contrast/names/headings/landmarks.
+- `verify-notes-flush.mjs` — **9/9, but see the caveat above; NOT proof of the flush.**
+
+Non-blocking: the AST `~21k`-char gain / zero loss note, and Vite's static+dynamic import
+warning for `index.json`. Both are historical and unchanged.
+
+### What the old handover got wrong (kept as a lesson)
+
+- "`.gitignore` is modified" — **false**; it is committed. The tree held 16+ modified files.
+- "`verify-notes-flush.mjs` has a selector bug at lines ~166/~187" — **already fixed**; the
+  script is now 9 checks, not 5.
+- "the `useNotes` fix is a race and is not yet proven" — the race was real but **irrelevant**;
+  the defect was the prop contract, and notes had **never** saved.
+- `DEAD_EXPECTED` still listed 14 modules that had already been deleted — a guard describing a
+  state that no longer existed. **Reload guard state before acting on its verdict.**
 
 ### Exact resume steps
 
@@ -38,7 +153,7 @@ The script currently does `document.querySelector('textarea')`. On a real phase 
    - `cd learning-site; npx vite preview --port 4199 --strictPort` (background)
    - `node scripts/verify-notes-flush.mjs http://localhost:4199`
 4. **It must pass 5/5. Then prove it can fail**: temporarily revert the `useRef` flush effect in `useNotes.js`, rebuild, re-run, and confirm it drops to 4/5. Restore the fix. A test that cannot fail is not evidence — that is this project's own rule (§0 / AGENTS.md).
-5. Run the full battery from root and `cd learning-site; npm test` (18 checks). Expect all pass, with the two browser checks skipping if no preview is running.
+5. Run the full battery from root and `cd learning-site; npm test` (19 checks). Expect all pass, with the two browser checks skipping if no preview is running.
 6. Commit and push. Suggested message is drafted in §9.5.
 
 ### Two cautions learned the hard way this session
@@ -658,7 +773,12 @@ that did not exist — `VITE_BASE` was read by the config while nothing ever set
 > below is kept because the method is the lesson, not the inventory. See
 > `scripts/check-reachability.mjs` (check 15), which now fails the build if any module under
 > `src/` becomes unreachable again, and `ROADMAP.md` → "Resolve D-008 properly" for the
-> conclusion. **43 modules in `src/`, all reachable.**
+> conclusion.
+>
+> **Update 2026-09-28:** `src/` holds **48 modules, all reachable**. The `DEAD_EXPECTED` set in
+> `audit-projections.mjs` was still listing all fourteen deleted files — a guard describing a
+> state that no longer existed. It is now **empty, deliberately**: nothing is legitimately dead
+> any more, so an entry there would only excuse a module that should not exist.
 
 **This exists so the next reader does not have to measure it again** — the count has
 already been recorded wrong twice in `learning-site/docs/DECISIONS.md` (D-008), so the

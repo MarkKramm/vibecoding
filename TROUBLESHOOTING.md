@@ -309,7 +309,7 @@ Write the message to a temp file and use `git commit -F <file>`.
 
 ### `npm test` vs `npm run test:browser`
 
-`npm test` runs 17 checks: 15 offline checks plus the rendered accessibility audit and all-phase
+`npm test` runs 19 checks: 17 offline checks plus the rendered accessibility audit and all-phase
 sweep, which need a browser and production preview on port 4173 (they explicitly skip if it is
 unavailable). `npm run test:browser` runs additional smoke, deep, quiz-correctness, and focused
 Finetuning checks against the built `dist` preview. Build first and keep the preview running for

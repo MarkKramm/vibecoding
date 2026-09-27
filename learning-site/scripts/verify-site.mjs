@@ -46,9 +46,13 @@ const EXPECTED = (() => {
     }
     return { phases, checklist };
   } catch {
-    // Generated data is gitignored, so a fresh clone may not have it yet. Fall back
-    // to values that at least do not produce a confusing pass.
-    return { phases: 65, checklist: 1054 };
+    // Generated data is gitignored, so a fresh clone may not have it yet. There is
+    // deliberately NO hardcoded fallback: the numbers this used to guess at (65 / 1054)
+    // went stale the moment the corpus grew, and a constant that claims to describe the
+    // corpus is exactly the "measuring a memory instead of the artifact" failure this
+    // file exists to catch. With no built data there is nothing to compare against, so
+    // the dashboard assertions below report an explicit skip instead of a false pass.
+    return null;
   }
 })();
 
@@ -227,11 +231,18 @@ async function main() {
     // These were hardcoded to /42/ and /706/ and went stale when the corpus grew to
     // 65 phases. Read the expected numbers from the built data instead, so a future
     // authoring pass cannot leave this failing on a correct site.
-    check(`dashboard shows ${EXPECTED.phases} phases`, rootText.includes(String(EXPECTED.phases)));
-    check(
-      `dashboard shows checklist total ${EXPECTED.checklist}`,
-      rootText.includes(String(EXPECTED.checklist))
-    );
+    if (EXPECTED) {
+      check(`dashboard shows ${EXPECTED.phases} phases`, rootText.includes(String(EXPECTED.phases)));
+      check(
+        `dashboard shows checklist total ${EXPECTED.checklist}`,
+        rootText.includes(String(EXPECTED.checklist))
+      );
+    } else {
+      console.log(
+        "  ~ skipped: dashboard corpus totals — no generated data to derive them from. " +
+          "Run `npm run build` first; asserting a hardcoded number here would only test a memory."
+      );
+    }
     check("dashboard lists 10 tracks", (rootText.match(/phases|not yet written/g) || []).length >= 6);
 
     // ---- Walk into a phase ------------------------------------------------

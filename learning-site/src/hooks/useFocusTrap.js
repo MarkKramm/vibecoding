@@ -101,14 +101,28 @@ export function useFocusTrap(active, { panelRef, initialFocusRef, lockScroll = t
     let restoreScroll = null;
     if (lockScroll) {
       const body = document.body;
+      // Capture BOTH values before touching either.
+      //
+      // The cleanup used to restore `overflow` from the captured previous value
+      // but hard-set `paddingRight = ""`. With one overlay that is harmless,
+      // because the previous value was "" anyway. With two it is a bug: the
+      // inner overlay captures the padding the outer one set, then clears it on
+      // close, and the page behind the still-open outer overlay shifts by the
+      // scrollbar width for as long as it remains open.
+      //
+      // Restoring the captured value makes each overlay undo exactly its own
+      // change. This assumes overlays close in LIFO order, which is what the
+      // app does -- a dialog cannot be dismissed from behind the dialog above
+      // it -- and the capture/restore pair is correct for that ordering.
       const prevOverflow = body.style.overflow;
+      const prevPaddingRight = body.style.paddingRight;
       // Compensate for the scrollbar so locking does not shift the layout behind.
       const gap = window.innerWidth - document.documentElement.clientWidth;
       body.style.overflow = "hidden";
       if (gap > 0) body.style.paddingRight = `${gap}px`;
       restoreScroll = () => {
         body.style.overflow = prevOverflow;
-        body.style.paddingRight = "";
+        body.style.paddingRight = prevPaddingRight;
       };
     }
 

@@ -107,7 +107,7 @@ node learning-site/scripts/audit-arithmetic.mjs # numbers stated in prose
 node learning-site/scripts/audit-encoding.mjs   # LF, UTF-8 no BOM, no mojibake, no tabs
 ```
 
-For all 18 site checks, build and start the production preview before `npm test`; two browser checks may skip if it is unavailable:
+For all 19 site checks, build and start the production preview before `npm test`; two browser checks may skip if it is unavailable:
 
 ```bash
 cd learning-site
@@ -161,7 +161,7 @@ All 10 tracks are written. This is a complete first pass, not a finished product
 - **The live page was observed by the project owner on 2026-09-18**, and the check found the
   Reference-view rendering defect documented below and in `CHECKPOINT.md`. We did not independently
   re-check the live URL during this repository audit.
-- The exhaustive comprehensive exam covers the current 549-question corpus and persists its
+- The exhaustive comprehensive exam covers the current 555-question corpus and persists its
   in-progress question order and selections locally so it can resume. It intentionally stores no
   question text or answer key, and active sessions are intentionally not exported in backups.
 - A number of volatile facts — free-tier terms, context-window sizes, model availability —

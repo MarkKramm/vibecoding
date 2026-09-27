@@ -25,7 +25,7 @@
 // Registered in lib/transfer.js → KEYS, so Back up & restore carries it.
 // See docs/DECISIONS.md → D-019.
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 const KEY = "vibecoding:notes:v1";
 
@@ -72,48 +72,116 @@ export function useNotes() {
     }
   }, [notes]);
 
-  // Write one phase's note. Emptying it removes the phase from the store rather
-  // than leaving a husk behind.
-  const setNote = useCallback((phaseId, text) => {
-    if (!phaseId) return;
-    setNotes((prev) => {
-      const current = prev[phaseId] || { note: "", answers: {} };
-      const next = prune({ ...current, note: String(text) });
-      const out = { ...prev };
-      if (next) out[phaseId] = next;
-      else delete out[phaseId];
-      return out;
-    });
+  // FLUSH ON UNMOUNT.
+  //
+  // The effect above writes after paint, which is correct for a keystroke and
+  // wrong for the last keystroke before this hook goes away. `useNotes` is
+  // instantiated inside `PhaseDetail`, which unmounts on every phase navigation.
+  // A reader who types and then immediately clicks "Next phase" in the same
+  // interaction frame can have the final characters dropped: the state update is
+  // scheduled, the component goes away, and the write effect never runs.
+  //
+  // The fix is that `latest` is NOT a mirror updated during render. It is the
+  // authoritative value, written SYNCHRONOUSLY inside every setter below, and the
+  // React state is a projection of it. That distinction is the whole fix, and the
+  // first attempt at this got it wrong:
+  //
+  //   FAILED: `latest.current = notes` during render, on the theory that the ref
+  //           would be current by unmount. It is not. If the input event and the
+  //           unmount happen with no render in between -- which is exactly the
+  //           race being fixed -- React never re-renders, the assignment never
+  //           runs, and the ref still holds the pre-typing value.
+  //
+  //   WORKS:  the setter computes the next object, stores it in the ref, and only
+  //           then hands it to setState. The ref is correct the instant the
+  //           keystroke is handled, whether or not a render ever happens.
+  //
+  // This was caught by scripts/verify-notes-flush.mjs, which typed into the right
+  // field and still found nothing persisted. A fix that "looks right" and is not
+  // is the reason that script exists.
+  //
+  // The write effect above remains the primary path; this is the safety net.
+  const latest = useRef(notes);
+
+  useEffect(
+    () => () => {
+      try {
+        window.localStorage.setItem(KEY, JSON.stringify(latest.current));
+      } catch {
+        // Same reasoning as above: a failed final flush must not throw during
+        // unmount, which would take the navigation down with it.
+      }
+    },
+    [],
+  );
+
+  // The single write path. It computes the next store from `latest.current`,
+  // stores it in the ref FIRST, and only then hands it to setState. Every setter
+  // goes through this, which is what makes the unmount flush see the newest value
+  // regardless of whether React has re-rendered.
+  //
+  // This reads the ref rather than using a functional setState updater on
+  // purpose. A functional updater would be correct for the state, but it would
+  // leave `latest.current` stale until the next render -- which is the exact
+  // failure being fixed. Two keystrokes in one tick still compose correctly here,
+  // because the second call reads the ref the first one just wrote.
+  const commit = useCallback((updater) => {
+    const next = updater(latest.current);
+    latest.current = next;
+    setNotes(next);
   }, []);
 
+  // Write one phase's note. Emptying it removes the phase from the store rather
+  // than leaving a husk behind.
+  const setNote = useCallback(
+    (phaseId, text) => {
+      if (!phaseId) return;
+      commit((prev) => {
+        const current = prev[phaseId] || { note: "", answers: {} };
+        const next = prune({ ...current, note: String(text) });
+        const out = { ...prev };
+        if (next) out[phaseId] = next;
+        else delete out[phaseId];
+        return out;
+      });
+    },
+    [commit],
+  );
+
   // Write one task's answer. Keyed by the minted task id, never by index.
-  const setAnswer = useCallback((phaseId, taskId, text) => {
-    if (!phaseId || !taskId) return;
-    setNotes((prev) => {
-      const current = prev[phaseId] || { note: "", answers: {} };
-      const answers = { ...current.answers };
-      const value = String(text);
-      if (value.trim() === "") delete answers[taskId];
-      else answers[taskId] = value;
-      const next = prune({ ...current, answers });
-      const out = { ...prev };
-      if (next) out[phaseId] = next;
-      else delete out[phaseId];
-      return out;
-    });
-  }, []);
+  const setAnswer = useCallback(
+    (phaseId, taskId, text) => {
+      if (!phaseId || !taskId) return;
+      commit((prev) => {
+        const current = prev[phaseId] || { note: "", answers: {} };
+        const answers = { ...current.answers };
+        const value = String(text);
+        if (value.trim() === "") delete answers[taskId];
+        else answers[taskId] = value;
+        const next = prune({ ...current, answers });
+        const out = { ...prev };
+        if (next) out[phaseId] = next;
+        else delete out[phaseId];
+        return out;
+      });
+    },
+    [commit],
+  );
 
   // Clear one phase's note and all of its answers, leaving every other phase
   // untouched. Scoped to the phase on purpose: a single "clear everything"
   // button on a page a reader visits 23 times is a footgun.
-  const clearPhase = useCallback((phaseId) => {
-    setNotes((prev) => {
-      if (!prev[phaseId]) return prev;
-      const out = { ...prev };
-      delete out[phaseId];
-      return out;
-    });
-  }, []);
+  const clearPhase = useCallback(
+    (phaseId) => {
+      commit((prev) => {
+        if (!prev[phaseId]) return prev;
+        const out = { ...prev };
+        delete out[phaseId];
+        return out;
+      });
+    },
+    [commit],
+  );
 
   return { notes, setNote, setAnswer, clearPhase };
 }

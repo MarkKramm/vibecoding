@@ -204,6 +204,32 @@ const STEPS = [
     args: [join(HERE, "check-reachability.mjs")],
     why: "fourteen modules once sat in src/ with no path from main.jsx — 1,740 lines, 71 KB — and every other check read them happily, because audit-projections walks the tree and therefore MENTIONS them, which looks like coverage in a grep. The documentation justified keeping them by calling them 'tested pure modules', which was false: no test file imported any of them, and no guard could falsify the claim because nothing tested them. This walks reachability from the entry point and fails if anything becomes unreachable, so the dead set cannot silently grow back. A module nothing can reach is either a mistake or a feature nobody finished, and both deserve to stop the build",
   },
+  {
+    // This one exists because THREE components on the phase page were called
+    // with props they do not declare, and two of those had been live since the
+    // initial commit: NotesPanel wanted `note`/`onChange` and was handed
+    // `notes`/`onNote`, so notes NEVER saved; TaskList wanted `answers`/
+    // `onAnswer` and was handed the checklist's `done`/`onToggle`, so task
+    // answers NEVER saved; ChecklistItem wanted `checked` and was handed the
+    // `done` map, so no box ever rendered ticked.
+    //
+    // Every one of those controls LOOKED like it worked — the textarea drew,
+    // accepted keystrokes, and saved nothing. No data check could see it,
+    // because the data was fine and the props were the problem, and none of the
+    // existing guards render a phase and type into it. It was found by a browser
+    // test that typed into the field and then read localStorage.
+    //
+    // The root cause is a port: these components came from the CS Roadmap
+    // project with their own prop vocabulary, and the call sites here were
+    // written fresh with different words. JavaScript never compares the two
+    // sides, so an undeclared prop is simply undefined at the call site and the
+    // component either crashes or silently does nothing. This is the only check
+    // that reads both halves of that contract and fails when they disagree.
+    name: "prop contracts (every declared prop has a caller)",
+    cmd: "node",
+    args: [join(HERE, "audit-props.mjs")],
+    why: "a prop no caller supplies is undefined inside the component, and the failure is invisible: a missing handler makes a control do nothing while still rendering, focusing and accepting input, and missing data renders as empty rather than as an error. Three such mismatches shipped on the phase page — notes and practice answers never persisted, and checklist boxes never showed as ticked — and every content, shape, projection and browser-sweep check stayed green through all of it, because the data was correct and only the wiring was wrong. This parses each component's declared props and each of its call sites and fails when a prop is declared that no caller passes. It is deliberately per-component: a global 'this name is used somewhere' scan let a real regression on NotesPanel report as two missing props instead of four",
+  },
 ];
 
 let failed = 0;

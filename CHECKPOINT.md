@@ -34,7 +34,7 @@ It ships as a React site that reads compiled JSON from hand-authored Markdown.
 ## The shape of it
 
 ```
-ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (65 files, 22,246 lines)
+ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (66 files, 22,506 lines)
         |
         |  scripts/build-content.mjs
         v
@@ -82,7 +82,7 @@ Cost 7, Vibecoding Craft 8, Safety & Career 5, Career 4.
 
 ## Ways to test yourself
 
-The 549 questions are available through four distinct modes:
+The 555 questions are available through five distinct modes:
 
 | Mode | Coverage | Graded? | Persistence |
 |---|---|---|---|
@@ -106,12 +106,12 @@ cd learning-site
 npm run dev          # content rebuild + dev server on 5173
 npm run build        # content rebuild + bundle to dist/
 npm run preview      # serve dist/ on 4173
-npm test             # 18 checks; 2 need a preview server or skip
+npm test             # 19 checks; 2 need a preview server or skip
 npm run test:browser # needs a running server
 ```
 
-⚠️ Exactly two of the 17 `npm test` steps — `accessibility (rendered page)` and `every phase renders (browser,
-all 65)` — need `npm run preview` on 4173. They **skip with a loud notice rather than failing**
+⚠️ Exactly two of the 19 `npm test` steps — `accessibility (rendered page)` and `every phase renders (browser,
+all phases)` — need `npm run preview` on 4173. They **skip with a loud notice rather than failing**
 when no server answers, because a guard that fails for an unrelated reason gets disabled, and a
 disabled guard is worse than none.
 
@@ -126,7 +126,7 @@ disabled guard is worse than none.
 **Verified:**
 
 - Content contract — 14 sections, fixed order and spelling, authored ids, quiz structure
-- All 549 quiz questions: one correct option, a `**Why:**` line, a valid `energy`
+- All 555 quiz questions: one correct option, a `**Why:**` line, a valid `energy`
 - Field shapes against what the renderers consume
 - Projection reads — no component reads a field its projection lacks
 - Inline markdown, lesson-block coverage, search (all against the real corpus)
@@ -293,7 +293,7 @@ checks here; it catches a class they structurally cannot.
 
 ## Exam feature decision — implemented in the current worktree
 
-The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 549 current questions, and track-exam result summaries on the dashboard. Verify and refresh this snapshot after the implementation is committed.
+The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 555 current questions, and track-exam result summaries on the dashboard. Verify and refresh this snapshot after the implementation is committed.
 
 Deliberately **not** queued: the share-link (progress in a URL fragment). It was offered and
 passed over twice — do not start it without being asked again.

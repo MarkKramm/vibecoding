@@ -90,7 +90,7 @@ From `learning-site/`:
 | `npm run dev` | rebuild content, then start the dev server on **5173** |
 | `npm run build` | rebuild content, then bundle into `dist/` |
 | `npm run preview` | serve `dist/` on **4173** |
-| `npm test` | **17 checks**; 15 offline plus 2 preview/browser checks that skip if no server answers |
+| `npm test` | **19 checks**; 17 offline plus 2 preview/browser checks that skip if no server answers |
 | `npm run check` | the three content-contract guards only |
 | `npm run test:browser` | browser checks; **needs a running server** |
 
@@ -121,7 +121,7 @@ node scripts/build-content.mjs --check; echo "exit=$?"
 cd learning-site && npm test
 ```
 
-Runs 17 checks in order. Fifteen run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
+Runs 19 checks in order. Seventeen run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
 
 | # | Check | Catches |
 |---|---|---|
@@ -129,7 +129,7 @@ Runs 17 checks in order. Fifteen run without a server; the rendered accessibilit
 | 2 | field shapes | a field whose shape the renderers cannot consume |
 | 3 | projection reads | a component reading a field absent from its projection |
 | 4 | inline markdown rendering | `renderInline` regressions |
-| 5 | quiz correctness | all 549 questions: one correct option, `**Why:**`, valid energy |
+| 5 | quiz correctness | all 555 questions: one correct option, `**Why:**`, valid energy |
 | 6 | lesson block renderer coverage | a block type with no `case` |
 | 7 | component rendering | real React markup and projection degradation behavior |
 | 8 | in-lesson search | `lessonTerms`/`buildEntries`/`searchLesson` |

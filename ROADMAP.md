@@ -18,7 +18,7 @@ items. Every phase passes a machine-verified 14-section contract.
 **The site works and is deployed.** Live at **https://markkramm.github.io/vibecoding/**, built
 and published by GitHub Actions, with CI green.
 
-**Verification is real.** `npm test` runs 18 checks, including offline guards and two browser checks
+**Verification is real.** `npm test` runs 19 checks, including offline guards and two browser checks
 (accessibility and a sweep of **every phase**) when a production preview is available. The
 accessibility audit covers 60 assertions across six views; separate browser checks verify quiz
 correctness and track rendering. Every guard has been proved capable of failing.
@@ -94,8 +94,8 @@ components through `react-dom/server` with esbuild transforming JSX in memory �
 dependency, no test framework, as planned.
 
 It covers `ToolCard` URL handling (including every placeholder spelling and non-string value,
-plus a sweep over all 433 corpus rows), `PhaseCard` against the real light projection and its
-degradation behaviour, and `Quiz` normalisation against all 549 real questions.
+plus a sweep over all 442 corpus rows), `PhaseCard` against the real light projection and its
+degradation behaviour, and `Quiz` normalisation against all 555 real questions.
 
 **It found a real defect before it was finished**: my earlier em-dash fix was a *blocklist*, and
 two tool rows carried the prose `"in this repository"` in the URL column. The parser now
@@ -196,7 +196,7 @@ was supposed to enable.
 
 ### ✅ Mixed practice sets — DONE
 
-A Practice view samples questions across a whole track or across all 549, shuffles them, and
+A Practice view samples questions across a whole track or across all 555, shuffles them, and
 reports which to revisit — no score, per the no-shame rule. It is the one arrangement a per-phase
 quiz structurally cannot offer, and for a reader studying alone it is the only way to tell *"I
 know this"* from *"I just read this"*.

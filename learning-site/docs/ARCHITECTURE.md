@@ -266,9 +266,7 @@ is told apart from anything else sharing the same origin.
 | `vibecoding:reading:v1` | `useReadingState` | last track/phase, and last heading per phase |
 | `vibecoding:notes:v1` | `useNotes` | map of phaseId → `{ note, answers }` |
 | `vibecoding:quiz:v1` | `useQuizAnswers` | map of questionId → chosen option index |
-| `vibecoding:energy-mode:v1` | `useEnergyMode` | `low \| normal \| high` |
 | `vibecoding:reading-size:v1` | `useReadingSize` | `s \| m \| l \| xl` |
-| `vibecoding:time-budget:v1` | `useTimeBudget` | `quick \| focused \| deep` |
 | `vibecoding:portfolio:v1` | `usePortfolio` | portfolio entries |
 | `vibecoding:applications:v1` | `useApplications` | application entries |
 | `vibecoding:certifications:v1` | `useCertifications` | certification entries |
@@ -278,9 +276,16 @@ is told apart from anything else sharing the same origin.
 key, and it is the reason the table above is not just documentation: adding a new
 storage key without adding it there means it will not be backed up. The export
 walks the list, validates every value, and refuses a payload whole if any single
-key is malformed rather than partially applying it. Four rows in that table —
-portfolio, applications, certifications and schedule — belong to hooks whose
-views were not ported; see D-008 for why they are still registered.
+key is malformed rather than partially applying it.
+
+**Six keys are registered but no longer written by this app:** portfolio,
+applications, certifications, schedule, `vibecoding:energy-mode:v1` and
+`vibecoding:time-budget:v1`. Their views or controls were not ported (or, for the
+last two, were deleted with D-008), and the table above lists only the keys a
+live screen still reads or writes. They stay in `KEYS` so an old backup
+round-trips losslessly rather than arriving as unknown-key rows — see D-008 and
+the `labelFor` note on why the honest label is "not used in this app" rather than
+a count of zero.
 
 Storage failures are absorbed rather than surfaced everywhere it makes sense —
 `useProgress` and friends catch a quota or availability error and carry on for

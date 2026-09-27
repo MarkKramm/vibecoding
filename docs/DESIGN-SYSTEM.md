@@ -214,11 +214,22 @@ renders one `<div className="empty-state">`, a `<p>{message}</p>`, then `{childr
 
 ---
 
-## <EnergyModeSelector>
+## <EnergyModeSelector> — REMOVED; kept as a record
 
-`src/components/EnergyModeSelector.jsx`. Low / Normal / High. It changes which tasks the
-dashboard offers as the next action — a low-energy day should not be shown a three-hour
-lab.
+**This component no longer exists.** `src/components/EnergyModeSelector.jsx` was deleted with
+the other thirteen unreachable modules — D-008, "Resolve D-008 properly" in `ROADMAP.md`. The
+section is kept because the reasoning below is still the right reasoning for any future
+energy control, and because two later passages in this file refer back to it.
+
+⚠️ **It was not merely unreachable, it was advertised.** `App.jsx` called `useEnergyMode()`
+and `useTimeBudget()` and printed both values in the footer, while neither value reached any
+page — so the footer named two settings the reader had no way to change. Both hooks were
+deleted when that footer line was removed. Their storage keys stay registered in
+`lib/transfer.js` → `KEYS`, labelled "not used in this app", so an old backup still
+round-trips instead of arriving as unknown-key rows.
+
+**What it did.** Low / Normal / High. It changed which tasks the dashboard offered as the
+next action — a low-energy day should not be shown a three-hour lab.
 
 **Props.** `mode` (one of `low | normal | high`) and `onChange(id)`.
 
@@ -239,10 +250,11 @@ authored energy value is treated as normal rather than hidden from everyone.
 - `--warning` is not used for `high`. Energy is not a severity scale.
 - The `note` field is surfaced as the label’s `title`, so the explanation of what each
   mode will offer is reachable without adding three paragraphs to the dashboard.
-- It deliberately shares its shape with `TimeBudgetSelector` — same fieldset, same option
-  chip, same legend treatment. They are the same kind of question asked twice, the reader
-  answers both once and both persist, and two differently-styled controls side by side
-  would read as two different kinds of thing.
+- It deliberately shared its shape with `TimeBudgetSelector` — same fieldset, same option
+  chip, same legend treatment. They were the same kind of question asked twice, the reader
+  answered both once and both persisted, and two differently-styled controls side by side
+  would read as two different kinds of thing. The two controls are gone; the observation
+  about pairing survives, because a future pair of preferences should still match.
 
 ---
 
@@ -452,12 +464,14 @@ sit between 20 and 90 minutes, so any cut inside that cluster is arbitrary and a
 would imply a precision nobody has. See D-021.
 
 **No false precision about the bands.** The band on a task is an authored judgement, not a
-measurement — nobody has timed these tasks. `TimeBudgetSelector` therefore carries a
-visible `.budget__note`: “How long you have is an estimate — nobody has timed these
-tasks.” It is not muted to the point of invisibility, because a disclaimer nobody notices
-is worse than none: it launders the guess. The selector offers three budgets, not four,
+measurement — nobody has timed these tasks. `TimeBudgetSelector` (since deleted with D-008;
+see the note under `<EnergyModeSelector>` above) therefore carried a visible
+`.budget__note`: “How long you have is an estimate — nobody has timed these tasks.” It was
+not muted to the point of invisibility, because a disclaimer nobody notices is worse than
+none: it launders the guess. The rule survives the component, and any future control that
+filters work by how long it takes inherits it. The selector offered three budgets, not four,
 because `ongoing` is a band a task can have, not an amount of time a reader can have; it
-appears only in the legend, so the reader can see why some work never shows up as a
+appeared only in the legend, so the reader could see why some work never shows up as a
 suggestion.
 
 **No auto-advancing carousels.** Nothing on the site moves on its own, and nothing changes

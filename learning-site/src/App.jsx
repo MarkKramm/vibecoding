@@ -29,10 +29,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { tracks, findTrack, neighbours } from "./data/roadmaps.js";
 import { useProgress, countDoneIds } from "./hooks/useProgress.js";
 import { usePhaseDetail } from "./hooks/usePhaseDetail.js";
-import { useEnergyMode } from "./hooks/useEnergyMode.js";
 import { useReadingState } from "./hooks/useReadingState.js";
 import { useReadingSize } from "./hooks/useReadingSize.js";
-import { useTimeBudget } from "./hooks/useTimeBudget.js";
 import { useShortcuts } from "./hooks/useShortcuts.js";
 import Dashboard from "./pages/Dashboard.jsx";
 import PhaseDetail from "./pages/PhaseDetail.jsx";
@@ -62,8 +60,6 @@ const VIEWS = [
 
 export default function App() {
   const { done, toggle, reset } = useProgress();
-  const energy = useEnergyMode();
-  const budget = useTimeBudget();
   const readingSize = useReadingSize();
   const reading = useReadingState();
   const { results: examResults } = useExamResults();
@@ -334,10 +330,13 @@ export default function App() {
           Read the lesson, do the tasks, tick the checklist, take the quiz. Every
           phase is written to be finished in a week.
         </p>
-        <p className="muted">
-          Energy: {energy.mode} · Budget: {budget.budget} · Progress is stored in
-          this browser only.
-        </p>
+        {/* The energy/budget line that used to sit here was removed: it printed
+            two preferences whose only controls (EnergyModeSelector,
+            TimeBudgetSelector) had been deleted with D-008, so the footer
+            advertised settings the reader could not change, and the hooks
+            behind it were reachable only because of this line. Progress being
+            browser-local is a real fact and stays. */}
+        <p className="muted">Progress is stored in this browser only.</p>
       </footer>
 
       <ShortcutHelp open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />

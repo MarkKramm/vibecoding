@@ -108,7 +108,7 @@ http://127.0.0.1:5173      ✗ may refuse the connection
 
 ## Trap 4 — the browser checks need a server, and the preview port differs
 
-`npm test` runs 18 checks. Most are offline, but the rendered accessibility audit and
+`npm test` runs 19 checks. Most are offline, but the rendered accessibility audit and
 the all-phase sweep need a browser and a production preview server on port 4173. If
 nothing responds there, those two checks explicitly skip; start the preview to get the
 full audit:
@@ -163,13 +163,13 @@ Zero means the file is fine and your console is lying to you.
 
 ```bash
 cd learning-site
-npm test             # 18 checks; browser checks skip if preview is unavailable
+npm test             # 19 checks; browser checks skip if preview is unavailable
 npm run check        # the content contract only: build, quiz, lesson AST
 ```
 
-For all 18 checks, build the site, start `npm run preview` in another terminal (default port 4173), then run `npm test`. The accessibility and all-phase browser checks report an explicit skip when no preview answers. If 4173 is occupied by another project, choose a free preview port and set `VITE_PREVIEW_URL` to that URL before running checks.
+For all 19 checks, build the site, start `npm run preview` in another terminal (default port 4173), then run `npm test`. The accessibility and all-phase browser checks report an explicit skip when no preview answers. If 4173 is occupied by another project, choose a free preview port and set `VITE_PREVIEW_URL` to that URL before running checks.
 
-`npm test` runs `scripts/check-all.mjs`, which chains 18 checks; this table lists representative coverage rather than every individual step:
+`npm test` runs `scripts/check-all.mjs`, which chains 19 checks; this table lists representative coverage rather than every individual step:
 
 | Check | Catches |
 |---|---|
