@@ -18,15 +18,16 @@ items. Every phase passes a machine-verified 14-section contract.
 **The site works and is deployed.** Live at **https://markkramm.github.io/vibecoding/**, built
 and published by GitHub Actions, with CI green.
 
-**Verification is real.** `npm test` runs 19 checks, including offline guards and two browser checks
+**Verification is real.** `npm test` runs 20 checks, including offline guards and two browser checks
 (accessibility and a sweep of **every phase**) when a production preview is available. The
 accessibility audit covers 60 assertions across six views; separate browser checks verify quiz
 correctness and track rendering. Every guard has been proved capable of failing.
 
 **The live site was previously observed by the project owner**, and that check found a serious
 defect a fully green suite had missed — see below. A later browser sweep of every phase found a
-second one, in the navigation between them. The new capstone/comprehensive modes and dashboard
-result display are implemented in the current worktree and still require final regression review.
+second one, in the navigation between them. The capstone/comprehensive modes and the dashboard
+result display are now **committed and shipped** (see `learning-site/src/pages/Exam.jsx`,
+`src/hooks/useCapstoneState.js`, and `npm test` step 17, which covers them).
 
 ---
 
@@ -41,7 +42,7 @@ it.
 
 ### ✅ The browser suite samples, it does not sweep — DONE
 
-**Resolved.** `scripts/sweep-phases.mjs` (check 14) opens **every phase across all 10 tracks**
+**Resolved.** `learning-site/scripts/sweep-phases.mjs` (check 15) opens **every phase across all 10 tracks**
 in a real browser, clicking dashboard → track → phase → next phase the way a reader does, and
 asserts per phase: the `h1` is the *right* phase's title, all six section labels rendered, the
 checklist has items **and** tappable controls, four quiz options render, *answering* a question
@@ -89,7 +90,7 @@ cannot.**
 
 ### 1. ✅ A real component test layer — DONE
 
-Delivered as `test-components.mjs`: **92 assertions**, now `npm test` step 8. It mounts the
+Delivered as `test-components.mjs`: **92 assertions**, now `npm test` step 7. It mounts the
 components through `react-dom/server` with esbuild transforming JSX in memory — no new
 dependency, no test framework, as planned.
 
@@ -187,7 +188,7 @@ pure modules". They were tested by nothing. `audit-projections.mjs` walks the tr
 D-008, where the false claim is preserved alongside its correction rather than quietly edited
 away — the claim surviving unchallenged for this long is the more useful lesson.
 
-**Two guards now prevent a repeat.** `scripts/check-reachability.mjs` (check 15) walks
+**Two guards now prevent a repeat.** `learning-site/scripts/check-reachability.mjs` (check 18) walks
 reachability from `src/main.jsx` and **fails the build** if any module becomes unreachable, so
 the dead set cannot silently regrow. `audit-projections.mjs` now distinguishes a module that was
 **deleted** from one that was **revived**; it previously reported both as "reachable again",

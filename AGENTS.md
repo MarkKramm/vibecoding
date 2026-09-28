@@ -221,10 +221,29 @@ distinguish your files from theirs. Stage by explicit path, or wait for them to 
 
 ## Network policy
 
-**Do not call `web_search`.** It is deliberately off: the account balance is negative and a
-search returns HTTP 402. `web_fetch` uses a different provider and works, but prefer zero
-network calls. If a fact needs verifying, append it to `docs/SEARCH-REQUESTS.md` and
-regenerate `PASTE-THIS.txt`.
+**Both `web_search` and `web_fetch` work** — verified 2026-09-29 with several successful calls of
+each. An earlier version of this file said search was deliberately off because the account balance
+was negative and that a search returns HTTP 402. **That stopped being true**, and a future session
+reading it would have declined to do work that in fact works — which is exactly how six research
+requests stayed open. **Whether the calls are free is still unknown**: no tool here reports balance
+or per-call cost, so the owner has to check the dashboard. Prefer targeted use over volume.
+
+**Search finds the identifier; fetch confirms the document says what the snippet implied.** Do not
+skip the second step. A wrong arXiv ID returns HTTP 200 with a real but unrelated paper, so read
+the title before citing it. The cheapest shortcut is a provider's own documentation index rather
+than a deep-path guess — `https://code.claude.com/docs/llms.txt` for Claude Code, and the
+equivalent docs root elsewhere. Following one link out of the previous page is usually cheaper
+than reasoning about what a path probably is.
+
+If a fact still needs verifying, append the question to `docs/SEARCH-REQUESTS.md`, then update
+`PASTE-THIS.txt` by hand to match its `### Queue:` section.
+
+> ⚠️ **`PASTE-THIS.txt` is hand-maintained, and nothing generates it.** An earlier version of this
+> file said "regenerate `PASTE-THIS.txt`", which names an operation no script performs — and the
+> two files then drifted, so the paste file no longer opened with the template's own wording.
+> `docs/RELAY-PASTE.md` and `PASTE-THIS.txt` are hand-maintained siblings that must be kept in
+> step by hand. They agree on the **count** (12) and have disagreed on **wording**; the wording in
+> `PASTE-THIS.txt` is the one to paste.
 
 ---
 

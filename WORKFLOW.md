@@ -68,7 +68,7 @@ while the app was completely fine.
    point every check at it:
    ```powershell
    $env:VITE_PREVIEW_URL="http://127.0.0.1:4199"
-   node scripts/sweep-phases.mjs http://127.0.0.1:4199
+   node learning-site/scripts/sweep-phases.mjs http://127.0.0.1:4199
    ```
 4. **`--strictPort` is what tells you the truth.** Without it, Vite silently increments to the
    next free port, your checks keep hitting the *other* server, and the summary looks fine while
@@ -90,7 +90,7 @@ From `learning-site/`:
 | `npm run dev` | rebuild content, then start the dev server on **5173** |
 | `npm run build` | rebuild content, then bundle into `dist/` |
 | `npm run preview` | serve `dist/` on **4173** |
-| `npm test` | **19 checks**; 17 offline plus 2 preview/browser checks that skip if no server answers |
+| `npm test` | **20 checks**; 18 offline plus 2 preview/browser checks that skip if no server answers |
 | `npm run check` | the three content-contract guards only |
 | `npm run test:browser` | browser checks; **needs a running server** |
 
@@ -121,7 +121,7 @@ node scripts/build-content.mjs --check; echo "exit=$?"
 cd learning-site && npm test
 ```
 
-Runs 19 checks in order. Seventeen run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
+Runs 20 checks in order. Eighteen run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
 
 | # | Check | Catches |
 |---|---|---|
@@ -135,13 +135,20 @@ Runs 19 checks in order. Seventeen run without a server; the rendered accessibil
 | 8 | in-lesson search | `lessonTerms`/`buildEntries`/`searchLesson` |
 | 9 | cost classification | every distinct `cost:` string is classified |
 | 10 | worked-example arithmetic | the corpus's own sums |
-| 11 | encoding and line endings | LF, UTF-8 no BOM, no tabs, no mojibake |
-| 12 | CSS wiring | every JSX class has a rule; every token is defined |
-| 13 | accessibility (rendered page) | six-view rendered a11y, with a loud skip if preview is unavailable |
-| 14 | every phase renders | every phase in a real browser, with a loud skip if preview is unavailable |
-| 15 | mixed practice sets | pool shape and sampling behavior |
-| 16 | exams | per-track scoring, balanced capstone rotation, exhaustive resume and backup rules |
-| 17 | reachability | every `src/` module is reachable from `main.jsx` |
+| 11 | free-toolkit figures | `docs/free-toolkit.md`'s stated counts vs the corpus |
+| 12 | encoding and line endings | LF, UTF-8 no BOM, no tabs, no mojibake |
+| 13 | CSS wiring | every JSX class has a rule; every token is defined |
+| 14 | accessibility (rendered page) | six-view rendered a11y, with a loud skip if preview is unavailable |
+| 15 | every phase renders | every phase in a real browser, with a loud skip if preview is unavailable |
+| 16 | mixed practice sets | pool shape and sampling behavior |
+| 17 | exams | per-track scoring, balanced capstone rotation, exhaustive resume and backup rules |
+| 18 | reachability | every `src/` module is reachable from `main.jsx` |
+| 19 | prop contracts | a declared component prop with no caller at any JSX call site |
+| 20 | notes flush (unmount persistence) | a note lost when a phase unmounts with no intervening render |
+
+> This table is a duplicate of the `STEPS` array in `learning-site/scripts/check-all.mjs`, and it
+> **did** drift: three steps were missing here, which put every row after 10 off by one. The
+> authoritative list is the script. Check it before trusting any row number in this table.
 
 
 Read the list from the source rather than trusting this table if the count matters —
@@ -152,7 +159,7 @@ Read the list from the source rather than trusting this table if the count matte
 ```bash
 npm run build
 npm run preview                      # in another shell, serves 4173
-npm test                             # includes a11y + all-65 browser checks
+npm test                             # includes a11y + all-66 browser checks
 npm run test:browser                 # smoke + deeper interaction checks
 ```
 

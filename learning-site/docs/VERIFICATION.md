@@ -25,7 +25,7 @@ strings. All of those produce a green build and a blank page.
 | Shapes | `learning-site/scripts/audit-shapes.mjs` | generated JSON | the JSON matches what the renderers assume |
 | Semantics | `learning-site/scripts/test-cost-tone.mjs` | generated JSON | cost classification is right *on this corpus* |
 | Encoding | `learning-site/scripts/audit-encoding.mjs` | nothing | LF, UTF-8 without BOM, no mojibake, no tabs |
-| Runtime | `learning-site/scripts/verify-site.mjs` | production preview + Edge/Chrome | the app renders, 15 checks |
+| Runtime | `learning-site/scripts/verify-site.mjs` | production preview + Edge/Chrome | the app renders, 16 checks |
 | Runtime, deep | `learning-site/scripts/verify-deep.mjs` | production preview + Edge | all written tracks, corpus-sized dashboard, search, 8 checks |
 | Correctness | `learning-site/scripts/verify-quiz-correctness.mjs` | production preview + Edge | the quiz marks the *source-correct* option correct |
 | All-phase sweep | `learning-site/scripts/sweep-phases.mjs` | production preview + Edge | all 66 phase screens and navigation; explicitly skips without a responding preview |
@@ -41,7 +41,7 @@ all — it is the only layer that works on a fresh clone before `npm install`. T
 *build* (not `--check`) so the generated JSON exists for the steps after it; the
 repo-root `--check` form is what the content pipeline's own workflow uses.
 
-`npm test` chains 19 checks in `scripts/check-all.mjs`. Seventeen are offline; the rendered
+`npm test` chains 20 checks in `scripts/check-all.mjs`. Eighteen are offline; the rendered
 accessibility audit and all-phase browser sweep use a real browser against the production
 preview at port 4173. Both print a loud skip and exit successfully if no server responds, so
 run them with a freshly built preview to get full coverage. `npm run test:browser` separately
@@ -128,7 +128,7 @@ number of classifications checked.
 
 ---
 
-## 4. `verify-site.mjs` — the real browser, 15 checks
+## 4. `verify-site.mjs` - the real browser, 16 checks
 
 **What it does.** Launches headless Edge (or Chrome) with a fresh temporary
 profile, connects over the **Chrome DevTools Protocol** using nothing but Node’s
@@ -397,7 +397,7 @@ cd learning-site
 
 npm run build         # builds content and production bundle
 npm run preview       # in another terminal, port 4173
-npm test              # 19 checks; 2 browser checks use the preview
+npm test              # 20 checks; 2 browser checks use the preview
 npm run test:browser  # smoke, deep, quiz correctness, focused track check
 npm run check         # content guard, quiz audit, AST audit
 ```

@@ -107,7 +107,7 @@ node learning-site/scripts/audit-arithmetic.mjs # numbers stated in prose
 node learning-site/scripts/audit-encoding.mjs   # LF, UTF-8 no BOM, no mojibake, no tabs
 ```
 
-For all 19 site checks, build and start the production preview before `npm test`; two browser checks may skip if it is unavailable:
+For all 20 site checks, build and start the production preview before `npm test`; two browser checks may skip if it is unavailable:
 
 ```bash
 cd learning-site
@@ -143,7 +143,8 @@ learning-site/               React 18 + Vite site that renders the curriculum
   src/data/generated/        built from Markdown; gitignored by design
   scripts/                   offline checks and browser verification
 
-docs/                        content schema, design system, decisions, research
+docs/                        content schema, design system, research
+learning-site/docs/          decisions (DECISIONS.md lives here, not in docs/)
 HANDOVER.md                  engineering continuity notes and lessons learned
 ```
 

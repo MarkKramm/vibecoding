@@ -175,9 +175,10 @@ Run these; do not eyeball them.
 
 ```bash
 node scripts/build-content.mjs --check
-node scripts/lint-content.mjs
-node scripts/audit-lesson-ast.mjs
 node scripts/audit-quiz.mjs
+node scripts/audit-lesson-ast.mjs
+node learning-site/scripts/audit-encoding.mjs
+node learning-site/scripts/audit-arithmetic.mjs
 ```
 
 - [ ] Build passes with no errors

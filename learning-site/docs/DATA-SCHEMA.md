@@ -108,7 +108,7 @@ plus:
 | `freeVsPaid` | `{ freeEnough, paidUpgrade, whenWorthPaying }` | each a multi-paragraph string, split on `\n\n` by the renderer |
 | `sourcePath` | `string` | e.g. `ai-roadmaps/foundations/01-phase-what-a-model-is.md` |
 
-All 65 written phases have a `lessonPath`; none has an empty `quiz`.
+All 66 written phases have a `lessonPath`; none has an empty `quiz`.
 
 ---
 
@@ -342,7 +342,7 @@ its `toc` entry’s `id`, which is what makes anchors and search-result jumps wo
 ### The six block types
 
 Every block carries a `type`. In the recorded 42-lesson snapshot there were **3,671 blocks**.
-The current generated corpus has 65 lessons and 5,019 blocks. It contains exactly six block
+The current generated corpus has 66 lessons. It contains exactly six block
 types, with these key sets — no others appear anywhere in the corpus:
 
 | Type | Count | Keys besides `type` |

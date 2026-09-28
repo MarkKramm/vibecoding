@@ -137,7 +137,7 @@ page build without loading a single track file.
 `App.jsx` holds the current view in a `useState` string. There is no
 react-router, no hash routing, and no history API.
 
-The app has five views and no nested routes. A router would add a dependency, a
+The app has seven views and no nested routes. A router would add a dependency, a
 `basename` that has to be kept in step with Vite’s `base` for GitHub Pages
 subdirectory hosting, and a class of “blank page on hard refresh” bug that only
 appears once deployed — in exchange for something no reader needs, because there
@@ -161,14 +161,15 @@ which is a better answer to that need than a URL in a history list.
 
 ## 4. The views
 
-Five components in `src/pages/`, selected by the `view` state in `App.jsx`.
-Four of them appear in the top navigation; `phase` is reached by opening a card.
+Seven components in `src/pages/`, selected by the `view` state in `App.jsx`.
+Six of them appear in the top navigation; `phase` is reached by opening a card.
 
 **Dashboard** (`Dashboard.jsx`) is a map, not a to-do list. It shows the corpus
 totals counted from the light index, an “in progress” section when the reader has
-ticked anything, and all ten track sections — including the four that are still
-being authored, rendered as `not yet written` rather than hidden. A curriculum
-that appears to have six tracks when ten are planned misleads the reader about
+ticked anything, and all ten track sections. Every track is written, so every one renders
+a phase grid; none renders as `not yet written` any more. The `not yet written` path is
+still implemented and still guarded, because it is the correct behaviour for a genuinely
+partial corpus.
 the size of what they are committing to.
 
 **PhaseDetail** (`PhaseDetail.jsx`) is one phase in full, and its section order
@@ -195,9 +196,13 @@ postings at all are reported as missing rather than quietly discarded.
 strategy documents. They live outside any track because they are read the other
 way round: a lesson is read start to finish, a glossary entry is looked up
 mid-sentence. It renders the same block AST a lesson does, through the same
-`LessonBlock` component, so a glossary cannot drift away from the lesson format. The authored glossary
-is not written yet, so today the view shows two documents and says so honestly
-rather than pretending the reference set is complete.
+`LessonBlock` component, so a glossary cannot drift away from the lesson format. All four
+shared documents are written and render here: **254 glossary terms** across ten categories and
+**71 catalogued resources** across fourteen groups, plus the study rules and the weekly tracker.
+
+> This section previously said the glossary "is not written yet" and that the view showed two
+> documents. That was the Reference-view defect described in `ROADMAP.md` — 325 authored items
+> rendering into an empty `<div>` — and it is fixed. The four documents are built and rendered.
 
 ---
 

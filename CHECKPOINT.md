@@ -106,11 +106,11 @@ cd learning-site
 npm run dev          # content rebuild + dev server on 5173
 npm run build        # content rebuild + bundle to dist/
 npm run preview      # serve dist/ on 4173
-npm test             # 19 checks; 2 need a preview server or skip
+npm test             # 20 checks; 2 need a preview server or skip
 npm run test:browser # needs a running server
 ```
 
-⚠️ Exactly two of the 19 `npm test` steps — `accessibility (rendered page)` and `every phase renders (browser,
+⚠️ Exactly two of the 20 `npm test` steps — `accessibility (rendered page)` and `every phase renders (browser,
 all phases)` — need `npm run preview` on 4173. They **skip with a loud notice rather than failing**
 when no server answers, because a guard that fails for an unrelated reason gets disabled, and a
 disabled guard is worse than none.
@@ -130,7 +130,7 @@ disabled guard is worse than none.
 - Field shapes against what the renderers consume
 - Projection reads — no component reads a field its projection lacks
 - Inline markdown, lesson-block coverage, search (all against the real corpus)
-- Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (205 files)
+- Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (214 files)
 - CSS wiring — every JSX class has a rule, every token is defined
 - **Accessibility** — 60 assertions across 6 views: contrast, accessible names, focus visibility,
   and keyboard reachability by control *kind*
@@ -291,9 +291,9 @@ checks here; it catches a class they structurally cannot.
 
 ---
 
-## Exam feature decision — implemented in the current worktree
+## Exam feature decision - decided 2026-09-19, shipped 2026-09-28
 
-The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 555 current questions, and track-exam result summaries on the dashboard. Verify and refresh this snapshot after the implementation is committed.
+The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 555 current questions, and track-exam result summaries on the dashboard. This section is the dated record of that decision, not a pending task.
 
 **Resolved 2026-09-28:** the implementation above was committed and shipped long ago; this
 paragraph is the dated record of the decision, not a pending task. The instruction to "verify

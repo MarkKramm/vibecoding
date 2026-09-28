@@ -2,7 +2,7 @@
 
 **Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-28 (third pause)**.
 **Purpose:** Everything a fresh session needs to resume this project without re-deriving anything.
-**Current repo root:** `C:\Users\zaman\Desktop\vibecoding` (re-cloned after the owner's NVMe SSD failure).
+**Current repo root:** the clone you are reading this in. (This copy: `C:\Users\zaman\Desktop\Projects\Learning\vibecoding`, as of 2026-09-29. The repo has moved machines more than once, so **do not treat any absolute path in this file as durable** — run commands from the repo root instead.)
 **Historical repo root in old logs:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`.
 **Sibling project (source of the proven architecture):** `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`
 
@@ -155,7 +155,7 @@ which is why the probe result above is recorded instead of the assertion.
 
 ### Exact resume steps (next session)
 
-1. `cd C:\Users\zaman\Desktop\vibecoding && git status -sb` — expect **clean**. If it is not,
+1. From the repo root: `git status -sb` — expect **clean**. If it is not,
    something changed after the last push (`git log --oneline -1` names it); read the diff before
    touching it.
 2. `cd learning-site && npm run build` — browser checks read `dist/`.
@@ -295,7 +295,7 @@ The GitHub account was re-authenticated after setting DSH to Full Access. `git f
     - **⚠️ CORRECTION, made in a later session: Medusa's speedup was listed on the line above as verified, and that is only true of the ARXIV version.** `arXiv:2401.10774` v3 says 2.3–3.6×, but the **ICML 2024 camera-ready** — PMLR v235, pp. 5209–5235, the version of record — states **2.3–2.8×**. Cite 2.8× when citing the published paper. The general trap: **a preprint and its camera-ready can disagree**, and the arXiv abstract is not the published abstract. **No phase ever cited 3.6×**, so the curriculum was unaffected — the error lived only in this audit note.
    - **⭐ The defect class to hunt is "technically true but materially misleading".** The `agents/07` MCP error and the `cost/06` Tagalog error are both that: not false, but implying the wrong thing. **Do not stop at "the date exists" — establish what it *means*.** The audit's own coverage was ~10–15% of volatile lines by count, weighted to the highest-value classes, and it said so plainly — treat the remainder as **unaudited**, not as cleared.
 3. **Git is clean as of this session.** HEAD `2c6726d`; the learning site was committed in `7d4c8bd` and documented in `b1278d7`. Line endings are watched on every file written — see §7.3, and `learning-site/scripts/audit-encoding.mjs` enforces it mechanically across 76 files.
-   - **✅ The volatile backlog has since been swept, and the architecture tables verified from primary configs.** `model-internals/02`'s `rope_theta` table was checked against raw `config.json` files for all four models and **every value matches** — DeepSeek-V3 `10000` with yarn and `original_max_position_embeddings 4096`, Llama-3-8B `500000` with `rope_scaling: null`, Mixtral-8x7B `1000000`, Qwen3-235B-A22B `1000000`. Two of those configs (Mixtral and Llama-3) also carry `hidden_size 4096` and `intermediate_size 14336`, independently confirming the phase's "naming trap" explanation that a Mixtral *expert* is the MLP inside a 4096-wide model rather than a standalone 7B one. **Access note: `meta-llama/Meta-Llama-3-8B` is gated (HTTP 401), so that row was read from an ungated mirror whose `_name_or_path` names the upstream model; the other three are openly readable.** Note also that `audit-encoding.mjs` now covers `ai-roadmaps/` and the repo-root `docs/`, not just `learning-site/`, so the file count above is no longer 76 — it is 169.
+   - **✅ The volatile backlog has since been swept, and the architecture tables verified from primary configs.** `model-internals/02`'s `rope_theta` table was checked against raw `config.json` files for all four models and **every value matches** — DeepSeek-V3 `10000` with yarn and `original_max_position_embeddings 4096`, Llama-3-8B `500000` with `rope_scaling: null`, Mixtral-8x7B `1000000`, Qwen3-235B-A22B `1000000`. Two of those configs (Mixtral and Llama-3) also carry `hidden_size 4096` and `intermediate_size 14336`, independently confirming the phase's "naming trap" explanation that a Mixtral *expert* is the MLP inside a 4096-wide model rather than a standalone 7B one. **Access note: `meta-llama/Meta-Llama-3-8B` is gated (HTTP 401), so that row was read from an ungated mirror whose `_name_or_path` names the upstream model; the other three are openly readable.** Note also that `audit-encoding.mjs` now covers `ai-roadmaps/` and the repo-root `docs/`, not just `learning-site/`, so the file count above is no longer 76 — it is 214 (re-measured 2026-09-29).
 4. **ALL GUARDS ARE GREEN — and there is now a FIFTH offline check.** Content: build (`42 phases / 6 tracks`), quiz audit, and AST audit all exit 0, with 0 minted IDs and 0 unbanded tasks. Site: `npm test` (**5 offline checks**) and `npm run test:browser` (25 checks) both pass. Two earlier defect classes are fixed and documented: the answer-position skew (§7.1) and the AST character gain, which is **explained and benign** (§7.2).
    - **NEW: `audit-arithmetic.mjs`, written because `cost/05`'s bug passed every existing check.** No check could see it — the build validates *structure*, the quiz audit validates *answer positions*, the AST audit validates that *prose survived*. None can evaluate arithmetic. The new guard checks one recurring relation in worked tables: `attempts = 1/successRate` and `costPerTask = costPerCall × attempts`. **A guard that cannot fail is worthless, so it was tested by re-introducing the original bug:** it reports `attempts: stated 2.4, but 1/60% = 1.67 (off 44%)` and exits 1, and the fixed content exits 0.
    - **Its own first version is a lesson worth keeping.** It crashed with a `TypeError` on tables whose body rows had more cells than their header — and because **a crash exits 1, the crash was indistinguishable from a genuine finding.** It appeared to catch the very bug it was written for while catching nothing. **Always prove a new guard fails for the RIGHT reason.**
@@ -328,7 +328,20 @@ A **learning site + roadmap** teaching vibecoding and the whole AI/LLM era — f
 
 ---
 
-## 2. Current verified state (measured, not remembered)
+## 2. ⚠️ SUPERSEDED — was "Current verified state (measured, not remembered)"
+
+> **Every number in this section, and in the three sub-sections that follow it, is from 2026-09-18 and
+> is wrong.** Measured 2026-09-29: **10 tracks / 66 phases** (not 5 / 31), **219,490** lesson words
+> (not 127,643), **1,076** checklist items (not 557), **555** quiz questions (not 291), **903**
+> practice tasks (not 378), **8,147** search terms (not 6,445), **4** shared docs (not 2). All ten
+> track folders exist and are fully populated; the "0 🔴 NOT STARTED" rows below are wrong, as is
+> "`21 phases remain`"; the directory inventory predates the existence of the React app entirely.
+>
+> It is retained unedited because it is the honest record of what was true then, and because the
+> *shape* of the error is the lesson: a section headed "measured, not remembered" went stale anyway,
+> because a measurement is only current on the day it is taken. **Do not quote a number from this
+> section.** The live figures are in `ROADMAP.md` and `CHECKPOINT.md`, and every one of them is
+> re-derived by `node scripts/build-content.mjs --check`, which fails loudly rather than going quiet.
 
 Build report from `node scripts/build-content.mjs`:
 
@@ -472,7 +485,7 @@ Vibecoding/
 ### Commands
 
 ```powershell
-cd "C:\Users\zaman\Desktop\vibecoding"
+# run from the repo root
 node scripts/build-content.mjs           # full build + report
 node scripts/build-content.mjs --check   # validate only
 node scripts/audit-quiz.mjs              # quiz structure + position balance
@@ -866,7 +879,7 @@ that did not exist — `VITE_BASE` was read by the config while nothing ever set
 
 > **✅ STATUS: RESOLVED.** All fourteen modules were **deleted** — 1,740 lines, 71 KB. The count
 > below is kept because the method is the lesson, not the inventory. See
-> `scripts/check-reachability.mjs` (check 15), which now fails the build if any module under
+> `scripts/check-reachability.mjs` (check 18), which now fails the build if any module under
 > `src/` becomes unreachable again, and `ROADMAP.md` → "Resolve D-008 properly" for the
 > conclusion.
 >
@@ -1908,7 +1921,11 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     The cause this time was not the document's contents but **the relay itself**. A file passed through a human can arrive as the file, as a summary of the file, as a critique of the file, or as a conversation about the file — and from the receiving end there is no way to tell which was intended. Three separate audiences now existed: the search assistant (wants questions), the human (wants a thing to paste), and the agent (wants protocol).
 
-    **The fix is to remove the human's judgement from the loop.** `PASTE-THIS.txt` lives at the **repo root**, is plain text, opens with the literal instruction *"Please search the web and answer the 12 questions at the bottom of this message"*, and is **generated from `RELAY-PASTE.md` by dropping only the markdown title line** — so the two cannot drift. Verified to contain **zero** occurrences of `web_fetch`, `402`, `grep`, `DeepSeek`, `subagent`, "Do not call" or `SEARCH-REQUESTS`. The human's entire task is now "open this file, select all, paste" — no interpretation, no summarising, no choosing.
+    **The fix is to remove the human's judgement from the loop.** `PASTE-THIS.txt` lives at the **repo root**, is plain text, opens with a direct instruction (*"Search the web now and answer these 12 questions. I need a source URL for each answer."*), and asks the human to do exactly one thing: open it, select all, paste — no interpretation, no summarising, no choosing.
+
+    > **⚠️ CORRECTION, 2026-09-29 — the mechanism described here never existed.** This paragraph used to claim the file "is **generated from `RELAY-PASTE.md` by dropping only the markdown title line** — so the two cannot drift," and to quote its opening line as *"Please search the web and answer the 12 questions at the bottom of this message."* **Nothing generates it.** Grepping both filenames across the repo's `.mjs` files returns one incidental comment. They are **hand-maintained siblings that must be kept in step by hand** — and they *have* drifted: the opening line above no longer matches `RELAY-PASTE.md`'s, and Q1's wording differs between them. They still agree on the **count** (12), which is the part the paste actually depends on.
+    >
+    > Worth recording rather than quietly fixing. A file that claims to be generated when no script generates it is exactly the failure mode this project exists to catch, and it survived inside a paragraph whose *argument* was good enough that nobody re-checked its *mechanism*. The same fictional automation appeared in `AGENTS.md`, which told a future session to "regenerate `PASTE-THIS.txt`" — an operation that cannot be performed. Both are fixed. **The packaging lesson is unaffected; only the claimed automation was fictional.**
 
     **The generalisable rule: when a handoff must pass through a person, the artifact should require no judgement from them.** Every relay that depended on the human deciding *what* to send failed. The moment the instruction became "paste this one file verbatim" the ambiguity had nowhere to live. Note also that the review *was substantively good* — it correctly spotted that Q2 and Q3 overlapped, that the date belonged in the first sentence, and that Q12's statute half would make an assistant redo finished work. **All three fixes were adopted.** A failed relay can still carry useful content; the failure is in the packaging, not necessarily in the thinking.
 

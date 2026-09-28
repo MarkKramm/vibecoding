@@ -95,7 +95,10 @@ task energy:  0 of 0 practice task(s) carry an energy value
 
 The minted-from-position count must be **0**. A future edit that adds a task without its comment raises that number instead of passing quietly, which is the signal to author the comment rather than to accept the mint.
 
-The same `band`/`energy` pair is parsed for the dashboard's "what should I do today?" picker; `scripts/lesson-ast.mjs` and the site's `src/lib/today.js` both fail **closed** on an unknown or missing band, so an unrecognised value can never be treated as fitting every budget.
+The same `band`/`energy` pair is parsed for the dashboard's "what should I do today?" picker; `scripts/lesson-ast.mjs` and the site's `src/lib/practice.js` both fail **closed** on an unknown or missing band, so an unrecognised value can never be treated as fitting every budget.
+
+> `src/lib/today.js` was named here previously. It was deleted with D-008 and is gone; the
+> Practice view (`src/lib/practice.js`) is what consumes `band` today.
 
 ### Sections to extract
 

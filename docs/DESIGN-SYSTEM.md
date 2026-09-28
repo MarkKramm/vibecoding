@@ -459,9 +459,15 @@ colours; the overdue follow-up passes it because `.app-due` is `font-weight: 600
 as `--warning`.
 
 **No time estimates in minutes.** Practice tasks carry a coarse band — `quick`,
-`focused`, `deep`, `ongoing` — never a duration in minutes. 82% of the 183 practice tasks
-sit between 20 and 90 minutes, so any cut inside that cluster is arbitrary and a slider
-would imply a precision nobody has. See D-021.
+`focused`, `deep`, `ongoing` — never a duration in minutes. Counted across the 66 phase files on
+2026-09-29, the distribution is **14% `quick`, 50% `focused`, 30% `deep`, 6% `ongoing`**, so
+**80% of tasks sit in the two middle bands** — which is the whole argument: any cut inside that
+cluster is arbitrary, and a slider would imply a precision nobody has. See D-021.
+
+> This sentence previously read "82% of the 183 practice tasks sit between 20 and 90 minutes".
+> The denominator was stale by a factor of about five, and it asserted minutes for a field that
+> deliberately does not record them. The band distribution above is what can actually be counted,
+> and it is why the original number was never checkable. Re-measure it if the corpus changes.
 
 **No false precision about the bands.** The band on a task is an authored judgement, not a
 measurement — nobody has timed these tasks. `TimeBudgetSelector` (since deleted with D-008;
