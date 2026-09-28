@@ -122,8 +122,13 @@ project's history — it has been made five times, always by momentum rather tha
 - **No tabs.**
 - **Real typographic characters**: em dash `—` (U+2014), en dash `–` (U+2013). Never an
   ellipsis character `…` (U+2026) — the heading requires three literal dots.
-- **No mojibake.** If you see `â€"` in output, the file is probably fine and your *console* is
-  misrendering. Verify by counting `U+00E2` in the file bytes, not by reading terminal output.
+- **No mojibake.** If you see a corrupted em dash in output — the `U+00E2 U+20AC` prefix followed by
+  a quote, which is a UTF-8 em dash misread as cp1252 — the file is probably fine and your *console*
+  is misrendering. Verify by counting `U+00E2` in the file bytes, not by reading terminal output.
+  That sequence is named by codepoint rather than written out, for the reason
+  `learning-site/scripts/audit-encoding.mjs` gives in its own header: this file is inside the guard's
+  scan, so a literal would force either a failing audit or a filename exemption — and an exempted
+  file is one the check cannot police.
 
 ### ⛔ The write-API trap
 

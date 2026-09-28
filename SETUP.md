@@ -146,7 +146,7 @@ with `\n` already in `$text`. Prefer a normal editor.
 heading prefix and destroyed 54 quiz headings. Edit occurrences individually, then
 re-run a structural guard.
 
-### If your console shows `â€"` and you think the file is corrupted
+### If your console shows the corrupted em dash (`U+00E2 U+20AC`) and you think the file is corrupted
 
 It probably is not. **Check the bytes, not the terminal.** PowerShell and some Windows
 consoles misrender correct UTF-8, and this exact false alarm has been raised here:

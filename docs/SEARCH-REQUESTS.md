@@ -161,18 +161,18 @@ vendor availability pages, not on a statute.
 **Source:** https://www.anthropic.com/legal/commercial-terms — Commercial Terms of Service,
 **effective June 17, 2025**, fetched in full, HTTP 200.
 
-- **Ownership (Â§B).** *"Customer... (b) owns its Outputs. Anthropic disclaims any rights it
+- **Ownership (§B).** *"Customer... (b) owns its Outputs. Anthropic disclaims any rights it
   receives to the Customer Content under these Terms... Anthropic hereby assigns to Customer
   its right, title and interest (if any) in and to Outputs."*
-- **Training (Â§B), verbatim:** *"Anthropic may not train models on Customer Content from
+- **Training (§B), verbatim:** *"Anthropic may not train models on Customer Content from
   Services."* This is a **commercial-terms** commitment; the consumer terms are a different
   document and this quote must not be used for `claude.ai`.
-- **Indemnity (Â§K.1), and here is the free-tier answer.** Anthropic will defend the customer
+- **Indemnity (§K.1), and here is the free-tier answer.** Anthropic will defend the customer
   against a claim that *"Customer's **paid** use of the Services... violates any third-party
   intellectual property right."* **The word "paid" is the exclusion, in the terms
   themselves** — so the commercial indemnity is not available on a free tier, and this is a
   direct answer to the question request 8 asked.
-- **Six exclusions (Â§K.3), and one of them matters enormously for this track:** the indemnity
+- **Six exclusions (§K.3), and one of them matters enormously for this track:** the indemnity
   does **not** apply where the claim arises from *"(a) modifications made by Customer to the
   Services or Outputs"*, *"(b) the combination of the Services or Outputs with technology or
   content not provided by Anthropic"*, *"(c) Inputs or other data provided by Customer"*,

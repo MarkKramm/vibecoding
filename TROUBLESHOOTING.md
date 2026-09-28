@@ -264,7 +264,7 @@ The guard decides coverage by **extension plus an explicit list**, and it now co
 `.gitignore`, `.editorconfig`, the workflows and the root docs — it previously did not, and a
 stray CR reached `.gitignore` while the guard reported "all clean".
 
-### My console shows `â€"` — is my file corrupted?
+### My console shows the corrupted em dash (`U+00E2 U+20AC`) — is my file corrupted?
 
 **Probably not.** Check the bytes, not the terminal. PowerShell and some Windows consoles
 miserender correct UTF-8, and this false alarm has been raised here before:

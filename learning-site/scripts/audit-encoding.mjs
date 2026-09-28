@@ -25,6 +25,32 @@ import { fileURLToPath } from "node:url";
 const SITE = fileURLToPath(new URL("..", import.meta.url));
 const REPO = join(SITE, "..");
 
+// ── THE REPO ROOT IS ENUMERATED, NOT LISTED ──────────────────────────────────
+// This is the THIRD time this gap class has been found, and the first two fixes
+// were both the same shape: name the files that had been missed. That shape fails
+// again the moment a file is added -- and it had ALREADY failed when this comment
+// was written. SCAN named `HANDOVER.md`, `README.md`, `AGENTS.md`,
+// `CONTRIBUTING.md`, `LICENSE`, `PASTE-THIS.txt` and the three dotfiles, while six
+// tracked root Markdown files -- `CHANGELOG.md`, `CHECKPOINT.md`, `ROADMAP.md`,
+// `SETUP.md`, `TROUBLESHOOTING.md` and `WORKFLOW.md` -- were never opened. The
+// guard reported "all clean" over six files it had not read.
+//
+// MEASURED, NOT INFERRED. A lone CR was injected into each of the six, the CR was
+// ASSERTED present on disk BEFORE the audit ran, and the real audit was then
+// executed: all six exited 0 and none was reported. The control -- `HANDOVER.md`,
+// which IS in the list -- exited 1 and was named. So the CR detector works and the
+// LIST was the hole, which is why the fix is to stop maintaining the list.
+//
+// Every top-level FILE in the repo root is therefore read, whatever its
+// extension. Directories are not walked from here: the subdirectories are named in
+// SCAN below and `.git` must not be opened. The extension filter is deliberately
+// bypassed for these, because that filter is exactly what would skip a future
+// `Makefile` or `CODEOWNERS` -- the same gap with one more turn of the wheel.
+// Nothing has to be added here when a root file appears; that is the point.
+const ROOT_FILES = readdirSync(REPO, { withFileTypes: true })
+  .filter((e) => e.isFile())
+  .map((e) => join(REPO, e.name));
+
 // Source text we own. Generated JSON is excluded on purpose: it is a build
 // artifact, regenerated from the Markdown, so checking it here would only
 // re-report whatever the Markdown already determines.
@@ -41,8 +67,13 @@ const REPO = join(SITE, "..");
 // `.editorconfig` and `.github/workflows/*.yml` were never opened. A stray CR
 // landed in `.gitignore` and git itself warned about it on push -- the guard had
 // reported "all clean" because it had never looked. Anything checked into the repo
-// is fair game for a bad line ending, so the guard now names these explicitly
-// rather than relying on a suffix.
+// is fair game for a bad line ending, so the guard must open them.
+//
+// The SECOND fix named the root files explicitly, and that list is what failed
+// next: it missed six root Markdown files for as long as they existed. That is why
+// root files are now ENUMERATED (see ROOT_FILES above) and this comment no longer
+// claims a list is a policy. The directories below stay named, because a directory
+// cannot go stale the way a file list can -- and `.git` must not be walked.
 const SCAN = [
   join(SITE, "src"),
   join(SITE, "scripts"),
@@ -54,25 +85,23 @@ const SCAN = [
   join(REPO, "docs"),
   join(REPO, "scripts"),
   join(REPO, ".github"),
-  join(REPO, "HANDOVER.md"),
-  join(REPO, "README.md"),
-  join(REPO, "AGENTS.md"),
-  join(REPO, "CONTRIBUTING.md"),
-  join(REPO, "LICENSE"),
-  join(REPO, "PASTE-THIS.txt"),
-  join(REPO, ".gitignore"),
-  join(REPO, ".gitattributes"),
-  join(REPO, ".editorconfig"),
+  // The repo root is deliberately ABSENT from this array. It is enumerated as
+  // ROOT_FILES above and checked directly, because naming root files one by one is
+  // what produced the six-file gap this array used to hide.
 ];
 
-// EXTENSIONLESS files that must still be checked. `extname()` returns "" for these,
-// so they need to be allowed through the extension filter below.
-const EXTENSIONLESS = new Set([
-  join(REPO, ".gitignore"),
-  join(REPO, ".gitattributes"),
-  join(REPO, ".editorconfig"),
-  join(REPO, "LICENSE"),
-]);
+// A file is ours if it carries an extension we own, OR carries no extension at all.
+//
+// The second half is deliberate, and it closes the SECOND gap in this file's own
+// history rather than repeating it: `extname()` returns "" for `.gitignore`, so a
+// coverage rule decided by extension silently skipped it and a stray CR sat there
+// until git complained on push. "No extension" is not a suffix guess -- it is a
+// closed set of files that are configuration or prose we wrote, and this repository
+// contains no extensionless binaries. Naming them by hand was the previous fix, and
+// that hand-kept `EXTENSIONLESS` set is now deleted: every member of it was a root
+// file, which the root pass reads directly, so the set had no remaining job and
+// existed only as another place to keep in sync.
+const isOurs = (p) => extname(p) === "" || EXTS.has(extname(p));
 
 const EXTS = new Set([".js", ".jsx", ".mjs", ".css", ".html", ".json", ".md", ".yml", ".yaml", ".txt", ".toml"]);
 const SKIP_DIRS = new Set(["node_modules", "dist", ".git", "generated"]);
@@ -88,7 +117,7 @@ function walk(p) {
     return;
   }
   if (st.isFile()) {
-    if (!EXTS.has(extname(p)) && !EXTENSIONLESS.has(p)) return;
+    if (!isOurs(p)) return;
     check(p);
     return;
   }
@@ -98,7 +127,7 @@ function walk(p) {
       walk(join(p, e.name));
     } else {
       const child = join(p, e.name);
-      if (EXTS.has(extname(e.name)) || EXTENSIONLESS.has(child)) check(child);
+      if (isOurs(child)) check(child);
     }
   }
 }
@@ -146,7 +175,30 @@ const MOJIBAKE = [
 // a prefix with the table above and would otherwise be shadowed by it.
 const MOJIBAKE_ALT = [
   [String.fromCharCode(0xe2, 0x80, 0x9d), "em dash (cp1252 variant)"],
+  // The two entries below were added after a REAL instance was found, which is the
+  // only way this table has ever been extended honestly. HANDOVER.md quoted a
+  // console misrendering as `U+00E2 U+20AC U+0022`: the corrupted em dash with a
+  // STRAIGHT quote as its third character, because something had normalised the
+  // curly quote while the first two characters stayed corrupted. No
+  // three-character entry above matches that, so the guard called the file clean
+  // -- and had done so since the line was written.
+  //
+  // The generalisable failure is that this table had been built by enumerating
+  // THIRD characters, one variant at a time, and a third character is unbounded.
+  // The PREFIX is not: a euro sign directly after an a-circumflex only ever arises
+  // from misreading a UTF-8 three-byte character as cp1252. Matching the family on
+  // its prefix therefore closes every variant of it at once, instead of waiting for
+  // a reader to hit the next one. A bare a-circumflex is legitimate text in French
+  // and Portuguese, which is exactly why the euro sign is part of the pattern.
+  [String.fromCharCode(0xe2, 0x20ac), "cp1252-misread UTF-8 (euro sign after a-circumflex)"],
+  // The same argument for the two-byte family: a stray a-circumflex before a
+  // section sign is a misread UTF-8 section sign and never legitimate prose.
+  [String.fromCharCode(0xc2, 0xa7), "section sign after a stray a-circumflex"],
 ];
+
+// Both tables in ONE list, so a more specific entry can be preferred to a family
+// entry at the same position by PATTERN LENGTH rather than by array order.
+const ALL_MOJIBAKE = [...MOJIBAKE, ...MOJIBAKE_ALT];
 
 // ── WHY THIS TABLE IS LONGER THAN IT LOOKS ───────────────────────────────────
 // Every extra entry was added in response to a variant ACTUALLY FOUND in the
@@ -196,15 +248,31 @@ function check(file) {
   // Mojibake that survived as real characters
   const lines = text.split("\n");
   for (let i = 0; i < lines.length; i++) {
-    for (const [bad, what] of MOJIBAKE) {
-      if (lines[i].includes(bad)) {
-        problems.push(`${rel}:${i + 1}: mojibake ${what}`);
+    // ONE report per offending position, and the MOST SPECIFIC entry wins.
+    //
+    // Two loops used to run here, one per table, and every match pushed its own
+    // problem. That was harmless while every entry was the same length and no two
+    // could match the same character. It stopped being harmless the moment
+    // MOJIBAKE_ALT carried FAMILY entries: the prefix `U+00E2 U+20AC` matches a
+    // corrupted em dash exactly as the three-character entry does, so one bad
+    // character would be reported twice. The scan below takes the earliest match
+    // and, at equal positions, the LONGEST pattern, then resumes after it -- so the
+    // specific name ("em dash") still wins over the family name.
+    let from = 0;
+    for (;;) {
+      let best = null;
+      let bestAt = -1;
+      for (const [bad, what] of ALL_MOJIBAKE) {
+        const at = lines[i].indexOf(bad, from);
+        if (at === -1) continue;
+        if (bestAt === -1 || at < bestAt || (at === bestAt && bad.length > best[0].length)) {
+          bestAt = at;
+          best = [bad, what];
+        }
       }
-    }
-    for (const [bad, what] of MOJIBAKE_ALT) {
-      if (lines[i].includes(bad)) {
-        problems.push(`${rel}:${i + 1}: mojibake ${what}`);
-      }
+      if (!best) break;
+      problems.push(`${rel}:${i + 1}: mojibake ${best[1]}`);
+      from = bestAt + best[0].length;
     }
     if (lines[i].includes("\t")) {
       problems.push(`${rel}:${i + 1}: contains a tab character`);
@@ -213,6 +281,11 @@ function check(file) {
 }
 
 for (const p of SCAN) walk(p);
+
+// The root pass. `check()` is called DIRECTLY rather than through `walk()` so the
+// extension filter cannot skip a root file: the whole point of enumerating the
+// root is that nothing there is exempt.
+for (const f of ROOT_FILES) check(f);
 
 console.log(`${files} file(s) scanned`);
 if (problems.length) {

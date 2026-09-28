@@ -10,19 +10,43 @@
 
 ## START HERE — current handoff (2026-09-28, third pause)
 
-**State: SAFE. Everything from this session is COMMITTED and PUSHED. `main` == `origin/main`
-(`git rev-list --left-right --count origin/main...HEAD` → `0 0`), the working tree is clean,
-and no scratch files remain in the repo root.**
+**State: SAFE. The 2026-09-28 session's work is COMMITTED; the working tree is clean and no
+scratch files remain in the repo root.**
 
-**Which commits matter** (deliberately not "the last commit" — that wording goes stale on the
-next push, which is how this paragraph got wrong once already; run `git log --oneline -3` for the
-current tip):
+**Do not trust this sentence for PUSH status — run the command.** Naming a commit, or asserting
+"pushed", has gone stale twice in this file's history, most recently because the very push carrying
+the claim falsified it. `git rev-list --left-right --count origin/main...HEAD` is authoritative:
+`0 0` means pushed, `0 N` means N local commits are unpushed. `git log --oneline -3` names the tip.
 
+**Commits that matter** (`git log` names the current tip — this list is a signpost, deliberately
+not a pointer to "the last commit"):
+
+- **The 2026-09-28 encoding work** — `audit-encoding.mjs` now reads the repo root by
+  **enumeration** instead of a hand-kept list (**six root Markdown files had never been opened**),
+  and its mojibake table matches bounding **prefixes** instead of character triples (a real
+  corrupted em dash had been sitting in *this* file, invisible). Seven further instances were
+  repaired: two real corrupted statute section signs in `docs/SEARCH-REQUESTS.md`, the rest
+  illustrations of the console artifact rewritten to name codepoints. See `CHANGELOG.md`, §30, §51.
+- **The 2026-09-28 flush work** — `learning-site/scripts/test-notes-flush-unit.mjs` **closes the
+  long-standing "unverified flush" item**, registered as **step 20 of 20** in `check-all.mjs`.
+  The flush is now proven by a test that fails when it is removed. See the note below.
 - **`d0eb0da`** — "Fix notes/tasks/checkboxes prop mismatch; add prop-contract guard" (24 files,
-  +1073/−236). **This is the fix.** Everything described below is in it.
-- **`c04380a`** — the docs correction that followed it, which brought this file and
-  `CHANGELOG.md` in line with `d0eb0da`.
+  +1073/−236). **This was the real bug fix** — notes had never saved at all.
+- **`c04380a`** — the docs correction that followed it.
 - **`237ccf1`** — the previous handover update, before the fix.
+
+> **2026-09-28, doc reconciliation — COMMITTED** (it said "uncommitted … check `git status`"
+> while it was being written; `git show --stat` on the tip reproduces the change).
+> `HANDOVER.md` §6 still described the curriculum as unfinished: *"32 remaining phase files"*,
+> *"Authored: 31. Remaining: 32."*, *"15 of 63 phases"*, *"21 of 63 phases across 4 tracks"*.
+> **All four are stale. The corpus is 66 phases across 10 tracks and is complete** —
+> `git ls-files ai-roadmaps` lists 66 `NN-phase-*.md` files across 10 track folders, every track
+> with its `00-overview.md` and `checklist-master.md`, and
+> `node scripts/build-content.mjs --check` reports `66 phase(s) across 10 track(s)`, exit 0.
+> §6.1, §6.2 and §14 are now prefixed HISTORICAL in place, each figure carries a
+> `SUPERSEDED 2026-09-28` line, and `CHANGELOG.md` has an `Unreleased` entry recording it.
+> **This note is the authoritative statement of content status; §6 below is the record of the
+> plan that produced the finished corpus, kept because the engineering history is worth reading.**
 
 ⚠️ **The previous START HERE (2026-09-25, kept below) was materially wrong and nearly cost a
 session.** See "What the old handover got wrong" at the end of this section.
@@ -76,14 +100,17 @@ both hooks and failed the build. Deleted: the footer line, both hook calls + imp
 round-trips). That also documented a latent bug: those keys' `kind` strings match **no**
 `mergeValue` branch, so they were already silently discarded on every restore.
 
-### ⚠️ THE ONE UNPROVEN CLAIM — read before trusting the notes-flush test
+### ✅ THE FLUSH IS NOW PROVEN — superseded 2026-09-28, and the technique is the one this section asked for
 
-**`verify-notes-flush.mjs` passes 9/9, but it CANNOT currently fail, so it is NOT evidence
-that the unmount flush works.**
+> **Superseded 2026-09-28.** The section below is kept as the record of a genuinely unresolved
+> claim and of why the script it was being tested with could not settle it. Do not read it as
+> current status: **the unmount flush is now verified by a test that fails without it.**
 
-The prove-it-can-fail run was done properly: the flush effect was reverted to write React
-state (`notes`) instead of the synchronously-written ref (`latest.current`), the site was
-rebuilt, and the script re-run. **It still passed 9/9.**
+**What was true, and stayed true.** `verify-notes-flush.mjs` passes 9/9 and **cannot fail on the
+flush path**, so for two sessions it was not evidence that the unmount flush works. The
+prove-it-can-fail run was done properly: the flush effect was reverted to write React state
+(`notes`) instead of the synchronously-written ref (`latest.current`), the site was rebuilt, and
+the script re-run. **It still passed 9/9.**
 
 The cause was found and fixed in the script — an `await sleep(300)` sat between the typing and
 the navigation, letting the ordinary `useEffect([notes])` write persist the text first. The
@@ -95,10 +122,34 @@ cannot isolate the unmount-flush code path** — under this timing the ordinary 
 commits before unmount regardless. The 9/9 pass proves the note field round-trips (real,
 useful) and says **nothing** about the flush itself.
 
-**Do not describe the flush as proven.** It is kept because it is correct on inspection and
-cheap, but it is **unverified**. Closing this needs a different technique — e.g. forcing the
-unmount inside the input handler, or a unit test that mounts the hook, calls `setNote`, and
-unmounts with no intervening render.
+**How the claim was actually closed.** The paragraph below said this needed "a different
+technique — e.g. … a unit test that mounts the hook, calls `setNote`, and unmounts with no
+intervening render." **That test now exists:** `learning-site/scripts/test-notes-flush-unit.mjs`,
+**step 20 of 20** in `check-all.mjs`. It mounts the hook directly and puts the state update and
+the unmount in **one synchronous block with no `await` between them**, so no passive effect can
+run in between, and it calls `localStorage.clear()` between the write and the unmount — which
+removes the mount write and leaves the unmount flush as the **only** thing that can put the
+marker back. It also covers a second, distinct failure: **two writes in one tick**, where a
+functional-`setState` implementation would let the first phase's note vanish while a single-write
+test still passed.
+
+**And it was proved falsifiable rather than assumed to work.** Commenting out the single `setItem`
+line in the unmount cleanup moved the run to **3 passed, 2 failed**, and the two failures were
+exactly the flush-dependent assertions — `the last keystroke survives an unmount with no
+intervening render` and `two writes in one tick both survive the unmount` — with the mount-write
+assertion still green (`mount write was "{}"`). The flush was restored immediately and the run
+returned to 5/5.
+
+**Scope of the claim, stated precisely:** the flush is verified for the one scenario it exists to
+handle — an unmount with no intervening render — by a test that **fails when the flush is
+removed**. The CDP harness still cannot isolate that path; that is a limitation of the harness,
+not an open question about the flush. A guard that has only ever been seen passing is not evidence,
+which is why the probe result above is recorded instead of the assertion.
+
+> Kept verbatim from the superseded text: *"Do not describe the flush as proven. It is kept
+> because it is correct on inspection and cheap, but it is unverified. Closing this needs a
+> different technique…"* — **that instruction is now discharged, and the record of it is the
+> reason the technique was found.**
 
 ### Exact resume steps (next session)
 
@@ -113,10 +164,12 @@ unmounts with no intervening render.
 4. `cd learning-site && npm test`, and from root the content battery
    (`node scripts/build-content.mjs --check; echo exit=$?`, then `audit-quiz`,
    `audit-lesson-ast`, `audit-arithmetic`, `audit-encoding`).
-5. Optional: `node scripts/verify-notes-flush.mjs http://localhost:4199` — 9/9, but read the
-   caveat above first; it is **not** proof of the flush.
-6. **Nothing is blocked.** Pick up whichever real item you want — the **unverified flush**,
-   the **mobile-device P0**, or **content** (§0 item 8).
+5. `learning-site/scripts/test-notes-flush-unit.mjs` runs as **step 20** inside `npm test` and
+   needs no server — that is the flush's coverage. Optional and useful for the note field:
+   `node scripts/verify-notes-flush.mjs http://localhost:4199` — 9/9, but that harness **cannot
+   fail on the flush path** (see the note above), so it is not the evidence.
+6. **Nothing is blocked. The flush is done.** Pick up whichever real item you want — the
+   **mobile-device P0** (see "Still open" below), or read §6 for what the corpus now contains.
 
 ### What commit `d0eb0da` contains (24 files, staged by explicit path, never `git add -A`)
 
@@ -148,7 +201,9 @@ This is now **history**, not a working tree — `git show --stat d0eb0da` reprod
 - Offline unit suites ✅ — shapes, inline, quiz, lesson-blocks, components, exam, practice,
   search, cost-tone, free-toolkit.
 - `audit-a11y.mjs` ✅ — all 6 nav buttons found, every view passes contrast/names/headings/landmarks.
-- `verify-notes-flush.mjs` — **9/9, but see the caveat above; NOT proof of the flush.**
+- `verify-notes-flush.mjs` — **9/9**. It covers the note field, but **cannot fail on the flush
+  path** (a limit of that harness, not of the flush). The flush itself is covered by
+  `test-notes-flush-unit.mjs`, which **does** fail when the flush is removed — see the START HERE.
 
 Non-blocking: the AST `~21k`-char gain / zero loss note, and Vite's static+dynamic import
 warning for `index.json`. Both are historical and unchanged.
@@ -183,14 +238,18 @@ Three of the four §9.6 defects are now **fixed and committed**: the notes prop 
 real bug — notes had never saved), the `useFocusTrap` `paddingRight` leak, and the `Exam.jsx`
 dead branch. `.gitignore` was already done. What genuinely remains:
 
-- **The unmount flush is UNVERIFIED** (see the caveat above). It is kept because it is correct
-  on inspection and cheap, but the CDP harness cannot isolate it. It needs a **different
-  technique**, not another run of the same script — e.g. a unit test that mounts the hook,
-  calls `setNote`, and unmounts with no intervening render.
+- ✅ **The unmount flush is no longer open — CLOSED 2026-09-28.** It is now verified by
+  `learning-site/scripts/test-notes-flush-unit.mjs` (step 20 of 20 in `check-all.mjs`), which
+  mounts the hook, calls `setNote`, and unmounts with no intervening render — **the exact
+  technique named below** — and which drops to **3 passed / 2 failed** when the flush is removed.
+  The CDP harness still cannot isolate the path; that is a limit of the harness, not a gap in the
+  flush. See the START HERE note.
 - **The mobile-device P0 in `ROADMAP.md` still needs a real phone.** Emulation is not a
   substitute; that is the whole point of the item.
-- **Content is the only thing between this project and "done"** — 3 of 10 tracks remain. See
-  §0 item 8 and §6.
+- ✅ **Content is NOT a remaining item.** This line said "3 of 10 tracks remain" until
+  2026-09-28; the corpus is **66 phases across 10 tracks** and
+  `node scripts/build-content.mjs --check` reports exactly that, exit 0. §0 item 8 and §6 keep the
+  plan that finished it.
 
 ---
 
@@ -242,8 +301,11 @@ The GitHub account was re-authenticated after setting DSH to Full Access. `git f
 6. **At most 1 subagent is permitted** (user instruction: *"you can always use 1 sub agent to maximize our concurrency"*, reaffirmed as *"you can use 1 subagent rn if you need"*). Used well, a subagent is a real concurrency win — but **verify its report at the detail level before trusting it.** Last session one subagent caught a genuine bug in my rename script while being wrong about another claim. For **content authoring** the standing advice is: write the phases directly, by hand; do not fan out.
 7. **The plan is 10 tracks / 63 phases.** Two additions driven by the user's clarified goal (*"just want to really build a skill and knowledge so maybe i can get even ai job someday"*): the **freemium / zero-budget playbook** (`cost/07`) and a whole new **Career & Getting Hired** track (4 phases).
 8. **⭐ SEVEN of ten tracks are complete; three remain empty — 15 of 63 phases.** Done: `foundations` (8), `model-internals` (6), `prompting` (7), `rag` (7), `cost` (7), `agents` (7), **`finetuning` (6 — completed this session)**. Remaining: `vibecoding` (8), `safety-career` (5), `career` (4). **Content is now the only thing between this project and "done"** — the site, its guards and its docs all exist. See §6.
+   > ⚠️ **SUPERSEDED 2026-09-28 — the curriculum is complete.** All ten tracks exist and the corpus is **66 phases across 10 tracks** (`foundations` gained a ninth phase, `multimodal-and-vision`, after this was written), each track with its `00-overview.md` and `checklist-master.md`; `git ls-files ai-roadmaps` confirms it. The paragraph above is the state at the time it was written and is kept as the record. **The START HERE at the top of this file is authoritative; this list is not.**
    - **All 20 track files and both shared docs are also written** (`00-overview.md` and `checklist-master.md` × 10, `resource-list.md`, `glossary.md`) — **but they are invisible to the build and the site. That is a real defect, and it is the most important thing in §6.2.**
+     > ✅ **RESOLVED.** Track overviews and checklists now build and render through the current pipeline; §6.2 keeps the incident and its fix as engineering history. The sentence above is preserved as the record of the defect.
    - **The three remaining tracks are the ones this project was really named for.** `vibecoding` (8) is the flagship and the largest remaining block; `safety-career` (5) and `career` (4) close the job-readiness spine the user explicitly asked for. **Order suggestion: `vibecoding` next**, because the user's stated goal is skill and employability rather than more theory.
+     > ✅ **DONE.** All three were written — `vibecoding` (8 phases), `safety-career` (5), `career` (4). No phase-authoring work remains.
 
 ---
 
@@ -561,6 +623,8 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 **Revised totals: 10 tracks, 63 phases.** (Was 9 tracks / 60 phases.)
 **Authored: 31. Remaining: 32.**
 
+> ⚠️ **SUPERSEDED 2026-09-28.** The plan grew past 63 phases (`foundations` gained `multimodal-and-vision`) and then finished: **66 phases across 10 tracks, 0 remaining.** The two lines above are the state at the time they were written, not a to-do. See the START HERE.
+
 **Plan changes already applied to the code:**
 - `scripts/build-content.mjs` `KNOWN_TRACKS` now contains a `career` entry (`short: 'career'`, `folder: 'career'`).
 - The `safety-career` track was **relabelled** to `Safety & Ethics` (blurb: "Alignment, misuse, privacy, and using these tools honestly.") because career content moved out into its own track. Its `id`, `short` and `folder` are **unchanged** — do not rename them, as existing IDs depend on them.
@@ -606,9 +670,11 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 
 ---
 
-### 6.1 Content — 32 remaining phase files
+### 6.1 Content — ⚠️ HISTORICAL: the phase plan as it stood with 32 files left (all now written)
 
-**RAG track (3 remaining, target 7):**
+> ⚠️ **SUPERSEDED 2026-09-28.** This section listed what was still to author. **Nothing is.** The corpus is **66 phases across 10 tracks**, every track carrying its `00-overview.md` and `checklist-master.md`, confirmed by `git ls-files ai-roadmaps`. The tables below are the briefs that were used to write those phases, so they remain useful as design record — read them as *what was specified*, not as a to-do list. **The START HERE at the top of this file is authoritative.**
+
+**RAG track (7, target 7) — ✅ COMPLETE.** Prefix `rag-`. Folder `ai-roadmaps/rag/`. All three remaining phases were written: `05-phase-metadata-and-evaluation.md`, `06-phase-rag-debugging.md`, `07-phase-graphrag-advanced.md`.
 
 | # | Slug | Title | Must teach |
 |---|---|---|---|
@@ -652,7 +718,7 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 | 7 | `working-with-agents` | Working With Coding Agents | Practical craft for agentic tools (Claude Code-style, IDE agents). Cover: giving a bounded task with a verifiable end state; letting it explore vs pinning the approach; reviewing diffs rather than trusting summaries — **the agent's report is a claim, the diff is the evidence**; committing before an agent run so you can revert; small increments over one big run; when a task is too big (decompose) or too ambiguous (specify); watching for scope creep in the diff; the "did it actually run the tests" check. Ties to Agents track heavily. |
 | 8 | `responsible-vibecoding` | Shipping What You Build | Turning vibecoded work into something defensible. Cover: security review for generated code (**the top real risks**: hardcoded secrets, missing authz, injection, dependency supply chain, unsafe deserialization); dependency hygiene (models suggest abandoned or malicious packages — verify); licences of generated code and of dependencies; **disclosure norms** (ties to `using-ai-honestly`); maintainability — will you understand this in six months; writing the README and the honest writeup; the portfolio argument: **one deep project with tests and an eval suite beats five demos**. Finish by connecting to the Safety track. |
 
-**Safety & Ethics track (5, target 5) — ALL TO WRITE.** Prefix `safe-`. Folder `ai-roadmaps/safety-career/`. **Note the track was relabelled to "Safety & Ethics" but its id/short/folder are unchanged** — see §6.0.
+**Safety & Ethics track (5, target 5) — ✅ COMPLETE (was ALL TO WRITE).** Prefix `safe-`. Folder `ai-roadmaps/safety-career/`. **Note the track was relabelled to "Safety & Ethics" but its id/short/folder are unchanged** — see §6.0. All five phases now exist (`01-phase-how-models-go-wrong.md` … `05-phase-career-in-the-ai-era.md`).
 
 | # | Slug | Title | Must teach |
 |---|---|---|---|
@@ -662,7 +728,7 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 | 4 | `using-ai-honestly` | Using AI Honestly | Practical, not preachy. Attribution and disclosure (when to say you used AI; norms still forming). **What is actually cheating in learning vs efficient use** — clear framework: using AI to *skip the struggle* vs using it to *check understanding after struggling*. The difference between AI-assisted work you can defend and work you cannot — the test: **"could I explain, debug, and extend this myself?"** Plagiarism vs generation. **Skill atrophy** — which competences weaken if you never do the work (reading unfamiliar code, debugging without hints, writing from a blank page, estimating difficulty). Honesty in the other direction too: not claiming credit you didn't earn, not hiding permitted tool use. Finish with a **personal policy template** the reader writes for themselves. |
 | 5 | `career-in-ai-era` | Career in the AI Era | ⚠️ **BOUNDARY CHANGED — see §6.0.2.** This phase now owns **the transition out of learning**: what differentiates people now that generation is cheap (**JUDGEMENT**, verification, systems thinking, specification, domain knowledge); the durable-vs-volatile distinction applied to **skills**; **how to keep learning without drowning** (few high-signal sources, follow mechanisms not leaderboards, re-check volatile specifics, **monthly cadence not daily**); and an honest self-assessment of where the reader actually stands. It should **hand off to the Career track** for portfolio construction, job search, and the 90-day plan — cross-reference rather than duplicate. Recommended split: **this phase ends the learning phase and states the reader is ready; `career/01–04` own everything about getting hired.** |
 
-### 6.2 Track-level files — ✅ WRITTEN, but ⚠️ NOT RENDERED (new defect found this session)
+### 6.2 Track-level files — ⚠️ HISTORICAL (both milestones closed; see the status line below)
 
 **Historical milestone:** all 22 overview/checklist/shared files were written in the commits below; the current corpus and rendering status are verified by the live build/tests in the 2026-09-19 handoff at the top. The build now reports `shared docs: 4`.
 
@@ -675,7 +741,7 @@ An audit of the authored 31 phases found the freemium spine was **already strong
 
 ### 6.3 Historical milestone — initial learning site
 
-At the time of the original site implementation it rendered 42 phases across six tracks. Current status is 65 phases across 10 tracks; see the 2026-09-19 handoff at the top and rerun tests before relying on current counts.
+At the time of the original site implementation it rendered 42 phases across six tracks. **Current status, confirmed 2026-09-28: 66 phases across 10 tracks — the curriculum is complete.** See the START HERE at the top; rerun the tests before relying on any count in this section.
 
 | | |
 |---|---|
@@ -1425,13 +1491,16 @@ command does not mean "ignored". Use `git status --porcelain` to test this
 question, because that is what actually decides whether a file would be committed.
 I got this wrong first and briefly reported the rule as broken when it was correct.
 
-### `learning-site/src/hooks/useNotes.js` — SUPERSEDED 2026-09-28: kept, but UNVERIFIED
+### `learning-site/src/hooks/useNotes.js` — ⚠️ HISTORICAL: kept, and since 2026-09-28 the flush is VERIFIED
 
-> **Correction (2026-09-28).** Two things changed since this was written. The flush was **kept**
-> — but the prove-it-can-fail run showed the CDP harness **cannot isolate the unmount path**, so
-> it is **unverified**, not "not yet proven" pending a fixed test. And this was **never the real
-> defect**: `PhaseDetail.jsx` passed `NotesPanel` the wrong prop names, so notes had never saved
-> at all. Read the current START HERE; the paragraph below is history.
+> **Correction (2026-09-28).** The flush was **kept**, and this was **never the real defect**:
+> `PhaseDetail.jsx` passed `NotesPanel` the wrong prop names, so notes had never saved at all.
+>
+> **⚠️ The verdict in this note was itself superseded the same day.** It said the flush was
+> **unverified**, because the CDP harness cannot isolate the unmount path — true of *that
+> harness*. `learning-site/scripts/test-notes-flush-unit.mjs` then verified it directly: the
+> flush runs on unmount with no intervening render, and removing it fails two assertions.
+> **Read the START HERE for current status; everything below is history.**
 
 **The defect it addresses.** `useNotes` writes to localStorage in a
 `useEffect(..., [notes])`, which runs after paint. `useNotes()` is instantiated
@@ -1455,12 +1524,15 @@ a selector bug, so it never exercised the note field.
 path. The unmount flush is a safety net only; if it ever becomes the sole writer, a
 reader who stays on one phase would never save at all.
 
-### `learning-site/scripts/verify-notes-flush.mjs` — SUPERSEDED 2026-09-28: committed, 9 checks, still cannot fail
+### `learning-site/scripts/verify-notes-flush.mjs` — ⚠️ HISTORICAL: 9 checks, and it cannot fail on the flush path
 
 > **Correction (2026-09-28).** The selector bug described below was **already fixed** before the
 > last session started, so "fix it" was a no-op. The script now runs **9** checks, not 5, and it
 > is **committed**, not untracked. It passes 9/9 — and it **also** passed 9/9 with the flush
-> deliberately reverted, which is why it is not evidence. See the START HERE caveat.
+> deliberately reverted, which is why it is not evidence **that the flush works**. It remains
+> good evidence that the note field round-trips. The flush's evidence is
+> `test-notes-flush-unit.mjs` (see the START HERE); this script's limit is the harness, and no
+> re-run of it can change that.
 
 A CDP-driven browser test that reproduces the race faithfully: it types into the
 note field via a native value setter plus a real `input` event, then navigates away
@@ -1489,8 +1561,9 @@ script because they encode real app behaviour:
 
 > ⚠️ **This draft was NEVER USED — it was superseded by `d0eb0da`.** It is kept only as an
 > example of the house style. Note what it gets wrong: it presents the `useNotes` flush as *the*
-> fix, which the 2026-09-28 session disproved — the real defect was the prop contract, and the
-> flush is unverified. Do not reuse this text.
+> fix, which the 2026-09-28 session disproved — the real defect was the prop contract. (It also
+> called the flush unverified; that verdict was retired the same day by
+> `test-notes-flush-unit.mjs`.) Do not reuse this text.
 
 **Suggested commit message** (the house style is prose explaining *why*, per
 `CHANGELOG.md`):
@@ -1560,7 +1633,7 @@ Status block at the end of this section; kept as the record of what the audit fo
 
 | Finding | Outcome |
 |---|---|
-| 1. `useNotes` unmount race | **Moot, and the flush is UNVERIFIED.** The *real* defect was a prop-contract mismatch in `PhaseDetail.jsx` — notes had **never** saved, so there was no race to lose. The flush is kept but the CDP harness cannot isolate it; see the START HERE caveat. |
+| 1. `useNotes` unmount race | **Moot — and since 2026-09-28 the flush is VERIFIED, not merely kept.** The *real* defect was a prop-contract mismatch in `PhaseDetail.jsx` — notes had **never** saved, so there was no race to lose. The CDP harness still cannot isolate the unmount path, but `test-notes-flush-unit.mjs` does, and it fails when the flush is removed. See the START HERE. |
 | 2. `useFocusTrap` `paddingRight` leak | **Fixed** — captures and restores the previous value (LIFO overlays), as the finding itself suggested. |
 | 3. Dead branch at `Exam.jsx:322` | **Fixed** — removed. |
 | `.gitignore` Secrets block (previous session) | **Already committed** (`315a7c8`). |
@@ -1750,6 +1823,10 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 30. **A mojibake table is never finished by reasoning. It grows by finding real damage.**
     Four variants were added, **each one discovered rather than predicted**, each proved by injecting that exact sequence. Guessing the set of possible corruptions in advance produces a table that looks thorough and misses the one in front of you. When a new variant appears: add it, fix the file, and **prove the new entry fails** — an entry that never matches is indistinguishable from a working one until a reader sees the garbage.
 
+    **Then the table violated its own lesson, and the table was what lost.** Every entry above matched a corrupted **character triple**, which silently assumed the third character was stable. It is not: `HANDOVER.md` quoted a console misrendering whose third character was a **straight quote** rather than the curly one, and since no entry could match it the guard called that file clean for as long as the line existed. The fix was **not** a fifth triple. A triple is unbounded in its last position; the **prefix** is bounded, because a euro sign directly after an a-circumflex only ever comes from misreading a UTF-8 three-byte character as cp1252. Matching on the prefix closed the entire family at once — and finding real damage is precisely what showed the prefix was the right level: **the seven further instances it immediately surfaced had been invisible for exactly the same reason.** Four were real corrupted statute section signs in `docs/SEARCH-REQUESTS.md`, repaired to `§`; three were deliberate illustrations of this same console artifact (`AGENTS.md`, `SETUP.md`, `TROUBLESHOOTING.md`), rewritten to name the codepoint rather than print the sequence, because the exemption that keeping them would require creates a file the guard cannot police. **Enumerate an unbounded position and the table is never finished; match the bounded one and the family closes.** A related detail: a family entry matches the same character as the specific entry, so the scan now keeps the longest pattern at the earliest position — otherwise widening the table would have reported every bad character twice.
+
+    **What is still not claimed.** The principled generalisation is *any* of `Â`, `Ã`, `â` followed by *any* cp1252-mapped byte, and that is **not** implemented — only the two families where damage was actually observed are. The table is therefore *less* wrong than it was, not complete, and that is the only claim this lesson permits.
+
 31. **⚠️ Fixing an encoding bug can introduce a WRONG CHARACTER, and the guard will not catch it.**
     The first repair pass mapped a corrupted **en dash** onto `U+201C`, a **left double quote**, turning `at 1–2 hours a day` into `at 1“2 hours a day`. The encoding guard went **green immediately** — `U+201C` is a perfectly legitimate character it has no reason to flag. **Encoding validity and textual correctness are different properties**, and only the first is mechanised. Repair with a **context-aware rule** (here, a regex replacing a quote only *between two digits*) rather than a blanket substitution, then sweep the corpus for the same mis-mapping.
 
@@ -1834,7 +1911,7 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
     **The generalisable rule: when a handoff must pass through a person, the artifact should require no judgement from them.** Every relay that depended on the human deciding *what* to send failed. The moment the instruction became "paste this one file verbatim" the ambiguity had nowhere to live. Note also that the review *was substantively good* — it correctly spotted that Q2 and Q3 overlapped, that the date belonged in the first sentence, and that Q12's statute half would make an assistant redo finished work. **All three fixes were adopted.** A failed relay can still carry useful content; the failure is in the packaging, not necessarily in the thinking.
 
 46. **An unexpected result from your own instrument is evidence about the instrument first, and the subject second.**
-    Three separate false alarms in one session, all the same shape. **(a)** A `node -e` one-liner crashed with *"Cannot read properties of undefined"*; I read it as a quiz question missing its `- [x]` marker and started hunting the file. The bug was mine — `pos['ABCD'][findIndex(...)]` — and decoding the six segments properly showed `options=4 xIndex=1..3` on every one. **(b)** Console output showed `â€"` and I began diagnosing mojibake in a file that had **0** occurrences of the signature byte `U+00E2` and 94 real em dashes (see lesson 44 for that console trap, which I walked into again anyway). **(c)** A browser probe set `location.hash` on every route, got an identical **20,368 characters** back, and I concluded the routes were broken — but `src/App.jsx` lines 4–15 document that routing is **deliberately** a string in `useState` with no deep-linking. Probing by **clicking** passed both new tracks immediately.
+    Three separate false alarms in one session, all the same shape. **(a)** A `node -e` one-liner crashed with *"Cannot read properties of undefined"*; I read it as a quiz question missing its `- [x]` marker and started hunting the file. The bug was mine — `pos['ABCD'][findIndex(...)]` — and decoding the six segments properly showed `options=4 xIndex=1..3` on every one. **(b)** Console output showed a corrupted em dash — the `U+00E2 U+20AC` prefix with a straight quote as its third character, named here by codepoint rather than written literally, because a file that contains the sequence a guard searches for cannot be policed by that guard (lesson 32) — and I began diagnosing mojibake in a file that had **0** occurrences of the signature byte `U+00E2` and 94 real em dashes (see lesson 44 for that console trap, which I walked into again anyway). **(c)** A browser probe set `location.hash` on every route, got an identical **20,368 characters** back, and I concluded the routes were broken — but `src/App.jsx` lines 4–15 document that routing is **deliberately** a string in `useState` with no deep-linking. Probing by **clicking** passed both new tracks immediately.
 
     In each case the right first move was to check the instrument — decode the data properly, count the signature byte, read the source — before touching the thing being measured. **Three times in one session is a habit, not bad luck.** The tell is an *identical* or *absurd* result: 20,368 chars on every route is not a routing bug, it is a probe that never navigated.
 
@@ -1862,9 +1939,11 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **Fixed** with a pure-append 706-line block (all values from existing tokens, responsive grids, a real skip link), and **guarded** by a new `learning-site/scripts/audit-css.mjs` that fails when any class referenced in JSX has no rule, or any bare `var(--x)` has no definition. It was **proved to fail for the right reason** against the broken stylesheet: exit 1, naming all 40 classes with the files that use them. Wired into `npm test` and CI.
 
-51. **A guard's blind spot is exactly as wide as the selector it uses to find its input — this project has now hit that THREE times, and twice in one session.**
+51. **A guard's blind spot is exactly as wide as the selector it uses to find its input — and this one guard has now produced THREE instances of it, all three enumerated below so the count can be checked rather than believed.** (The heading previously said *three* while listing *two*; the list is what is real, so the missing case is now written out and it is the one measured here.)
     First instance (already in §12): `audit-encoding.mjs` scanned only `learning-site/*` and reported clean while never opening the 48 curriculum phases. Fixed then by adding directories.
     Second instance, this session: the **same guard** decided coverage by file **extension**, so `.gitignore` (no extension), `.editorconfig` and `.github/workflows/*.yml` were never opened. A stray CR landed in `.gitignore` and **git itself warned on push** — the guard had reported "all clean" because it had never read the file. Fixed by adding `.github`, the root docs, and an `EXTENSIONLESS` set; files scanned went **190 → 200**. Proved by injecting CRLF into `.gitignore` and watching it exit 1 with `.gitignore: 38 CRLF line ending(s)`.
+
+    Third instance, this session, and the **second time the fix for this class failed**: the second fix replaced the extension rule with a **named list of root files**, and six tracked root Markdown files — `CHANGELOG.md`, `CHECKPOINT.md`, `ROADMAP.md`, `SETUP.md`, `TROUBLESHOOTING.md` and `WORKFLOW.md` — were never in it, so they had never been read. **Measured rather than inferred:** a lone CR was injected into each of the six, the CR was **asserted present on disk before the audit ran**, and the real audit was then executed — all six **exited 0 and were never reported**, while the control `HANDOVER.md`, which *is* in the list, exited 1 and was named. So the detector worked and the **list** was the hole. Fixed by **enumerating the repo root at runtime** (`readdirSync(REPO, { withFileTypes: true })`, files only, the extension filter deliberately bypassed) instead of naming files; files scanned went **208 → 214**, exactly the six. The identical probe re-run flipped all six to exit 1 and named each. **A hardcoded list is the extension rule with extra steps** — each fix in this series narrowed what the guard could see while looking more explicit. A latent hole in the same class was closed in the same pass: `walk()` still decided coverage by **extension**, so an extensionless file added in a **subdirectory** would have been skipped in silence, and the `EXTENSIONLESS` set the second fix introduced had become **dead code** — every member of it was a root file, and the root pass already reads those directly, so it existed only as one more place to keep in sync. The set was deleted and replaced by a rule (an extension we own **or** no extension at all), proved by creating an extensionless file carrying CRLF inside `learning-site/scripts/` and watching the audit name it, while a `.bin` file carrying the identical CRLF was left unread — one direction alone would have been satisfied by a rule that reads everything.
 
     An extension list, a directory list, or a hardcoded file list all fail **silently** and report success on everything they never looked at. When adding a check, ask what input it *cannot* see.
 
@@ -1934,9 +2013,11 @@ The user's five-part objective, **as clarified mid-session**. The user later nar
 
 **Status of those criteria right now:** all content guards green; `npm test` green (9/9 offline, 135 unit assertions); browser suites green (25 checks) on dev **and** production. The remaining gap to "done" is **content**, not the site: 21 of 63 phases across 4 tracks.
 
+> ⚠️ **SUPERSEDED 2026-09-28 — there is no remaining content gap.** All ten tracks are complete at **66 phases**, so the sentence above is the record of an earlier state rather than a to-do list. See the START HERE.
+
 ---
 
-## 14. Standing design principles for the remaining 21 phases
+## 14. Standing design principles — ⚠️ HISTORICAL (no phases remain to write)
 
 These emerged from the user's clarifying question and should govern everything still to be written.
 

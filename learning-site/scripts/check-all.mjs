@@ -230,6 +230,38 @@ const STEPS = [
     args: [join(HERE, "audit-props.mjs")],
     why: "a prop no caller supplies is undefined inside the component, and the failure is invisible: a missing handler makes a control do nothing while still rendering, focusing and accepting input, and missing data renders as empty rather than as an error. Three such mismatches shipped on the phase page — notes and practice answers never persisted, and checklist boxes never showed as ticked — and every content, shape, projection and browser-sweep check stayed green through all of it, because the data was correct and only the wiring was wrong. This parses each component's declared props and each of its call sites and fails when a prop is declared that no caller passes. It is deliberately per-component: a global 'this name is used somewhere' scan let a real regression on NotesPanel report as two missing props instead of four",
   },
+  {
+    // This step exists because the BROWSER harness cannot fail on this path, and a
+    // green browser run was being read as proof that the unmount flush works.
+    //
+    // It cannot. Typing dispatches a synchronous `input` event, so `setNote` runs and
+    // schedules a render -- but the `useEffect([notes])` write is a PASSIVE effect and
+    // is not flushed during that event. When the following click commits,
+    // `commitRootImpl` calls `flushPassiveEffects()` FIRST, so the ordinary write lands
+    // before PhaseDetail unmounts and the flush has nothing left to do. Removing the
+    // flush therefore changes nothing observable in a browser.
+    //
+    // CHANGELOG.md records the measurement rather than the reasoning: with the flush
+    // deliberately reverted to a plain state write and the site rebuilt,
+    // `verify-notes-flush.mjs` still passed 9/9. That 9/9 was evidence about the
+    // harness, not about the hook.
+    //
+    // So this file mounts the hook directly and puts the state update and the unmount
+    // in ONE synchronous block, with no await between them, so no passive effect can
+    // run in between. `localStorage.clear()` runs between the write and the unmount,
+    // which removes the mount write; the only thing that can put the marker back is
+    // the flush itself. With the flush removed the store stays empty and this exits 1.
+    //
+    // The second scenario covers a DIFFERENT failure: two writes in one tick. If
+    // `commit()` used a functional setState updater instead of the ref, the second call
+    // would build its new store from the pre-first-write value and the first phase's
+    // note would vanish. A single-write test passes straight through that bug, which is
+    // why the case is here rather than folded into the assertion above.
+    name: "notes flush (unmount persistence, unit)",
+    cmd: "node",
+    args: [join(HERE, "test-notes-flush-unit.mjs")],
+    why: "the browser harness CANNOT fail on this path -- typing dispatches a synchronous input event, so setNote schedules a render, but the useEffect([notes]) write is a PASSIVE effect that is not flushed during the event; when the following click commits, commitRootImpl calls flushPassiveEffects() FIRST, so the ordinary write lands before PhaseDetail unmounts and the flush has nothing left to do. CHANGELOG.md records that verify-notes-flush.mjs still passed 9/9 with the flush deliberately reverted to a plain state write, so a green browser run says nothing about the flush in either direction. This step mounts the hook directly, puts the setState and the unmount in ONE synchronous block with no await between them, clears localStorage in between so only the flush can put the marker back, and asserts the value read off disk -- it exits 1 with the flush removed. Without this entry the file is a file, not a test",
+  },
 ];
 
 let failed = 0;
