@@ -271,6 +271,14 @@ The practical rule is unchanged, so do not skip it because the trend is interest
 
 **Where reflection stops working.** With a weak signal it makes things worse rather than better. With a strong signal it costs extra calls and context per attempt, which is worth paying when attempts are cheap and the signal is reliable, and not worth paying when you could simply fix the underlying tool or prompt instead. And reflection cannot invent information: if the agent failed because a tool cannot do what was needed, reflecting on the failure will not grant the capability. It is a way of using a signal you already have, not a substitute for having one.
 
+**And "worse" here can mean measurably worse, not marginally worse.** The most natural coding workflow is *ask, look wrong, ask again* — which is reflection with a human occupying the signal role. Shukla, Joshi and Syed ran precisely that as a controlled experiment: **400 code samples, 40 rounds of "improvement", four prompting strategies** ([arXiv:2506.11022](https://arxiv.org/abs/2506.11022), *"Security Degradation in Iterative AI Code Generation — A Systematic Analysis of the Paradox"*, read 2026-09-29). The result runs against the intuition that has the field. **After five iterations the code carried 37.6% more critical vulnerabilities**, with a distinct vulnerability pattern for each prompting strategy. Every round of self-correction added flaws rather than removing them.
+
+The mechanism is the one from Phase 3's red-flag taxonomy, which is why it is worth connecting: **an improvement pass is still a generation pass**, and generation is good at surface-level patterns and bad at following dataflow across lines and files. A refactor that "tightens" a request handler re-renders the escaping logic from scratch, and the re-render is where the injection comes back. **Each iteration re-rolls every weakness it did not specifically target, and carries no memory of the one you caught last time.** That is also why "just clean up this file, it looks messy" is a riskier request than it sounds.
+
+The consequence is narrow and actionable. Reflection pays when failure is detected by **something other than judgement** — a failing test, a type error, a traceback, a linter. It does not pay when the only signal is *"this looks wrong to me"*, because that signal is the same surface pattern-matching that is already producing the defect. **If your loop's stopping condition is your own opinion of the code, you are not verifying — you are re-rolling.**
+
+The honest limit on the number: this is a controlled synthetic experiment, and 37.6% is a rise in *detected critical* vulnerabilities under static analysis, not a measured rise in exploited breaches. Take the direction as the finding and the magnitude as one study's figure.
+
 ### Part 5 — Choosing a pattern
 
 Five patterns, and the task's structure — not the pattern's sophistication — decides.

@@ -138,7 +138,22 @@ These are the patterns worth descending for. They are ranked by how often they c
 
 **4. Unnecessary dependencies.** A new library for something the standard library does. Every dependency is supply-chain surface, licence exposure and a future upgrade. If the brief said "no new dependencies", this is a violation rather than a preference.
 
-**5. Security smells.** String-concatenated SQL. Shell commands built from input. Secrets in code. `eval`. Broad permissions. Missing authorisation on an endpoint that has authentication. Phase 8 goes deep; the flag belongs here.
+**5. Security smells — and where that instinct is wrong.** String-concatenated SQL. Shell commands built from input. Secrets in code. `eval`. Broad permissions. Missing authorisation on an endpoint that has authentication. Phase 8 goes deep; the flag belongs here.
+
+**Rank that list by measurement, not by folklore, because two of its items are backwards.** Veracode's Spring 2026 report ran 80 coding tasks across Java, JavaScript, C# and Python, five instances per language-and-weakness combination, against models totalling over 150 LLMs. The aggregate everybody quotes is that **45% of generation tasks introduce a known security flaw** ([veracode.com](https://www.veracode.com/blog/spring-2026-genai-code-security), read 2026-09-29). The aggregate is close to useless on its own, because the four weakness classes are wildly uneven:
+
+| Weakness class | Share of tasks producing secure code |
+| --- | --- |
+| Insecure cryptography (CWE-327) | **86%** |
+| SQL injection (CWE-89) | **82%** |
+| Cross-site scripting (CWE-80) | **15%** |
+| Log injection (CWE-117) | **13%** |
+
+**The two you would guess are worst are the two it handles best.** Insecure crypto and SQL injection are the *top* two results. Veracode's own explanation is the mechanism, and it generalises past security: models are good at **recognising surface-level patterns**. A parameterised query and a standard crypto library are recognisable shapes — they look the same in every textbook, so the model reproduces the shape correctly. What fails is anything whose correct answer depends on tracking dataflow **across** multiple lines or files, because that is not a pattern to be recognised, it is a path to be followed. XSS and log injection are both in that category, and both are in the bottom two.
+
+So **descend on the escaping and the log line, not on the SQL string.** If review time is scarce, spend it on how untrusted values are escaped on their way into HTML and sanitised on their way into a log file. Do not spend it re-litigating a query that is already parameterised — you will spend it and find nothing.
+
+Two caveats that must travel with the 45% everywhere it is repeated. First, it is a **vendor running its own static analysis over its own task set**, restricted to four weakness classes: it measures whether a *generated snippet* contains a known pattern, not whether a *shipped application* is safe, and it says nothing about authorisation, secrets in environment variables, or business-logic flaws. Second, it is **not a general security rate** — the 45% is an aggregate across four classes, and two of them account for nearly all of the failures. "45% of AI code is insecure" is a much bigger claim than the measurement supports, and it is the form the number usually travels in.
 
 **6. Tests that match the code.** If tests arrived with the implementation, they assert what the code does. That includes the bugs. Phase 4 is entirely this problem, and it is listed here because it is a red flag *while reviewing*, not only while testing.
 
