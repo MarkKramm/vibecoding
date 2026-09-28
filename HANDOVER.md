@@ -21,13 +21,15 @@ the claim falsified it. `git rev-list --left-right --count origin/main...HEAD` i
 **Commits that matter** (`git log` names the current tip — this list is a signpost, deliberately
 not a pointer to "the last commit"):
 
-- **The 2026-09-28 encoding work** — `audit-encoding.mjs` now reads the repo root by
+- **`5e32550`** — "Run the notes-flush unit test in the suite, and close two encoding-guard blind
+  spots" (9 files, +807/−88). The 2026-09-28 encoding work is here: `audit-encoding.mjs` now reads
+  the repo root by
   **enumeration** instead of a hand-kept list (**six root Markdown files had never been opened**),
   and its mojibake table matches bounding **prefixes** instead of character triples (a real
   corrupted em dash had been sitting in *this* file, invisible). Seven further instances were
   repaired: two real corrupted statute section signs in `docs/SEARCH-REQUESTS.md`, the rest
   illustrations of the console artifact rewritten to name codepoints. See `CHANGELOG.md`, §30, §51.
-- **The 2026-09-28 flush work** — `learning-site/scripts/test-notes-flush-unit.mjs` **closes the
+- **Also in `5e32550`** — `learning-site/scripts/test-notes-flush-unit.mjs` **closes the
   long-standing "unverified flush" item**, registered as **step 20 of 20** in `check-all.mjs`.
   The flush is now proven by a test that fails when it is removed. See the note below.
 - **`d0eb0da`** — "Fix notes/tasks/checkboxes prop mismatch; add prop-contract guard" (24 files,
@@ -35,8 +37,8 @@ not a pointer to "the last commit"):
 - **`c04380a`** — the docs correction that followed it.
 - **`237ccf1`** — the previous handover update, before the fix.
 
-> **2026-09-28, doc reconciliation — COMMITTED** (it said "uncommitted … check `git status`"
-> while it was being written; `git show --stat` on the tip reproduces the change).
+> **2026-09-28, doc reconciliation — COMMITTED in `5e32550`** (it said "uncommitted … check
+> `git status`" while it was being written; `git show --stat 5e32550` reproduces the change).
 > `HANDOVER.md` §6 still described the curriculum as unfinished: *"32 remaining phase files"*,
 > *"Authored: 31. Remaining: 32."*, *"15 of 63 phases"*, *"21 of 63 phases across 4 tracks"*.
 > **All four are stale. The corpus is 66 phases across 10 tracks and is complete** —
