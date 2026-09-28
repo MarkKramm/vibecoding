@@ -105,7 +105,7 @@ lives in.
 | 7 | Security defects in generated code beyond package hallucination | PARTIAL, partly unclosable |
 | 8 | Indemnity on free tiers (Anthropic CLOSED; GitHub/Google/OpenAI open) | PARTLY CLOSED |
 | 9 | Training on free-tier code, per vendor | PARTLY CLOSED |
-| 10 | Disclosure norms for AI-assisted work | OPEN for source code |
+| 10 | **OPEN — blocked by bot protection, not by method.** Every official EU route returns an **AWS WAF** JavaScript challenge. See below. |
 | 11 | Documented production incidents from AI-assisted code | CLOSED |
 | 12 | Philippines availability (DPA half CLOSED via LawPhil) | PARTIAL, partly unclosable |
 
@@ -314,7 +314,33 @@ The strongest lead is the **EU AI Act Article 50** transparency regime and the C
 
 → **Applied to `ai-roadmaps/vibecoding/07`, Part 6**, which previously read as though Claude Code's defaults were the general case. The phase now carries the six-tool comparison table, the read-scope inversion, and the corrected statement that prompts are not the security boundary.
 
-### STILL OPEN — as of 2026-09-29, after the permissions pass
+### BLOCKED — Request 10, with the blocker now identified precisely (attempted 2026-09-29)
+
+The earlier note on request 10 said the code question "needs the actual Article 50 text and recitals from a primary legal source, not news summaries." That was right about the *kind* of source and wrong about the obstacle. **Attempted 2026-09-29: the official source is reachable in principle and unreachable in fact, because it is behind bot protection.**
+
+Every route tested returned the same **2,035-byte AWS WAF challenge** (identifiable by `awsWafCookieDomainList` and the `gokuProps` key/IV pair in the body) rather than the document:
+
+| Route | Result |
+|---|---|
+| `eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401689` | **HTTP 202**, WAF challenge |
+| `eur-lex.europa.eu/eli/reg/2024/1689/oj/eng` | **HTTP 202**, WAF challenge |
+| `eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=OJ:L_202401689` | **HTTP 202**, WAF challenge |
+| `eur-lex.europa.eu/.../TXT/?uri=CELEX%3A32024R1689` | **HTTP 202**, WAF challenge |
+| `eur-lex.europa.eu/.../TXT/HTML/?uri=CELEX:32024R1689` | **HTTP 202**, WAF challenge |
+| `data.europa.eu/eli/reg/2024/1689/oj` | **HTTP 202**, WAF challenge |
+| `op.europa.eu` (Publications Office) | **HTTP 403** |
+
+**⚠️ Note the status code, because it is the trap.** These return **202 "Accepted"**, not 404 or 403. A fetch that checks only for "2xx" or "not an error" will record a **successful retrieval of a 2KB JavaScript challenge** and conclude the regulation was read. It was not. This is the same class of failure as the HTTP-200-with-navigation-chrome pages caught during the permissions pass, one level up: **that one truncated a real document, this one substitutes a challenge page for the document entirely.**
+
+**Why no amount of further fetching will close it.** The challenge is JavaScript that computes a token and sets a cookie. `web_fetch` executes no JavaScript, so it cannot solve it. That is a property of the tool, not of the URL, and it is why this is recorded as a blocker rather than as "not yet attempted."
+
+**The one route that would work, and it needs the human.** A real browser solves the challenge, and this session has a `browser` tool. It returned `[browser.disconnected] No desktop browser is connected to this session. Open this session in the desktop app and wait for it to connect.` **So the fix is one step and it is the user's:** open the desktop app, then re-run this request, and the browser will pass the WAF and Article 50 can be read. Alternatively, paste the Article 50 text (and its recitals) in by hand.
+
+**What must not happen in the meantime.** The finding already on file — that Article 50 governs AI-generated *content* with disclosure attaching to deployers who publish it, with a carve-out where a human is meaningfully in control, and that **whether source code falls in scope is unestablished** — is sourced to secondary description and is **not** a substitute for the article. **Do not let the corpus assert either that source code is in scope or that it is out.** The honest position, and the one Phase 4 should carry, remains that no norm specific to AI-assisted code has been established from a primary source.
+
+
+
+### STILL OPEN — as of 2026-09-29, after the permissions and injection passes
 
 | # | State |
 |---|---|
@@ -327,7 +353,7 @@ The strongest lead is the **EU AI Act Article 50** transparency regime and the C
 | 7 | **PARTIAL and partly unclosable** — same security file. Two of the four candidate flaws are contradicted by the measurement; **no vendor publishes a rate for hardcoded secrets or missing authorization.** |
 | 8 | **PARTLY CLOSED** — [`RESEARCH-VENDOR-2026-09-29.md`](RESEARCH-VENDOR-2026-09-29.md). GitHub writes **no standalone copyright promise**, delegating to the customer's own volume agreement. |
 | 9 | **PARTLY CLOSED** — same file. Codex has a **second "Include environments" training switch** the main opt-out does not change. |
-| 10 | **OPEN for code specifically.** EU AI Act Article 50 governs AI-generated *content*; whether source code is in scope needs the actual legal text and recitals, not news summaries. Not a question this method closes. |
+| 10 | **OPEN, and the blocker is mechanical.** Every official EU route returns an **AWS WAF** JavaScript challenge (HTTP 202, 2,035 bytes), which `web_fetch` cannot solve because it runs no JavaScript. A real browser would pass it. See "BLOCKED — Request 10" above. |
 | 11 | **CLOSED** — PocketOS (25 April 2026) applied to `vibecoding/07` Part 7, plus the Hugging Face July 2026 intrusion. |
 | 12 | **PARTIAL and unclosable for 3 of 4 tools** — same security file. GitHub, Groq and Antigravity publish **no supported-country list**; GitHub's exclusions are by account type, not geography. |
 
