@@ -200,7 +200,7 @@ Honest, proportionate, and not the same thing as apologising.
 
 - **A client or employer, when the terms of your engagement require it.** Some contracts now specify, and a growing number of organisations have internal policy. Ask rather than assume — the cost of asking is a question, and the cost of not asking is a conversation later.
 - **Collaborators on a shared codebase**, because they will be maintaining it, and knowing how it was produced tells them what to check.
-- **Users**, in the narrow cases where it is material: if the software makes consequential decisions, or if regulation in your jurisdiction requires disclosure, or if the terms of a platform you are publishing on require it.
+- **Users**, in the narrow cases where it is material: if the software makes consequential decisions, or if the terms of a platform you are publishing on require it. **If you are shipping to the EU, note that no EU law requires you to disclose AI-assisted code** — see the part below, because the obvious answer here is wrong.
 - **Nobody else.** Disclosure is not a confession and it is not a badge. It is information a specific person needs to do a specific thing.
 
 **How to say it.** The form that works is factual and short, and it names the parts that matter for maintenance rather than the whole process:
@@ -215,6 +215,24 @@ against it. Architecture and the API design are mine.
 Notice what that does. It says which parts were generated — useful to a maintainer. It states the verification that was actually performed — which is the part that matters, because "AI-assisted" alone tells a colleague nothing about whether to trust it. And it does not editorialise. **The disclosure that helps is the one that reports your verification, not your tooling.**
 
 **What over-disclosure costs.** Announcing AI use where it is irrelevant invites a judgement about method in place of a judgement about the work, and it can obscure the thing a reviewer needs — which is whether this is correct and maintained. Disclose where it is material; do not perform it.
+
+### Part 5a — No, the EU does not require you to disclose AI-assisted code
+
+**Dated 2026-09-29, from the official text of Regulation (EU) 2024/1689. Full working in `docs/RESEARCH-EU-AI-ACT-2026-09-29.md`.**
+
+The instinct here is to look for the law and find it. So here is the result of actually looking, because it is a cleaner answer than "it depends":
+
+**The EU AI Act requires no disclosure of AI-generated source code. Anywhere.**
+
+**Article 50 is the transparency article, and code is not in it.** Its obligations attach to an enumerated set of media — synthetic *"audio, image, video or text content"*, deep fakes, emotion recognition, biometric categorisation, and AI-generated text *"published with the purpose of informing the public on matters of public interest"*. **Code is absent from that list.** The text obligation is the nearest miss, and it misses twice over: it covers only public-interest text, not a README or documentation, and it is expressly excepted where the content *"has undergone a process of human review or editorial control and where a natural or legal person holds editorial responsibility"* — which is the normal condition of shipping software you wrote. The machine-readable marking duty in ¶2 is worth understanding too, because it is the provision people cite: it falls on **the provider of the model**, not on you.
+
+**And it is not hiding elsewhere in the Act.** The phrase *"source code"* occurs exactly three times in the whole Regulation — Article 74, where a market surveillance authority may demand a high-risk system's code on a reasoned request; Article 78, where source code is listed among the things **protected from disclosure**; and Article 92, where the Commission may request a general-purpose model's code in order to evaluate that model. **All three point inward, at a provider's own model. None imposes anything on the person who used a coding assistant.**
+
+**This is live law, not a future question.** Article 113 sets general application at **2 August 2026**, and Chapter IV — the chapter Article 50 closes — appears in none of the three exceptions. As of today the obligations have been in force for about two months. They simply do not reach code.
+
+**So why disclose anyway?** Because the reason was never the statute. Disclosure matters where it always did: you are the author, a maintainer downstream needs to know which parts to distrust, and a client or employer may require it **by contract** — which is unaffected by anything the AI Act does or does not say. Contracts and professional norms are where most disclosure obligations actually come from. **Knowing the law's answer is "nothing is required" is what lets you disclose proportionately rather than performatively** — it is the difference between "my contract says so" and "I am confessing to a crime."
+
+**The scope of that answer, stated honestly.** This covers the EU AI Act as adopted, read from the primary text. It says nothing about other jurisdictions, and nothing about the terms of a platform you publish on or a contract you sign. And it is the answer as of the date above — this is exactly the kind of thing that changes, which is why it is dated.
 
 ### Part 5b — If you handle personal data, there is a law
 

@@ -105,7 +105,7 @@ lives in.
 | 7 | Security defects in generated code beyond package hallucination | PARTIAL, partly unclosable |
 | 8 | Indemnity on free tiers (Anthropic CLOSED; GitHub/Google/OpenAI open) | PARTLY CLOSED |
 | 9 | Training on free-tier code, per vendor | PARTLY CLOSED |
-| 10 | **OPEN — blocked by bot protection, not by method.** Every official EU route returns an **AWS WAF** JavaScript challenge. See below. |
+| 10 | Disclosure norms for AI-assisted work | CLOSED (EU AI Act imposes no duty) |
 | 11 | Documented production incidents from AI-assisted code | CLOSED |
 | 12 | Philippines availability (DPA half CLOSED via LawPhil) | PARTIAL, partly unclosable |
 
@@ -314,7 +314,17 @@ The strongest lead is the **EU AI Act Article 50** transparency regime and the C
 
 → **Applied to `ai-roadmaps/vibecoding/07`, Part 6**, which previously read as though Claude Code's defaults were the general case. The phase now carries the six-tool comparison table, the read-scope inversion, and the corrected statement that prompts are not the security boundary.
 
-### BLOCKED — Request 10, with the blocker now identified precisely (attempted 2026-09-29)
+### ⛔ SUPERSEDED — the "BLOCKED — Request 10" entry below — CLOSED 2026-09-29, same session
+
+**Everything in that section is retained because the *method* finding is still valuable and because the error is instructive. The conclusion drawn from it was wrong.** Read the blocker, then read this:
+
+- **Request 10 is CLOSED.** The answer is negative and it comes from the primary legal source: the EU AI Act imposes **no** disclosure duty on AI-generated source code. Full working in [`RESEARCH-EU-AI-ACT-2026-09-29.md`](RESEARCH-EU-AI-ACT-2026-09-29.md).
+- **The WAF was never the obstacle.** `eur-lex.europa.eu` and `data.europa.eu` really are behind an AWS WAF challenge returning HTTP 202, and that observation stands. But **`publications.europa.eu` is a different host path and is not defended**: `http://publications.europa.eu/resource/celex/32024R1689` with `Accept: application/xml;notice=object` returns 654 KB with no challenge, and the canonical cellar UUID resolves to the official English text as Formex XML. **The document was never behind the front door; only the HTML rendering was.**
+- **The browser was never necessary.** The section below says resolving this needs the user to connect a desktop browser. **It did not.** The route was found without it, twenty minutes after that entry was written.
+- **Why it was written wrong.** A 202 "Accepted" is not an error, so the fetch looked like a success, and a blocker recorded from a failing check is easy to mistake for a boundary of the world. **A blocker's cause matters more than the block** — and here the cause turned out to be the least interesting thing about it.
+- **The generalisation worth keeping:** *before recording a source as unreachable, try its machine-readable endpoint on a sibling host.* HTML rendering is what gets defended; content-negotiation APIs usually are not.
+
+
 
 The earlier note on request 10 said the code question "needs the actual Article 50 text and recitals from a primary legal source, not news summaries." That was right about the *kind* of source and wrong about the obstacle. **Attempted 2026-09-29: the official source is reachable in principle and unreachable in fact, because it is behind bot protection.**
 
@@ -336,7 +346,7 @@ Every route tested returned the same **2,035-byte AWS WAF challenge** (identifia
 
 **The one route that would work, and it needs the human.** A real browser solves the challenge, and this session has a `browser` tool. It returned `[browser.disconnected] No desktop browser is connected to this session. Open this session in the desktop app and wait for it to connect.` **So the fix is one step and it is the user's:** open the desktop app, then re-run this request, and the browser will pass the WAF and Article 50 can be read. Alternatively, paste the Article 50 text (and its recitals) in by hand.
 
-**What must not happen in the meantime.** The finding already on file — that Article 50 governs AI-generated *content* with disclosure attaching to deployers who publish it, with a carve-out where a human is meaningfully in control, and that **whether source code falls in scope is unestablished** — is sourced to secondary description and is **not** a substitute for the article. **Do not let the corpus assert either that source code is in scope or that it is out.** The honest position, and the one Phase 4 should carry, remains that no norm specific to AI-assisted code has been established from a primary source.
+**~~What must not happen in the meantime.~~ — *This instruction is now obsolete and is retained to show the reasoning.* It said: the finding already on file is sourced to secondary description and is not a substitute for the article, so *"do not let the corpus assert either that source code is in scope or that it is out."* **The primary article has now been read, and the corpus states the answer: source code is neither in nor out of Article 50 — it is simply absent from the enumerated media, and the Act's three other mentions of source code are powers over a provider's own model.** The caution was correct while it stood; it was answered rather than ignored.
 
 
 
@@ -353,13 +363,13 @@ Every route tested returned the same **2,035-byte AWS WAF challenge** (identifia
 | 7 | **PARTIAL and partly unclosable** — same security file. Two of the four candidate flaws are contradicted by the measurement; **no vendor publishes a rate for hardcoded secrets or missing authorization.** |
 | 8 | **PARTLY CLOSED** — [`RESEARCH-VENDOR-2026-09-29.md`](RESEARCH-VENDOR-2026-09-29.md). GitHub writes **no standalone copyright promise**, delegating to the customer's own volume agreement. |
 | 9 | **PARTLY CLOSED** — same file. Codex has a **second "Include environments" training switch** the main opt-out does not change. |
-| 10 | **OPEN, and the blocker is mechanical.** Every official EU route returns an **AWS WAF** JavaScript challenge (HTTP 202, 2,035 bytes), which `web_fetch` cannot solve because it runs no JavaScript. A real browser would pass it. See "BLOCKED — Request 10" above. |
+| 10 | **CLOSED, negatively.** The EU AI Act requires **no** disclosure of AI-generated source code. Article 50's obligations attach to enumerated media (audio, image, video, public-interest text) and code is absent; *"source code"* appears exactly three times in the whole Regulation, all concerning a provider's own model. Article 50 has been in application since **2 August 2026**. Applied to `vibecoding/08` Part 5a. |
 | 11 | **CLOSED** — PocketOS (25 April 2026) applied to `vibecoding/07` Part 7, plus the Hugging Face July 2026 intrusion. |
 | 12 | **PARTIAL and unclosable for 3 of 4 tools** — same security file. GitHub, Groq and Antigravity publish **no supported-country list**; GitHub's exclusions are by account type, not geography. |
 
-**Ten of twelve are now closed or usably partial. What remains is open for structural reasons, not for want of trying.** Q10 needs the **text of a legal article**, not an article *about* it — a different kind of source, and no amount of further fetching on the current approach will settle it. Q7's and Q12's remaining halves ask for numbers **no vendor publishes**, which is itself the finding, and "could not verify" is the correct entry for them. Q4 closed on 2026-09-29 with four primary write-ups read in full; the widely repeated claim that "Cursor and Codex got out and Google left two unpatched" is **not supported** by the Pillar write-up, which records neither Codex nor Google and no patch from either vendor.
+**Eleven of twelve are now closed or usably partial, and the twelfth is closed in the only way it could be.** Q10 is **CLOSED, negatively** — the EU AI Act imposes no disclosure duty on AI-generated source code, established from the primary legal text. Q7's and Q12's remaining halves ask for numbers **no vendor publishes**, which is itself the finding, and "could not verify" is the correct entry for them; there is nothing further to fetch. Q4 closed on 2026-09-29 with four primary write-ups read in full; the widely repeated claim that "Cursor and Codex got out and Google left two unpatched" is **not supported** by the Pillar write-up, which records neither Codex nor Google and no patch from either vendor.
 
-**The method that closed nine of twelve, recorded so nobody has to rediscover it:** *search finds the identifier, fetch confirms the document says what the snippet implied, and the strongest shortcut is the provider's own documentation index rather than a guessed deep path.* Three providers name theirs explicitly and all three worked: `https://code.claude.com/docs/llms.txt`, `https://learn.chatgpt.com/docs/llms.txt`, `https://docs.devin.ai/llms.txt`.
+**The method that closed eleven of twelve, recorded so nobody has to rediscover it:** *search finds the identifier, fetch confirms the document says what the snippet implied, and the strongest shortcut is the provider's own documentation index rather than a guessed deep path.* Three providers name theirs explicitly and all three worked: `https://code.claude.com/docs/llms.txt`, `https://learn.chatgpt.com/docs/llms.txt`, `https://docs.devin.ai/llms.txt`. **A fourth route, found late and worth the most:** *when a source is defended, try its machine-readable endpoint on a sibling host.* EUR-Lex is behind AWS WAF, and the official legal text was sitting in the Publications Office cellar API, unguarded, in the EU's own Formex XML.
 
 **And a second method, learned the hard way in this pass: a fetch that returns HTTP 200 with only the site chrome is not a successful fetch.** Two pages in the permissions pass did exactly that. Re-reading the raw response before writing anything down is what kept two confident, wrong details out of this repository.
 
