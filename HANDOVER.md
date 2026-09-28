@@ -1422,8 +1422,7 @@ encoding/shape audits; `npm test` all 17 checks (with preview running); `npm run
 all suites. Non-blocking warnings only: AST 20,951-char gain / zero loss; Vite static+dynamic
 import of `index.json`; a React `javascript:` URL warning from a test fixture.
 
-**Next steps:** review diff → commit by explicit path → push `main` → `git fetch origin` to
-confirm. Optionally investigate the AST gain specifically against the full 65-lesson corpus.
+**Next steps: ✅ done — committed by explicit path, working tree clean.** Four commits closed the research queue: `0697a8c` (six-tool permissions/sandboxing survey), `0057930` (four prompt-injection incidents), `157a20f` (Q10's WAF blocker, later superseded), `fe0228e` (Q10 closed from the primary legal text). **Eleven of twelve research requests are closed; the twelfth is unclosable because no vendor publishes the number.** Nothing is queued behind a human.
 
 **Not queued, and deliberately so:** the share-link (progress in a URL fragment). It was
 offered twice and passed over both times. Do not start it unasked.
@@ -1436,9 +1435,8 @@ offered twice and passed over both times. Do not start it unasked.
   `sweep-phases.mjs` (§12.31), where clicks fired React handlers and changed nothing because
   the target was at y=18,865px inside a 450px window. Treat mobile as **unverified**, not as
   "probably fine".
-- **Volatile facts.** §9a's debt table below still stands and has not shrunk: `web_search` is
-  off for this account. `docs/SEARCH-REQUESTS.md` is the handoff — a human pastes it into a
-  web chat and the answers come back.
+- **Volatile facts. ⚠️ This bullet was stale until 2026-09-29 and said a human still had to paste questions into a web chat.** That is finished. `web_search` works (verified repeatedly, 2026-09-29), and **eleven of the twelve research requests in `docs/SEARCH-REQUESTS.md` are closed** against primary sources, the twelfth being unclosable because no vendor publishes the number. **No relay is outstanding and none is needed.** The remaining open items are the three tools in Q12 with no published country list, and the two Q7 flaw classes with no published rate — both recorded as *could not verify*, which is the correct entry, not a task.
+- **The WAF lesson, because it is the one that will save time again.** `eur-lex.europa.eu` and `data.europa.eu` are behind an AWS WAF challenge that returns **HTTP 202**, which is not an error. The official EU legal text is reachable from `publications.europa.eu` instead, via content negotiation. Full route in §12.60. **Before recording any source as unreachable, try its machine-readable endpoint on a sibling host.**
 
 ### The verification debt, quantified (kept from the original §9a)
 
@@ -2020,6 +2018,31 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
     **Note the docs were already right.** `WORKFLOW.md` says to build first and restart the preview. The instruction existed; **nothing enforced it.** A correct instruction that only an agent who already suspects the problem will follow is not a control.
 
     Fix belongs in `check-all.mjs` — a step 0 running `vite build`, or a comparison of the preview's served asset hash against `dist/`. Until then: `npm run build` before trusting steps 14 and 15. Recorded in `WORKFLOW.md` §2 as well, because that is where the instruction is read.
+
+60. **A blocker I recorded, committed, and then broke twenty minutes later — and the reason is more useful than the fix.** 2026-09-29, research request 10.
+    Every `eur-lex.europa.eu` and `data.europa.eu` route returns a **2,035-byte AWS WAF JavaScript challenge**. `web_fetch` runs no JavaScript, so it cannot solve it. That is all true, and I committed it as `157a20f` together with the conclusion that resolving the question needed the user to connect a desktop browser.
+
+    **Twenty minutes later I found the route, and no browser was needed.** `publications.europa.eu` is a *different host path* and is not defended:
+
+    ```
+    http://publications.europa.eu/resource/celex/32024R1689
+      Accept: application/xml;notice=object          -> 200, 654 KB, no challenge
+    read canonical cellar UUID from the notice       -> dc8116a1-3fe6-11ef-865a-01aa75ed71a1
+    .../cellar/<uuid>.0006.01/DOC_1                 -> 200, official English PDF, 2.5 MB
+    .../cellar/<uuid>.0006.02/DOC_1                 -> 200, ZIP of Formex XML, 162 KB
+    ```
+
+    **Use the Formex XML, not the PDF.** It is the EU's own machine-readable legislative format; stripping tags gives clean quotable article text, where the PDF would have needed a parser and returned worse text.
+
+    Three lessons, in order of how much they cost:
+
+    - **HTTP 202 is not an error.** These responses are *Accepted*, not 404 or 403. Any check testing for "2xx" or merely "not an error" records a successful retrieval of a challenge page and concludes the document was read. **It was not.** This is the same failure as the HTTP-200-with-navigation-chrome pages in the permissions work, one level up: that truncated a real document, this substitutes a challenge for the document entirely. **A guard that only checks status will pass on a page that contains none of what you asked for.**
+    - **A blocker's cause matters more than the block.** I did not record "EUR-Lex is unreachable". I recorded *why*, and the why turned out to be the least interesting thing about it. Had I written only the blocker, the next session would have inherited a dead end with no indication that a sibling host held the answer.
+    - **"Needs the human" is a conclusion, not an observation, and it is the most expensive thing to record wrongly.** I wrote that the user had to act, and they would have — for a question that never needed them. Delegating a fetchable task to a person is a silent failure: it looks like diligence, and it costs someone's afternoon.
+
+    **The generalisation, now in the network policy:** *before recording a source as unreachable, try its machine-readable endpoint on a sibling host.* HTML rendering is what gets defended; content-negotiation APIs usually are not.
+
+    Also the first recorded instance of a **negative research result** in this project, and it is the strongest kind: the question had been open because nobody could read the article, and reading it produced a clean answer rather than an ambiguity. See `docs/RESEARCH-EU-AI-ACT-2026-09-29.md` — the EU AI Act imposes **no** disclosure duty on AI-generated source code, Article 50 has been in application since 2 August 2026, and "source code" appears exactly three times in the whole Regulation, all of them powers over a provider's own model. **The open question was an artefact of not having read the text.**
 
 ---
 
