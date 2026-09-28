@@ -214,7 +214,22 @@ Three practical consequences, and this is a control rather than a fix:
 
 **Read those together and the conclusion is uncomfortable but clear: filtering does not solve this.** The authors' own recommendation is that prompt injection must be treated as a **first-class vulnerability class needing architectural mitigation, not ad-hoc filtering**. What that means for you in practice is that **the controls below are about limiting damage, not preventing the attack** — you are choosing blast radius, not immunity. If someone tells you a particular agent "handles" prompt injection, that is a claim to check against this paper rather than accept.
 
-**⚠️ Partly closed — one tool verified in detail, observed 2026-09-29.** The *mechanism* and the *research* above are sourced. The **per-tool default behaviour** — sandboxing, approval prompts, what each agent does without asking — changes with every release, so treat anything below as a dated observation of one tool, not a property of agents. The still-open list is in `docs/SEARCH-REQUESTS.md`. The numbers in the paper describe the state of the field in **early 2026**.
+**⚠️ Partly closed — six tools verified, observed 2026-09-29.** The *mechanism* and the *research* above are sourced. The **per-tool default behaviour** — sandboxing, approval prompts, what each agent does without asking — changes with every release, so treat anything below as a dated observation of named tools, not a property of agents. Full comparison in `docs/RESEARCH-PERMISSIONS-2026-09-29.md`. The numbers in the paper describe the state of the field in **early 2026**.
+
+**Read this before the walkthrough: there is no such thing as an agent's default, because six of the major tools do not agree.** The walkthrough below describes Claude Code in full because its defaults are the most instructive, and it would be a mistake to read it as typical. Two things are true across the field and two are not: **approval prompts and a sandbox are separate controls** (true everywhere), and **which one is on by default** (true nowhere).
+
+| | Sandbox default | Native Windows sandbox? | Approval default |
+|---|---|---|---|
+| **Claude Code** | Opt-in | **No** — macOS, Linux, WSL2 only | Prompts on first Bash/edit/fetch/search |
+| **Codex** | **On** | **Yes** — native, `unelevated` or `elevated` | `on-request` — out-of-workspace edits, network |
+| **Cursor** | Settable, default not documented | CLI installs on PowerShell | Prompts without an allowlist entry |
+| **Copilot CLI** | Opt-in (`/sandbox enable`, public preview) | Not stated | Prompts on first use of each tool |
+| **Antigravity** | **On** on macOS/Linux · **Off** on Windows | **No** | "Allowed in sandbox; ask outside" |
+| **Devin CLI** | Opt-in (`--sandbox`) | **No — hard-fails** | `Normal`: reads auto, writes and shell prompt |
+
+*All six rows fetched from vendor documentation, 2026-09-29.*
+
+**The Windows column is the one to notice.** If you are on Windows, as many readers will be, **three of these six cannot sandbox natively at all** and a fourth ships its sandbox as a public preview. Codex is the only one of the six with a native Windows sandbox. A lesson that says "run it in a sandbox" is, for a large part of this audience, advice they cannot take — and the tool they *can* use is not the one whose defaults most of the writing on this subject describes.
 
 Claude Code is worth walking through in full, because its defaults are the clearest available instance of the four axes in the table above, and because two of them cut against the reassuring version of the story.
 
@@ -224,7 +239,18 @@ Claude Code is worth walking through in full, because its defaults are the clear
 
 **The sandbox is opt-in, and its defaults are not what the word implies.** It runs on macOS, Linux and WSL2 — **not native Windows**, which matters if you have just installed Windows 11; you need WSL2. You turn it on yourself. With filesystem isolation enabled, the default read scope is **the entire computer** minus a short deny list, and the documentation says so plainly: this *"still allows reading credential files such as `~/.aws/credentials` and `~/.ssh/`"* unless you configure `sandbox.credentials` to deny them. Network access pre-allows **no** domains, so the first connection to any new host prompts. (fetched 2026-09-29 from `https://docs.claude.com/en/docs/claude-code/sandboxing`)
 
-The honest summary is the one this table already implies: **an agent running in a sandbox is not the same as an agent holding least privilege, and the two are configured independently.** The sandbox is the enforcement boundary; the credential-deny list and the permission modes are the policy. Neither defaults to tight. A lesson that stopped at "it runs in a sandbox, so it is contained" would be teaching the reassuring half — and the half that fails first is a read of `~/.ssh/`, which no prompt ever asked you about.
+The honest summary is the one this table already implies: **an agent running in a sandbox is not the same as an agent holding least privilege, and the two are configured independently.** The sandbox is the enforcement boundary; the credential-deny list and the permission modes are the policy. In Claude Code's case neither defaults to tight. A lesson that stopped at "it runs in a sandbox, so it is contained" would be teaching the reassuring half — and the half that fails first is a read of `~/.ssh/`, which no prompt ever asked you about.
+
+**And here is the part that makes "is it sandboxed?" the wrong question.** Compare two tools, both sandboxed, on the axis that fails first:
+
+- **Claude Code**: sandbox opt-in, and once on, the default read scope is **the entire computer** minus a short deny list. Its own docs concede it *"still allows reading credential files such as `~/.aws/credentials` and `~/.ssh/`"*.
+- **Antigravity**: sandbox on by default on macOS and Linux, and *"Sensitive files like `~/.ssh` and `.env` are blocked, anything not explicitly mounted is invisible inside the sandbox."*
+
+**The tool that is stricter about containing writes is looser about reading secrets, and the tool that blocks secrets by default ships that behaviour switched off on Windows.** So the strictest tool on one axis is the loosest on another, and a checklist item that asks "sandboxed?" is measuring neither. The two questions worth asking are **what can it read** and **what can it write without asking** — and those are configured separately from each other. (Antigravity fetched 2026-09-29 from `https://antigravity.google/docs/sandbox/`; Devin CLI from `https://docs.devin.ai/cli/sandbox` and `.../cli/reference/permissions`; Codex from `https://learn.chatgpt.com/docs/agent-approvals-security.md`. Full citations in `docs/RESEARCH-PERMISSIONS-2026-09-29.md`)
+
+**One more thing the approval prompt is not: a security control.** Devin CLI's `Autonomous` mode, which requires its sandbox, *re-enables* the approval prompt for file edits — while `Accept Edits`, `Smart` and `Bypass` run them unattended inside the workspace. Turning prompts off there would not have made it less safe; entering the sandbox made prompt-on-edits the correct setting. **Approval prompts are a usability feature sitting in front of a control.** Removing one does not remove the other, and in three of these six the prompt never existed.
+
+**The design worth copying is the one that fails closed.** Devin CLI *"will refuse to start rather than running unsandboxed"* if the sandbox cannot be set up — and on Windows, where it is unsupported, it **hard-fails** rather than degrading. Five of the six degrade some other way when their control is unavailable. A tool that will not start is the only failure mode that cannot be mistaken for a working one. Relatedly, Codex protects `.git`, `.agents` and `.codex` as read-only **recursively, even inside a writable root**, following a `gitdir:` pointer to wherever the real directory lives — the same reasoning Claude Code gives for refusing to let a command edit `.claude/`: *an agent that can rewrite its own permissions has no permissions.*
 
 ### Part 7 — What it costs when you get this wrong
 

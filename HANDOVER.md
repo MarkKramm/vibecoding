@@ -2006,6 +2006,21 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 58. **Two documented counts and one default port were wrong, and all three failed in the direction of wasted time rather than a caught bug.**
     A hardcoded expected value in a guard is a claim about the artifact that nothing re-checks. `/42/` and `/706/` were correct when written and silently wrong later, and the suite stayed green through it because `verify-site.mjs` is not in `npm test` — it needs a running preview server. **A check that only runs when a human remembers to run it will not notice when the world moves.** Prefer deriving an expectation from the source of truth over restating it.
 
+59. **`npm test` never rebuilds the app bundle, so its two browser checks can pass on content that was never rendered — and it reports success while doing it.** Found 2026-09-29.
+    Step 1 runs `build-content.mjs`, which regenerates the **JSON**. **No step in the 20 runs `vite build`.** Steps 14 and 15 are browser checks pointed at `http://localhost:4173`, and `vite preview` serves `dist/` — built whenever it was last built.
+
+    The failure mode is not a red build. It is a **green one**:
+
+    > A ~4,100-character addition to `vibecoding/07` passed all 20 checks, and the all-phase sweep reported **36,854 chars** — byte-identical to the pre-edit figure. After `npm run build` and a preview restart, the same phase measured **40,990 chars**.
+
+    **How it was caught, which is the part worth keeping.** The number was *identical* to a figure recorded before the edit. Adding content cannot leave a character count unchanged, so the identical digit was the tell. AGENTS.md's "an unexpected result from your own tooling is evidence about the tooling first" is usually about a check reporting failure; here it caught a check reporting **success**.
+
+    **The loud-skip design made this worse, not better.** The suite deliberately skips *loudly* when no preview answers. But **a preview that is up and serving a stale bundle emits nothing** — no skip, no warning, not even a stale number. The suite handles the detectable case well and is blind in the only case that matters.
+
+    **Note the docs were already right.** `WORKFLOW.md` says to build first and restart the preview. The instruction existed; **nothing enforced it.** A correct instruction that only an agent who already suspects the problem will follow is not a control.
+
+    Fix belongs in `check-all.mjs` — a step 0 running `vite build`, or a comparison of the preview's served asset hash against `dist/`. Until then: `npm run build` before trusting steps 14 and 15. Recorded in `WORKFLOW.md` §2 as well, because that is where the instruction is read.
+
 ---
 
 ## 13. What "done" looks like

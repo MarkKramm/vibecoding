@@ -90,22 +90,24 @@ agent-side record — do not paste them.
 ### Queue: vibecoding phases 6-8 (asked 2026-09-19)
 
 Status key: **OPEN** = needs the relay · **CLOSED** = answered with a source ·
-**BLOCKED** = not reachable by any route we have.
+**BLOCKED** = not reachable by any route we have. Updated 2026-09-29 — see the
+per-request table under "STILL OPEN" below for detail and for the research file each closure
+lives in.
 
 | # | Claim it settles | Status |
 |---|---|---|
-| 1 | Coding-agent context windows, and which vendors withhold them | OPEN |
-| 2 | What an agent does without asking, per tool | OPEN |
-| 3 | Sandbox and approval defaults | OPEN |
-| 4 | Prompt injection via repository content — documented incidents | OPEN |
-| 5 | Git-as-safety-net authoritative guidance | OPEN |
-| 6 | Evidence on agent self-reports being inaccurate | OPEN |
-| 7 | Security defects in generated code beyond package hallucination | OPEN |
+| 1 | Coding-agent context windows, and which vendors withhold them | CLOSED |
+| 2 | What an agent does without asking, per tool | CLOSED (six tools) |
+| 3 | Sandbox and approval defaults | CLOSED (six tools) |
+| 4 | Prompt injection via repository content — documented incidents | OPEN (leads only) |
+| 5 | Git-as-safety-net authoritative guidance | CLOSED, corrected |
+| 6 | Evidence on agent self-reports being inaccurate | CLOSED |
+| 7 | Security defects in generated code beyond package hallucination | PARTIAL, partly unclosable |
 | 8 | Indemnity on free tiers (Anthropic CLOSED; GitHub/Google/OpenAI open) | PARTLY CLOSED |
 | 9 | Training on free-tier code, per vendor | PARTLY CLOSED |
-| 10 | Disclosure norms for AI-assisted work | OPEN |
-| 11 | Documented production incidents from AI-assisted code | OPEN |
-| 12 | Philippines availability (DPA half CLOSED via LawPhil) | PARTLY CLOSED |
+| 10 | Disclosure norms for AI-assisted work | OPEN for source code |
+| 11 | Documented production incidents from AI-assisted code | CLOSED |
+| 12 | Philippines availability (DPA half CLOSED via LawPhil) | PARTIAL, partly unclosable |
 
 The full wording of each is in `RELAY-PASTE.md` under the same numbers.
 ## ATTEMPTED WITH `web_fetch` — what closed, what is blocked
@@ -300,13 +302,40 @@ The strongest lead is the **EU AI Act Article 50** transparency regime and the C
 
 **But the code question is NOT answered, and the distinction is the whole question.** As described by every secondary source, Article 50 concerns **AI-generated *content*** — text, image, audio, video — and the disclosure obligation attaches to *deployers publishing that content*, with a carve-out for cases where a human is meaningfully in control. **Whether source code falls in scope at all is unestablished from a primary legal source here.** Reading a general "AI transparency" headline as though it settled disclosure of AI-assisted *code* would be precisely the "technically true but materially misleading" defect this file exists to prevent. → **The content rules are real and dated; the code question stays open.**
 
-### STILL OPEN — in progress 2026-09-29
+### CLOSED — Requests 2 and 3, all six tools — 2026-09-29
 
-Requests **1, 5, 7, 8, 9 and 12** are now being worked with both `web_search` and `web_fetch` (2026-09-29). **2 and 3** are closed for Claude Code only — the Codex, Copilot agent mode, Cursor, Devin and Antigravity equivalents remain unverified. **4** is partly closed: a malicious-README credential theft against Cursor, Pillar Security's "Rules File Backdoor", Orca's "RoguePilot" against Copilot in Codespaces, and MITIGA's poisoned coding test are all named, but **the primary write-ups are unread**, so those are leads rather than findings. **10** is closed for the EU content regime and open for code specifically, above.
+**Both requests are now closed for every tool in the sample.** The findings, the per-tool tables and the verbatim quotes are in **[`RESEARCH-PERMISSIONS-2026-09-29.md`](RESEARCH-PERMISSIONS-2026-09-29.md)**; only the conclusion is repeated here.
 
-**The method that closed six of twelve, recorded so nobody has to rediscover it:** *search finds the identifier, fetch confirms the document says what the snippet implied, and the strongest shortcut is the provider's own documentation index rather than a guessed deep path.* Three of the six closures came from following **one link out of the previous page** — Claude Code's own docs named `https://code.claude.com/docs/llms.txt` as its index, and the sandboxing page sat one link from the permissions page.
+**The headline is a negative result, and it is the useful one: no two of the six tools agree on the default.** A sandbox is **on** by default in Codex and (on macOS/Linux) Antigravity, and **off or opt-in** in Claude Code, Copilot CLI, Devin CLI and Antigravity-on-Windows. **Three of the six cannot sandbox natively on Windows at all, and Codex is the only one of the six that can** — which matters for a corpus whose readers may well be on Windows.
 
-The sentence this file used to carry — **"no amount of URL-guessing closes them"** — was true about guessing and wrong as a reason to stop. It should have read as an argument for reading the index instead of guessing paths, not as a reason not to try. Six of the twelve were open for want of a search tool, and the tool was the only thing actually missing.
+**The finding that changed a corpus claim:** a sandbox is not a security posture, and the strictest tool on one axis is the loosest on another. Claude Code's sandbox, once enabled, has a default read scope of the entire computer and its docs concede it still allows reading `~/.ssh/`. Antigravity blocks `~/.ssh` and `.env` by default but ships that behaviour switched off on Windows. **So "is it sandboxed?" is the wrong question; "what can it read" and "what can it write without asking" are the two that matter, and they are configured independently.**
+
+**Also established:** approval prompts are a usability feature, not a control — Devin's `Autonomous` sandboxed mode *re-enables* the edit prompt, because in a sandbox it no longer needs to. And **Devin is the only one of the six that fails closed** — it refuses to start rather than run unsandboxed, and hard-fails on Windows where the sandbox is unsupported.
+
+→ **Applied to `ai-roadmaps/vibecoding/07`, Part 6**, which previously read as though Claude Code's defaults were the general case. The phase now carries the six-tool comparison table, the read-scope inversion, and the corrected statement that prompts are not the security boundary.
+
+### STILL OPEN — as of 2026-09-29, after the permissions pass
+
+| # | State |
+|---|---|
+| 1 | **CLOSED** — [`RESEARCH-VENDOR-2026-09-29.md`](RESEARCH-VENDOR-2026-09-29.md). Codex, Antigravity and Devin publish no context-window number anywhere, which answers the question's second half. |
+| 2 | **CLOSED for six tools** — [`RESEARCH-PERMISSIONS-2026-09-29.md`](RESEARCH-PERMISSIONS-2026-09-29.md). Other tools (Windsurf, Cline, Aider, OpenHands) unexamined. |
+| 3 | **CLOSED for six tools** — same file, same caveats. |
+| 4 | **Leads only.** The 0din.ai malicious-README study, Pillar Security's "Rules File Backdoor", Orca's "RoguePilot" and MITIGA's poisoned coding test are all named, but **the primary write-ups are unread.** arXiv:2601.17548 is already applied to `vibecoding/07`. |
+| 5 | **CLOSED, with a correction** — [`RESEARCH-SECURITY-AVAIL-2026-09-29.md`](RESEARCH-SECURITY-AVAIL-2026-09-29.md). The first pass answered "no vendor says commit first" from two vendors; **OpenAI's Codex docs do say it, in different words** — clean status before delegating, commit frequently. The failed search is recorded rather than deleted. |
+| 6 | **CLOSED** — arXiv:2605.29442, applied to `agents/03`. |
+| 7 | **PARTIAL and partly unclosable** — same security file. Two of the four candidate flaws are contradicted by the measurement; **no vendor publishes a rate for hardcoded secrets or missing authorization.** |
+| 8 | **PARTLY CLOSED** — [`RESEARCH-VENDOR-2026-09-29.md`](RESEARCH-VENDOR-2026-09-29.md). GitHub writes **no standalone copyright promise**, delegating to the customer's own volume agreement. |
+| 9 | **PARTLY CLOSED** — same file. Codex has a **second "Include environments" training switch** the main opt-out does not change. |
+| 10 | **OPEN for code specifically.** EU AI Act Article 50 governs AI-generated *content*; whether source code is in scope needs the actual legal text and recitals, not news summaries. Not a question this method closes. |
+| 11 | **CLOSED** — PocketOS (25 April 2026) applied to `vibecoding/07` Part 7, plus the Hugging Face July 2026 intrusion. |
+| 12 | **PARTIAL and unclosable for 3 of 4 tools** — same security file. GitHub, Groq and Antigravity publish **no supported-country list**; GitHub's exclusions are by account type, not geography. |
+
+**Nine of twelve are now closed or usably partial. The three genuinely open items are open for structural reasons, not for want of trying:** Q4 needs primary write-ups fetched, Q10 needs a legal text rather than an article, and Q7's and Q12's remaining halves ask for numbers **no vendor publishes** — which is itself the finding, and "could not verify" is the correct entry for them.
+
+**The method that closed nine of twelve, recorded so nobody has to rediscover it:** *search finds the identifier, fetch confirms the document says what the snippet implied, and the strongest shortcut is the provider's own documentation index rather than a guessed deep path.* Three providers name theirs explicitly and all three worked: `https://code.claude.com/docs/llms.txt`, `https://learn.chatgpt.com/docs/llms.txt`, `https://docs.devin.ai/llms.txt`.
+
+**And a second method, learned the hard way in this pass: a fetch that returns HTTP 200 with only the site chrome is not a successful fetch.** Two pages in the permissions pass did exactly that. Re-reading the raw response before writing anything down is what kept two confident, wrong details out of this repository.
 
 ---
 

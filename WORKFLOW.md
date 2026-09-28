@@ -123,6 +123,20 @@ cd learning-site && npm test
 
 Runs 20 checks in order. Eighteen run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
 
+#### ⚠️ `npm test` does NOT rebuild the app bundle — steps 14 and 15 can pass on stale content
+
+**This is the most dangerous gap in the suite, because it reports success.**
+
+`npm test` step 1 runs `build-content.mjs`, which regenerates the **JSON**. **No step in the 20 runs `vite build`.** Steps 14 and 15 are browser checks that read `http://localhost:4173`, and `vite preview` serves `dist/` — a bundle built at some earlier moment. So:
+
+> **A content edit can add thousands of characters, `npm test` can report `all 20 checks passed`, and the browser checks will have rendered the page as it was before the edit. Nothing goes red, and nothing skips.**
+
+Observed and measured on **2026-09-29**: a ~4,100-character addition to `vibecoding/07` passed all 20 checks with the all-phase sweep reporting **36,854 chars** — byte-identical to the pre-edit figure. After `npm run build` and a preview restart, the same phase measured **40,990 chars**. Every check was green in both runs; only the number moved.
+
+**Why the loud-skip design makes this worse rather than better.** The suite goes to some trouble to skip *loudly* when no preview answers, which is the right instinct. But **a preview that is up and serving a stale bundle produces no signal at all** — not a skip, not a warning, not a stale number. The one case you cannot detect is the one that matters.
+
+**The rule, then:** before trusting steps 14 or 15, run `npm run build` and restart the preview. The pipeline at the top of this file already says so; **this is why, and it is currently enforced by nothing but discipline.** If you want the suite self-checking here, the fix belongs in `check-all.mjs` — a step 0 that runs `vite build`, or a comparison of the preview's served asset hash against `dist/`.
+
 | # | Check | Catches |
 |---|---|---|
 | 1 | content build | writes JSON; contract violations |

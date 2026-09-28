@@ -14,9 +14,20 @@ Question as asked: "Is there official vendor documentation or a well-known engin
 
 ### Answer
 
-**Yes to the second half, no to the first.** Two vendor-primary sources were found and read in full, and both tell you to read the diff and distrust the agent's own account of what it did. **Neither one tells you to commit before the agent runs.** Both describe committing *after* you are satisfied with the change, which is the opposite operation. Any content that says "commit first, then let the agent work" is not supported by the two vendor sources below, and I found no third-party source that I could verify for it either.
+**Yes to the second half. The first half was answered "no" on an incomplete search, and that answer was wrong — see the correction below.**
 
-This matters for the corpus, because "commit before you run an agent" is a claim about safety workflow that is routinely repeated in blog posts. It is not what the vendors say. What the vendors say is: watch it work, read the diff, make it prove itself, and commit once you agree with what you see.
+Two vendor-primary sources were found and read in full, and both tell you to read the diff and distrust the agent's own account of what it did. Both describe committing *after* you are satisfied with the change.
+
+> ### ⚠️ CORRECTION, 2026-09-29 — the "no" on the first half was wrong
+>
+> The original pass searched Cursor and Anthropic, found neither saying "commit first", and generalised to "no vendor says it". A later pass read OpenAI's Codex documentation and found it says something very close. Verbatim, from `https://learn.chatgpt.com/docs/agent-approvals-security.md`:
+>
+> > "Work on a feature branch and keep `git status` clean before delegating. This keeps Codex patches easier to isolate and revert."
+> > "Prefer patch-based workflows (for example, `git diff`/`git apply`) over editing tracked files directly. Commit frequently so you can roll back in small increments."
+>
+> That is not literally "make a throwaway commit first", but it is a clear instruction to **start from a clean tree and commit in small increments so you can roll back** — the same practice, described in a different vocabulary. **A "no" generalised from two vendors to all vendors is exactly the shape of error this file exists to prevent, and it happened here.**
+>
+> **The defensible claim is now: at least one major vendor tells you to start from a clean working tree and commit frequently. Whether the "commit first" framing is right is a matter of interpretation, not of missing evidence.**
 
 ### Finding 1 — Cursor (official engineering blog)
 
@@ -50,16 +61,28 @@ This matters for the corpus, because "commit before you run an agent" is a claim
 - **Date read:** 2026-09-29
 - **Interpretation:** the documented position is that agent-managed checkpoints are *not* the safety net and git is. That is an argument for having version control in place. It is not an instruction to make a throwaway commit before each prompt.
 
-### Finding 4 — OpenAI / GitHub Copilot: "commit before you run an agent"
+### Finding 4 — OpenAI / Codex: "commit before you run an agent"
+
+- **Source URL:** `https://learn.chatgpt.com/docs/agent-approvals-security.md`
+- **Verification status:** `verified from primary source`
+- **Date read:** 2026-09-29
+- **Verbatim quote:** "Work on a feature branch and keep `git status` clean before delegating. This keeps Codex patches easier to isolate and revert."
+- **Verbatim quote:** "Prefer patch-based workflows (for example, `git diff`/`git apply`) over editing tracked files directly. Commit frequently so you can roll back in small increments."
+- **Status change:** this finding previously read `could not verify` on the grounds that no OpenAI documentation could be located. That search was targeted at the *phrase* "commit before", and the guidance is written in different words — clean status, commit frequently, roll back in small increments. **The block was an artefact of searching for a literal phrase rather than the practice.** Recorded here rather than deleted, because the reason the original pass failed is the more useful part.
+- **Interpretation:** this is a pre-flight cleanliness requirement plus an incremental-commit discipline. It is the practice the question was asking about, in vocabulary that does not contain the question's words.
+
+### Finding 5 — GitHub Copilot: still unverified
 
 - **Source URL:** none found
 - **Verification status:** `could not verify`
 - **Date read:** 2026-09-29
-- **Note:** search surfaced only third-party blog posts (one small agency blog, one freeCodeCamp article) making this claim. I did not fetch either, and neither is vendor-primary. No OpenAI or GitHub Copilot documentation was located that recommends committing before an agent run or that frames diff review as an alternative to the agent's summary. Treat the claim as unverified for those two tools, not as disproved — the search was targeted at the recommendation, not at every Copilot page.
+- **Note:** the Copilot pages read for this pass cover the CLI's permission model, directory scoping and the cloud agent's environment. **None of them addresses git practice.** Treat as unverified for Copilot specifically — and note that Finding 4's failure mode is a live risk for any future search, since the same phrasing gap could apply here.
 
 ### Practical phrasing this supports
 
-The defensible, sourced version of the rule is: **do not trust the agent's summary; watch the run, read the diff, and make it show evidence.** The "commit first" framing is the one part of the question's premise that the vendor sources do not support.
+The defensible, sourced version of the rule: **do not trust the agent's summary; watch the run, read the diff, and make it show evidence.** That much is consistent across Cursor, Anthropic and OpenAI.
+
+On the commit half, the sourced position is now stronger than it was: **OpenAI documents a clean working tree before delegating and frequent incremental commits so you can roll back**, while Cursor and Anthropic describe committing after you are satisfied. **All three converge on the same practice — version control in place, small reversible steps, human judgement at the merge point — and differ only in when they say to make the commit.** The corpus may state the practice as sourced. It may not state "commit first" as a quoted recommendation, because no vendor uses those words.
 
 ---
 
