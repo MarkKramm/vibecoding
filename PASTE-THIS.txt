@@ -1,3 +1,41 @@
+==============================================================================
+RESOLVED 2026-09-29 - DO NOT PASTE THIS FILE. All 12 questions are answered.
+==============================================================================
+
+Eleven of the twelve are closed against primary sources. The twelfth (Q12,
+Philippine availability) is closed for every tool except three that publish no
+supported-country list at all, which is a finding rather than a gap.
+
+The questions are kept below as the record of what was asked, NOT as a task.
+Answers, source URLs and the reasoning are in docs/SEARCH-REQUESTS.md, with the
+detailed findings in:
+
+  docs/RESEARCH-VENDOR-2026-09-29.md          Q1, Q8, Q9
+  docs/RESEARCH-PERMISSIONS-2026-09-29.md     Q2, Q3   (six tools)
+  docs/RESEARCH-INJECTION-2026-09-29.md       Q4      (four primary write-ups)
+  docs/RESEARCH-SECURITY-AVAIL-2026-09-29.md  Q5, Q7, Q12
+  docs/RESEARCH-EU-AI-ACT-2026-09-29.md       Q10     (from the legal text)
+
+Two answers contradicted the premise of the question they came from, and both
+are recorded rather than tidied away:
+
+  Q5  was answered "no vendor tells you to commit before running an agent"
+      after searching two vendors. OpenAI's Codex docs do say it, in different
+      words. The first answer was a "no" generalised too far.
+
+  Q7  supplied a candidate list of over-represented flaws. The one large
+      measurement readable in full has two of them (SQL injection, weak
+      crypto) as its two BEST results, and the two it does flag (XSS, log
+      injection) were not on the list.
+
+Why this file existed at all: web search was believed unavailable, so questions
+were to be pasted into a web chat by hand. Search works, and nothing needs
+pasting.
+
+------------------------------------------------------------------------------
+The original prompt follows, unaltered.
+------------------------------------------------------------------------------
+
 Search the web now and answer these 12 questions. I need a source URL for each answer.
 
 If you cannot find a source for one, write "could not verify" and move on. Do not guess.

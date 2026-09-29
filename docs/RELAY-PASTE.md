@@ -1,5 +1,31 @@
 # Research request — please search the web and cite sources
 
+> ## ⛔ SUPERSEDED 2026-09-29 — do not paste this file
+>
+> **All twelve questions are answered.** Eleven are closed against primary
+> sources; the twelfth (Q12) is closed for every tool except three that publish
+> no supported-country list, which is a finding rather than a gap.
+>
+> **Nothing needs pasting.** This file was written because `web_search` was
+> believed to be unavailable, so the questions had to be carried into a web chat
+> by hand. Search works, the relay is finished, and the whole round-trip is
+> obsolete.
+>
+> **Where the answers are:** `docs/SEARCH-REQUESTS.md` holds the per-request
+> status and the reasoning. The findings themselves are in
+> `RESEARCH-VENDOR-2026-09-29.md` (Q1, Q8, Q9),
+> `RESEARCH-PERMISSIONS-2026-09-29.md` (Q2, Q3),
+> `RESEARCH-INJECTION-2026-09-29.md` (Q4),
+> `RESEARCH-SECURITY-AVAIL-2026-09-29.md` (Q5, Q7, Q12) and
+> `RESEARCH-EU-AI-ACT-2026-09-29.md` (Q10).
+>
+> **This file and `PASTE-THIS.txt` are hand-maintained siblings that were meant
+> to stay in step.** They agreed on the count and disagreed on the wording, and
+> the wording in `PASTE-THIS.txt` was the one to paste. Both are now historical.
+> **Do not re-synchronise them** — there is nothing left to synchronise.
+>
+> The original text follows, unaltered, as the record of what was asked.
+
 I am writing a technical curriculum about building software with AI coding tools, and I
 need answers accurate as of **September 2026**. **Please use web search.**
 
