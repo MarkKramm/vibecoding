@@ -14,7 +14,7 @@ Rules applied: every row below was read off a page whose **body** was actually r
 |---|---|---|---|---|
 | **Claude Code** | **Opt-in** | **No** — macOS, Linux, WSL2 only | Prompts on first use of Bash, edits, web fetch, web search | Claude Code, not the model |
 | **Codex** | **On by default** | **Yes** — native, `unelevated` or `elevated` | `on-request`: out-of-workspace edits and network | OS-level, per platform |
-| **Cursor** | Settable via `/sandbox` or `--sandbox` | CLI installs natively on PowerShell | Prompts without an allowlist entry | Declarative token rules |
+| **Cursor** | **On** in 2.x per a third-party disclosure; auto-executes with no approval | CLI installs natively on PowerShell | **None by default** — sandboxed instead | Declarative token rules |
 | **GitHub Copilot CLI** | **Opt-in** — `/sandbox enable`, public preview | Not stated | Prompts on first use of each tool | Directory scoping, **heuristic** |
 | **Antigravity** | **On** on macOS/Linux · **Off** on Windows | **No** — previous behaviour | macOS/Linux "allowed in sandbox; ask outside" | Namespaces / Seatbelt |
 | **Devin CLI** | **Opt-in** — `--sandbox` | **No — hard-fails** | `Normal`: reads auto, writes and shell prompt | OS-level, **fail-closed** |
@@ -81,9 +81,10 @@ Verbatim, the default position:
 - **Permission model is token-shaped, not mode-shaped:** `Shell(commandBase)`, `Read(pathOrGlob)`, `Write(pathOrGlob)`, `WebFetch(domainOrPattern)`, `Mcp(server:tool)`. Stored in `~/.cursor/cli-config.json` globally or `<project>/.cursor/cli.json` per project.
 - **Deny beats allow** — the clearest precedence rule of the six.
 - **WebFetch prompts by default:** *"Without an allowlist entry, each fetch prompts for approval."*
-- **Sandbox is settable**, via `/sandbox` or `--sandbox <mode>`. **The default was not established from these two pages** — the docs describe both states without naming the shipped default. Recorded as `could not verify` rather than inferred from the flag's existence.
+- **✅ The shipped default is now answered, 2026-09-29, by a third-party primary source.** The earlier entry here read `could not verify`, because Cursor's two pages document `enabled` and `disabled` without naming the default. **Cato Networks' DuneSlide disclosure states that *"Cursor 2.x shipped with automatic terminal command execution inside a sandbox by default, which operates without prompting the user for approval. This feature is built to prevent approval-fatigue."*** **So Cursor belongs in the on-by-default column, and is the most permissive entry in it: sandboxed, but with no approval prompt in the default state.** That is a vendor's description of a third party's product, so it is marked as such rather than treated as Cursor's own statement — but it is specific, falsifiable, and the only published answer to this field. Full source in [`RESEARCH-INJECTION-EXTRA-2026-09-29.md`](RESEARCH-INJECTION-EXTRA-2026-09-29.md).
 - **Modes** are Agent (default, *"Full access to all tools"*), Plan, and Ask (*"Read-only exploration without making changes"*).
 - **A detail worth keeping:** for `sudo`, *"Your password flows directly to `sudo` via a secure IPC channel; the AI model never sees it."* Credential entry designed so the agent cannot observe the secret.
+- **A finding that belongs in this file as well as the injection one.** Cursor builds its sandbox write policy from tool parameters, and *"when the LLM assigns a non-default value to this parameter, that path is blindly added to the sandbox's allowed write list."* **The security boundary is computed from model output.** It also runs opposite to the controls in §2 and §6 of this file: Codex protects `.git`, `.agents` and `.codex` recursively inside a writable root, and Claude Code refuses writes to `.claude/`, while in DuneSlide the agent **overwrote the sandbox binary itself**, so later commands in the same session ran unsandboxed. An agent that can rewrite its own sandbox has no sandbox.
 
 ### 4. GitHub Copilot CLI — heuristic directory scoping, opt-in sandbox
 
