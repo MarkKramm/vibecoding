@@ -51,26 +51,53 @@ nonsense result:
 **"All ten tracks broken, but zero problems found" is the signature.** So is *any* total failure
 that contradicts its own summary. Suspect the port before the content.
 
-**How this actually happens here.** The sibling project `cs-roadmap` is a separate checkout with
-its own `vite preview`, and **it defaults to the same port 4173**. On 2026-09-25 a `cs-roadmap`
-preview was already listening when this repo's checks ran, and the sweep failed on every track
-while the app was completely fine.
+**How this actually happens here.** The sibling project `cs-roadmap` is a separate checkout with its own `vite preview`, and **it defaults to the same port 4173**. On 2026-09-25 a `cs-roadmap` preview was already listening when this repo's checks ran, and the sweep failed on every track while the app was completely fine.
+
+#### It happened again on 2026-09-29, and `audit-a11y.mjs` has no preflight
+
+**Same class as lesson 57, and the fix that lesson received was never applied here.**
+
+Two `vite preview` processes were bound to **each** of 4173 and 4199 — this repo's and `cs-roadmap`'s — and the OS was handing connections between them. The sweep passed repeatedly by luck. Then one run landed on the wrong process and produced:
+
+> `✖ accessibility audit failed — 14 problem(s), 4 assertion(s) passed`
+> `✖ expected 6 .navbtn view buttons, found 0 — views cannot be reached, so the audit cannot see them`
+
+Then eleven more lines reading as accessibility defects across all six views.
+
+**Every one of those fourteen was a confident report about an application this repo has never shipped.** The port was serving a page titled "CS Roadmap". `verify-site.mjs` was given a preflight in lesson 57 precisely so it would refuse to continue against the wrong app — **`audit-a11y.mjs` never got one, so it does the thing that fix was written to prevent.**
+
+**Two tells here, both worth internalising.** The count contradicts its own summary, as Trap 3 already says. But the sharper one: the app mounted and the Curriculum view audited *perfectly* — 61 interactive elements, focus visibility and reachability all passing — while every other view reported "unreachable". **A page cannot have one working view and five that fail to load. Believe the part that passed; question the part that failed.**
+
 
 **The rules that follow — and they matter more than usual when more than one agent or terminal is working:**
 
 1. **Never assume 4173 is yours.** Before any browser check, run
    `Get-NetTCPConnection -State Listen -LocalPort 4173` and **count the listeners**. More than
    one means the result is unreliable — stop and use a private port.
-2. **Do not kill a server you did not start.** It may be another checkout's, or another
+2. **Confirm identity, not just the port.** `(Invoke-WebRequest http://localhost:4173).Content` must
+   contain a `<title>` of **this** project. `"CS Roadmap"` means you are pointed at the sibling
+   checkout, and every finding after that point is about an app you have never shipped.
+3. **Use `localhost`, never `127.0.0.1`.** The preview server binds IPv6 only. The IPv4 form fails
+   to connect, which is indistinguishable from "no server answered" and produces a **skip** rather
+   than a failure — so a typo in the host silently converts a real check into a green no-op. This
+   bit me during the 2026-09-29 run above.
+4. **Do not kill a server you did not start.** It may be another checkout's, or another
    session's mid-verification run. Use a different port instead; that costs nothing and breaks
-   nobody.
-3. **Use a private port for your own runs.** `npm run preview -- --port 4199 --strictPort`, then
-   point every check at it:
+   nobody. Identify by full command line: this repo's processes sit under
+   `...\Learning\vibecoding\...`, the sibling's under `...\Learning\cs-roadmap\...`.
+5. **Use a private port, and verify it is actually free first.** On 2026-09-29 `cs-roadmap` was
+   listening on **both** 4173 and 4199, so the "private" port named in the old version of this rule
+   was not private at all. Scan before choosing:
    ```powershell
-   $env:VITE_PREVIEW_URL="http://127.0.0.1:4199"
-   node learning-site/scripts/sweep-phases.mjs http://127.0.0.1:4199
+   4300..4320 | Where-Object { -not (Get-NetTCPConnection -State Listen -LocalPort $_ -EA 0) }
    ```
-4. **`--strictPort` is what tells you the truth.** Without it, Vite silently increments to the
+   Then start the preview and point every check at it, using `localhost` per rule 3 above:
+   ```powershell
+   npm run preview -- --port 4300 --strictPort     # from learning-site
+   $env:VITE_PREVIEW_URL="http://localhost:4300"
+   node learning-site/scripts/sweep-phases.mjs http://localhost:4300
+   ```
+6. **`--strictPort` is what tells you the truth.** Without it, Vite silently increments to the
    next free port, your checks keep hitting the *other* server, and the summary looks fine while
    testing nothing. With it, a taken port fails loudly.
 
