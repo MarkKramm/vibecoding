@@ -264,6 +264,32 @@ const failuresByPhase = new Map();
  * would report every phase as broken.
  */
 async function readPhase() {
+  // WHY THE REPORTED CHARACTER NUMBER IS NOT A COMPLETENESS MEASURE.
+  //
+  // This loop breaks the moment `len` exceeds 1200, and `len` is
+  // `document.body.innerText.length`. So the number printed per phase is "how
+  // much visible text had rendered at the instant the page first crossed 1,200
+  // characters" - a LOAD-TIMING ARTIFACT, not a measure of how much content the
+  // phase contains.
+  //
+  // Measured 2026-09-29: agents/agent-08 measured 9,188 and then 9,245 across
+  // two consecutive identical sweeps, while agents/agent-03 was stable at
+  // 42,369 in both. The lesson block payloads are the same size - 78 blocks
+  // and ~25.4k JSON chars for both agent-07 and agent-08. One page paints in a
+  // single pass and the other paints incrementally, so where the poll observes
+  // the page differs by a few dozen characters.
+  //
+  // DO NOT read a small change here as a content regression, and do NOT read
+  // two runs agreeing as evidence the content is correct. The checks that mean
+  // something are the h1 matching the phase title, 6/6 sections, the checklist
+  // count, the quiz-option count, and the <1500 floor below which catches a body
+  // that threw. A genuinely truncated lesson fails on section count, not on
+  // character count.
+  //
+  // A character count that is BYTE-IDENTICAL across two runs after a content
+  // edit is a different and much more serious signal: that is a stale bundle,
+  // because no content change can leave a rendered length unchanged. See
+  // HANDOVER.md lesson 59 and the `vite build` step added to check-all.mjs.
   let stats = null;
   for (let i = 0; i < 80; i++) {
     stats = await evalJs(`

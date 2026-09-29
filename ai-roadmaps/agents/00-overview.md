@@ -40,8 +40,9 @@ Everything is achievable at zero cost. The practical constraint is quota, not mo
 | 6 | Agent Safety and Human Approval | 1 week | Approval gates, sandboxing, least privilege, and indirect prompt injection as a structural risk |
 | 7 | MCP and Evaluating Agents | 2 weeks | The integration standard, plus how to measure whether an agent works — with failure taxonomy and pass^k |
 | 8 | Agent Skills and the Harness You Configure | 2 weeks | The layer around the agent: skills, instruction files, hooks, and which extension point to reach for — plus an audit of what your setup can do without asking |
+| 9 | Instruction Files and Hooks: Request Versus Guarantee | 2 weeks | Which of your rules are requests and which are enforced: file precedence, load order, path-scoped rules, and hooks that block rather than advise |
 
-**Read them in order.** Phases 1–3 build the loop, 4–5 scale it, 6 contains it, 7 measures it and connects it to the outside world, and 8 configures the layer the agent actually runs inside.
+**Read them in order.** Phases 1–3 build the loop, 4–5 scale it, 6 contains it, 7 measures it and connects it to the outside world, 8 configures the layer the agent runs inside, and 9 makes your rules enforced rather than advisory.
 
 Phase 6 is the one people skip and should not. If you build the agent before you build the guardrails, you will learn why the hard way.
 
@@ -62,7 +63,7 @@ Phase 6 is the one people skip and should not. If you build the agent before you
 
 ## Roughly how long it takes
 
-**8 phases, about 9 weeks at five sessions a week.** Phases 7 and 8 are two weeks each because MCP, evaluation, and the harness configuration layer are all substantial.
+**9 phases, about 10 weeks at five sessions a week.** Phases 7, 8 and 9 are two weeks each because MCP, evaluation, and the harness configuration layer are all substantial.
 
 At one hour a day, plan on eleven weeks. Budget extra: agent development is iterative, and a meaningful fraction of your time goes on debugging loops rather than reading.
 
