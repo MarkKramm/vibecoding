@@ -1,6 +1,6 @@
 # HANDOVER — Vibecoding / AI Era Learning Site
 
-**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-28 (third pause)**.
+**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-29 (fourth pause)**.
 **Purpose:** Everything a fresh session needs to resume this project without re-deriving anything.
 **Current repo root:** the clone you are reading this in. (This copy: `C:\Users\zaman\Desktop\Projects\Learning\vibecoding`, as of 2026-09-29. The repo has moved machines more than once, so **do not treat any absolute path in this file as durable** — run commands from the repo root instead.)
 **Historical repo root in old logs:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`.
@@ -8,7 +8,55 @@
 
 ---
 
-## START HERE — current handoff (2026-09-28, third pause)
+## START HERE — current handoff (2026-09-29, fourth pause)
+
+**State: SAFE. Everything from the 2026-09-29 session is COMMITTED and PUSHED; the working tree
+is clean and no scratch files remain in the repo root.** Ten commits this session, tip `a381ec8`.
+
+**Measured at this pause** — verify rather than trust, but these were green:
+
+| | |
+|---|---|
+| Corpus | **68 phases**, 10 tracks · 231,982 lesson words · 1,105 checklist · 567 quiz · 941 practice |
+| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` all **exit 0**; encoding clean across **225 files** |
+| Suite | `npm test` **21/21** on a verified-free port, with the browser checks genuinely executing |
+| Sync | `git rev-list --left-right --count origin/main...HEAD` → `0 0` |
+
+**Two new phases shipped this session**, both researched from vendor documentation rather than
+written from memory, both registered in the README counts and the `agents` track overview in the
+same commit:
+
+- **`agents/08` Agent Skills and the Harness You Configure** — closes a gap that was a genuine
+  **zero mentions across 3.58M characters**, which is exactly the viral thing the user had seen.
+- **`agents/09` Instruction Files and Hooks: Request Versus Guarantee** — built on one vendor
+  sentence: an instruction like "never edit `.env`" is *a request, not a guarantee*, and a
+  `PreToolUse` hook that blocks the edit is enforcement.
+
+**Research this session, in `docs/`** (all read off primary sources): `RESEARCH-VENDOR`,
+`RESEARCH-SECURITY-AVAIL`, `RESEARCH-PERMISSIONS`, `RESEARCH-INJECTION`, `RESEARCH-EU-AI-ACT`,
+plus two `-EXTRA-` files and two harness files feeding phases 8 and 9. **Eleven of twelve research
+requests are closed**; the twelfth asks for numbers no vendor publishes, which is the finding.
+
+**Three things a new session should know before starting:**
+
+1. **Two browser-check gotchas, both hit this session.** Use a **verified-free** port — the
+   sibling `cs-roadmap` checkout listens on 4173 *and* 4199 — and use `localhost`, never
+   `127.0.0.1`, because the preview binds IPv6 only and the IPv4 form fails as a silent **skip**.
+   Full procedure in `WORKFLOW.md` Trap 3.
+2. **The sweep's per-phase character count is a load-timing artifact, not a completeness
+   measure** (lesson 61). Do not chase a small change in it, and do not trust two agreeing runs.
+3. **`audit-a11y.mjs` has no page-identity preflight** (lesson 62). Pointed at another app it
+   reports confident accessibility failures about software you never shipped. `verify-site.mjs`
+   got this fix in lesson 57; the a11y audit never did. **This is the open engineering thread.**
+
+**Still needs the human, and nothing else is blocked on it:** the mobile P0 phone test, `gh auth
+login` for CI visibility, and a web-tool cost check. **Phase C (large codebases and long-running
+agents) is researched in `docs/RESEARCH-HARNESS-SCALE-2026-09-29.md` and deliberately unwritten**
+— its strongest claim came back negative and should be handled carefully. See lesson 60's close.
+
+---
+
+## Previous handoff (2026-09-28, third pause)
 
 **State: SAFE. The 2026-09-28 session's work is COMMITTED; the working tree is clean and no
 scratch files remain in the repo root.**
@@ -2057,7 +2105,35 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **The generalisation, now in the network policy:** *before recording a source as unreachable, try its machine-readable endpoint on a sibling host.* HTML rendering is what gets defended; content-negotiation APIs usually are not.
 
-    Also the first recorded instance of a **negative research result** in this project, and it is the strongest kind: the question had been open because nobody could read the article, and reading it produced a clean answer rather than an ambiguity. See `docs/RESEARCH-EU-AI-ACT-2026-09-29.md` — the EU AI Act imposes **no** disclosure duty on AI-generated source code, Article 50 has been in application since 2 August 2026, and "source code" appears exactly three times in the whole Regulation, all of them powers over a provider's own model. **The open question was an artefact of not having read the text.**
+    Also the first recorded instance of a **negative research result** in this project, and the strongest kind: the question had been open because nobody could read the article, and reading it produced a clean answer rather than an ambiguity. See `docs/RESEARCH-EU-AI-ACT-2026-09-29.md` — the EU AI Act imposes **no** disclosure duty on AI-generated source code, Article 50 has been in application since 2 August 2026, and "source code" appears exactly three times in the whole Regulation, all of them powers over a provider's own model. **The open question was an artefact of not having read the text.**
+
+61. **The all-phase sweep's character count is a load-timing artifact, and I nearly shipped a non-regression as a regression.** 2026-09-29.
+    While verifying `agents/09` I saw `agents/agent-08` render **9,188** characters where a run twenty minutes earlier had reported **31,111**. Everything I could measure said something was badly wrong: the earlier figure was roughly three times the current one, on a file I had just committed and believed unchanged.
+
+    **It was not wrong, and neither was the 9,188.** `sweep-phases.mjs` polls the page and **breaks the moment the rendered length exceeds 1,200**, so the number it prints per phase is *"how much visible text had rendered at the instant the page first crossed 1,200 characters."* Measured directly: two consecutive **identical** sweeps gave `agent-08` 9,188 and 9,245, while `agent-03` was stable at 42,369 in both. The two phases have near-identical payloads — 78 lesson blocks and ~25.4k JSON characters each. One page paints in a single pass; the other paints incrementally, so where the poll happens to observe it differs by a few dozen characters.
+
+    **The checks that actually mean something are the `h1` title match, 6/6 sections, the checklist count, the quiz-option count, and the `<1500` floor** — that floor exists to catch a body that threw, not to measure completeness. **A genuinely truncated lesson fails on section count, not on character count.**
+
+    **Two different signals hide behind that one number, and confusing them is the actual risk:**
+
+    | Observation | Meaning | Severity |
+    |---|---|---|
+    | Count drifts by tens between identical runs | Load-timing noise. Ignore. | None |
+    | Count is **byte-identical** after a content edit | **Stale bundle** — no content change can leave a rendered length unchanged | Serious; fixed in `23ad38d` |
+
+    Lesson 59's "the identical digit was the only tell" was correct, and I would have applied it here too if I had not measured first. **The distinguishing question is not "did the number change" but "is the change larger than the noise floor, and is it in the direction a content edit should move it."** Documented in `sweep-phases.mjs` beside the polling loop so the next reader does not have to re-derive it.
+
+62. **`audit-a11y.mjs` still has no page-identity preflight, and it reported 14 confident failures about an app this repo has never shipped.** 2026-09-29.
+    Trap 3 (`WORKFLOW.md`) fired again: the sibling `cs-roadmap` checkout had previews bound to **both** 4173 and 4199, Windows was handing connections between them, and one `npm test` landed on the wrong process. The output was not an error. It was a wall of accessibility defects — *"expected 6 `.navbtn` view buttons, found 0"*, then one line per view reporting it unreachable — all of them about a page titled "CS Roadmap".
+
+    **The sharper tell was not the count but the shape:** the app mounted, and the Curriculum view audited *perfectly* (61 interactive elements, focus visibility and reachability all passing) while every other view reported unreachable. **A page cannot have one working view and five that fail to load.** Believe the part that passed; question the part that failed.
+
+    **This is lesson 57's defect, unfixed in a sibling script.** `verify-site.mjs` was given a preflight precisely so it would refuse to continue against the wrong app. `audit-a11y.mjs` never received it, so it still does the thing that fix was written to prevent. **This is the open engineering thread from the 2026-09-29 session** — the fix belongs in `audit-a11y.mjs` and is not done.
+
+    A second, smaller defect found the same way: `WORKFLOW.md`'s Trap 3 rule 3 prescribed `http://127.0.0.1:4199`, which **cannot work**, because the preview server binds IPv6 only. The failure is indistinguishable from "no server answered", so the prescribed command silently converted a real check into a green no-op. The rule now says `localhost`, and warns about exactly that skip-as-success failure mode. The sibling's previews were left running and untouched throughout — identify by full command line before killing anything.
+
+    **The general lesson, which is this project's most repeated one and keeps recurring in new guises:** before believing a wall of failures, confirm the thing you tested is the thing you meant to test. Here the content was correct, the guards were correct, and the only defects were a port collision and a preflight that was never written.
+
 
 ---
 
