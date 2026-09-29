@@ -90,7 +90,7 @@ From `learning-site/`:
 | `npm run dev` | rebuild content, then start the dev server on **5173** |
 | `npm run build` | rebuild content, then bundle into `dist/` |
 | `npm run preview` | serve `dist/` on **4173** |
-| `npm test` | **20 checks**; 18 offline plus 2 preview/browser checks that skip if no server answers |
+| `npm test` | **21 checks**; 19 offline plus 2 preview/browser checks that skip if no server answers |
 | `npm run check` | the three content-contract guards only |
 | `npm run test:browser` | browser checks; **needs a running server** |
 
@@ -121,21 +121,32 @@ node scripts/build-content.mjs --check; echo "exit=$?"
 cd learning-site && npm test
 ```
 
-Runs 20 checks in order. Eighteen run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
+Runs 21 checks in order. Nineteen run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. Check 14 rebuilds the app bundle so those two browser checks cannot read a stale `dist/` — see the FIXED section below. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
 
-#### ⚠️ `npm test` does NOT rebuild the app bundle — steps 14 and 15 can pass on stale content
+#### ✅ FIXED 2026-09-29 — `npm test` now rebuilds the app bundle (21 checks)
 
-**This is the most dangerous gap in the suite, because it reports success.**
+**This gap was real and is now closed.** Kept because the failure mode is worth recognising on sight.
 
-`npm test` step 1 runs `build-content.mjs`, which regenerates the **JSON**. **No step in the 20 runs `vite build`.** Steps 14 and 15 are browser checks that read `http://localhost:4173`, and `vite preview` serves `dist/` — a bundle built at some earlier moment. So:
+`npm test` regenerated the content **JSON** but **no step ran `vite build`**, and the two browser checks read `http://localhost:4173`, where `vite preview` serves `dist/` — a bundle from some earlier moment. So:
 
-> **A content edit can add thousands of characters, `npm test` can report `all 20 checks passed`, and the browser checks will have rendered the page as it was before the edit. Nothing goes red, and nothing skips.**
+> **A content edit could add thousands of characters, `npm test` could report all checks passed, and the browser checks would have rendered the page as it was before the edit. Nothing went red, and nothing skipped.**
 
-Observed and measured on **2026-09-29**: a ~4,100-character addition to `vibecoding/07` passed all 20 checks with the all-phase sweep reporting **36,854 chars** — byte-identical to the pre-edit figure. After `npm run build` and a preview restart, the same phase measured **40,990 chars**. Every check was green in both runs; only the number moved.
+Measured on **2026-09-29**: a ~4,100-character addition to `vibecoding/07` passed every check with the all-phase sweep reporting **36,854 chars** — byte-identical to the pre-edit figure. After a build, the same phase measured **40,990**. Every check was green in both runs; only the number moved.
 
-**Why the loud-skip design makes this worse rather than better.** The suite goes to some trouble to skip *loudly* when no preview answers, which is the right instinct. But **a preview that is up and serving a stale bundle produces no signal at all** — not a skip, not a warning, not a stale number. The one case you cannot detect is the one that matters.
+**Why the loud-skip design made it worse rather than better.** The suite skips *loudly* when no preview answers, which is the right instinct. But **a preview that is up and serving a stale bundle produces no signal at all** — no skip, no warning, not even a stale number. The suite handled the detectable case well and was blind in the only case that mattered.
 
-**The rule, then:** before trusting steps 14 or 15, run `npm run build` and restart the preview. The pipeline at the top of this file already says so; **this is why, and it is currently enforced by nothing but discipline.** If you want the suite self-checking here, the fix belongs in `check-all.mjs` — a step 0 that runs `vite build`, or a comparison of the preview's served asset hash against `dist/`.
+**The fix:** a new step, **#14, `vite build`**, runs immediately before the first browser check. It is spawned as `node <vite bin> build` rather than `npx vite build`, because `npx` is `npx.cmd` on Windows and needs `shell: true`, which would drop the exit status the runner depends on.
+
+**Verified by reproducing the bug and then the fix**, not by inspection. With a temporary ~240-character probe paragraph added to `vibecoding/07` and **no manual rebuild**:
+
+| Run | Result |
+|---|---|
+| `sweep-phases.mjs` alone, no build | **45,985** — stale, the bug reproduced |
+| `npm test`, build step now present | **46,223** — the edit was picked up |
+
+The probe was then removed. **A preview restart is no longer required**; `vite preview` reads `dist/` from disk per request, so the earlier belt-and-braces restart was covering for a rebuild the suite had not been doing.
+
+**The standing rule is still worth keeping**, because the same trap exists in any other order of operations: *before trusting a browser-backed check, confirm the artefact it reads was rebuilt by the run that reported it.* The suite now does that for itself.
 
 | # | Check | Catches |
 |---|---|---|
@@ -152,13 +163,14 @@ Observed and measured on **2026-09-29**: a ~4,100-character addition to `vibecod
 | 11 | free-toolkit figures | `docs/free-toolkit.md`'s stated counts vs the corpus |
 | 12 | encoding and line endings | LF, UTF-8 no BOM, no tabs, no mojibake |
 | 13 | CSS wiring | every JSX class has a rule; every token is defined |
-| 14 | accessibility (rendered page) | six-view rendered a11y, with a loud skip if preview is unavailable |
-| 15 | every phase renders | every phase in a real browser, with a loud skip if preview is unavailable |
-| 16 | mixed practice sets | pool shape and sampling behavior |
-| 17 | exams | per-track scoring, balanced capstone rotation, exhaustive resume and backup rules |
-| 18 | reachability | every `src/` module is reachable from `main.jsx` |
-| 19 | prop contracts | a declared component prop with no caller at any JSX call site |
-| 20 | notes flush (unmount persistence) | a note lost when a phase unmounts with no intervening render |
+| 14 | **app bundle (`vite build`)** | **the two browser checks below reading a stale `dist/` and reporting success** |
+| 15 | accessibility (rendered page) | six-view rendered a11y, with a loud skip if preview is unavailable |
+| 16 | every phase renders | every phase in a real browser, with a loud skip if preview is unavailable |
+| 17 | mixed practice sets | pool shape and sampling behavior |
+| 18 | exams | per-track scoring, balanced capstone rotation, exhaustive resume and backup rules |
+| 19 | reachability | every `src/` module is reachable from `main.jsx` |
+| 20 | prop contracts | a declared component prop with no caller at any JSX call site |
+| 21 | notes flush (unmount persistence) | a note lost when a phase unmounts with no intervening render |
 
 > This table is a duplicate of the `STEPS` array in `learning-site/scripts/check-all.mjs`, and it
 > **did** drift: three steps were missing here, which put every row after 10 off by one. The

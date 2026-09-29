@@ -2017,7 +2017,22 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **Note the docs were already right.** `WORKFLOW.md` says to build first and restart the preview. The instruction existed; **nothing enforced it.** A correct instruction that only an agent who already suspects the problem will follow is not a control.
 
-    Fix belongs in `check-all.mjs` — a step 0 running `vite build`, or a comparison of the preview's served asset hash against `dist/`. Until then: `npm run build` before trusting steps 14 and 15. Recorded in `WORKFLOW.md` §2 as well, because that is where the instruction is read.
+    Fix belonged in `check-all.mjs` — a step 0 running `vite build`, or a comparison of the preview's served asset hash against `dist/`.
+
+    > **✅ FIXED later the same day, and verified by reproducing the bug first.** A new
+    > step 14 runs `vite build` immediately before the first browser check, so the suite
+    > now rebuilds what it is about to test. Proven rather than assumed: with a temporary
+    > ~240-character probe added to `vibecoding/07` and no manual rebuild,
+    > `sweep-phases.mjs` alone reported the stale **45,985** while `npm test` reported
+    > **46,223**. The probe was then removed. The suite is now **21 checks** (19 offline
+    > plus 2 browser). A preview restart is no longer needed — `vite preview` reads
+    > `dist/` from disk per request, so the earlier restart was covering for a rebuild
+    > the suite had never been doing. Recorded in `WORKFLOW.md` §2.
+    >
+    > **What remains true regardless of the fix:** *before trusting a browser-backed
+    > check, confirm the artefact it reads was rebuilt by the run that reported it.* The
+    > suite now does that for itself, but the same trap is one build step away in any
+    > other tool.
 
 60. **A blocker I recorded, committed, and then broke twenty minutes later — and the reason is more useful than the fix.** 2026-09-29, research request 10.
     Every `eur-lex.europa.eu` and `data.europa.eu` route returns a **2,035-byte AWS WAF JavaScript challenge**. `web_fetch` runs no JavaScript, so it cannot solve it. That is all true, and I committed it as `157a20f` together with the conclusion that resolving the question needed the user to connect a desktop browser.

@@ -9,6 +9,12 @@
 //   2. audit-shapes runs before the browser checks, because it catches the cheap
 //      class of bug (a field whose element type changed) in under a second. A
 //      browser run takes longer; failing fast keeps the loop tight.
+//   1b. `vite build` runs immediately before the FIRST browser check, and this is
+//      not tidiness. Step 1 writes the content JSON, but the browser checks read
+//      dist/ through `vite preview`, and nothing else in this suite rebuilt it —
+//      so they validated a bundle from whenever it was last built and reported
+//      success while doing so. See the `why` on the build step for the
+//      measurement that caught it and the failure mode it produced.
 //   3. The three renderer/logic tests follow the shape audit: they also read the
 //      generated JSON, and they check the SITE's behaviour rather than the
 //      content's shape. They are separate steps from audit-shapes because they
@@ -165,6 +171,12 @@ const STEPS = [
     // Note the mode is deliberately the strict one: a baseline records defects
     // that are the site's to fix, and leaving entries in place after the fix
     // makes the audit claim a fixed thing is still broken.
+    name: "app bundle (vite build) — the two browser checks below read this",
+    cmd: "node",
+    args: [join(SITE, "node_modules", "vite", "bin", "vite.js"), "build"],
+    why: "THE STALE-BUNDLE TRAP, and it is the reason this step exists. Step 1 regenerates the CONTENT JSON, but nothing in this suite ran `vite build`, and steps 14 and 15 are browser checks pointed at PREVIEW_URL, where `vite preview` serves dist/ -- a bundle built at some earlier moment. So a content edit could add thousands of characters, this suite could report all 20 checks passed, and the browser checks would have rendered the page exactly as it was before the edit. Nothing went red and nothing skipped: a preview that is up and serving a stale bundle emits no signal at all, which is the one case the suite's loud-skip design cannot see. Measured 2026-09-29: a ~4,100-character addition to vibecoding/07 passed all 20 checks with the all-phase sweep reporting 36,854 chars, byte-identical to the pre-edit figure; after a build the same phase measured 40,990. The identical digit was the only tell. The suite's loud skip on a MISSING server is the right instinct and made this worse rather than better, because it handles the detectable case well and is blind in the one that matters. This step costs about a second and closes the class. Spawned as `node <vite bin> build` rather than `npx vite build` because npx is npx.cmd on Windows and needs shell:true, which would drop the exit status this loop depends on",
+  },
+  {
     name: "accessibility (rendered page)",
     cmd: "node",
     args: [join(HERE, "audit-a11y.mjs"), PREVIEW_URL, "--strict"],
