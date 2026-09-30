@@ -22,7 +22,7 @@ That second half is not a soft skill. With AI assistance, producing plausible ou
 
 ## The ten tracks
 
-Ten tracks, **68 phases** in total. They are numbered in reading order, but you do not have to walk them strictly in sequence — see [How to use these tracks](#how-to-use-these-tracks) below.
+Ten tracks, **69 phases** in total. They are numbered in reading order, but you do not have to walk them strictly in sequence — see [How to use these tracks](#how-to-use-these-tracks) below.
 
 Every phase in every track is completable **without spending money**. Where a paid mechanism is genuinely unavailable on a free tier, the phase teaches the mechanism and gives you a local or simulated substitute — see [`cost/07`](cost/) for the full zero-budget playbook.
 
@@ -32,7 +32,7 @@ Every phase in every track is completable **without spending money**. Where a pa
 | 2 | **Model Internals** | [`model-internals/`](model-internals/) | How inference actually works and what it costs: architecture, KV cache, quantization, serving, the model landscape | 6 |
 | 3 | **Prompting** | [`prompting/`](prompting/) | Getting what you want on purpose: instruction design, reasoning techniques, structured output, context engineering | 7 |
 | 4 | **Retrieval & RAG** | [`rag/`](rag/) | Giving a model knowledge it was not trained on: chunking, embeddings, vector search, hybrid retrieval, reranking, evaluation | 7 |
-| 5 | **Agents & Tools** | [`agents/`](agents/) | Models that act: function calling, the agent loop, multi-agent systems, MCP, sandboxing, agent evaluation, and **the harness you configure around the agent** | 9 |
+| 5 | **Agents & Tools** | [`agents/`](agents/) | Models that act: function calling, the agent loop, multi-agent systems, MCP, sandboxing, agent evaluation, and **the harness you configure around the agent** | 10 |
 | 6 | **Finetuning & Evals** | [`finetuning/`](finetuning/) | Changing the model versus changing the prompt, and measuring whether either helped: LoRA, datasets, LLM-as-judge, regression suites | 6 |
 | 7 | **Cost & Efficiency** | [`cost/`](cost/) | Maximising capability per peso: token economics, prompt caching, batching, model routing, provider strategy, local models, **and the zero-budget playbook** | 7 |
 | 8 | **Vibecoding Craft** | [`vibecoding/`](vibecoding/) | Building real software with AI agents: context management, verification, review, debugging AI-written code, shipping | 8 |
@@ -183,7 +183,7 @@ The rhythm assumes **5 days, not 7**. A plan that requires every day is a plan t
     ├── model-internals/       # 00-overview + 6 phases + checklist
     ├── prompting/             # 00-overview + 7 phases + checklist
     ├── rag/                   # 00-overview + 7 phases + checklist
-    ├── agents/                # 00-overview + 9 phases + checklist
+    ├── agents/                # 00-overview + 10 phases + checklist
     ├── finetuning/            # 00-overview + 6 phases + checklist
     ├── cost/                  # 00-overview + 7 phases + checklist
     ├── vibecoding/            # 00-overview + 8 phases + checklist

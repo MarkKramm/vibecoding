@@ -41,8 +41,9 @@ Everything is achievable at zero cost. The practical constraint is quota, not mo
 | 7 | MCP and Evaluating Agents | 2 weeks | The integration standard, plus how to measure whether an agent works — with failure taxonomy and pass^k |
 | 8 | Agent Skills and the Harness You Configure | 2 weeks | The layer around the agent: skills, instruction files, hooks, and which extension point to reach for — plus an audit of what your setup can do without asking |
 | 9 | Instruction Files and Hooks: Request Versus Guarantee | 2 weeks | Which of your rules are requests and which are enforced: file precedence, load order, path-scoped rules, and hooks that block rather than advise |
+| 10 | Working at Scale: Parallel Agents, Large Codebases, and Walking Away | 2 weeks | Subagents, worktrees, teams and workflows; dispatching work that survives your terminal; and the check that decides when it is done |
 
-**Read them in order.** Phases 1–3 build the loop, 4–5 scale it, 6 contains it, 7 measures it and connects it to the outside world, 8 configures the layer the agent runs inside, and 9 makes your rules enforced rather than advisory.
+**Read them in order.** Phases 1–3 build the loop, 4–5 scale it, 6 contains it, 7 measures it and connects it to the outside world, 8 configures the layer the agent runs inside, 9 makes your rules enforced rather than advisory, and 10 works at scale once one session is not enough.
 
 Phase 6 is the one people skip and should not. If you build the agent before you build the guardrails, you will learn why the hard way.
 
@@ -63,7 +64,7 @@ Phase 6 is the one people skip and should not. If you build the agent before you
 
 ## Roughly how long it takes
 
-**9 phases, about 10 weeks at five sessions a week.** Phases 7, 8 and 9 are two weeks each because MCP, evaluation, and the harness configuration layer are all substantial.
+**10 phases, about 11 weeks at five sessions a week.** Phases 7 to 10 are two weeks each because MCP, evaluation, the harness configuration layer, and working at scale are all substantial.
 
 At one hour a day, plan on eleven weeks. Budget extra: agent development is iterative, and a meaningful fraction of your time goes on debugging loops rather than reading.
 
