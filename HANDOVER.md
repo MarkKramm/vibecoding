@@ -2152,6 +2152,47 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **The transferable shape, for any guard that inspects an external artefact:** *before reporting on it, confirm it is the thing you meant to report on.* This project has now hit that in three separate forms — `verify-site.mjs` driving a restaurant site, the port collision above, and a `fetch` returning HTTP 200 carrying only navigation. Each time the failure looked like a finding rather than a mistake, which is exactly why they were expensive.
 
+64. **⛔ A TASK ON A LINE NOBODY PARSES IS NOT A BROKEN TASK. IT IS AN ABSENT ONE, AND ABSENCE IS THE ONE DEFECT EVERY OTHER GUARD HERE IS BLIND TO.**
+    Found 2026-09-30, in `29af0ef`. This is the most valuable bug this project has produced, and it was found by accident — while re-measuring a statistic, not by looking for it.
+
+    `ai-roadmaps/vibecoding/08` carried five practice tasks numbered **`15b`–`15f`**. That was a reasonable editorial choice: the EU AI Act section had been appended mid-phase, and a letter suffix let it slot in after task 15 without renumbering the three tasks after it. The build's task parser matches `/^\d+[.)]\s/`, which does not match a trailing letter. So those five lines were not tasks. They were prose that happened to end in an HTML comment.
+
+    **What that removed:** the entire RA 10173 practical section — the personal-data inventory with its sensitive-field marking, the lawful basis per processing purpose, the processor list and data processing agreements, the §20(f) breach-notification plan, and the note that §30 makes concealment a separate crime. The *teaching* was on the page; the *practice the learner is told to do* was not. Nothing was rendered, nothing was searchable, nothing was banded, nothing was scheduled.
+
+    **Why every guard passed, which is the part that matters.** The five tasks kept their authored ids (`t19`–`t23`), so the ID contract validated them — it checks ids on lines it *reads*. Their bands were never validated, so the duration guard passed vacuously. Nothing compared the number of task lines in the files against the number the build emitted, so the gap was invisible. The corpus reported **960 practice tasks when the files held 965**. `build-content --check`, `audit-quiz`, `audit-lesson-ast`, `audit-free-toolkit`, `audit-arithmetic`, `audit-encoding` and all 21 `npm test` checks exited **0**.
+
+    **The property that made it survive is the lesson.** An unvalidated *band* fails loudly, which is why a guard for it was safe to add earlier. An id on an unparsed line fails **completely silently** — the task is not wrong, it is absent, and every property that looks checkable is checked on the subset that parsed. The bug was plausible rather than malformed, and plausible is the worst property a bug can have.
+
+    **The fix, and why it is written the way it is.** `parseTasks` now tracks which lines it consumed and errors on any line in the practice section carrying an authored `<!-- id: … -->` that it did not read. That is deliberately **format-independent** — it is not a list of forbidden spellings — so it catches the next variant of "nearly a list item" under the same rule, and stays correct if the parser's own pattern ever changes. Verified both ways: it fires on the historical `15b.` form, and it fires on an asterisk bullet, which is what actually demonstrates the independence claimed in the comment. `docs/CONTENT-SCHEMA.md` documents it, because the error message points there.
+
+    **The content fix was a renumber, not a relabel.** `15b`–`15f` became `16`–`20` and the following three became `21`–`23`. **No authored id changed** — `t19`–`t23` now sit between `t15` and `t16`, which is precisely what authored ids are for. The display number is a convenience for the reader; the id is the identity a saved answer is stored against. Renumbering the digits breaks nothing; touching the ids would have broken real progress. Two prose references to a task number were updated, and the deliverable section — which had never asked for any of the five tasks' output, a second and smaller gap only visible once the tasks were — now does.
+
+    **The generalisation, for any content pipeline:** *a check that validates properties of what it parsed has no opinion about what it failed to parse, so an unparsed item passes every property check you have.* If a pipeline has an ID contract, ask what an item needs to look like to be *seen at all*, and make that a hard error rather than a skip. The cheapest possible detector here was not pattern-matching the bug — it was noticing that the id existed and was unused.
+
+65. **A VERIFICATION THAT RETURNS A SUSPICIOUSLY CLEAN NUMBER MUST HAVE ITS METHOD STATED AS CAREFULLY AS ITS RESULT.**
+    Found 2026-09-30 while re-measuring the DESIGN-SYSTEM band distribution, in `c5b9cd7`.
+
+    `docs/VERIFIED-FACTS.md` §2.1 recorded that a scan for hardcoded frontier identifiers (`gpt-4/5/6`, `claude-3/4`, `gemini-N`, `o1-`, `o3-`) across the phase corpus "returns **exactly one hit**", and it re-asserted that count each time the corpus grew — which is a good convention, and the reason the record was still standing.
+
+    Re-scanned **case-insensitively**: **five** hits. All five were then read in full and all five are compliant — one is the documented placeholder, and four are dated citations (the Reflexion paper's "80% reported for GPT-4 **at the time**", a 2023 paper's demo target, a 2024 TDD study, and one line already flagged `⚠️ Volatile, dated`). **So the rule held and the corpus was clean.**
+
+    But the original "one hit" was an artefact of a **case-sensitive pattern that could not match a capitalised identifier**, and the document never said so. That is a method gap, not a content gap, and it is the more useful half. *"One hit"* and *"one hit from a pattern that cannot match `GPT-4`"* are different claims, and only one of them supports the sentence it was written for. Five is now the documented number to re-run.
+
+    **This is lesson 61's shape applied to verification rather than to a guard:** an implausibly clean result is a reason to distrust the query. The same session produced the mirror-image case — a first scan for the same families returned **23** hits against a documented 1, because I had added `llama`/`mistral`/`qwen`/`deepseek` and matched case-insensitively, pulling in paper titles and dated teaching history. Both the 23 and the 1 were wrong; the 5 was the answer. **Suspect the query, then narrow it to the question actually asked, then read every hit rather than counting them.**
+
+    A related note on the same edit: the four new `file:line` references in that table were written from memory and **all four were wrong** — the real locations are `agents/03`, `agents/05`, `vibecoding/04` (twice) and `cost/05`. They were caught by listing the files and checking. A guessed path is not a citation, and that rule applies to internal references just as much as to URLs.
+
+66. **SUSPECT YOUR OWN READING BEFORE YOU EDIT A GUARD THAT YOU BELIEVE IS BROKEN.**
+    Recorded 2026-09-30, in `c5b9cd7`, because the near-miss is the useful part.
+
+    Mid-session, output appeared to show the phase sweep reporting `✖` for every track and `swept 0 of 69 phase(s)` while `npm test` still printed **"✓ all 21 checks passed"** and exited 0. If real, that would have been the worst bug in the project: the check that backs CHECKPOINT's "every phase renders" claim silently verifying nothing.
+
+    **It was not real.** Two separate command outputs had been conflated — the "all 21 checks passed" line came from an earlier invocation that had `VITE_PREVIEW_URL` set, and the failure lines from a later one that did not. Reproduced exactly: with the variable unset the suite correctly prints `✗ every phase renders (browser, all phases) FAILED (exit 1)` and exits **1**. `sweep-phases.mjs` records its problems properly and `check-all.mjs` treats a non-zero exit as a failure. The guards were right; the reading was wrong.
+
+    **What made the misreading possible is worth naming.** A real one-server-two-apps collision, plus a sibling checkout holding 4173, made "swept 0 of 69" a genuinely reachable state — so the scenario was plausible enough to read as real without checking. The cost of one more command was far lower than the cost of editing a correct sweep to satisfy a misread output, which is exactly the trap `AGENTS.md` names: *never edit a guard to make it agree with what you think you saw.*
+
+    One **real** defect did surface from the same investigation and was fixed: the sweep's failure summary led with `failuresByPhase.size`, which is empty whenever a track will not open, because an unopened track never enters a phase to be recorded as failed. A wrong-application run reported `phase sweep failed — 0 phase(s) with problems (10 detail line(s))` — self-contradictory, and to anyone skimming it, indistinguishable from "nothing went wrong". The empty set was the *symptom*, not an absence of problems. The summary now leads with the problem count and names the track-level diagnosis, because "a track would not open" and "a phase rendered badly" are different problems with different fixes.
+
 
 
 ---
