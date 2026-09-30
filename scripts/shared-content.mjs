@@ -248,6 +248,15 @@ function parseGlossary(text, file, problems) {
  * @param {string} root Repository root, for relative source paths.
  * @returns {{generatedAt: string, docs: object[]}}
  */
+
+/**
+ * How many shared documents are registered. Exported so the build's pass line
+ * can report "4/4" rather than a bare count of the ones it happened to find —
+ * a count that reads as "all validated" when one document is simply absent is
+ * the kind of number that hides a deletion.
+ */
+export const SHARED_DOC_COUNT = SHARED_DOCS.length;
+
 export function buildSharedDocs(sharedDir, root) {
   const problems = [];
   const docs = [];
@@ -256,9 +265,18 @@ export function buildSharedDocs(sharedDir, root) {
   for (const spec of SHARED_DOCS) {
     const path = join(sharedDir, spec.file);
     if (!statSync(path, { throwIfNoEntry: false })?.isFile()) {
-      // Not a failure while the curriculum is being written: the shared folder
-      // fills in over time, and a missing document is reported by the build
-      // summary rather than blocking every phase from building.
+      // This used to be a silent `continue`, on the reasonable grounds that the
+      // shared folder "fills in over time" while a curriculum is being written.
+      // That reasoning has expired: all four documents exist and are registered,
+      // so a missing one now means a file was DELETED or RENAMED — and the
+      // consequence is a whole document silently disappearing from the site,
+      // which is the same failure shape as an unparsed practice task. The old
+      // behaviour also made the build's own pass line lie: it reported the
+      // number of documents it *found*, so three of four present printed
+      // "3 shared doc(s)" and read as though all were validated.
+      problems.push(
+        `ai-roadmaps/shared/${spec.file} — registered shared document is missing, so "${spec.id}" would vanish from the site with a clean build. Restore the file, or remove it from SHARED_DOCS if it is genuinely retired.`,
+      );
       continue;
     }
 

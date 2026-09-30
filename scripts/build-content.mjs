@@ -24,7 +24,7 @@ import { fileURLToPath } from 'node:url';
 
 import { parseLesson } from './lesson-ast.mjs';
 import { buildSearchIndex } from './search-index.mjs';
-import { buildSharedDocs } from './shared-content.mjs';
+import { buildSharedDocs, SHARED_DOC_COUNT } from './shared-content.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 export const ROOT = join(__dirname, '..');
@@ -164,16 +164,35 @@ const VALID_ENERGY = new Set(['low', 'normal', 'high']);
 const VALID_BANDS = new Set(['quick', 'focused', 'deep', 'ongoing']);
 
 /**
- * A bare domain with a real TLD, and therefore no scheme — the shape a URL takes
- * when a human types it into prose. Used only to tell "this resource was meant
- * to be a link" apart from "this bullet points at a file in this repository".
+ * A bare domain written as a link but missing its scheme — the shape a URL takes
+ * when a human types it into prose. Used only to tell "this resource was meant to
+ * be a link" apart from "this bullet points at a file in this repository".
  *
- * The TLD list is the whole point. A pattern loose enough to catch `foo.md` or
- * `arXiv:2106.09685` would also catch the 113 legitimate in-repository and
- * non-link bullets these sections are full of, and a guard with 113 false
- * positives is a guard that gets switched off.
+ * The TLD list alone is NOT sufficient, which this pattern got wrong once
+ * already. `.sh`, `.io`, `.co`, `.me`, `.dev` and `.app` are all real TLDs *and*
+ * all common file extensions or package names, so a perfectly legitimate bullet
+ * — "Bootstrap the phase with `install.sh` from the repo" — was reported as a
+ * link missing its scheme, failing the build. A guard that fires on correct
+ * content is worse than no guard, because the fix a future editor reaches for is
+ * to delete the guard.
+ *
+ * So the pattern requires the token to look like a *host being used as a link*,
+ * which means one of:
+ *
+ *   - a path follows it:      `developer.mozilla.org/en-US/docs/...`
+ *   - or it carries a www.:   `www.imperial.ac.uk`
+ *
+ * A filename has neither — `install.sh`, `socket.io`, `package_skill.py` — and a
+ * bare TLD with neither a path nor a `www.` is deliberately not reported.
+ * `heise.de` is a known false negative, accepted: this exists to catch the common
+ * slip, not to be exhaustive, and the narrower rule is what keeps it usable.
+ *
+ * The earlier reasoning in this comment was about a *different* rule — the
+ * over-broad "any bullet here with no URL" version, which produced 113 false
+ * positives across the corpus. That lesson still holds and is recorded at the
+ * call site; it just does not apply here, where the scheme test does the work.
  */
-const BARE_DOMAIN = /\b[a-z0-9][a-z0-9-]*\.(?:com|org|net|io|dev|ai|app|co|edu|gov|me|sh|gg|xyz|cloud|tech)\b(?:\/|\b)/i;
+const BARE_DOMAIN = /(?:www\.[a-z0-9][a-z0-9-]*\.[a-z]{2,}\b|\b[a-z0-9][a-z0-9-]*\.(?:com|org|net|io|dev|ai|app|co|edu|gov|me|gg|xyz|cloud|tech|ac|uk|de|fr|info|blog)\b\/)/i;
 
 /** Collects contract violations so every one is reported, not just the first. */
 class BuildErrors {
@@ -737,9 +756,13 @@ export function parseQuiz(section, phaseId, errors, file, seenIds) {
     if (!current) return;
     const marks = current.options.filter((o) => o.correct).length;
 
-    if (current.options.length < 3) {
-      errors.add(file, current.line, `quiz ${current.id} has ${current.options.length} option(s); at least 3 are required`);
-    }
+    // The option COUNT is not checked here. It used to be, as `at least 3`,
+    // which was the contract in CONTENT-SCHEMA.md until 2026-09-30. The contract
+    // is now exactly 4 and is enforced in parseQuiz, after all questions are
+    // collected. Leaving the old check in place meant a 2-option question
+    // emitted two mutually inconsistent errors in one run — "at least 3 are
+    // required" and "exactly 4 are required" — which is the kind of noise that
+    // teaches people to ignore a build's output. One rule, one message.
     if (marks === 0) {
       errors.add(file, current.line, `quiz ${current.id} has no correct option — mark exactly one option with [x]`);
     }
@@ -1044,6 +1067,45 @@ export function buildPhase(filePath, trackId, seenPhaseIds, seenItemIds, errors)
     const present = new Map();
     for (const [title] of sections) present.set(normaliseHeading(title), title);
 
+    // A `## ` heading that is not one of the 14 contract sections.
+    //
+    // This is the most severe member of the family this file keeps hitting,
+    // because `splitSections` starts a new section on ANY unfenced `## ` line.
+    // A heading the schema does not define is therefore not merely unread - it
+    // **terminates whatever section came before it**, and everything after it is
+    // attributed to a section nobody reads.
+    //
+    // Verified, and it is total loss rather than mis-rendering. Injecting
+    // `## Part Two - a second part` into the middle of a phase lesson:
+    //
+    //   lesson blocks   84 -> 2
+    //   text before it  present
+    //   text after it   ABSENT
+    //   build-content --check   exit 0
+    //   audit-lesson-ast.mjs    exit 0
+    //   total character loss      0
+    //
+    // The audit reporting zero loss is the part worth understanding: it measures
+    // the lesson body it was given, and the truncation happened before its view
+    // existed. It cannot see a loss that occurred upstream of it, so no
+    // downstream guard can be relied on to catch this.
+    //
+    // Scanned before adding: 966 unfenced `## ` headings across all 69 phase
+    // files, which is exactly 69 x 14, with zero strays. So this closes a latent
+    // trap rather than a live defect - stated here so it is not later mistaken
+    // for a content fix.
+    for (const [title, sec] of sections) {
+      const known = SECTION_ORDER.some(
+        (n) => title === n || title.startsWith(n + ':') || title.startsWith(n + ' ')
+      );
+      if (known) continue;
+      errors.add(
+        rel,
+        sec.start || 1,
+        `"## ${title}" is not one of the 14 contract sections, and splitSections treated it as one — it ENDED the section above it, so everything after this line was attributed to a heading nobody reads and is missing from the built output. Use "###" for a heading inside a lesson.`
+      );
+    }
+
     for (const name of SECTION_ORDER) {
       if (name === 'Lesson') continue; // prefix-matched, never exact
       if (sections.has(name)) continue;
@@ -1092,6 +1154,49 @@ export function buildPhase(filePath, trackId, seenPhaseIds, seenItemIds, errors)
     for (const problem of lesson.unknown) {
       errors.add(rel, lessonSection.start + (problem.line ?? 0), `lesson parse: ${problem.detail}`);
     }
+
+    // A line inside a lesson that LOOKS like a heading but is not one.
+    //
+    // `lesson-ast.mjs` recognises `#{3,5}` as a heading, because a lesson's
+    // structure is `### Part N` under a single `## Lesson` in the phase file. So
+    // `## Part 2` and `###### Sub` fall through to the paragraph catch-all and
+    // render with their hashes visible, and `###Heading` — one missing space —
+    // does the same.
+    //
+    // This is MIS-RENDERED rather than lost, which is why it is a lesser defect
+    // than the unparsed-task family: the words reach the page. It is still
+    // silent, and still for the lesson-64 reason. `audit-lesson-ast.mjs` derives
+    // its expected text with its own `^#{1,6}\s+` stripper, so for `## Part 2`
+    // the expected side loses the hashes while the actual keeps them — a GAIN,
+    // and gain is behind `console.warn` with `process.exit(1)` reached only when
+    // LOSS is non-zero. Verified: injecting each of these into a phase gives
+    // `build-content --check` exit 0 and `audit-lesson-ast` exit 0, with the text
+    // present in `generated/lessons/<id>.json` inside a `para` block.
+    //
+    // Scanned before adding: 14,718 lesson body lines across all 69 phases, zero
+    // occurrences. So this closes a latent trap rather than a live defect, which
+    // is stated here so nobody later reads it as a content fix.
+    // Fence state must be tracked, or this guard fires on code comments. The
+    // first version of it reported 88 violations, every one of them a `# ...`
+    // line inside a ```python block — a Python comment, not a heading. The
+    // lesson-ast parser tracks fences and this guard did not, so it disagreed
+    // with the very thing it was checking.
+    const FENCE = /^(```+|~~~+)\s*([A-Za-z0-9_+-]*)\s*$/;
+    let inFence = false;
+    lessonSection.lines.forEach((line, i) => {
+      if (FENCE.test(line)) { inFence = !inFence; return; }
+      if (inFence) return;
+      const m = line.match(/^(#{1,6})(\s*)(\S.*)$/);
+      if (!m) return;
+      const level = m[1].length;
+      const hasSpace = m[2].length > 0;
+      if (hasSpace && level >= 3 && level <= 5) return;   // a real lesson heading
+      errors.add(
+        rel,
+        lessonSection.start + i,
+        `line looks like a lesson heading but will render as literal text: "${line.trim().slice(0, 60)}" — lesson headings are "### Part N" through "##### Sub" (3 to 5 hashes) with a space after the hashes.`,
+      );
+    });
   }
 
   // Tools table.
@@ -1274,7 +1379,7 @@ function main() {
   const shared = buildSharedDocs(join(CONTENT_DIR, 'shared'), ROOT);
 
   if (checkOnly) {
-    console.log(`✓ content build check passed — ${allPhases.length} phase(s) across ${Object.keys(trackOutputs).length} track(s), ${shared.docs.length} shared doc(s)`);
+    console.log(`✓ content build check passed — ${allPhases.length} phase(s) across ${Object.keys(trackOutputs).length} track(s), ${shared.docs.length}/${SHARED_DOC_COUNT} shared doc(s) validated`);
     return;
   }
 
