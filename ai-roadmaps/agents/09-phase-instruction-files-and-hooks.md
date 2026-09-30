@@ -48,7 +48,7 @@ Most people's instruction files are a wish list. By the end of this phase yours 
 | 7 | Part 7: blocking, and the subtleties that bite | 2h |
 | 8 | Part 8: the security layer and the audit | 2h |
 
-If you only have four hours this week, do tasks 1, 5, 10 and 14. Those produce a classified rule inventory, a path-scoped rule, a blocking hook, and the audit — which is the phase.
+If you only have four hours this week, do tasks 2, 10, 12 and 17. Those produce the classified rule inventory, a path-scoped rule, a blocking hook you have proved blocks, and the audit — which is the phase.
 
 Budget extra time on day 3. Load order and concatenation are more surprising than they sound, and getting them wrong produces confusing failures.
 
@@ -146,7 +146,16 @@ There is more than one instruction file, and the rule for choosing between them 
 
 So: you maintain a project on `AGENTS.md`, you add a local scratch file to keep personal notes out of git, and **your entire project instruction file silently stops being read.** No error, no warning, no symptom other than the agent suddenly not knowing things it knew yesterday. This is the single most valuable thing in Part 2, and it costs nothing to check.
 
-**The escape hatch is a setting, and it has four values.** The documented default reads `CLAUDE.md` files, *or* `AGENTS.md` when you have no `CLAUDE.md`. You can also set it to read both together, to `CLAUDE.md` only, or to `managed-only`, which loads your organisation's policy and nothing else from the project. **If you maintain an `AGENTS.md` and use `CLAUDE.local.md`, you want the "both" value** — that is the configuration that makes the two additive instead of exclusive.
+**The escape hatch is a setting, and it has four values**, set via `/config` or in settings under `pluginConfigs`. The four strings, because a setting you cannot name is a setting you cannot look up:
+
+| Value | What Claude reads |
+|---|---|
+| `claude-md-or-agents-md` | Your `CLAUDE.md` files, or your `AGENTS.md` files when you have no `CLAUDE.md` or `CLAUDE.local.md` in your working directory or above it. **The default.** |
+| `claude-md-and-agents-md` | Both together, each directory's `CLAUDE.md` first and its `AGENTS.md` after. An `AGENTS.md` your `CLAUDE.md` already imports or symlinks to is not read twice. |
+| `claude-md` | Your `CLAUDE.md` files only — `AGENTS.md` is never read. |
+| `managed-only` | Only your organisation's managed `CLAUDE.md` and auto memory at launch. Project, local and user `CLAUDE.md`, `.claude/rules/`, and every `AGENTS.md` are left out. |
+
+**If you maintain an `AGENTS.md` and use `CLAUDE.local.md`, you want `claude-md-and-agents-md`** — that is the configuration that makes the two additive instead of exclusive. The trap worth naming: on the default, having *either* file silently disables the other, and the symptom is "my `AGENTS.md` is being ignored", which reads like a bug in the file rather than a setting.
 
 **The cross-tool note, and it is a genuinely good one.** `AGENTS.md` is the portable *instruction* convention, and `SKILL.md` is the portable *capability* convention, under the open Agent Skills standard. That pairing — `AGENTS.md` for what is true about the project, `SKILL.md` for what the agent can do — is the story you can carry between tools without over-claiming, because the skills format is a published standard while `AGENTS.md` support is a feature of this particular harness. **Verify the second half in your own tool before relying on it.**
 

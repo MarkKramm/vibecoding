@@ -47,7 +47,7 @@ Three distinct problems get bundled together in most discussions, and keeping th
 | 8 | Part 8: large codebases, and one honest negative | 2h |
 | 9 | Part 9: cost, and the audit | 1.5h |
 
-If you only have four hours this week, do tasks 1, 5, 11 and 15. Those produce the decision table, two isolated parallel sessions, one dispatched background job with a check, and the audit.
+If you only have four hours this week, do tasks 1, 7, 11 and 16. Those produce the decision table, two isolated parallel sessions, one dispatched background job with a check attached, and the audit.
 
 This phase is more expensive than the last two, because the material is genuinely new and heavily dated. Budget the reading.
 
@@ -95,6 +95,7 @@ This phase is more expensive than the last two, because the material is genuinel
 - **`https://code.claude.com/docs/en/best-practices.md`** — the verification gates.
 - **`https://git-scm.com/docs/git-worktree`** — git's own documentation, which carries a caveat the tool's docs do not repeat.
 - **`https://code.claude.com/docs/en/large-codebases.md`** — monorepo configuration.
+- **`https://code.claude.com/docs/en/costs.md`** — the source of the enterprise figures and the 7× multiplier quoted in Part 9.
 
 **⚠️ Dated 2026-09-29, and this phase is the most volatile in the track.** Agent view is in **research preview** and the docs say the interface may change. Agent teams are **experimental and disabled by default**, behind an environment variable. Several features carry explicit version floors. **Treat the concepts as durable and every flag, name and default as a snapshot.** Where something is unreleased, gated, or unverified, this phase says so rather than describing it as though you could rely on it.
 
@@ -154,7 +155,7 @@ The mechanism is simple and the reason to use it is narrow:
 
 Read that last clause again. **A subagent is not free context.** It has its own window, which is the point, and it makes its own requests against **the same quota**. Delegating five research tasks in one turn is five times the spend, not one.
 
-**One more constraint, and it is a design decision rather than a bug:** if the combined descriptions of your subagents exceed **15,000 tokens**, you get a warning at startup with the total. That is a real ceiling on how many specialised agents you can define before their descriptions start competing for attention — the same failure mode as a skill catalogue that outgrows its listing budget, which Part 4 of Phase 8 covered. **Descriptions are always the scarce resource.**
+**One more constraint, and it is a design decision rather than a bug:** if the combined descriptions of your subagents exceed **15,000 tokens**, you get a warning at startup with the total. That is a real ceiling on how many specialised agents you can define before their descriptions start competing for attention — the same failure mode as a skill catalogue that outgrows its listing budget, which Part 2 of Phase 8 covered. **Descriptions are always the scarce resource.**
 
 ### Part 4 — Worktrees, and the check you cannot disable
 
@@ -281,7 +282,7 @@ This is the pattern that sounds like the future, and it is genuinely here.
 **Two published anchors, both dated and both vendor figures rather than measured costs:**
 
 - **Agent teams: approximately 7× standard sessions when teammates run in plan mode.** Scoped, as noted in Part 5 — do not generalise it.
-- **Enterprise deployments: *"around $13 per developer per active day and $150-250 per developer per month, with costs remaining below $30 per active day for 90% of users."* Reported, not independently verified, and it is an average that will not describe you — but it is the right order of magnitude for "what does a day of agentic work cost."
+- **Enterprise deployments: *"Across enterprise deployments, the average cost is around $13 per developer per active day and $150-250 per developer per month, with costs remaining below $30 per active day for 90% of users."* From `costs.md`, read 2026-09-29. Reported by the vendor, not independently verified, and it is an average across deployments that will not describe you — but it is the right order of magnitude for "what does a day of agentic work cost."
 
 **The guidance is about restraint, not optimisation:** use a mid-tier model for teammates, *"keep teams small"*, *"keep spawn prompts focused"*, and — the one people forget — *"Shut down teammates when their work is done. Each active teammate continues consuming tokens until it exits or the session ends."*
 

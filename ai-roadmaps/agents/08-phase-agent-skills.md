@@ -42,7 +42,7 @@ By the end you will have written skills that trigger when you expect and stay qu
 | 7 | Part 7: debugging skills that misbehave | 2h |
 | 8 | Part 8: the harness audit, then the deliverable | 2h |
 
-If you only have four hours this week, do tasks 1, 4, 9 and 12. Those produce three working skills, a written extension-point decision, and the audit — which is the phase.
+If you only have four hours this week, do tasks 3, 10, 13 and 15. Those produce one working skill with a tested description, the written extension-point decision, an observed listing-budget failure, and the audit — which is the phase.
 
 Budget extra time on day 2. The description is the hard part, and it resists being written quickly.
 
@@ -76,7 +76,7 @@ Budget extra time on day 2. The description is the hard part, and it resists bei
 
 - **A coding agent with a skills mechanism.** Claude Code is the reference implementation documented here, because it is the one whose docs name every field. Any harness that follows the Agent Skills standard will behave similarly for the portable fields.
 - **A terminal.** You will create directories and files by hand at least once, deliberately, so you know exactly what the tool did.
-- **A version-controlled repository.** Skills are files. They belong in git from the first commit, for the reasons Phase 2 of the Vibecoding track gives.
+- **A version-controlled repository.** Skills are files. They belong in git from the first commit, for the reasons Phase 7 of the Vibecoding track gives: a clean commit is the boundary between an agent's work and yours, and a skill you cannot diff is a skill you cannot review.
 - **A scratch repository** with a real but small codebase, so skill triggers are observable.
 - **Your agent's own documentation index.** For Claude Code that is `https://code.claude.com/docs/llms.txt`, a plain list of every page. Fetch the index before guessing a path; guessed deep links 404.
 
@@ -89,7 +89,7 @@ Budget extra time on day 2. The description is the hard part, and it resists bei
 - **`https://code.claude.com/docs/en/hooks-guide.md`** — the event layer.
 - **Your own repository's instruction file.** Whatever `AGENTS.md` or `CLAUDE.md` you already have is the best worked example available to you. Read it critically in Part 8.
 
-**⚠️ Dated, 2026-09-29.** Every field name, default, and threshold in this phase was read from vendor documentation on that date. The skill mechanism is recent and moving fast — Claude Code alone changed how boolean frontmatter parses within a few releases, and several behaviours here are explicitly version-gated. **Treat the shape as durable and the specifics as a snapshot.** Where a version is named, it is because the behaviour changed at that version, not for decoration.
+**⚠️ Dated, 2026-09-29.** Every field name, default, and threshold in this phase was read from vendor documentation on that date. The skill mechanism is recent and moving fast — Claude Code alone changed how boolean frontmatter parses within a few releases, and several behaviours here are explicitly version-gated. **Treat the shape as durable and the specifics as a snapshot.** No version numbers appear in this phase — the documentation states that behaviours are version-gated without this phase reproducing floors it read on one day. **Check your own version's documentation rather than trusting a number written here.**
 
 ## Lesson: The File That Teaches the Agent
 
@@ -233,7 +233,7 @@ Two frontmatter fields scope a skill's capabilities:
 - **`allowed-tools`** — tools usable *without asking permission* for the turn that invokes the skill. The grant **clears when you send your next message**, which is a genuinely good design: it does not become standing authority.
 - **`disallowed-tools`** — tools *removed* while the skill is active. The documentation's example is an autonomous loop that should never call `AskUserQuestion`, which is exactly right: a background task cannot ask a question nobody is there to answer.
 
-**That clearing behaviour is the distinction worth internalising.** A permission grant inside a skill is scoped to one turn. A permission grant in an interactive session, as Phase 7 of the Vibecoding track found across three different tools, can be *written to disk and apply to every future session in that repository*. **Same word, wildly different blast radius.** When you are reading a harness configuration, the question is never "is this permitted" but "for how long, and does it survive this session".
+**That clearing behaviour is the distinction worth internalising.** A permission grant inside a skill is scoped to one turn. **This is documented for one tool, not three** — Phase 7 establishes the disk-persistence for Claude Code, and its "three of six" finding is about native Windows sandboxing, which is a different subject. Treat the mechanism as real and the tool coverage as unverified, and check your own harness rather than assuming the blast radius transfers. A permission grant in an interactive session, as Phase 7 of the Vibecoding track found for Claude Code, can be *written to disk and apply to every future session in that repository*. **Same word, wildly different blast radius.** When you are reading a harness configuration, the question is never "is this permitted" but "for how long, and does it survive this session".
 
 **And the framing that ties the phase together: hooks are the most powerful thing you will configure, and the most dangerous.** A hook runs your script, or an HTTP request, or an MCP tool call, on a lifecycle event — every file edited, every tool used, every session start. That is a standing capability with no per-invocation approval, which is exactly what the safety track means by *authority*. Before you install one, you should be able to answer what it can reach, what it sends anywhere, and what happens if it fails.
 
@@ -249,7 +249,7 @@ Two frontmatter fields scope a skill's capabilities:
 
 **The mitigations are documented too, which is the useful part**, because this is a solvable problem rather than a reason to avoid automation: before you script `claude -p` over a repository you did not write, review its `.claude/` settings files, start with `--bare`, or disable hooks for that run with `--settings '{"disableAllHooks": true}'`.
 
-**Connect it back to this week's security research and the pattern completes.** A hostile repository does not need a clever payload if the harness will run its configuration automatically. Hidden instructions in an instruction file (Phase 2 of this track) are one vector; **committed hooks in an untrusted folder under a scripted run are another, and they execute code rather than text.** Both are the same lesson from a different layer: **your agent's configuration is part of your supply chain**, and "I wrote this repo" is not the same as "this configuration is mine."
+**Connect it back to this week's security research and the pattern completes.** A hostile repository does not need a clever payload if the harness will run its configuration automatically. Hidden instructions in an instruction file (Phase 6 of this track covers indirect prompt injection; Phase 9 of this track returns to it for instruction files specifically) are one vector; **committed hooks in an untrusted folder under a scripted run are another, and they execute code rather than text.** Both are the same lesson from a different layer: **your agent's configuration is part of your supply chain**, and "I wrote this repo" is not the same as "this configuration is mine."
 
 **A related point, and the reason this phase ends where it does.** A configured harness accumulates authority quietly. Instruction files, skills, subagents, hooks, MCP servers: each one is reasonable, and together they are an agent that can read your repository, run commands, and reach the network **without asking you about any of it in particular.** This week's own security research in this project is the worked example — a repository whose hidden instructions were placed in exactly the files this phase teaches you to write. **Writing `CLAUDE.md` well and knowing that a hostile one is a delivery mechanism are the same skill.**
 
@@ -289,7 +289,7 @@ Four failure modes, all documented, all of which you will hit.
 
 **Your personal skills disappeared.** If folders you created under your personal skills directory are gone, look in the `.trash` subfolder. The documented cause is a file named `manifest.json` sitting in that directory, which caused the listed skill folders to be moved into a timestamped trash folder and stop loading. Restore by moving the folder back — **before the retention sweep, 30 days after the move, deletes trash entries.**
 
-**The general habit this phase is really teaching is the one from Phase 3 of this track: when something does not work, go and look at what actually happened rather than adjusting the thing you wish were wrong.** Four of these five failures are invisible from the outside. The debug flag, the context report, and the validation command are how you find out which one you have.
+**The general habit this phase is really teaching is the one from Phase 3 of this track: when something does not work, go and look at what actually happened rather than adjusting the thing you wish were wrong.** All four of these failures are invisible from the outside. The debug flag, the context report, and the validation command are how you find out which one you have.
 
 ### Part 8 — The harness audit
 
@@ -306,7 +306,7 @@ For every extension you have configured, four questions:
 
 **And read your own instruction file critically, as a security artifact.** Because this week's research established that these files are where a hostile repository puts its instructions. Ask: what does this file tell the agent to do, does any of it grant standing authority, and would I be comfortable with it arriving from a pull request I had not read closely?
 
-**The deliverable is the three files: three skills with deliberate descriptions and a stated reason for each, a one-page extension-point decision, and this audit.** If the audit is uncomfortable, that is the phase working.
+**The deliverable is six artefacts, and they are listed in full below: three working skills, the triggering test table, the extension-point decision record, this audit, the instruction-file security review, and a dated note on which figures are vendor-reported.** If the audit is uncomfortable, that is the phase working.
 
 ## Hands-on practice tasks
 
@@ -352,7 +352,7 @@ For every extension you have configured, four questions:
 1. **Three working skills**, committed to a repository, each with a deliberate `description`, a `when_to_use` where it helps, a body under fifteen lines, and a one-line statement of which frontmatter fields are portable and which are vendor extensions.
 2. **The triggering test table** from task 5: five requests, what was expected, what actually fired, and what you changed as a result.
 3. **The extension-point decision record** from task 10, naming the extension you use for each of the four categories and why.
-4. **The harness audit** from task 8, covering every extension you have configured, with the four answers for each and a list of what you deleted and why.
+4. **The harness audit** from task 15, covering every extension you have configured, with the four answers for each and a list of what you deleted and why.
 5. **The instruction-file security review** from task 17: every line granting standing authority, and your judgement on each.
 6. **A dated note** stating that the field list, defaults, and thresholds come from vendor documentation read on 2026-09-29, and which behaviours are version-gated.
 
