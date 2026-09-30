@@ -459,10 +459,16 @@ colours; the overdue follow-up passes it because `.app-due` is `font-weight: 600
 as `--warning`.
 
 **No time estimates in minutes.** Practice tasks carry a coarse band — `quick`,
-`focused`, `deep`, `ongoing` — never a duration in minutes. Counted across the 66 phase files on
-2026-09-29, the distribution is **14% `quick`, 50% `focused`, 30% `deep`, 6% `ongoing`**, so
+`focused`, `deep`, `ongoing` — never a duration in minutes. Re-counted across the 69 phase files on
+2026-09-30, the distribution is **14% `quick`, 51% `focused`, 29% `deep`, 6% `ongoing`**, so
 **80% of tasks sit in the two middle bands** — which is the whole argument: any cut inside that
 cluster is arbitrary, and a slider would imply a precision nobody has. See D-021.
+
+> The 2026-09-30 re-count is the point as much as the new numbers. Three harness phases and a
+> five-task visibility fix added 30 tasks, and the distribution barely moved — the argument for
+> four coarse bands rests on the *shape* of the distribution, so a corpus that grows by 3% and
+> keeps its shape confirms the rule rather than merely restating it. Exact figures: 965 tasks —
+> 134 `quick`, 496 `focused`, 279 `deep`, 56 `ongoing`; the two middle bands total 80.31%.
 
 > This sentence previously read "82% of the 183 practice tasks sit between 20 and 90 minutes".
 > The denominator was stale by a factor of about five, and it asserted minutes for a field that

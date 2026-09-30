@@ -153,6 +153,29 @@ retires. **One placeholder across 66 phases is the rule working, not a near miss
 when Foundations gained its ninth phase (*Multimodal and Vision*); that phase uses no model name
 at all, so the count is unchanged.
 
+**Re-scanned 2026-09-30 at 69 phases, and the count of one was an artefact of a case-sensitive
+pattern rather than a property of the corpus.** The re-scan matched `gpt-4`, `gpt-5`, `gpt-6`,
+`claude-3`, `claude-4`, `gemini-<N>`, `o1-` and `o3-` **case-insensitively** and returns **five**
+hits, not one. All five were then read in full and **all five are compliant**, so the rule holds —
+but the original scan could only have found the one because the other four are capitalised
+(`GPT-4`) and it was looking for the lowercase form:
+
+| Location | Text | Verdict |
+|---|---|---|
+| `cost/05:787` | `model="gpt-4",` in illustrative `log_call()` usage | The documented placeholder. Non-load-bearing — a reader copying the snippet loses nothing when it retires. |
+| `agents/03:229` | Reflexion paper's "80% reported for GPT-4 **at the time**" | Dated research history, explicitly scoped "at the time". Not a recommendation. |
+| `agents/05:269` | Greshake et al. demonstrated attacks "against real-world systems including a GPT-4-powered chat application" | Describes what a 2023 paper did. Historical. |
+| `vibecoding/04:29` | "A 2024 study ... with GPT-4 and Llama 3" | Study attribution carrying its own date. |
+| `vibecoding/04:248` | "⚠️ Volatile, dated: as of 2026-09, the TDD finding above comes from a specific study of GPT-4 and Llama 3" | **The rule being followed exactly** — flagged volatile, dated, and separated from the durable mechanism beside it. |
+
+**The transferable point is about the scan, not the corpus.** A verification that returns a
+suspiciously clean number has to have its *method* stated as carefully as its result, because
+"one hit" and "one hit from a pattern that cannot match a capitalised identifier" are different
+claims and only one of them supports the sentence it was written for. A case-sensitive pattern is
+a reasonable thing to write; it is not a reasonable thing to leave unstated in a document whose
+whole purpose is to let a future editor re-run the check. The five-hit count is now the number to
+re-run against.
+
 ### 2.2 Tokenizer and API details
 
 | Item | Status | Note |
@@ -268,7 +291,7 @@ subtotokens."* Treating tensor2tensor's builder as "the WordPiece algorithm" wou
 misattribution, which is presumably why the earlier pass declined to do it.
 
 **What to teach, and what this curriculum already does.** WordPiece is not mentioned anywhere in
-the 66-phase corpus, so no lesson is currently wrong. If it is ever added, teach the qualitatively
+the 69-phase corpus (re-checked 2026-09-30, still 0 hits), so no lesson is currently wrong. If it is ever added, teach the qualitatively
 correct and fully-sourced mechanism — **greedy longest-match-first against a fixed vocabulary,
 with `##` marking continuations** — and describe vocabulary construction only as
 "frequency-driven subword selection, whose reference implementation was never released." Do not

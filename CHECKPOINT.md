@@ -10,9 +10,14 @@ current checkout; rerun the checks before relying on them.
 GitHub Pages was reported unreachable during the 2026-09-18 checkpoint. This is a historical
 service observation, not verified current status; check the live URL before diagnosing deployment.
 
-**Corpus totals in this file are current as of the Foundation-phase expansion** (Foundations
-gained a ninth phase, *Multimodal and Vision*): **66 phases**, 555 quiz questions, 903 practice
-tasks, 1,076 checklist items, 442 tool rows. Where this file narrates a past incident it keeps
+**Corpus totals in this file are current as of 2026-09-30** (69 phases, following three harness
+phases and a five-task visibility fix): **69 phases**, 573 quiz questions, 965 practice
+tasks, 1,121 checklist items. The previous header also carried **442 tool rows**; that figure has
+been **dropped rather than updated**, because no script in this repository computes it and the
+narrow definition it used (tool and resource tables only, excluding quiz options and comparison
+tables) is not recoverable from the tooling. The corpus has 1,597 Markdown table rows in total,
+which is a **different metric** and should not be quoted in its place. If a tool-row count is
+wanted again, it needs a script that defines it first. Where this file narrates a past incident it keeps
 the number that was true at the time — those are records of what happened, not claims about the
 current corpus, and rewriting them would destroy the history they exist to preserve.
 
@@ -21,7 +26,7 @@ current corpus, and rewriting them would destroy the history they exist to prese
 ## What this is
 
 A free, self-paced curriculum for learning how modern AI systems work and how to get hired
-building with them. **66 phases across 10 tracks**, written for someone with a **$0 budget**
+building with them. **69 phases across 10 tracks**, written for someone with a **$0 budget**
 starting from beginner-to-intermediate.
 
 It ships as a React site that reads compiled JSON from hand-authored Markdown.
@@ -126,14 +131,16 @@ disabled guard is worse than none.
 **Verified:**
 
 - Content contract — 14 sections, fixed order and spelling, authored ids, quiz structure
-- All 555 quiz questions: one correct option, a `**Why:**` line, a valid `energy`
+- All 573 quiz questions: one correct option, a `**Why:**` line, a valid `energy`
 - Field shapes against what the renderers consume
 - Projection reads — no component reads a field its projection lacks
 - Inline markdown, lesson-block coverage, search (all against the real corpus)
-- Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (214 files)
+- Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (226 files)
 - CSS wiring — every JSX class has a rule, every token is defined
 - **Accessibility** — 60 assertions across 6 views: contrast, accessible names, focus visibility,
   and keyboard reachability by control *kind*
+- **Unparseable task lines** — an authored task id the parser could not read is a build error, so
+  a task can no longer be silently absent from the page while every guard exits 0
 - **Every one of the 66 phases renders** — opened in a real browser, not sampled
 - **Mixed practice sets** — sampling, filtering, the no-score contract, and the question
   shape the *app* sees rather than the one the file stores
@@ -298,7 +305,7 @@ The agreed scope is a rotating balanced capstone (10 questions per written track
 **Resolved 2026-09-28:** the implementation above was committed and shipped long ago; this
 paragraph is the dated record of the decision, not a pending task. The instruction to "verify
 and refresh this snapshot after the implementation is committed" was discharged. The corpus has
-since grown to **66 phases / 555 quiz questions** — see the totals at the top of this file.
+since grown to **69 phases / 573 quiz questions** — see the totals at the top of this file.
 
 Deliberately **not** queued: the share-link (progress in a URL fragment). It was offered and
 passed over twice — do not start it without being asked again.

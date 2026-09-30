@@ -467,7 +467,28 @@ if (problems.length === 0) {
   reap();
   process.exit(0);
 } else {
-  console.log(`\u2716 phase sweep failed \u2014 ${failuresByPhase.size} phase(s) with problems (${problems.length} detail line(s))`);
+  // `failuresByPhase.size` is the WRONG number to lead with, and it is wrong in
+  // exactly the case that matters most. A track that cannot be opened never
+  // enters a phase, so nothing is recorded against `failuresByPhase` - which made
+  // a run that opened 0 of 69 phases and recorded 10 problems report
+  //
+  //     phase sweep failed - 0 phase(s) with problems (10 detail line(s))
+  //
+  // which reads as self-contradictory, and to anyone skimming it reads like
+  // "nothing went wrong". The empty set is the *symptom*, not an absence of
+  // problems. So lead with the number of problems, and name the track-level
+  // failure explicitly, because "a track would not open" and "a phase rendered
+  // badly" are different diagnoses with different fixes.
+  if (failuresByPhase.size === 0) {
+    console.log(`\u2716 phase sweep failed \u2014 ${problems.length} problem(s), and 0 phase(s) could be opened at all`);
+    console.log("");
+    console.log("  No phase was reached, so nothing here is a verdict on a phase. This is a");
+    console.log("  track-level failure: the dashboard did not yield an openable track. Check");
+    console.log("  first that this is the right application on this port, then that the");
+    console.log("  dashboard and track routes are serving.");
+  } else {
+    console.log(`\u2716 phase sweep failed \u2014 ${failuresByPhase.size} phase(s) with problems (${problems.length} detail line(s))`);
+  }
   console.log("");
   console.log("  A phase that renders here is one a reader can actually use. A phase that fails");
   console.log("  is a page someone will open and find broken, and no data check can see it.");
