@@ -17,7 +17,7 @@ is clean and no scratch files remain in the repo root.** Ten commits this sessio
 
 | | |
 |---|---|
-| Corpus | **68 phases**, 10 tracks · 231,982 lesson words · 1,105 checklist · 567 quiz · 941 practice |
+| Corpus | **69 phases**, 10 tracks · 232,000+ lesson words · 1,105 checklist · 573 quiz · 960 practice |
 | Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` all **exit 0**; encoding clean across **225 files** |
 | Suite | `npm test` **21/21** on a verified-free port, with the browser checks genuinely executing |
 | Sync | `git rev-list --left-right --count origin/main...HEAD` → `0 0` |
@@ -50,9 +50,16 @@ requests are closed**; the twelfth asks for numbers no vendor publishes, which i
    got this fix in lesson 57; the a11y audit never did. **This is the open engineering thread.**
 
 **Still needs the human, and nothing else is blocked on it:** the mobile P0 phone test, `gh auth
-login` for CI visibility, and a web-tool cost check. **Phase C (large codebases and long-running
-agents) is researched in `docs/RESEARCH-HARNESS-SCALE-2026-09-29.md` and deliberately unwritten**
-— its strongest claim came back negative and should be handled carefully. See lesson 60's close.
+login` for CI visibility, and a web-tool cost check.
+
+**✅ Phase C is now written** — `agents/10` Working at Scale, committed `e2094c3` on 2026-09-30.
+The harness sequence is therefore complete: **`agents/08`** skills and the extension points,
+**`agents/09`** instruction files and hooks, **`agents/10`** subagents, worktrees, teams, dispatch,
+and the verification gate. Its research file carried an honest negative — the corpus would have
+been easy to repeat the claim that text search is *wrong* on typed languages, and the
+documentation only supports a **cost** argument — so `agents/10` teaches code intelligence as a
+context-efficiency tool and says the accuracy claim is unsupported. **If a future editor finds
+that sentence has hardened into the stronger claim, that is the regression to look for.**
 
 ---
 
@@ -2133,6 +2140,18 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
     A second, smaller defect found the same way: `WORKFLOW.md`'s Trap 3 rule 3 prescribed `http://127.0.0.1:4199`, which **cannot work**, because the preview server binds IPv6 only. The failure is indistinguishable from "no server answered", so the prescribed command silently converted a real check into a green no-op. The rule now says `localhost`, and warns about exactly that skip-as-success failure mode. The sibling's previews were left running and untouched throughout — identify by full command line before killing anything.
 
     **The general lesson, which is this project's most repeated one and keeps recurring in new guises:** before believing a wall of failures, confirm the thing you tested is the thing you meant to test. Here the content was correct, the guards were correct, and the only defects were a port collision and a preflight that was never written.
+
+    **Closed 2026-09-30** in `7a83b73`: `audit-a11y.mjs` now fetches the served HTML and skips when it is not this project, naming the application that actually answered. Verified in all three states with a real decoy server serving a page titled "CS Roadmap" — decoy skips with the title named, nothing listening skips, and the real site audits for real with 60 assertions. Two things found only by testing: exiting while undici still held the preflight socket aborted the process on Windows with `0xC0000409`, so a skip reported as a crash; and piping this script's output into `Select-Object -First N` truncates the pipe and produces the **same** abort, which looks like a script failure and is not one. Capture the output and slice it afterwards.
+
+63. **A wrong-port skip is only honest if it says which app answered — and a guard that fabricates findings is worse than one that stays silent.**
+    Recorded 2026-09-30 as the closing note on lesson 62, because fixing it surfaced a distinction worth keeping.
+
+    `audit-a11y.mjs` skips when nothing is listening, and that was already right. The gap was that *something listening* counted as fine, so a sibling project's preview produced **14 confident accessibility failures** about software this repo has never shipped. The fix has to refuse to produce findings, not merely exit differently.
+
+    **And the fix had to remain a skip rather than become a failure.** The file's own stated position is that a step failing because of the environment gets commented out within a week, and a disabled guard is worse than no guard. A wrong port is an operator error, not a property of the code under test, so failing the suite over it teaches people to switch the check off. What must never happen is emitting **findings** about a page you did not write — and a skip that names the offending application cannot be mistaken for a pass, which is what makes the exit-0 choice safe rather than lenient.
+
+    **The transferable shape, for any guard that inspects an external artefact:** *before reporting on it, confirm it is the thing you meant to report on.* This project has now hit that in three separate forms — `verify-site.mjs` driving a restaurant site, the port collision above, and a `fetch` returning HTTP 200 carrying only navigation. Each time the failure looked like a finding rather than a mistake, which is exactly why they were expensive.
+
 
 
 ---
