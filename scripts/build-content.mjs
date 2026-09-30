@@ -512,11 +512,13 @@ export function parseTasks(section, phaseId, errors, file) {
   if (!section) return { tasks, minted, missingBand };
 
   let index = 0;
+  const consumed = new Set();
   for (let i = 0; i < section.lines.length; i += 1) {
     const line = section.lines[i];
     const match = line.match(/^\s*\d+[.)]\s+(.*)$/);
     if (!match) continue;
 
+    consumed.add(i);
     index += 1;
     let text = match[1].trim();
     let id = null;
@@ -572,6 +574,37 @@ export function parseTasks(section, phaseId, errors, file) {
     }
 
     tasks.push({ id, text, band, energy });
+  }
+
+  // A task line the parser could not read is the most expensive failure this
+  // build can have, because nothing else reports it. The task keeps its
+  // authored id, so the ID contract passes; the band is never validated, so the
+  // duration guard passes; the row is simply absent from the page, absent from
+  // the search index, and absent from the practice-task count. Every guard
+  // exits 0.
+  //
+  // This happened for real. `vibecoding/08` carried five tasks numbered
+  // `15b`–`15f`, the letter suffix an editorial choice made when the EU AI Act
+  // section was appended mid-phase. `/^\d+[.)]/` does not match a trailing
+  // letter, so the entire RA 10173 practical section — lawful basis, processor
+  // list, breach plan, §30 concealment — was invisible on the site while the
+  // corpus reported success. It survived because the tasks were *plausible*,
+  // which is the worst property a bug can have.
+  //
+  // The check is deliberately format-independent rather than a second list of
+  // forbidden spellings. Any line in this section carrying an authored id that
+  // the parser did not consume is an error, so the next variant of "nearly a
+  // list item" is caught by the same rule that catches this one.
+  for (let i = 0; i < section.lines.length; i += 1) {
+    if (consumed.has(i)) continue;
+    const line = section.lines[i];
+    const idMatch = line.match(/<!--\s*id:\s*([^\s>]+)/);
+    if (!idMatch) continue;
+    errors.add(
+      file,
+      section.start + i,
+      `practice task "${idMatch[1]}" is on a line the parser did not read as a task — it would be silently dropped from the page, the search index and the practice-task count. Task lines must match /^\d+[.)]\s/ (a plain number, then . or )), so "15b." is not valid. Renumber the display value; authored ids need no change.`,
+    );
   }
 
   return { tasks, minted, missingBand };

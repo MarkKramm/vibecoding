@@ -95,6 +95,14 @@ task energy:  0 of 0 practice task(s) carry an energy value
 
 The minted-from-position count must be **0**. A future edit that adds a task without its comment raises that number instead of passing quietly, which is the signal to author the comment rather than to accept the mint.
 
+**The display number is not free, and the rule is narrow on purpose.** A task line is recognised by `/^\d+[.)]\s/` — a plain number, then `.` or `)`, then whitespace. Anything else carrying an `id:` comment is a **build error**, not a skipped line.
+
+This matters more than a formatting nit, and it is not hypothetical. `vibecoding/08` carried five tasks numbered `15b`–`15f`: the letter suffix was a reasonable editorial choice when a section was appended mid-phase, so the renumbering could be deferred. The parser does not match a trailing letter, so those five tasks were **silently dropped from the page, the search index and the practice-task count** while every guard exited 0. They kept their authored ids, so the ID contract passed; their bands were never validated, so the duration guard passed. The corpus reported 960 tasks when the files held 965.
+
+**The lesson is about which properties are load-bearing.** An unvalidated band fails loudly. An id on a line nobody parses fails *completely silently* — the task is not wrong, it is absent, and absence is the one defect every other guard is blind to. That is why the check is written as *an authored id the parser did not consume* rather than a list of forbidden spellings: it catches the next variant of "nearly a list item" under the same rule, and it stays format-independent as the parser's own list changes.
+
+**So renumber; do not relabel.** The display value is a convenience for the reader and carries no identity. Authored ids are the identity. Inserting a task in the middle of a phase should renumber the visible digits and leave every `id:` untouched, and the build's `0 minted from position, N authored` line is how you confirm you did.
+
 The same `band`/`energy` pair is parsed for the dashboard's "what should I do today?" picker; `scripts/lesson-ast.mjs` and the site's `src/lib/practice.js` both fail **closed** on an unknown or missing band, so an unrecognised value can never be treated as fitting every budget.
 
 > `src/lib/today.js` was named here previously. It was deleted with D-008 and is gone; the
