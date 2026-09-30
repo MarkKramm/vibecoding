@@ -163,6 +163,18 @@ const VALID_ENERGY = new Set(['low', 'normal', 'high']);
 /** Duration bands a practice task may carry. */
 const VALID_BANDS = new Set(['quick', 'focused', 'deep', 'ongoing']);
 
+/**
+ * A bare domain with a real TLD, and therefore no scheme — the shape a URL takes
+ * when a human types it into prose. Used only to tell "this resource was meant
+ * to be a link" apart from "this bullet points at a file in this repository".
+ *
+ * The TLD list is the whole point. A pattern loose enough to catch `foo.md` or
+ * `arXiv:2106.09685` would also catch the 113 legitimate in-repository and
+ * non-link bullets these sections are full of, and a guard with 113 false
+ * positives is a guard that gets switched off.
+ */
+const BARE_DOMAIN = /\b[a-z0-9][a-z0-9-]*\.(?:com|org|net|io|dev|ai|app|co|edu|gov|me|sh|gg|xyz|cloud|tech)\b(?:\/|\b)/i;
+
 /** Collects contract violations so every one is reported, not just the first. */
 class BuildErrors {
   constructor() {
@@ -466,16 +478,42 @@ export function parseToolRow(cells) {
  * @param {object|undefined} section The section block.
  * @returns {{name: string, url: string}[]}
  */
-export function parseResources(section) {
+export function parseResources(section, errors, file) {
   if (!section) return [];
   const out = [];
 
-  for (const line of section.lines) {
+  for (let i = 0; i < section.lines.length; i += 1) {
+    const line = section.lines[i];
     const text = line.replace(/^\s*[-*+]\s+/, '').replace(/^\s*\d+[.)]\s+/, '').trim();
     if (!text || text.startsWith('|') || text.startsWith('#')) continue;
 
     const url = text.match(/https?:\/\/[^\s)>\]]+/);
-    if (!url) continue;
+    if (!url) {
+      // A bare domain with a real TLD is unambiguously meant to be a link, so
+      // dropping it silently removes a resource the author wrote on purpose.
+      //
+      // The narrowness is deliberate and was measured, not guessed. The obvious
+      // broader rule - "a bullet here with no URL is an error" - produces 113
+      // false positives across the corpus, because these sections legitimately
+      // list in-repository files (`shared/study-rules.md`, `docs/research/...`),
+      // arXiv identifiers, and non-link resources like "Your own git log".
+      // Requiring a real TLD separates those from an actual bare domain, and
+      // the corpus currently has zero of those, so this rule is silent until
+      // something is genuinely wrong.
+      //
+      // Worth the narrowness: a scheme-less URL is how a human writes a URL.
+      // Verified silent before this guard - `https://code.claude.com/docs/en/
+      // agents.md` losing its scheme dropped the phase from 8 resources to 7,
+      // and build-content --check and audit-free-toolkit both exited 0.
+      if (errors && BARE_DOMAIN.test(text)) {
+        errors.add(
+          file,
+          section.start + i,
+          'resource looks like a link but has no http:// or https:// scheme, so it was silently dropped from the resource list — add the scheme',
+        );
+      }
+      continue;
+    }
 
     // Everything before the URL, minus a trailing separator, is the name.
     const name = text
@@ -1112,7 +1150,7 @@ export function buildPhase(filePath, trackId, seenPhaseIds, seenItemIds, errors)
     skills: sectionBullets(sections.get("Skills you'll gain")),
     topics: parseTopics(sections),
     tools,
-    resources: parseResources(sections.get('Free/cheap resources')),
+    resources: parseResources(sections.get('Free/cheap resources'), errors, rel),
     tasks,
     deliverableItems: sectionBullets(sections.get('Deliverable / proof of work')),
     deliverable: fm.deliverable ?? '',
