@@ -982,9 +982,14 @@ Three of these modules read fields that **do not exist** on the light projection
 taskIds, quizIds`. Measured: **0 of 65 light phase records carry `checklist`, `tasks` or
 `quiz`.** The full per-track files carry all three.
 
+**⛔ The five modules below have since been DELETED, so their paths and line numbers are a
+record, not a place to go.** Each was verified to have existed and to have been removed (three
+commits touch each path), and the line numbers are as they were at the time of the audit. The
+rule stated underneath is still live and still worth obeying; the citations are not resolvable.
+
 | Module | Reads | Status |
 |---|---|---|
-| `lib/pace.js:139` | `phase.checklist.every(...)` | **Threw on every call** — now guarded (see below) |
+| `lib/pace.js:139` | `phase.checklist.every(...)` | **Threw on every call** — guarded before deletion (see below) |
 | `lib/review.js:57` | `phase.quiz \|\| []` | Silent: returns empty, "nothing to revisit" |
 | `lib/today.js:125,127` | `phase.checklist \|\| []`, `phase.tasks \|\| []` | Silent: no task ever marks as addressed |
 | `lib/pathOrder.js:58` | `phase.checklist \|\| []` | Silent: every phase reads `untouched` |
@@ -1000,7 +1005,7 @@ make the numbers right.
 `loadTrackPhases()`, never the light index.** The two projections are described in the
 header of `learning-site/src/data/roadmaps.js`.
 
-**Fixed (was a live latent crash, not just dead code).** `lib/pace.js:139` called
+**Fixed before deletion (was a live latent crash, not just dead code).** `lib/pace.js:139` called
 `.every()` on `phase.checklist`, which is always `undefined` on the light index — so the
 module threw `TypeError: Cannot read properties of undefined` on the first phase examined,
 every single call. It is now `(phase.checklist || []).every(...)`, matching the
@@ -1679,7 +1684,7 @@ this session and **also dissolved**:
   `"map of phaseId -> { note, answers }"`, so notes fall past it. That looked like a
   stray apostrophe causing data loss. It is not: `"map of 'phaseId#sectionId' -> true"`
   is a **real key** (reading progress), the predicate is intentional and precise, and
-  the notes case is handled correctly further down at `transfer.js:550` under its own
+  the notes case is handled correctly further down at `transfer.js:562` under its own
   `isNotesMap()` guard, with existing-wins on the note and per-task union on answers.
 
 **Still genuinely open — three defects, none severe** *(all three are now fixed — see the
@@ -1860,7 +1865,7 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **The hard-failing one is the good citizen.** `scripts/shared-content.mjs` treats every bullet under a `##` heading as a catalogue entry and *must* find a URL in it. Three quirks had to be discovered empirically, each costing a real build failure: the `# H1` is mandatory (without it the title silently falls back to the id); resource bullets must be plain `Name — URL`, because `**bold**` and `[md](links)` corrupt the extracted name; and the bullet regex is `/^\s*[-*+]/` with **no trailing-whitespace requirement**, so it matches `**bold` and `---`. That last one produced two failures from horizontal rules, which strip to `--` and read as a bullet. **Seven failures before the file was acceptable — and every one was reported with a file and line number.**
 
-    **The silently-ignoring one is how the real bug survived.** `findExtraDocs()` at `build-content.mjs:849` is **dead code — never called.** `main()` calls only `findPhaseFiles()`, whose glob is `/^\d+-phase-.*\.md$/`. So the 20 track files that this project had been *tracking as owed work for several sessions* were built into nothing, validated by nothing, and rendered by nothing — and **no guard said a word**, because the phase-side parse simply ignores files it does not recognise. `ai-roadmaps/README.md` L195–199 documents both files as part of every track folder and **is currently false**.
+    **The silently-ignoring one is how the real bug survived.** `findExtraDocs()` at `build-content.mjs:1182` is **dead code — never called.** `main()` calls only `findPhaseFiles()`, whose glob is `/^\d+-phase-.*\.md$/`. So the 20 track files that this project had been *tracking as owed work for several sessions* were built into nothing, validated by nothing, and rendered by nothing — and **no guard said a word**, because the phase-side parse simply ignores files it does not recognise. `ai-roadmaps/README.md` L195–199 documents both files as part of every track folder, and that documentation **was false when this was written — but is true again now.** All ten track folders contain both `00-overview.md` and `checklist-master.md` (verified 2026-09-30). The lesson is not that the docs are wrong; it is that *nothing re-derives the claim*, so it was wrong for as long as the files were missing and became right only when someone happened to write them.
 
     **The lesson is about what a guard can and cannot notice.** A strict parser protects you from malformed input and is loud. A permissive one protects nothing and is silent — and silence is indistinguishable from success. This is the same shape as lesson 23 (a true statement that misleads) and lesson 24 (a crashing guard that looks like a passing one): **the dangerous failures are the ones that produce no signal at all.** When you write a file that a build is *supposed* to consume, prove it is consumed — grep for the identifier that reads it, or change a word and see whether the output changes. **"The build passed" only means the build ran.**
 
