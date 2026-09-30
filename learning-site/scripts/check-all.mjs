@@ -177,6 +177,16 @@ const STEPS = [
     why: "THE STALE-BUNDLE TRAP, and it is the reason this step exists. Step 1 regenerates the CONTENT JSON, but nothing in this suite ran `vite build`, and steps 14 and 15 are browser checks pointed at PREVIEW_URL, where `vite preview` serves dist/ -- a bundle built at some earlier moment. So a content edit could add thousands of characters, this suite could report all 20 checks passed, and the browser checks would have rendered the page exactly as it was before the edit. Nothing went red and nothing skipped: a preview that is up and serving a stale bundle emits no signal at all, which is the one case the suite's loud-skip design cannot see. Measured 2026-09-29: a ~4,100-character addition to vibecoding/07 passed all 20 checks with the all-phase sweep reporting 36,854 chars, byte-identical to the pre-edit figure; after a build the same phase measured 40,990. The identical digit was the only tell. The suite's loud skip on a MISSING server is the right instinct and made this worse rather than better, because it handles the detectable case well and is blind in the one that matters. This step costs about a second and closes the class. Spawned as `node <vite bin> build` rather than `npx vite build` because npx is npx.cmd on Windows and needs shell:true, which would drop the exit status this loop depends on",
   },
   {
+    // Runs immediately after the build, on the artifact that build just produced,
+    // and BEFORE any browser check reads it. The ordering is the point: a browser
+    // check pointed at a preview cannot tell a correct bundle from one whose
+    // asset URLs will not resolve on the deploy host.
+    name: "base paths (asset URLs match the serving base)",
+    cmd: "node",
+    args: [join(HERE, "audit-base-paths.mjs")],
+    why: "THE BLANK-PAGE GAP, and it is the one check in this suite that exists because the local environment and the deployed environment DISAGREE. Verified 2026-09-30: the live site at markkramm.github.io/vibecoding/ was serving a blank page — its HTML requested `/assets/index-<hash>.js`, which 404s, while `/vibecoding/assets/<same hash>` returned the 389 KB bundle. The deployed build had not had VITE_BASE applied, so every asset URL was absolute and every one 404'd. All 21 pre-existing checks passed, and would keep passing, because they all run against a preview served from `/` where `/assets/...` is CORRECT. The failure exists only when the artifact is served from a subpath, so no local check could ever have seen it. This step reads the base out of the environment and the asset paths out of dist/index.html and fails when they disagree; the Pages workflow runs the same script with the deploy base, which is the only configuration in which the bug is visible. Runs here with base `/`, where it passes, so a change that began emitting doubled or relative paths is still caught locally"
+  },
+  {
     name: "accessibility (rendered page)",
     cmd: "node",
     args: [join(HERE, "audit-a11y.mjs"), PREVIEW_URL, "--strict"],

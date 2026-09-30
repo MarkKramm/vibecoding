@@ -88,6 +88,33 @@ jobs:
           VITE_BASE: /vibecoding/
         run: npm run build
 
+      # THE ONE CHECK THAT COULD HAVE CAUGHT THE BLANK PAGE.
+      #
+      # Verified live on 2026-09-30: https://markkramm.github.io/vibecoding/ was
+      # serving a BLANK page. Its HTML requested `/assets/index-<hash>.js`, which
+      # returns 404, while `/vibecoding/assets/index-<hash>.js` returns the
+      # 389 KB bundle. The deployed build had not had VITE_BASE applied, so every
+      # asset URL was absolute, every one 404'd, and `#root` never rendered. The
+      # project README advertises that exact URL as the way to read the curriculum.
+      #
+      # Why nothing caught it: every check in this repository — `npm test` and all
+      # 21 of its steps included — runs against a preview served from `/`, where
+      # `/assets/...` is CORRECT. A build with the wrong base passes all of them.
+      # The failure only exists when the artifact is served from a subpath, which
+      # is exactly the condition no local check reproduces. The gap was not a
+      # missing rule; it was that the local environment and the deployed
+      # environment were never compared.
+      #
+      # So compare them. The script is the same one wired into `npm test`, where it
+      # runs with base `/`; here it runs with the deploy base, which is the only
+      # configuration in which the bug is visible. If VITE_BASE is ever dropped or
+      # shadowed, this fails the job instead of publishing a blank page.
+      - name: Assert asset paths match the deploy base
+        working-directory: learning-site
+        env:
+          VITE_BASE: /vibecoding/
+        run: node scripts/audit-base-paths.mjs
+
       # Offline checks run against the freshly generated JSON and the built
       # output, so this is the last point where a content or shape regression can
       # stop a deploy.
