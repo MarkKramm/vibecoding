@@ -22,6 +22,99 @@ const problems = [];
 const ok = (m) => console.log(`  ✓ ${m}`);
 const bad = (m) => { problems.push(m); console.log(`  ✖ ${m}`); };
 
+// --- PREFLIGHT: a server that answers is not necessarily THIS project -------
+//
+// This script had the same defect as `verify-site.mjs` and `audit-a11y.mjs`
+// before those two were fixed, and it is the third instance in this project of
+// one shape. Pointed at a different application on the same port it reported,
+// with total confidence:
+//
+//     1. App shell
+//       ✓ app mounted (#root has children)
+//       ✓ page rendered 3545 chars of text
+//     2. Finetuning track reachable
+//       ✖ Finetuning not found on the landing page
+//       ✖ could not find a clickable Finetuning entry
+//       ✖ phase MISSING from track view: When to Fine-Tune
+//
+// Every one of those findings was about software this repo has never shipped.
+// The two ✓ lines are the reason it was not caught: they are generic enough that
+// ANY React app satisfies them, so the script was confident it had a page to
+// inspect before it had established whose page it was. A preflight stops it
+// before the browser is even launched.
+//
+// This project's own landing page renders ~21,000 characters where the other
+// application rendered 3,545. That gap is suggestive, but a character-count
+// threshold is a fragile proxy for identity, so the check below is the same one
+// the sibling scripts use: fetch the served HTML and look for this project's own
+// name in it.
+async function identifyServedApp() {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 5000);
+    // `connection: close` then an explicit abort, for the reason recorded in
+    // audit-a11y.mjs: both paths below call process.exit(), and exiting with a
+    // pooled keep-alive socket still open aborts the process on Windows with
+    // 0xC0000409, which a suite reads as a crash rather than as a clean skip.
+    const r = await fetch(BASE, { signal: ctrl.signal, headers: { connection: 'close' } });
+    const html = await r.text();
+    clearTimeout(t);
+    ctrl.abort();
+    if (!r.ok) return { reachable: false };
+    const m = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    return {
+      reachable: true,
+      isOurs: /Vibecoding/i.test(html),
+      title: m ? m[1].trim() : '(no title in the served HTML)',
+    };
+  } catch {
+    return { reachable: false };
+  }
+}
+
+const served = await identifyServedApp();
+
+if (!served.reachable) {
+  console.log(`\n⚠ browser check SKIPPED — nothing is serving ${BASE}`);
+  console.log('');
+  console.log('  This check drives a real browser, so it needs a preview server.');
+  console.log('  Nothing was checked. To run it:');
+  console.log('');
+  console.log('    npm run build');
+  console.log('    npx vite preview --port 4173 --strictPort   # in another shell');
+  console.log('    node scripts/check-browser.mjs http://localhost:4173');
+  console.log('');
+  console.log('  Exiting 0 so a stopped server does not fail the rest of the suite.');
+  setTimeout(() => process.exit(0), 60);
+}
+
+// The port answered, but it is not this project. Still a skip rather than a
+// failure — a wrong port is operator error, not a property of the code under
+// test, and a guard that fails for environmental reasons gets switched off
+// within a week. What must never happen is emitting FINDINGS about a page this
+// repo did not write, and a skip that names the application that actually
+// answered cannot be mistaken for a pass.
+if (!served.isOurs) {
+  console.log(`\n⚠⚠⚠ browser check SKIPPED — WRONG APP ON ${BASE} ⚠⚠⚠`);
+  console.log('');
+  console.log('  That port is answering, but it is NOT serving this project.');
+  console.log(`  Its title is: ${served.title}`);
+  console.log('');
+  console.log('  Nothing was checked, and NO findings are reported. Calling the');
+  console.log('  Finetuning track missing on someone else\'s application would be a');
+  console.log('  confident falsehood, which is the one outcome a browser check must');
+  console.log('  never produce.');
+  console.log('');
+  console.log('  This is almost always a port collision: another checkout\'s preview is');
+  console.log('  holding the port. Find it with:');
+  console.log('');
+  console.log('    Get-NetTCPConnection -State Listen -LocalPort <port>');
+  console.log('');
+  console.log('  then start this project\'s preview on a port confirmed free.');
+  console.log('');
+  setTimeout(() => process.exit(0), 60);
+}
+
 // --- start a headless browser with a CDP endpoint -------------------------
 const proc = spawn(EDGE, [
   '--headless=old',
