@@ -10,6 +10,10 @@ By the end you will be able to build an agent that does something useful, and �
 
 The track also covers **MCP**, the open standard for connecting models to tools. Writing a small MCP server is one of the best portfolio projects available at zero cost, and Phase 7 treats it that way.
 
+**The track has a second half, and it is about a different subject.** Phases 1 to 7 are the loop itself: tools, planning, context, memory, safety, evaluation, and the integration standard. Phases 8 to 10 are the **layer the loop runs inside** — what the agent knows (skills and instruction files), what it is permitted to do (hooks, which enforce rather than advise), and what happens when one session is not enough (subagents, worktrees, teams, and dispatching work you then walk away from).
+
+That split is deliberate, and it turns on a distinction worth carrying for the rest of your career: **a rule the agent has been asked to follow is not a rule that is enforced.** Phases 8 and 9 are largely about telling those two apart, and Phase 10 is about what becomes possible once work runs without you watching — which is only safe if something other than your attention decides when the work is finished. If you take one thing from the back half of this track, take that.
+
 ## Who this suits
 
 You need **Prompting Phases 4 and 6** absolutely — tool calling is structured output inside a loop, and chaining is the mental model for multi-step execution. **Foundations Phase 3** matters for context management, and Phase 5 for sampling.
