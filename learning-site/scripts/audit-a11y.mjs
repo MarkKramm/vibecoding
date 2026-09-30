@@ -114,7 +114,50 @@ async function serverIsUp() {
   }
 }
 
-if (!await serverIsUp()) {
+// ---- PREFLIGHT: a server that answers is not necessarily THIS project ------
+//
+// `serverIsUp()` only asks whether something returned 2xx. Necessary, and not
+// sufficient. The gap caused a real false alarm on 2026-09-29: the sibling
+// `cs-roadmap` checkout had `vite preview` bound to BOTH 4173 and 4199, Windows
+// handed connections between the two, and this audit landed on the wrong one.
+// It then reported 14 confident accessibility failures, one per view, all about
+// a page titled "CS Roadmap" - an application this repo has never shipped.
+// Nothing was red, so nothing looked wrong.
+//
+// A wall of failures is the most expensive shape for a guard to emit, because
+// it reads as a finding rather than as a mistake. `verify-site.mjs` got a
+// preflight for exactly this reason and this script never did. Now it does.
+async function identifyServedApp() {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 5000);
+    // `connection: close` so the socket is not left in undici's keep-alive pool
+    // when this branch calls process.exit(). Without it, exiting with the socket
+    // still open trips a libuv assertion on Windows and the exit code comes back
+    // as -1, which a suite reads as a crash rather than as a clean skip.
+    const r = await fetch(BASE, { signal: ctrl.signal, headers: { connection: "close" } });
+    const html = await r.text();
+    clearTimeout(t);
+    // Destroy the socket instead of returning it to the pool. Both paths below
+    // call process.exit(), and exiting with a pooled keep-alive socket open
+    // aborts the process on Windows with 0xC0000409 (STATUS_STACK_BUFFER_OVERRUN),
+    // which a suite reads as a crash rather than as a clean skip.
+    ctrl.abort();
+    if (!r.ok) return { reachable: false };
+    const m = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    return {
+      reachable: true,
+      isOurs: /Vibecoding/i.test(html),
+      title: m ? m[1].trim() : "(no title in the served HTML)",
+    };
+  } catch {
+    return { reachable: false };
+  }
+}
+
+const served = await identifyServedApp();
+
+if (!served.reachable || !await serverIsUp()) {
   console.log(`\u26a0 accessibility audit SKIPPED \u2014 nothing is serving ${BASE}`);
   console.log("");
   console.log("  This audit drives a real browser against the built site, so it needs a");
@@ -128,6 +171,44 @@ if (!await serverIsUp()) {
   console.log("  This is the ONLY condition under which this check passes without");
   console.log("  looking at the page; a reachable but broken page still fails.");
   process.exit(0);
+}
+
+// The port answered, but it is not this project. That is a different situation
+// from "nothing is listening" and it deserves a different message, because the
+// one thing that must never happen here is reporting FINDINGS about software
+// this repo has never shipped.
+//
+// Still a skip, and deliberately: a wrong port is an operator error rather than
+// a property of the code under test, and failing the suite over it is how
+// browser checks get commented out. Exiting 0 keeps the guard honest, because
+// a skip that names the application that actually answered cannot be mistaken
+// for a pass.
+if (!served.isOurs) {
+  console.log(`\u26a0\u26a0\u26a0 accessibility audit SKIPPED - WRONG APP ON ${BASE} \u26a0\u26a0\u26a0`);
+  console.log("");
+  console.log("  That port is answering, but it is NOT serving this project.");
+  console.log(`  Its title is: ${served.title}`);
+  console.log("");
+  console.log("  Nothing was checked. Any findings below would have described");
+  console.log("  someone else's application, so this audit refuses to produce them.");
+  console.log("");
+  console.log("  Cause: another checkout's `vite preview` is holding the port. On this");
+  console.log("  machine the sibling `cs-roadmap` project does exactly that, and two");
+  console.log("  servers can share one port on Windows.");
+  console.log("");
+  console.log("    # see who holds it, and whether there is more than one listener");
+  console.log("    Get-NetTCPConnection -State Listen -LocalPort 4173");
+  console.log("");
+  console.log("    # then run against a port you have confirmed is free");
+  console.log("    npx vite preview --port 4300 --strictPort");
+  console.log("    node scripts/audit-a11y.mjs http://localhost:4300");
+  console.log("");
+  // Exit on a short delay rather than immediately. The preflight opened a real
+  // socket to discover the wrong app, and tearing the process down while libuv
+  // is still closing it aborts with 0xC0000409 on Windows, which a suite reads
+  // as a crash rather than as a clean skip. Yielding first lets the close
+  // finish. A skip is a skip either way; it should not look like a failure.
+  setTimeout(() => process.exit(0), 60);
 }
 
 // --- start a headless browser with a CDP endpoint --------------------------
