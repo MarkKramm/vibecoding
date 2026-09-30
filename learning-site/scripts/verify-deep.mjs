@@ -117,7 +117,27 @@ try {
       if (value) return value;
       await sleep(250);
     }
-    throw new Error(`Timed out waiting for ${description}; last value: ${JSON.stringify(value)}`);
+    // The hint is not decoration. This script knows how many phases it expects
+    // and that they are all reachable, so "timed out" almost always means the
+    // page it reached is not this project. Verified: pointed at the sibling
+    // cs-roadmap checkout on 4173, this produced
+    //
+    //   verifying http://localhost:4173 (69 phases across 10 written tracks)
+    //   Error: Timed out waiting for phase quiz options; last value: 0
+    //
+    // which states the expectation and then never mentions that a different
+    // application satisfied it. The reader is left to guess between "my content
+    // broke" and "someone else is on my port", and the second is both far more
+    // likely and trivial to fix. Its sibling check-browser.mjs used to go
+    // further and report confident findings about that other application; that
+    // one now preflights and skips.
+    throw new Error(
+      `Timed out waiting for ${description}; last value: ${JSON.stringify(value)}\n` +
+        `  This script expected the full corpus from ${SITE_URL}. If a preview is\n` +
+        `  running but the counts or the page content never appear, check that\n` +
+        `  ${SITE_URL} is serving THIS project and not another checkout's preview:\n\n` +
+        `    Get-NetTCPConnection -State Listen -LocalPort <port>\n`,
+    );
   };
 
   await send("Runtime.enable");

@@ -84,7 +84,27 @@ function parseResourceGroups(text, file, problems) {
       continue;
     }
 
-    if (line.trim() === '' || line.startsWith('#')) continue;
+    if (line.trim() === '') continue;
+
+    // A `#` line that is not a valid `## ` heading is not prose either. The old
+    // `line.startsWith('#')` skip absorbed it, so `##Group` — one missing space —
+    // neither became a group heading nor was reported: every resource beneath it
+    // was appended to the *previous* group, and a group whose entries were all
+    // written that way is then dropped entirely further down, because empty
+    // groups are filtered before the document is emitted. So one typo could
+    // remove a whole category from a published page with a clean build.
+    if (line.startsWith('#')) {
+      // A valid `## Group` already returned at the top of this loop, so any
+      // line still starting with `##` here is malformed. A single `#` is the
+      // document title and is legitimately not a group.
+      const isDocumentTitle = /^#\s+\S/.test(line);
+      if (!isDocumentTitle) {
+        problems.push(
+          `${file}:${i + 1} — heading is not "## Group" (check the space after the hashes), so it was not read as a category heading: "${line.trim().slice(0, 60)}"`,
+        );
+      }
+      continue;
+    }
 
     const item = line.replace(/^\s*[-*+]\s+/, '').replace(/^\s*\d+[.)]\s+/, '').trim();
     if (!item) continue;
@@ -99,10 +119,18 @@ function parseResourceGroups(text, file, problems) {
 
     const url = item.match(/https?:\/\/[^\s)>\]]+/);
     if (!url) {
-      // A bullet with no URL in a catalogue is almost always a typo, and it
+      // An entry with no URL in a catalogue is almost always a typo, and it
       // would render as unclickable text in a list the reader expects to click.
-      if (/^\s*[-*+]/.test(line)) {
-        problems.push(`${file}:${i + 1} — resource bullet has no URL: "${item.slice(0, 60)}"`);
+      //
+      // The guard must accept every list form the stripper above accepts. It
+      // previously tested `/^\s*[-*+]/` only, so a NUMBERED entry with a
+      // scheme-less URL fell straight through with nothing reported. Verified
+      // silent: `1. MDN - developer.mozilla.org/en-US/docs/Web/HTML` left the
+      // published resource list at 71 entries with MDN absent, and
+      // `build-content --check` exited 0. One missing colon, one lost link, no
+      // signal - on a document that is one of only four shared docs.
+      if (/^\s*(?:[-*+]|\d+[.)])\s/.test(line)) {
+        problems.push(`${file}:${i + 1} — resource entry has no URL: "${item.slice(0, 60)}"`);
       }
       continue;
     }
@@ -180,10 +208,32 @@ function parseGlossary(text, file, problems) {
       continue;
     }
 
+    // A `#` line that reached here matched neither `/^##\s+/` nor `/^###\s+/`,
+    // so it is a malformed heading rather than prose — `###Term`, one missing
+    // space. It was previously absorbed by the `!line.startsWith('#')` guard
+    // below, which exists to let a stray heading through rather than to bless a
+    // broken one. The consequence was not cosmetic: a `###Term` heading is the
+    // only thing that creates a glossary category, so a whole section could
+    // disappear from a published page with a clean build.
+    if (line.startsWith('#')) {
+      // `# Title` is the document's own H1 and is legitimately not a category.
+      // Getting this wrong produced a false positive on `# Glossary` in this very
+      // file, which is the useful kind of bug: it was invisible while `--check`
+      // skipped shared validation, and surfaced the moment that gate was wired
+      // in. A guard added in the same change as the gate that exposes it is worth
+      // more than a guard added later and never tested against real input.
+      if (!/^#\s+\S/.test(line)) {
+        problems.push(
+          `${file}:${i + 1} — glossary heading is not "## Group" or "### Term" (check the space after the hashes), so it was dropped: "${line.trim().slice(0, 60)}"`,
+        );
+      }
+      continue;
+    }
+
     // Ordinary prose before any entry — allowed as an introduction. Prose
     // *between* entries is not, and is reported, because it means an entry
     // lost its bold term marker and now reads as an unlabelled sentence.
-    if (entries.length > 0 && !line.startsWith('#') && !line.startsWith('|') && !line.startsWith('>')) {
+    if (entries.length > 0 && !line.startsWith('|') && !line.startsWith('>')) {
       problems.push(`${file}:${i + 1} — glossary line is neither a term entry nor a heading: "${line.trim().slice(0, 60)}"`);
     }
   }

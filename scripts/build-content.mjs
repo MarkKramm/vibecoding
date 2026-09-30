@@ -1248,8 +1248,33 @@ function main() {
   // Every error is collected before exiting, so one run fixes the whole file.
   errors.report();
 
+  // The shared documents are validated HERE, before the checkOnly return below,
+  // and that placement is the whole point of this block.
+  //
+  // `buildSharedDocs` used to be called much further down, on the write path
+  // only. So `--check` — the command AGENTS.md tells every agent to run before
+  // finishing a change, and the one this project has treated as *the* contract
+  // check — returned before it was ever reached, and none of the four shared
+  // documents were validated by it at all.
+  //
+  // Verified, not theorised. With a scheme-less URL in `shared/resource-list.md`:
+  //
+  //   node scripts/build-content.mjs            -> ✖ shared content build failed - 1 problem(s)   exit 1
+  //   node scripts/build-content.mjs --check    -> ✓ content build check passed - 69 phase(s)     exit 0
+  //
+  // So a broken glossary, a resource list with a silently dropped link, or a
+  // study-rules file that no longer parses all passed the documented guard. The
+  // site build still caught it, which is why this survived: the full build runs
+  // on every deploy, so nothing was ever visibly wrong in production. What was
+  // wrong is that the check a contributor is told to trust before pushing was
+  // blind to a quarter of the content.
+  //
+  // The write is still done below, at its original place, so check mode does not
+  // mutate generated output. Only the validation moved.
+  const shared = buildSharedDocs(join(CONTENT_DIR, 'shared'), ROOT);
+
   if (checkOnly) {
-    console.log(`✓ content build check passed — ${allPhases.length} phase(s) across ${Object.keys(trackOutputs).length} track(s)`);
+    console.log(`✓ content build check passed — ${allPhases.length} phase(s) across ${Object.keys(trackOutputs).length} track(s), ${shared.docs.length} shared doc(s)`);
     return;
   }
 
@@ -1334,7 +1359,8 @@ function main() {
   const search = buildSearchIndex(lessons);
   writeFileSync(join(OUT_DIR, 'search.json'), `${JSON.stringify(search)}\n`, 'utf8');
 
-  const shared = buildSharedDocs(join(CONTENT_DIR, 'shared'), ROOT);
+  // `shared` is built and validated above, before the checkOnly return, so that
+  // `--check` sees the shared documents too. Only the write happens here.
   writeFileSync(join(OUT_DIR, 'shared.json'), `${JSON.stringify(shared, null, 2)}\n`, 'utf8');
 
   // The build report. These counts are printed rather than assumed because
