@@ -17,10 +17,11 @@ is clean and no scratch files remain in the repo root.** Ten commits this sessio
 
 | | |
 |---|---|
-| Corpus | **69 phases**, 10 tracks · 232,000+ lesson words · 1,105 checklist · 573 quiz · 960 practice |
-| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` all **exit 0**; encoding clean across **225 files** |
-| Suite | `npm test` **21/21** on a verified-free port, with the browser checks genuinely executing |
-| Sync | `git rev-list --left-right --count origin/main...HEAD` → `0 0` |
+| Corpus | **69 phases**, 10 tracks · 237,082 lesson words · 1,121 checklist · 573 quiz · **965** practice · 0 minted from position · 276 glossary terms |
+| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` all **exit 0**; encoding clean across **226 files** |
+| Suite | `npm test` **22/22** on a verified-free port, with the browser checks genuinely executing |
+| Sync | `git rev-list --left-right --count origin/main...HEAD` → `0 0`, tree clean |
+| Live site | **Working.** `markkramm.github.io/vibecoding/` serves `/vibecoding/assets/...` and the 389 KB bundle loads |
 
 **Two new phases shipped this session**, both researched from vendor documentation rather than
 written from memory, both registered in the README counts and the `agents` track overview in the
@@ -49,8 +50,19 @@ requests are closed**; the twelfth asks for numbers no vendor publishes, which i
    reports confident accessibility failures about software you never shipped. `verify-site.mjs`
    got this fix in lesson 57; the a11y audit never did. **This is the open engineering thread.**
 
-**Still needs the human, and nothing else is blocked on it:** the mobile P0 phone test, `gh auth
-login` for CI visibility, and a web-tool cost check.
+**Still needs the human, and nothing else is blocked on it:** the mobile P0 phone test, and a
+web-tool cost check. `gh auth login` is **no longer needed** — the user read CI status from the
+Actions tab in a browser, which is enough, so treat it as optional convenience rather than a
+blocker.
+
+**✅ The live site was a blank page and is now fixed** (`089ddfe`, then `d2e520c`). It served
+absolute `/assets/...` URLs, so every asset 404'd, the bundle never ran and `#root` stayed empty —
+while all 21 checks passed, because they all run against a preview served from `/` where those
+paths are correct. The subtle part, and the reason a first fix did not hold: **`npm test` step 14
+is `vite build`, and it runs without `VITE_BASE`**, so it silently replaced the correctly-based
+artifact between the check and the upload. A guard's *position* is part of its correctness — see
+lesson 69. Lesson 70 records a related trap: generated JSON embeds a build timestamp, so chunk
+hashes change every build, which cost one false "still broken" diagnosis.
 
 **✅ Phase C is now written** — `agents/10` Working at Scale, committed `e2094c3` on 2026-09-30.
 The harness sequence is therefore complete: **`agents/08`** skills and the extension points,

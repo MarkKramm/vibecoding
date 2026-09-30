@@ -316,7 +316,13 @@ passed over twice — do not start it without being asked again.
 
 - **P0 — mobile has been emulated, never touched.** Every browser check here sets a viewport
   override; no one has held this site on a real phone. Emulation has already hidden one bug
-  class (the off-screen-click problem), so treat mobile as **unverified**.
+  class (the off-screen-click problem), so treat mobile as **unverified**. The test is now
+  unconfounded: until 2026-09-30 the live site was a **blank page**, so any mobile result would
+  have been meaningless. That is fixed and verified (`/vibecoding/assets/...` serves a 389 KB
+  bundle), so a failure now means a real mobile defect. On a phone, open
+  `markkramm.github.io/vibecoding/`, open the **tallest** phase (Agents 10), scroll to the
+  bottom, and tap the last checklist item — that is the specific interaction a headless run once
+  reported as clicking successfully while doing nothing.
 - **P2 — volatile facts are unverified.** Free tiers, pricing and model availability are dated
   in the content but not re-checked, because `web_search` returns HTTP 402 on this account.
   `docs/SEARCH-REQUESTS.md` holds the list; it needs a human to paste it into a web chat.
