@@ -68,7 +68,7 @@ Phase 6 is the one people skip and should not. If you build the agent before you
 
 ## Roughly how long it takes
 
-**10 phases, about 11 weeks at five sessions a week.** Phases 7 to 10 are two weeks each because MCP, evaluation, the harness configuration layer, and working at scale are all substantial.
+**10 phases, about 14 weeks at five sessions a week.** Phases 1 to 6 are one week each and phases 7 to 10 are two weeks each, because MCP, evaluation, the harness configuration layer, and working at scale are all substantial.
 
 At one hour a day, plan on eleven weeks. Budget extra: agent development is iterative, and a meaningful fraction of your time goes on debugging loops rather than reading.
 
