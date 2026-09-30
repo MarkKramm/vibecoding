@@ -190,6 +190,53 @@ The second is long context: Lost in the Middle (arXiv:2307.03172) found that ret
 
 **Where local stops working.** Local stops being the right answer the moment the task is hard and the answer matters. It also stops when your time is worth more than the tokens you are saving — and for a learner with a free or cheap API, that is most of the time. It stops hardest on the download: if getting the weights costs you more than the inference would have, the economics are already settled.
 
+### Part 1b — The two memory numbers, and why the box on your desk is a capacity decision
+
+Part 1 established capacity as the thing that decides whether local is possible. That is right, and it is incomplete in a way that costs people money, because **capacity and bandwidth are different numbers doing different jobs, and hardware marketing only ever shows you one of them.**
+
+**Capacity decides whether the model fits at all.** That is the `P × b` arithmetic from Part 1, and it is a hard wall: a model that does not fit does not run slowly, it does not run.
+
+**Bandwidth decides how fast it runs once it fits.** The mechanism is the same one that makes capacity matter: **generating a single token requires reading the model's active weights.** Not streaming them politely — reading them, for every token, from the memory the processor can reach. So tokens-per-second is governed by how fast that memory can be read, and on a large model that figure is dominated by memory bandwidth rather than by arithmetic throughput.
+
+**Two consequences worth internalising, because both invert an intuition:**
+
+- **A faster compute chip does not necessarily make generation faster.** If the model is memory-bound, and on a large model it usually is, then adding FLOPS buys you very little. This is why the headline number on a spec sheet is the least useful number for inference.
+- **Quantization helps twice, not once.** Fewer bits per parameter means less to store *and* less to read per token. Halving the bits roughly halves both, so a model that did not fit now fits *and* generates faster. That is the strongest argument for quantizing rather than waiting for a bigger machine, and Part 1's arithmetic already implied it without saying so.
+
+**So the hardware decision is a question, not a brand, and it has exactly one useful form:**
+
+> **Does your model fit in the fast memory? If it does, buy bandwidth. If it does not, buy capacity — and accept that it will be slower.**
+
+That is the whole decision. Everything else is preference.
+
+**The two architectures, and why they are not interchangeable:**
+
+| | **Discrete GPU** | **Unified memory** |
+|---|---|---|
+| What it is | A separate card with its own fast, soldered memory | One pool the CPU and GPU both read from |
+| Capacity | Capped hard — consumer cards top out around 32 GB | Scales far higher, into the hundreds of GB |
+| Bandwidth | Very high, often 1,000+ GB/s | Lower per gigabyte, though newer parts narrow the gap |
+| Decides | **How fast** a model that fits runs | **Whether** a large model runs at all |
+| Software | The mature accelerated path (CUDA) | More immature outside Apple's stack |
+
+**Illustrations, dated 2026-09-30. Read the verification status before trusting any figure — they are not equally solid.**
+
+- **NVIDIA DGX Spark** — a 128 GB coherent unified-memory desktop box on the GB10 Grace Blackwell Superchip. NVIDIA's own documentation gives **128 GB LPDDR5x, a 256-bit interface, and 273 GB/s**, supporting models up to 200B parameters and fine-tuning up to 70B, with two units linkable for larger models. `verified from primary source` — these figures come from NVIDIA's product page and user guide, not from a review.
+- **NVIDIA RTX 5090** — the opposite shape: **32 GB** of discrete GDDR7 at roughly **1,792 GB/s**. This configuration is *consistently* reported across many independent sources, but NVIDIA's own spec page was not read for this phase, so treat the exact figures as **vendor-claimed and worth checking yourself**.
+- **Apple Silicon Mac Studio** — unified memory up to 128 GB on recent M-series Max configurations, at several hundred GB/s, with the best-supported non-CUDA path via Metal and MLX. `secondary sources only — check Apple's published tech specs`
+- **AMD Strix Halo (Ryzen AI Max+ 395)** — the budget entry into large unified memory: 128 GB of LPDDR5X with roughly 96 GB allocatable to the GPU, at meaningfully lower bandwidth, and the cheapest of these machines by a wide margin. `secondary sources only` — and **the accelerator software support is the thing to check before buying**, not the memory.
+
+**The pattern across all four, and the part that generalises past any of them:** the high-bandwidth options are capacity-capped around 32 GB, and the high-capacity options are bandwidth-limited. **A 32 GB card is often the better buy for a 7B or 14B model, and worse than useless for a 70B one.**
+
+**And the bandwidth argument is why mixture-of-experts models are unusually kind to unified memory.** An MoE model needs *capacity* for all of its weights but reads only the few experts active for the current token, so its bandwidth penalty is smaller than the parameter count suggests. That is a real and current reason large local models became practical on machines that are not fast — and it is the same reason capacity stopped being the only number worth reading off a spec sheet.
+
+**Now the part that matters if you have no money, because the honest answer is that most of this hardware tiering is irrelevant to you.**
+
+**A quantized model in the 7B–14B range, on a machine you already own, is genuinely useful** — for classification, extraction, summarisation, and as a private fallback for text you would not send to a hosted API. Part 1's own arithmetic makes it concrete: at 4-bit quantization a 7B model needs roughly **3.5 GB** of weights, and an 8 GB machine has room for that once the operating system has taken its share. **That is the free path, and it does not require buying a desktop box or a graphics card.** A local runtime will load a quantized model on hardware you already have in about one command, and Part 4 works the crossover arithmetic for exactly your case.
+
+**The honest thing to say to someone in that position:** the machines above are what *decides the question* when a model does not fit, and understanding them is what tells you whether local is worth pursuing at all. But knowing a 128 GB unified box exists is not a reason to buy one. **Part 4's decision rule — a free or cheap API, and your time worth more than the tokens you would save — still applies, and for a learner it usually settles the question before hardware enters into it.** Buy hardware when a specific model you actually need will not fit, not because you have read a spec sheet.
+
+
 ### Part 2 — API is a variable cost, and variable costs scale with your mistakes
 
 The API's structure is the mirror image. You pay nothing to exist and nothing to be capable. You pay per token, and only when you use it. That means your first month can cost almost nothing and your worst month can cost a great deal, and nothing in the pricing page warns you about the difference.
