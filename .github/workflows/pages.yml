@@ -88,28 +88,9 @@ jobs:
           VITE_BASE: /vibecoding/
         run: npm run build
 
-      # THE ONE CHECK THAT COULD HAVE CAUGHT THE BLANK PAGE.
-      #
-      # Verified live on 2026-09-30: https://markkramm.github.io/vibecoding/ was
-      # serving a BLANK page. Its HTML requested `/assets/index-<hash>.js`, which
-      # returns 404, while `/vibecoding/assets/index-<hash>.js` returns the
-      # 389 KB bundle. The deployed build had not had VITE_BASE applied, so every
-      # asset URL was absolute, every one 404'd, and `#root` never rendered. The
-      # project README advertises that exact URL as the way to read the curriculum.
-      #
-      # Why nothing caught it: every check in this repository — `npm test` and all
-      # 21 of its steps included — runs against a preview served from `/`, where
-      # `/assets/...` is CORRECT. A build with the wrong base passes all of them.
-      # The failure only exists when the artifact is served from a subpath, which
-      # is exactly the condition no local check reproduces. The gap was not a
-      # missing rule; it was that the local environment and the deployed
-      # environment were never compared.
-      #
-      # So compare them. The script is the same one wired into `npm test`, where it
-      # runs with base `/`; here it runs with the deploy base, which is the only
-      # configuration in which the bug is visible. If VITE_BASE is ever dropped or
-      # shadowed, this fails the job instead of publishing a blank page.
-      - name: Assert asset paths match the deploy base
+      # A FAST FAIL on build configuration, not the guarantee. See the note on the
+      # final step for why this position is not sufficient on its own.
+      - name: Assert asset paths match the deploy base (early)
         working-directory: learning-site
         env:
           VITE_BASE: /vibecoding/
@@ -118,9 +99,40 @@ jobs:
       # Offline checks run against the freshly generated JSON and the built
       # output, so this is the last point where a content or shape regression can
       # stop a deploy.
+      #
+      # WARNING: this step REBUILDS dist/ and that matters more than it looks.
+      # `npm test` step 14 is `vite build` (added to close the stale-bundle trap),
+      # and it runs with NO VITE_BASE, because every browser check in the suite
+      # expects a preview served from `/`. So this step silently REPLACES the
+      # correctly-based artifact from the Build site step with one that emits
+      # absolute `/assets/...` paths.
+      #
+      # That is not a theory. It is what shipped on 2026-09-30: a green deploy,
+      # a green base-path assertion, and a blank live page. The assertion sat
+      # BETWEEN the good build and this step, so it passed on an artifact that
+      # was then destroyed before upload. The lesson is lesson 67's shape one
+      # level down — a check that is not at the last point before the thing it
+      # protects does not protect it.
       - name: Offline site checks
         working-directory: learning-site
         run: npm test
+
+      # THE ONLY ASSERTION THAT ACTUALLY GUARDS THE PUBLISHED ARTIFACT.
+      #
+      # Rebuilds with the deploy base, then verifies — in that order, and after
+      # every step that could have touched dist/. Costs about two seconds and is
+      # the difference between a working site and a blank one.
+      #
+      # The rebuild is not redundant with the Build site step: it undoes what npm
+      # test just did. The assertion is not redundant with the early one: only
+      # this one runs against the bytes that get uploaded.
+      - name: Rebuild for the deploy base and verify
+        working-directory: learning-site
+        env:
+          VITE_BASE: /vibecoding/
+        run: |
+          npm run build
+          node scripts/audit-base-paths.mjs
 
       # Pages serves static files only. The site is a single-page app with no
       # client-side router (routing is state, per App.jsx), so a 404 fallback to
