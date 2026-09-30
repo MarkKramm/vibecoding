@@ -2241,6 +2241,42 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     Two corollaries that earned their keep. First, **a probe should assert that its own setup applied**, and say so when it did not — the silent no-op replace that searched for `-` in a file written with `—` reported three cases as "SILENT" when nothing had been injected at all. A test harness that cannot fail is the lesson-64 shape one level down. Second, **a subagent's report is a lead.** Six of the eight citations it reported were verified correct, and the two plain errors it found were confirmed by reading the cited line before editing — which is also how the *fourth* error was caught, the one that ran the opposite way and which the report had classified as fine.
 
+69. **⛔ A CHECK THAT IS NOT AT THE LAST POINT BEFORE THE THING IT PROTECTS DOES NOT PROTECT IT.**
+    Found 2026-09-30, in `089ddfe` and then `d2e520c`. This is lesson 67's shape one level down, and it cost two commits and a live outage to learn.
+
+    **The live site was a blank page.** `https://markkramm.github.io/vibecoding/` — the URL the README advertises as the way to read this curriculum — returned an HTML page requesting `/assets/index-<hash>.js`, which 404s, while `/vibecoding/assets/<same hash>` returned the 389 KB bundle. Absolute asset paths, every one a 404, the bundle never executed, `#root` empty.
+
+    **All 21 checks passed, and would keep passing.** Every one runs against a preview served from `/`, where `/assets/...` is CORRECT. A build with the wrong base is not merely untested — it is a build that passes every test in this repository. The failure only exists when the artifact is served from a subpath, which is exactly the condition no local check reproduces. The gap was not a missing rule; it was that the local environment and the deployed environment were never compared.
+
+    The first fix added that comparison — `audit-base-paths.mjs`, run in CI with the deploy base — and **the site stayed blank after a fully green deploy.** The reason is the actual lesson:
+
+    ```
+    1. Build site                      VITE_BASE=/vibecoding/  -> /vibecoding/assets/...  correct
+    2. Assert base paths (early)       passes, correctly, on a correct artifact
+    3. Offline site checks (npm test)  NO VITE_BASE           -> REBUILDS dist/
+    4. upload-pages-artifact           uploads whatever dist/ now holds
+    ```
+
+    **`npm test` step 14 is `vite build`** — the step added to close the stale-bundle trap — and it runs without `VITE_BASE` because every browser check expects a preview served from `/`. So step 3 silently replaced the good artifact from step 1 with a broken one, and step 4 uploaded that. My assertion sat *between* the good build and the thing that destroyed it, so it verified bytes that were already doomed. It passed. It was right, and it protected nothing.
+
+    **The fix is a rebuild-then-assert after the only step that can clobber the artifact.** Order matters inside it. The early assertion is kept and renamed, because it is a real fast-fail on build configuration — but its comment now says plainly that it is not the guarantee, so no future editor moves it back up believing it still holds.
+
+    **The alternative that looks tidier and does not work:** setting `VITE_BASE` on the `npm test` step. The suite's browser checks drive a preview served from `/`, so a base of `/vibecoding/` would 404 every asset locally and fail all 22 checks. The comment records this so nobody tries it.
+
+    **The generalisation, in one line:** a guard's position is part of its correctness. Lesson 67 said a gate must cover everything it is named after; this says a gate must also be positioned after everything that can invalidate it. Both are the same failure seen from two sides — a check that is not looking at the thing that matters will pass while the thing is broken.
+
+70. **A BUILD TIMESTAMP IN GENERATED DATA MAKES CHUNK HASHES NONDETERMINISTIC, AND THAT ALREADY MISLED ME ONCE.**
+    Found 2026-09-30, immediately after fixing the blank page, while trying to verify the fix.
+
+    The generated JSON carries `generatedAt: new Date().toISOString()` in `shared.json` and in every per-track object. Because those values are embedded in the bundle, **the chunk hashes change on every build even when no content changed.** Measured: two consecutive builds of identical inputs, three seconds apart, produced `shared-C7igsotR.js` then `shared--keGTna-.js`, `agents-BIFCIGcO.js` then `agents-BgmGW8hy.js`, `vibecoding-ZMaKA0Ge.js` then `vibecoding-DtHrxahD.js`. `search-*.js` is stable, because the search index carries no timestamp.
+
+    **What it cost me, which is why it is recorded.** After the fix deployed, I probed the live site for the chunk names my *local* build had produced and got three 404s. I had already concluded the deploy was broken and started writing that up. The 404s were entirely an artefact of comparing hashes from two builds that could never match. **I nearly published a false "still broken" finding on a site I had just fixed** — the exact mirror image of the six instances in lesson 68, and the seventh.
+
+    Two costs beyond the wasted reasoning. Long-term caching of those chunks is defeated on every deploy for no reason, and "did this deploy change anything?" is unanswerable by comparing filenames, which is a genuinely useful thing to be able to ask.
+
+    **Not fixed, deliberately, and the reason is recorded so it is a decision rather than an oversight.** Removing or pinning `generatedAt` touches the data contract the site renders, and no UI is known to display it. The fix is probably to drop the field or derive it from the newest content mtime, but that is a change to what the build emits, and it should be done deliberately with the projections checked rather than opportunistically while chasing a deploy. Recorded here as a known limitation with a known cause.
+
+
 
 
 ---
