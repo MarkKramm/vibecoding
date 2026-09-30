@@ -64,6 +64,26 @@ If you cannot tick an item, the phase it names is where to go back.
 - [ ] I have written or run a small MCP server. <!-- id: agent-master-c34 energy: high -->
 - [ ] I can state honestly, in writing, what my own agent does not do reliably. <!-- id: agent-master-c35 energy: normal -->
 
+## The harness you configure
+
+Phases 8, 9 and 10 are about the layer around the agent: what it knows, what it may do, and what happens when one session is not enough. These items are track-level on purpose — none of them is a single-phase skill, because the dangerous failure is configuring one layer and assuming the others followed.
+
+- [ ] I can sort my own project's rules into **requests** and **guarantees**, and name what enforces each guarantee. <!-- id: agent-master-c36 energy: high -->
+- [ ] I have written a skill, and I can say what its description must do for the agent to choose it. <!-- id: agent-master-c37 energy: normal -->
+- [ ] I have debugged a skill that never triggered, triggered too often, or lost its description — and can tell which of the three it was. <!-- id: agent-master-c38 energy: high -->
+- [ ] I can explain why descriptions are the scarce resource, and what happens to a skill catalogue that outgrows its listing budget. <!-- id: agent-master-c39 energy: high -->
+- [ ] I have written a hook that **blocks** rather than advises, and I can say what it stops that an instruction file could not. <!-- id: agent-master-c40 energy: high -->
+- [ ] I know the precedence order my agent's instruction files load in, including which ones load on demand. <!-- id: agent-master-c41 energy: normal -->
+- [ ] I can pick a parallelism mechanism for a piece of work and name which of context, filesystem, plan, or coordination was the binding constraint. <!-- id: agent-master-c42 energy: high -->
+- [ ] I have run two sessions in isolated worktrees, and can explain what stops one reaching the other's files. <!-- id: agent-master-c43 energy: normal -->
+- [ ] I know that a subagent has its own context **and** spends from the same quota as the session that spawned it. <!-- id: agent-master-c44 energy: high -->
+- [ ] I can name a command in my own project that produces a pass or fail, and have used it as a gate on dispatched work. <!-- id: agent-master-c45 energy: high -->
+- [ ] I have dispatched work, closed the terminal, and can interpret the state it came back in — including what "needs input" is asking of me. <!-- id: agent-master-c46 energy: high -->
+- [ ] I can state what a reviewer prompted to find gaps gets wrong, and I check its findings rather than implementing them. <!-- id: agent-master-c47 energy: high -->
+- [ ] I can say what code intelligence gives me, and that the documented argument is about context cost rather than accuracy. <!-- id: agent-master-c48 energy: high -->
+- [ ] For every agent or job I left running, I can say what stops it and what it costs per hour — and I have shut down the finished ones. <!-- id: agent-master-c49 energy: high -->
+- [ ] I can give a specific dated example of a rule I believed was enforced and was not. <!-- id: agent-master-c50 energy: high -->
+
 ---
 
 ## What this checklist is not

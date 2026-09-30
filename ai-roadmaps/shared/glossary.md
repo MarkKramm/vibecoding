@@ -170,6 +170,25 @@ Every term this curriculum introduces, defined in one sentence and organised by 
 - **Failure taxonomy** — categorising how an agent fails, because the distribution tells you what to fix.
 - **Trajectory** — the full path an agent took, which can be graded separately from whether it succeeded.
 - **Impossible-task test** — giving an agent a task that cannot be done, to see whether it reports the blocker or fabricates success.
+- **Agent Skill** — a folder of instructions, references and scripts the agent loads on demand, packaged so behaviour can be shared rather than retyped.
+- **SKILL.md** — the file at a skill's root carrying its name and description, which is the part the agent actually reads before deciding to open the skill.
+- **Skill frontmatter** — the metadata block at the top of a `SKILL.md`, where the description that decides whether a skill applies is written.
+- **Deferred load** — a skill's instructions loading only when the skill is invoked, so a thousand lines of reference material cost nothing until something needs them.
+- **Listing budget** — the practical limit on how many skills can be advertised before descriptions start being dropped, taking the matching keywords with them.
+- **Instruction file** — a checked-in file of standing instructions the agent reads automatically, such as `CLAUDE.md`; the mechanism behind most of a project's agent rules.
+- **Request versus guarantee** — whether a rule is something the agent has been asked to follow or something the harness enforces; only the second survives a long run.
+- **Hook** — a script the harness runs at a defined point in a turn, which is where a rule stops being a request.
+- **Stop hook** — a hook that runs as a turn tries to end, able to block completion until a check passes.
+- **Worktree** — a separate working directory with its own files and branch, sharing one repository's history, so parallel sessions cannot overwrite each other.
+- **Worktree isolation** — the enforcement that keeps a session inside its own worktree; its most valuable check is the one that fires when the tool cannot prove a command is safe.
+- **Agent team** — several coordinated sessions sharing a task list and able to message each other directly, run by a lead.
+- **Dynamic workflow** — a script holding the plan and running many subagents, which makes the plan auditable and rerunnable rather than a model's turn-by-turn judgement.
+- **Supervisor process** — the separate process that keeps background work running when you close the terminal, which is what makes walking away possible.
+- **Needs input** — the state meaning a dispatched session is waiting on something only you can answer, which is why walk-away is not unattended completion.
+- **Verification gate** — a check producing a pass or fail that decides when dispatched work is finished, so the operator is not the loop.
+- **Plan mode** — a read-only mode where a model investigates without editing, the mode in which agent teams' cost multiple is documented.
+- **Language server** — the process that knows a codebase's symbols and types, giving an agent go-to-definition rather than text search.
+- **Code intelligence** — using that symbol knowledge to navigate by name instead of by string; its documented benefit is context cost, not accuracy.
 
 ## Fine-tuning and evaluation
 
@@ -224,6 +243,9 @@ Every term this curriculum introduces, defined in one sentence and organised by 
 - **Free tier** — a no-cost allowance, which typically gives up rate limits, model breadth, and sometimes different data terms.
 - **Freemium** — a model where a free tier exists to lead into a paid one, which is worth understanding before you depend on it.
 - **Local model** — a model running on your own hardware, where the cost is time and electricity rather than money.
+- **Capacity versus bandwidth** — the two different questions local hardware answers: capacity decides whether a model fits at all, bandwidth decides how fast it runs once it does.
+- **Unified memory** — one addressable pool shared by CPU and GPU, which removes the capacity cliff of copying between separate memories and is why a machine with less VRAM can still run a large model.
+- **Effective VRAM** — the memory actually available to a model after the system has taken its share, so a card's advertised figure is an upper bound rather than a promise.
 
 ## Vibecoding craft
 

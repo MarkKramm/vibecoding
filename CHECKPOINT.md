@@ -71,7 +71,7 @@ Historical snapshot; the opening note records the commit and verification baseli
 | Practice tasks | 891 |
 | Checklist items | 1,054 |
 | Tool rows | 433 (237 after de-duplication) |
-| Glossary terms | 254 across 10 categories |
+| Glossary terms | 276 across 10 categories |
 | Catalogued resources | 71 across 14 groups |
 | `npm test` checks at snapshot | 17 total, including 2 preview/browser-dependent checks |
 | Recorded assertions | 759 (699 offline + 60 accessibility) |
@@ -173,7 +173,7 @@ mapped `active.blocks` unconditionally, so two of the three kinds rendered an em
 
 | Document | Authored | Rendered |
 |---|---|---|
-| Glossary | 254 terms, 10 categories | **nothing** |
+| Glossary | 276 terms, 10 categories | **nothing** |
 | Resource list | 71 links, 14 groups | **nothing** |
 
 The tabs worked, titles and blurbs appeared, and the body was blank. The data was correct,
