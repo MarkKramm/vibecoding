@@ -653,6 +653,34 @@ export function parseChecklist(section, errors, file, seenIds) {
     checklist.push({ id, text, energy });
   }
 
+  // The checklist equivalent of the unparseable practice task, and found the
+  // same way — by asking what a line has to look like to be *seen at all*.
+  //
+  // A checklist item written `- [-] text` instead of `- [ ] text` fails
+  // `/^\s*[-*+]\s*\[[ xX]\]\s+/`, so it is skipped by the loop above. Its
+  // authored id therefore never reaches `seenIds`, never gets duplicate-checked,
+  // and never appears in the output. The phase simply renders one item fewer,
+  // and every guard passes: build-content --check, audit-quiz,
+  // audit-lesson-ast, audit-free-toolkit, audit-arithmetic, audit-encoding and
+  // all 21 npm test checks.
+  //
+  // There is no per-phase checklist count to fall back on, because the count is
+  // legitimately different in every phase — so unlike the quiz's four-option
+  // rule, nothing else here could ever have caught it. The detection has to be
+  // the id itself.
+  for (let i = 0; i < section.lines.length; i += 1) {
+    const line = section.lines[i];
+    if (/^\s*[-*+]\s/.test(line) && /<!--\s*id:/.test(line)
+        && !/^\s*[-*+]\s*\[[ xX]\]\s+/.test(line)) {
+      const idMatch = line.match(/<!--\s*id:\s*([^\s>]+)/);
+      errors.add(
+        file,
+        section.start + i,
+        `checklist item "${idMatch[1]}" is not a checkbox, so it was never parsed — it would be silently absent from the page and from saved progress. Use \`- [ ] text\` or \`- [x] text\`.`,
+      );
+    }
+  }
+
   return checklist;
 }
 
@@ -782,6 +810,44 @@ export function parseQuiz(section, phaseId, errors, file, seenIds) {
   if (quiz.length === 0 && hasProse) {
     errors.add(file, section.start, 'quiz section has content but no parseable questions — each question must be a `### Q<n>.` heading');
   }
+
+  // Exactly four options per question, enforced.
+  //
+  // The four-option rule is written into AGENTS.md and CONTENT-SCHEMA.md and was
+  // enforced NOWHERE. `optionCount` was computed by audit-quiz.mjs and then only
+  // printed, which is the same shape of defect as the unparseable practice task:
+  // the number was observable, so it looked checked.
+  //
+  // Proven silent, not theorised. Removing the single space in one option -
+  // `- [ ] All agent team sessions` becoming `- [ ]All agent team sessions` -
+  // makes the line fail `/^\s*[-*+]\s*\[([ xX])\]\s+/`, so the option is not
+  // parsed, and the question goes to the reader with THREE options. That passed
+  // build-content --check, audit-quiz, audit-lesson-ast, and the whole npm test
+  // suite. The distractor a learner is meant to reject had vanished.
+  //
+  // The count check is the backstop; the guard below is what names the cause.
+  for (const q of quiz) {
+    if (q.options.length !== 4) {
+      errors.add(
+        file,
+        q.line,
+        `quiz ${q.id} has ${q.options.length} option(s) but exactly 4 are required — an option that the parser did not read looks identical to one that was deleted. Check for a missing space after the checkbox: \`- [ ] text\`.`,
+      );
+    }
+  }
+
+  // A checkbox the option pattern rejected is an error in its own right, because
+  // the count check above cannot tell "a distractor was malformed" from "a
+  // distractor was removed", and the first is a typo worth naming.
+  section.lines.forEach((line, i) => {
+    if (!/^\s*[-*+]\s*\[/.test(line)) return;
+    if (/^\s*[-*+]\s*\[([ xX])\]\s+/.test(line)) return;
+    errors.add(
+      file,
+      section.start + i,
+      `quiz option is not in the required form — it would be silently dropped from the question. Use \`- [ ] text\` or \`- [x] text\`, with a space after the bracket.`,
+    );
+  });
 
   return quiz;
 }

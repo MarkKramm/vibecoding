@@ -149,15 +149,21 @@ The format reuses **Markdown task-list syntax**: `- [x]` marks the correct optio
 |---|---|
 | Heading | `### Q<n>. <question> <!-- id: <phase-id>-q<nn> energy: <low\|normal\|high> -->` |
 | `id` | Authored, unique, matching the phase's own prefix — never minted from position |
-| Options | At least 3, each `- [ ]` or `- [x]`, with **exactly one** `[x]` |
+| Options | **Exactly 4**, each `- [ ]` or `- [x]`, with **exactly one** `[x]` |
 | Explanation | A single-line `**Why:**` after the options |
 | `energy` | Reuses the checklist vocabulary so anything that reads energy already understands a question |
 
 `energy` is `low` for quick factual recall, `normal` for reasoning about a scenario, `high` for multi-step judgement.
 
-**The build fails rather than skipping** on a missing `[x]`, two `[x]` marks, a missing `**Why:**`, a duplicate id, an unknown energy, or a section with prose but no parseable questions. A quiz is a claim that one answer is right, so a malformed one is worse than a missing one — it tells the reader their correct answer is wrong.
+**The build fails rather than skipping** on a missing `[x]`, two `[x]` marks, a missing `**Why:**`, a duplicate id, an unknown energy, a section with prose but no parseable questions, **an option count other than four**, or a checkbox that is not in the required form. A quiz is a claim that one answer is right, so a malformed one is worse than a missing one — it tells the reader their correct answer is wrong.
 
-**The set is validated separately**, in `scripts/audit-quiz.mjs`, because a per-question check cannot see a defect of the collection. A quiz can put seven of its ten correct answers in position C, so that every question is individually valid and the build is green, yet a reader answering "C" every time scores 70% without reading. The guard gates **position skew** above 50%, unused positions, and erratic option counts.
+> **The four-option rule was documented and not enforced until 2026-09-30, and this table previously said "At least 3".** Both halves of that were wrong. The count was never asserted anywhere — `audit-quiz.mjs` collected `optionCount` into a map and printed the distribution, which *looks* like a check and is not one — and the schema's own floor of three was below what the corpus has always done. Measured across the corpus on that date: **573 of 573 questions at exactly four options, with no exceptions at any other count.** So the rule was four in practice, three in the schema, and absent from the tooling.
+>
+> The failure it permitted is not hypothetical. Deleting the single space in one option — `- [ ] All agent team sessions` becoming `- [ ]All agent team sessions` — makes the line fail `/^\s*[-*+]\s*\[([ xX])\]\s+/`, so the option is not parsed and the question reaches the reader with **three**. That passed `build-content --check`, `audit-quiz`, `audit-lesson-ast` and all 21 `npm test` checks. The distractor a learner is meant to reject had silently vanished. The build now asserts the count *and* names a malformed checkbox, because a count of three cannot distinguish "a distractor was mistyped" from "a distractor was removed", and the first is worth naming.
+
+**The set is validated separately**, in `scripts/audit-quiz.mjs`, because a per-question check cannot see a defect of the collection. A quiz can put seven of its ten correct answers in position C, so that every question is individually valid and the build is green, yet a reader answering "C" every time scores 70% without reading. The guard gates **position skew** above 50% and unused positions.
+
+> This paragraph previously claimed the guard also gated "erratic option counts". **It did not, and does not** — the option-count distribution is reported in that script's JSON output for a human to read, which is why the missing assertion went unnoticed for as long as it did. The count is now a hard build rule rather than a report, and this claim has been narrowed to what the script actually enforces.
 
 ### Sections deliberately NOT extracted
 
