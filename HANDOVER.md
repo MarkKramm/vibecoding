@@ -2198,6 +2198,49 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     One **real** defect did surface from the same investigation and was fixed: the sweep's failure summary led with `failuresByPhase.size`, which is empty whenever a track will not open, because an unopened track never enters a phase to be recorded as failed. A wrong-application run reported `phase sweep failed — 0 phase(s) with problems (10 detail line(s))` — self-contradictory, and to anyone skimming it, indistinguishable from "nothing went wrong". The empty set was the *symptom*, not an absence of problems. The summary now leads with the problem count and names the track-level diagnosis, because "a track would not open" and "a phase rendered badly" are different problems with different fixes.
 
+67. **⛔ THE CONTRACT CHECK DID NOT CHECK A QUARTER OF THE CONTENT. `--check` NEVER REACHED THE SHARED DOCUMENTS.**
+    Found 2026-09-30, in `db83e58`. This is the most consequential defect this project has produced, and it is the direct consequence of lesson 64's shape applied one level up.
+
+    `build-content.mjs` called `buildSharedDocs()` on the **write path only**, far below `if (checkOnly) return;`. So `build-content.mjs --check` returned before ever reaching it. **The four shared documents — study rules, resource list, glossary, weekly tracker — have never been validated by the check that `AGENTS.md` tells every agent to run before finishing a change.**
+
+    Verified rather than reasoned. With a scheme-less URL injected into `shared/resource-list.md`:
+
+    ```
+    node scripts/build-content.mjs          ->  ✖ shared content build failed — 1 problem(s)   exit 1
+    node scripts/build-content.mjs --check  ->  ✓ content build check passed — 69 phase(s)     exit 0
+    ```
+
+    **Why it survived so long, and the reason matters more than the bug.** The full build runs on every deploy, so nothing was ever visibly wrong in production. The site always built. What was wrong is narrower and quieter: the check a contributor is told to trust before pushing was blind to a quarter of the content, so a contributor could break the glossary, be told "check passed", and be right. **A gate that covers most of what it is named after is worse than no gate, because it is believed.** Nobody omits a check on purpose; they omit the *second* content directory and never find out.
+
+    **The generalisation: for any check, ask what it does not reach, and make the answer mechanical.** Not "does this validate the content" but "which inputs does this function ever see". A `--check` mode that skips half the build is a mode whose name is a lie, and the lie is invisible precisely because the half it skips is not the half anyone is looking at.
+
+    Four silent-drop paths in `shared-content.mjs` were closed at the same time, all found by a subagent audit and all confirmed by reading the code and reproducing:
+
+    - A **numbered** resource entry with a scheme-less URL was dropped with nothing reported. The error guard tested `/^\s*[-*+]/` while the stripper directly above it also accepted `/\d+[.)]/` — **the guard covered only half the forms it was meant to.** Reproduced: the published resource list stayed at 71 entries with the entry absent and `--check` exited 0.
+    - A heading missing the space after the hashes, `##Group`, matched no pattern and was absorbed by `line.startsWith('#')`. Every resource beneath it joined the **previous** group, and a group whose entries were all written that way is then dropped entirely, because empty groups are filtered before emission. **One typo could remove a whole category from a published page.**
+    - The same shape in the glossary: `###Term` is the only thing that creates a glossary category, so one missing space could delete a whole section from a published page.
+    - The glossary's own malformed-line report was **unreachable for any heading**, because it excluded `line.startsWith('#')` — the very condition that made the heading malformed.
+
+    **The lesson inside the lesson, which cost a real bug to learn.** The new glossary guard flagged `# Glossary` — the document's own H1 — as malformed. It was invisible while `--check` skipped shared validation, and surfaced the instant that gate was wired in. **A guard added in the same change as the gate that exercises it is worth more than a guard added later and never run against real input**, because the false positive surfaces while the author still knows which line they just wrote. Wiring the gate and adding the guards together was luck; the general rule is to prefer it deliberately.
+
+68. **A SUSPICIOUS COUNT IS EVIDENCE ABOUT THE QUERY. THIS PROJECT NOW HAS FOUR INSTANCES, AND THREE OF THEM WERE MINE.**
+    Recorded 2026-09-30, consolidating lessons 61, 65 and 66 into one habit, because the pattern is now unmistakable and the instances are instructive in what they have in common.
+
+    | Instance | The query said | The truth | Who was wrong |
+    |---|---|---|---|
+    | 65 | 1 hardcoded model identifier | 5, once matched case-insensitively | the original scan's method |
+    | 65 (first attempt) | 23 | 5 | my widened query |
+    | `db83e58` | 113 URL-less resource bullets | 0 real ones | my over-broad rule |
+    | 66 | the sweep passed while verifying nothing | it failed correctly | my reading of two outputs |
+    | `8e4804f` | 5 track overviews with bad durations | 1 | my checker, on 4 of them |
+    | `db83e58` | guards were silent | 3 of 4 breakages never applied | my probe, searching ASCII hyphens in an em-dash file |
+
+    **Six instances, five of them my own tooling, and every single one would have become a wrong commit.** The README "stale count" is the clearest: I edited two numerals in the ASCII diagram believing they were phase counts, and a checker I then wrote proved they were decorative slogan text. The reverts were byte-exact and nothing corrupt was committed — but the margin there was one command.
+
+    **The habit, stated once so it can be followed without re-deriving six stories:** when a check returns a number that is too large, too small, too clean, or too convenient, the first hypothesis is the query. Read the line you actually tested. Confirm the thing you tested is the thing you meant to test. *Then* believe the corpus. Re-running the same check with a different tool and getting a different number is not a contradiction to resolve — it is the finding.
+
+    Two corollaries that earned their keep. First, **a probe should assert that its own setup applied**, and say so when it did not — the silent no-op replace that searched for `-` in a file written with `—` reported three cases as "SILENT" when nothing had been injected at all. A test harness that cannot fail is the lesson-64 shape one level down. Second, **a subagent's report is a lead.** Six of the eight citations it reported were verified correct, and the two plain errors it found were confirmed by reading the cited line before editing — which is also how the *fourth* error was caught, the one that ran the opposite way and which the report had classified as fine.
+
 
 
 ---
