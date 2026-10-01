@@ -10,6 +10,56 @@ The full commit history is the authoritative record: `git log --oneline`.
 
 ## Unreleased
 
+### The doc-count guard declared a region that matched nothing, and two documents were never declared at all — five stale quiz counts were sitting in plain sight
+
+The encoding audit was found covering 228 of 229 tracked files while reporting itself clean, so
+the question worth asking of this guard was not "do my checks pass" but **"is there something my
+checks never look at"**. Answering that took extracting every number inside the guard's own
+current-state regions and asking which ones no pattern could reach.
+
+- **A declared region matched nothing.** `## Still open` was anchored to `(?=^## Neither)`, and
+  CHECKPOINT.md has no heading by that name. The pattern had never matched, so the whole section was
+  unchecked — silently, with a healthy claim count. It is now `/^## Still open[\s\S]*/`, and **every
+  declared region is asserted to match something**, because a region that matches nothing is
+  indistinguishable from a passing run in the output.
+- **The quiz pattern required the noun to sit immediately after the number**, so an adjective or a
+  hyphen defeated it. Four stale `555`s sat against a corpus of 573, in four places the guard could
+  not reach: "all 555 real questions", "the current 555-question corpus", "a 555-question
+  exhaustive pool", and "across all 555" — the last of which has **no noun at all** and is now
+  carried by the same `across all <N>` form the tracks and file claims already use.
+- **Two documents were never in scope**, and both held a stale count. `learning-site/docs/
+  VERIFICATION.md` is the file a reader opens to ask *what has actually been verified*, which makes
+  an unchecked figure in it worse than one in a roadmap; it is now fully in scope, and its capstone
+  size is exempt by name because it draws a fixed number per run however large the corpus grows.
+  README's `## Status and honesty about it` is a "Known gaps, stated plainly" list, and is all
+  present tense by construction.
+- **Bringing them into scope immediately found three more stale numbers**: `66 phases` in two places
+  against a corpus of 69, and `npm test # 20 checks` against 23.
+- **`NOT_A_TOTAL` exemptions were line-granular**, so one silently swallowed every other claim on
+  the same line. The exam sentence carries both "10 questions per written track" — exempt, a per-run
+  capstone setting — and "over all 573 current questions", a live total. The exemption took the 573
+  with it, and editing it to any wrong value would have produced a clean run. Exemptions now blank
+  only their own span.
+- **`HISTORY` has the same blind spot, and it is recorded rather than engineered around**, because
+  unlike an exemption its match is not the span holding the number. That is how a fifth `555` stayed
+  invisible: it sat on a line ending "the dated record of that decision", which
+  `/\brecord(?:ed)?\s+(?:of|from)\b/i` matches. The fix was to the content — that sentence repeated
+  a disclaimer the next paragraph already states under **Resolved 2026-09-28** — so removing it
+  untangled a genuinely ambiguous line and freed the live claim to be checked.
+
+**Two of these would have shipped as coverage that was not coverage.** The hyphenated pattern read
+as coverage in the source and matched *nothing*, because the text says `573-question`, singular. An
+injection of `561-question` caught it; without that proof the guard would have passed while sitting
+directly on top of two real stale sites. The dead-region assertion was proved the same way — after a
+first attempt whose injection never reached disk, which is why the injected bytes are now asserted on
+disk before the guard's verdict is read.
+
+Coverage went from 23 claims to 34. All seven guards exit 0 and `npm test` is 23/23.
+
+**One number that looked stale was not.** `442 corpus rows` had the same shape as the others, but
+`audit-free-toolkit.mjs` reports 442 rows and 243 distinct tools today. Measuring before editing is
+what stopped a correct figure from being "corrected" into a wrong one.
+
 ### ROADMAP P1, done: the volatile facts were re-checked against primary sources, and five of six concrete figures still held
 
 - **The scope was drawn by what a source can settle, not by what is dated.** 116 lines across the

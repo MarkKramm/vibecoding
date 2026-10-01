@@ -103,7 +103,7 @@ dependency, no test framework, as planned.
 
 It covers `ToolCard` URL handling (including every placeholder spelling and non-string value,
 plus a sweep over all 442 corpus rows), `PhaseCard` against the real light projection and its
-degradation behaviour, and `Quiz` normalisation against all 555 real questions.
+degradation behaviour, and `Quiz` normalisation against all 573 real questions.
 
 **It found a real defect before it was finished**: my earlier em-dash fix was a *blocklist*, and
 two tool rows carried the prose `"in this repository"` in the URL column. The parser now
@@ -204,7 +204,7 @@ was supposed to enable.
 
 ### ✅ Mixed practice sets — DONE
 
-A Practice view samples questions across a whole track or across all 555, shuffles them, and
+A Practice view samples questions across a whole track or across all 573, shuffles them, and
 reports which to revisit — no score, per the no-shame rule. It is the one arrangement a per-phase
 quiz structurally cannot offer, and for a reader studying alone it is the only way to tell *"I
 know this"* from *"I just read this"*.

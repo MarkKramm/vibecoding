@@ -300,7 +300,7 @@ checks here; it catches a class they structurally cannot.
 
 ## Exam feature decision - decided 2026-09-19, shipped 2026-09-28
 
-The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 555 current questions, and track-exam result summaries on the dashboard. This section is the dated record of that decision, not a pending task.
+The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 573 current questions, and track-exam result summaries on the dashboard.
 
 **Resolved 2026-09-28:** the implementation above was committed and shipped long ago; this
 paragraph is the dated record of the decision, not a pending task. The instruction to "verify

@@ -89,7 +89,49 @@ const CLAIMS = [
     label: "quiz questions",
     expected: CORPUS.quiz,
     // "573 quiz questions", "573 questions"
-    patterns: [/\b(\d[\d,]*)\s+(?:quiz\s+)?questions\b/gi],
+    //
+    // Widened after four stale "555"s were found in current-state prose, against a
+    // corpus of 573. The original pattern required the noun to sit IMMEDIATELY after
+    // the number, so an adjective or a hyphen defeated it and every one of the four
+    // read as if it were covered:
+    //
+    //   "Quiz normalisation against all 555 real questions"   adjective intervenes
+    //   "the current 555-question corpus"                     hyphen, not a space
+    //   "a 555-question exhaustive pool"                      hyphen, not a space
+    //   "across all 555, shuffles them"                       NO noun at all
+    //
+    // The first three are now caught. The fourth cannot be: a bare number followed by
+    // a comma is not a claim about a quantity, so no pattern anchored on a noun can
+    // reach it. That one is carried by the phrase "across all <N>" instead, which is
+    // narrow enough to be about corpus scope and is what "across all 10 tracks" and
+    // "across 94 authored Markdown files" already use.
+    //
+    // The adjective-tolerant form is deliberately bounded to ONE intervening word.
+    // An unbounded `(?:\w+\s+){0,3}` would also swallow "the 6 views above and the
+    // 555 questions below", where only the second number is a quiz total, and the
+    // guard reports every captured number as needing to match -- so a greedy pattern
+    // does not merely miss things, it manufactures false failures that train a reader
+    // to ignore the output.
+    patterns: [
+      /\b(\d[\d,]*)\s+(?:quiz\s+)?questions\b/gi,
+      // "the current 573-question corpus". This one takes `questions?` with the
+      // plural OPTIONAL, unlike the spaced form above, because in a compound
+      // adjective the noun agrees with the thing being measured and is naturally
+      // singular -- "a 573-question corpus", "a 573-question exhaustive pool".
+      //
+      // An injection of "561-question" proved the plural-only version silently missed
+      // every hyphenated site in the corpus. That is the failure worth recording: the
+      // pattern read as coverage in the source, the guard passed, and the two real
+      // stale sites underneath it were invisible. The spaced form keeps the plural
+      // required on purpose, so that "1 question" is not read as a corpus total.
+      /\b(\d[\d,]*)-(?:quiz\s+)?questions?\b/gi,
+      /\b(\d[\d,]*)\s+(?:[a-z]+\s+){1,2}(?:quiz\s+)?questions\b/gi,
+      // "across all 555, shuffles them" -- a bare number, so the noun anchor cannot
+      // reach it. The negative lookahead matters: without it this also matches
+      // "across all 10 tracks", which is the `tracks` claim's job, and the first
+      // run of this pattern reported ROADMAP:52 as a stale quiz count.
+      /\bacross\s+all\s+(\d[\d,]*)\b(?!\s+(?:tracks?|phases?))/gi,
+    ],
   },
   {
     label: "practice tasks",
@@ -353,11 +395,25 @@ const DOCS = [
       /^## What this is[\s\S]*?(?=^## State recorded)/m,
       /^## Ways to test yourself[\s\S]*?(?=^## What is verified)/m,
       /^## What is verified[\s\S]*?(?=^## The defect)/m,
-      /^## Still open[\s\S]*?(?=^## Neither)/m,
       // The command reference. Its annotations are current-state by definition --
       // a reader copies from here -- and one kept a stale "20 checks" through a
       // whole reconciliation pass because it was outside every region.
       /^## Commands[\s\S]*?(?=^## )/m,
+      // `## Still open` was anchored to `(?=^## Neither)`, and CHECKPOINT.md has no
+      // heading by that name -- so this pattern matched NOTHING and the whole
+      // section was unchecked, silently. Found by extracting every region and asking
+      // which ones came back empty, not by any failing claim.
+      //
+      // It is the last section in the file, so it runs to end of file. It is a
+      // separate entry rather than folded into an earlier region because it is a
+      // different kind of text: the earlier regions describe what IS, this one
+      // describes what is NOT yet done, and both need watching.
+      /^## Still open[\s\S]*/m,
+      // The exam decision is dated, but what it describes is a SHIPPED feature, and the
+      // sentence describing it said "over all 555 current questions" -- a present-tense
+      // claim about live behaviour, in a section no region covered. It is in scope
+      // because of that clause, not because of the heading.
+      /^## Exam feature decision[\s\S]*?(?=^## )/m,
     ],
   },
 
@@ -367,7 +423,29 @@ const DOCS = [
   { path: "HANDOVER.md", regions: [/^\*\*Measured at this pause\*\*[\s\S]*?(?=^---)/m] },
 
   // The header block is current; per-track counts further down are not totals.
-  { path: "README.md", regions: [/^#[\s\S]*?(?=^## )/m] },
+  // `## Status and honesty about it` is also current by construction -- it is a "Known
+  // gaps, stated plainly" list -- and it sat outside the header-only region holding a
+  // stale "current 555-question corpus".
+  {
+    path: "README.md",
+    regions: [
+      /^#[\s\S]*?(?=^## )/m,
+      /^## Status and honesty about it[\s\S]*?(?=^## )/m,
+    ],
+  },
+
+  // A document that was NOT in scope, carrying a stale quiz count.
+  //
+  // The gap was found by extracting every number inside the regions above and asking
+  // which ones no pattern could reach; "555" turned up here too. A document nobody
+  // declares is a document nobody checks, so it is added rather than left as prose
+  // that happens to be correct.
+  //
+  // `learning-site/docs/VERIFICATION.md` is the more surprising of the two. It is the
+  // file a reader opens to ask "what has actually been verified", which makes an
+  // unchecked figure in it worse than one in a roadmap -- and it is a live
+  // current-state table, not a dated snapshot, so the whole file is in scope.
+  { path: "learning-site/docs/VERIFICATION.md" },
 ];
 
 // Numbers that are not corpus totals even inside a current-state region, because
@@ -387,6 +465,17 @@ const NOT_A_TOTAL = [
   // named rather than matched by keyword so the next reader can judge the call.
   { doc: "CHECKPOINT.md", match: /\d[\d,]*\s+Markdown table rows/, why: "table rows across the corpus, not files the encoding audit opens" },
   { doc: "ROADMAP.md", match: /\d[\d,]*\s+authored Markdown files/, why: "the count of content FILES, not the encoding audit's coverage" },
+  // VERIFICATION.md's test table names each check and what it asserts. The capstone
+  // size is a per-run setting -- it draws this many questions however large the corpus
+  // is -- so it is exempt by name rather than left for a broad pattern to misread.
+  // Without this exemption the hyphenated quiz pattern reports "100" as a stale quiz
+  // count on the same line as the correct one, which is how a guard teaches a reader
+  // to skim past real failures.
+  {
+    doc: "learning-site/docs/VERIFICATION.md",
+    match: /\d+\s*-question\s+balanced\s+rotating\s+capstone/,
+    why: "how many questions the capstone draws per run, not the corpus total",
+  },
   { doc: "CHECKPOINT.md", match: /\d[\d,]*\s+authored Markdown files/, why: "the count of content FILES, not the encoding audit's coverage" },
 ];
 
@@ -413,8 +502,75 @@ const HISTORY = [
   /^>\s/, // block quotes are commentary on the past
 ];
 
+// A KNOWN LIMITATION, recorded rather than engineered around.
+//
+// `HISTORY` (like `NOT_A_TOTAL` before it) is line-granular: one match skips the whole
+// line. In this repository a paragraph is one long line, so a single line can carry a
+// history marker and a live corpus claim at once, and the marker wins.
+//
+// It happened. CHECKPOINT.md's exam paragraph said "over all 555 current questions" --
+// a present-tense claim about a shipped feature -- and ended "This section is the dated
+// record of that decision", which `/\brecord(?:ed)?\s+(?:of|from)\b/i` matches. The 555
+// was therefore invisible, and editing it to any wrong value would have produced a
+// clean run.
+//
+// The fix applied was to the CONTENT: the sentence repeated a disclaimer the very next
+// paragraph already states under "**Resolved 2026-09-28:**", so it was removed and the
+// live claim became checkable. That is the right trade -- an ambiguous line is worth
+// untangling -- but it is a manual step, not something this guard does for you.
+//
+// `NOT_A_TOTAL` no longer has this problem: it blanks only its own span, so a sibling
+// claim on the same line survives. `HISTORY` cannot use the same trick, because unlike
+// an exemption its match is not the span holding the number. If you find a live claim
+// hiding behind a history marker, split the paragraph; do not add the marker to this
+// list to silence the symptom, because that removes the only trace of the conflict.
+
 const problems = [];
 const checked = [];
+
+// ---------------------------------------------------------------------------
+// Every declared region must actually match something.
+//
+// A region pattern that matches nothing is the silentest failure this guard can
+// have: it looks configured, it is listed in the source, and the guard reports a
+// healthy claim count while an entire section goes unchecked. That is not
+// hypothetical -- `## Still open` was anchored to a heading (`## Neither`) that
+// CHECKPOINT.md does not contain, and had been matching nothing since it was
+// written. No claim failed, because no claim inside it was ever examined.
+//
+// This is the same principle `audit-encoding.mjs` now uses to assert that every
+// tracked file is either scanned or exempted: the question is not "did the checks
+// I wrote pass" but "is there something my checks never looked at".
+// ---------------------------------------------------------------------------
+const deadRegions = [];
+for (const doc of DOCS) {
+  if (!doc.regions) continue;
+  let text;
+  try {
+    text = readFileSync(join(ROOT, doc.path), "utf8");
+  } catch {
+    continue; // a missing doc is not this guard's business; other checks own presence
+  }
+  for (const tpl of doc.regions) {
+    const re = new RegExp(tpl.source, tpl.flags.replace("g", ""));
+    const m = re.exec(text);
+    if (!m) {
+      deadRegions.push({ doc: doc.path, tpl: tpl.source });
+    } else if (m[0].trim().length === 0) {
+      deadRegions.push({ doc: doc.path, tpl: tpl.source, empty: true });
+    }
+  }
+}
+
+for (const d of deadRegions) {
+  // Reported through its own path rather than pushed into `problems`, because a dead
+  // region has no stated number, no expected number and no line to point at. Forcing
+  // it into that shape printed `undefined:undefined says undefined, corpus has
+  // undefined`, which is a report that reads like a bug in the guard rather than the
+  // defect it found -- the same reason the claim report dedupes on what the reader
+  // actually sees.
+  problems.push({ deadRegion: true, ...d });
+}
 
 for (const doc of DOCS) {
   const path = join(ROOT, doc.path);
@@ -446,13 +602,32 @@ for (const doc of DOCS) {
   lines.forEach((line, i) => {
     if (!inScope(i)) return;
     if (HISTORY.some((h) => h.test(line))) return;
-    if (NOT_A_TOTAL.some((n) => n.doc === doc.path && n.match.test(line))) return;
+
+    // NOT_A_TOTAL exemptions blank out their own span instead of skipping the whole
+    // line.
+    //
+    // They used to `return`, which is line-granular, and that silently swallowed
+    // every OTHER claim on the same line. CHECKPOINT.md's exam sentence carries both
+    // "10 questions per written track" -- exempt, because it is a per-run capstone
+    // setting -- and "over all 573 current questions" -- a live corpus total. The
+    // exemption took the 573 with it, so editing that 573 to a wrong number would
+    // have produced a clean run. That is the same defect as a dead region: coverage
+    // that looks configured and is not, found only by noticing that a correct number
+    // in a newly added region did not raise the claim count.
+    //
+    // Replacing the exempt span with a separator rather than deleting it keeps the
+    // rest of the line scannable while stopping any pattern from straddling the hole.
+    let scannable = line;
+    for (const n of NOT_A_TOTAL) {
+      if (n.doc !== doc.path) continue;
+      scannable = scannable.replace(new RegExp(n.match.source, "g"), (m) => " ".repeat(m.length));
+    }
 
     for (const claim of CLAIMS) {
       for (const pattern of claim.patterns) {
         pattern.lastIndex = 0;
         let m;
-        while ((m = pattern.exec(line)) !== null) {
+        while ((m = pattern.exec(scannable)) !== null) {
           const stated = Number(m[1].replace(/,/g, ""));
           if (!Number.isFinite(stated)) continue;
           checked.push(`${doc.path}:${i + 1} ${claim.label} = ${stated}`);
@@ -463,6 +638,10 @@ for (const doc of DOCS) {
               label: claim.label,
               stated,
               expected: claim.expected,
+              // The ORIGINAL line, never the blanked copy. The span-blanking above is
+              // an implementation detail of scanning; showing it rendered "10 questions
+              // per written track" as a run of spaces, leaving the report pointing at a
+              // hole instead of at the sentence that is actually wrong.
               text: line.trim(),
               // Recorded so the report can name which pattern fired, which is what
               // makes a double report on one line diagnosable rather than merely
@@ -498,6 +677,14 @@ if (problems.length) {
 
   console.log(`\n${unique.length} stale claim(s):\n`);
   for (const p of unique) {
+    if (p.deadRegion) {
+      console.log(`  ${p.doc}  DEAD REGION  /${p.tpl}/`);
+      console.log(
+        `    ${p.empty ? "matched only whitespace" : "matched nothing"}, so every current-state claim it was written to watch is unchecked.`,
+      );
+      console.log(`    Fix the pattern or the heading. Deleting the region looks identical to a passing run.\n`);
+      continue;
+    }
     console.log(`  ${p.doc}:${p.line}  says ${p.stated}, corpus has ${p.expected}  (${p.label})`);
     console.log(`    ${p.text}\n`);
   }
