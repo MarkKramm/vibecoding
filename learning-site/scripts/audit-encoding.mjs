@@ -17,6 +17,31 @@
 // a one-line edit rather than an afternoon.
 //
 // Run: node scripts/audit-encoding.mjs
+//
+// TWO THINGS THIS FILE GOT WRONG ON 2026-10-01, both found by arithmetic and by
+// injecting one defect rather than by reading the code, and both worth stating up
+// front because each looked like a pass:
+//
+//   1. IT DID NOT SCAN EVERY TRACKED FILE. `git ls-files` reported 229 and this
+//      audit reported 228; the delta was `learning-site/package-lock.json`. A lone
+//      CR written into it, asserted present on disk, left this audit exiting 0 with
+//      "all files are LF". SCAN named `learning-site/src`, `scripts`, `docs` and
+//      then three individual files in `learning-site/`, so the fourth file in that
+//      same directory was invisible. The fix is not another path -- it is the
+//      coverage assertion at the bottom, which fails when a tracked file is neither
+//      scanned nor exempted. See the comment there.
+//
+//   2. ITS REPORTS NAMED A MACHINE-SPECIFIC ABSOLUTE PATH. The relative path was
+//      computed as `file.split("/Vibecoding/")[1] || file`, which resolves only when
+//      the checkout sits in a directory literally named `Vibecoding`. Everywhere
+//      else it fell through to the absolute path, so the promise above was not kept
+//      and a report could not be pasted into a command. It is now `relative(REPO, …)`.
+//
+// The byte-level reports also carried no line number at all -- a CRLF was announced
+// per file with a count and no position, which is unactionable on a 2,000-line phase
+// file. They now name the first occurrence's line. Every change here was proved by
+// injecting the defect, asserting the bytes reached disk, and reading the EXIT
+// CODE; the probe scripts live in %TEMP% and are not committed, per AGENTS.md.
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, extname, relative, sep } from "node:path";
@@ -86,6 +111,18 @@ const SCAN = [
   join(REPO, "docs"),
   join(REPO, "scripts"),
   join(REPO, ".github"),
+  // `learning-site/` itself is DELIBERATELY absent, and its three files were named
+  // individually above -- `vite.config.js`, `index.html`, `package.json`. That is the
+  // same mistake the repo root used to make, and it had already failed: the fourth
+  // file in that directory, `package-lock.json`, was never scanned. A lone CR
+  // written into it was asserted present on disk and this audit still exited 0.
+  // Naming three siblings is a list that fails on the fourth.
+  //
+  // The whole directory is walked instead. `learning-site/node_modules` is the one
+  // thing in it that must not be read, and `SKIP_DIRS` already contains
+  // `node_modules`, so walking costs one `readdirSync` and gets every future file
+  // in that directory for free.
+  join(SITE),
   // The repo root is deliberately ABSENT from this array. It is enumerated as
   // ROOT_FILES above and checked directly, because naming root files one by one is
   // what produced the six-file gap this array used to hide.
@@ -126,10 +163,20 @@ const SKIP_DIRS = new Set(["node_modules", "dist", ".git", "generated"]);
 // git behaves as before rather than silently checking nothing -- a guard that
 // quietly narrows its own coverage is the failure mode this file's history is made
 // of.
+// Stored FORWARD-SLASHED, which is the form `git ls-files` prints and the form
+// `git diff` and the GitHub UI take.
+//
+// This used to normalise to the platform separator instead, so `isTracked()` had
+// to hand it `relative(REPO, p)` unmodified. That was self-consistent while it was
+// the only consumer, but the coverage assertion at the bottom compares this set
+// against `SCANNED`, which is forward-slashed because it feeds the report text --
+// and on Windows the two sets differed on every single entry, so the assertion
+// reported all 229 files as unscanned. One canonical form is the fix; converting
+// in `isTracked()` instead would have left the same trap for the next consumer.
 const TRACKED_ONLY = (() => {
   try {
     const out = execFileSync("git", ["ls-files", "-z"], { cwd: REPO, encoding: "utf8", maxBuffer: 1 << 28 });
-    const set = new Set(out.split("\0").filter(Boolean).map((p) => p.split("/").join(sep)));
+    const set = new Set(out.split("\0").filter(Boolean));
     return set.size > 0 ? set : null;
   } catch {
     return null;
@@ -139,11 +186,20 @@ const TRACKED_ONLY = (() => {
 const problems = [];
 let files = 0;
 
-// Paths are compared relative to the repo root, because that is the form
-// `git ls-files` prints and the form that survives a checkout on another machine.
+// Every file `check()` actually opened, as a repo-relative forward-slashed path --
+// the same form `git ls-files` prints, so the coverage assertion at the bottom can
+// compare the two sets directly. Populated by `check()` rather than by the
+// walkers, because that is the only place that knows a file was genuinely read:
+// a path can reach `walk()` and still be dropped by the extension or tracked-file
+// filter, and counting it as covered would make the assertion a tautology.
+const SCANNED = new Set();
+
+// Paths are compared relative to the repo root and forward-slashed, because that
+// is the form `git ls-files` prints, the form the coverage assertion compares
+// against, and the form that survives a checkout on another machine.
 function isTracked(p) {
   if (!TRACKED_ONLY) return true;
-  return TRACKED_ONLY.has(relative(REPO, p));
+  return TRACKED_ONLY.has(relative(REPO, p).split(sep).join("/"));
 }
 
 function walk(p) {
@@ -253,26 +309,81 @@ const ALL_MOJIBAKE = [...MOJIBAKE, ...MOJIBAKE_ALT];
 // reader sees the garbage.
 
 function check(file) {
+  // Idempotent. SCAN deliberately contains both `learning-site/` and some of its
+  // own children -- the three named files are still listed, and they also live
+  // inside the directory now walked -- so a file can arrive here twice. Reading
+  // it twice would report a problem twice and inflate the scanned count; the
+  // count is load-bearing because the coverage line beside it is what makes the
+  // 229-vs-316 style mismatch visible, so it has to mean "distinct files read".
+  const id = relative(REPO, file).split(sep).join("/");
+  if (SCANNED.has(id)) return;
   files++;
+  SCANNED.add(id);
   const buf = readFileSync(file);
-  const rel = file.replace(/\\/g, "/").split("/Vibecoding/")[1] || file;
+  // Relative to the REPO ROOT, forward-slashed, via the same `relative()` the
+  // tracked-file test uses. This was `file.split("/Vibecoding/")[1] || file`,
+  // which only resolved when the checkout sat in a directory literally named
+  // `Vibecoding`. On any other path the split missed and every problem was
+  // reported against a machine-specific ABSOLUTE path, so the header's promise
+  // that a report names "the FILE AND LINE" was not kept and no reader could
+  // grep the output. Proven by injection 2026-10-01: a lone CR in
+  // `learning-site/src/main.jsx` printed the whole absolute path.
+  //
+  // It is `relative(REPO, ...)` rather than `relative(SITE, ...)` because every
+  // other path in this file is repo-relative, including `isTracked()` and the
+  // form `git ls-files` prints. One convention, so a name in a report can be
+  // pasted straight into a command.
+  const rel = id;
+
+  // The line number every report below carries, so the header's promise that a
+  // report names "the FILE AND LINE" holds for the byte-level problems too.
+  //
+  // It did not, and the omission is what made the CR findings useless in practice:
+  // a CRLF is reported per FILE with a count and no position, so on a 2,000-line
+  // phase file the reader is told a number exists somewhere and not where. Both
+  // byte-level problems are found by a raw byte scan, which has no line context of
+  // its own, so the line is derived here by counting LFs up to the offending byte.
+  //
+  // LF, not the file's own terminator: a file that is entirely CRLF has its CRs at
+  // byte i and its LFs at byte i+1, so counting LFs before the CR gives the line the
+  // CR terminates. Counting the CR itself would report every CRLF in the file as
+  // being on line 1.
+  const lineOf = (byteIndex) => {
+    let line = 1;
+    for (let i = 0; i < byteIndex && i < buf.length; i++) {
+      if (buf[i] === 0x0a) line++;
+    }
+    return line;
+  };
 
   // BOM
   if (buf.length >= 3 && buf[0] === 0xef && buf[1] === 0xbb && buf[2] === 0xbf) {
-    problems.push(`${rel}: has a UTF-8 BOM`);
+    problems.push(`${rel}:1: has a UTF-8 BOM`);
   }
 
   // CRLF / lone CR
+  //
+  // The CRLF report names the FIRST occurrence rather than only a count, because a
+  // count alone cannot be acted on and a file with 650 CRLFs does not need 650
+  // lines of output. Every occurrence is still counted, so a partial fix that
+  // leaves some behind does not read as a clean file.
   let crlf = 0;
   let loneCr = 0;
+  let firstCrlf = -1;
+  let firstLoneCr = -1;
   for (let i = 0; i < buf.length; i++) {
     if (buf[i] === 0x0d) {
-      if (buf[i + 1] === 0x0a) crlf++;
-      else loneCr++;
+      if (buf[i + 1] === 0x0a) {
+        if (crlf === 0) firstCrlf = i;
+        crlf++;
+      } else {
+        if (loneCr === 0) firstLoneCr = i;
+        loneCr++;
+      }
     }
   }
-  if (crlf) problems.push(`${rel}: ${crlf} CRLF line ending(s)`);
-  if (loneCr) problems.push(`${rel}: ${loneCr} lone CR byte(s)`);
+  if (crlf) problems.push(`${rel}:${lineOf(firstCrlf)}: ${crlf} CRLF line ending(s), first at this line`);
+  if (loneCr) problems.push(`${rel}:${lineOf(firstLoneCr)}: ${loneCr} lone CR byte(s), first at this line`);
 
   // Valid UTF-8 (a decode that produces U+FFFD means it was not valid)
   let text;
@@ -332,7 +443,80 @@ for (const f of ROOT_FILES) {
   if (isTracked(f)) check(f);
 }
 
+// ── COVERAGE IS NOW CHECKED, NOT ASSUMED ─────────────────────────────────────
+// This is the FOURTH instance of the same gap class, and the first three fixes
+// were all "add the path that was missed" -- a shape that fails again the moment
+// the next file lands somewhere the list does not reach. The repo root was fixed
+// by ENUMERATING it for exactly that reason, and this is the same move applied to
+// the whole tree.
+//
+// Found 2026-10-01, by arithmetic rather than by inspection: `git ls-files`
+// reports 229 tracked files and the audit reported 228 scanned. The delta was
+// `learning-site/package-lock.json`, which sits directly in `learning-site/` and
+// is outside every SCAN entry -- that array names `src`, `scripts`, `docs` and
+// then three individual files, so the fourth file in the same directory was
+// invisible. Proved by injection, not by reading: a lone CR was written into the
+// file, ASSERTED present on disk (60,815 -> 60,816 bytes), the real audit ran,
+// and it printed `228 file(s) scanned` and `all files are LF, UTF-8 without BOM,
+// no mojibake, no tabs` with exit 0.
+//
+// It is the worst file in the repository for this particular defect. `.gitattributes`
+// line 42 carries `package-lock.json -diff`, so a line-ending change to it is
+// invisible in review AND invisible in `git diff`. That is precisely the class
+// this audit exists for, sitting on the one file where the other two layers of
+// defence are also silent.
+//
+// So rather than adding the path, this asserts the property. Every tracked file
+// must be either SCANNED or listed in EXEMPT below with a reason. A tracked file
+// that is neither fails the audit, and the message names it. Adding a file
+// anywhere in the tree now either gets checked automatically or has to be
+// declared, which is the only arrangement that cannot rot.
+//
+// `TRACKED_ONLY` is null when git is unavailable, in which case there is no
+// tracked set to compare against and the check is skipped rather than reported
+// as a pass -- a guard that cannot see is not a guard that succeeded.
+const EXEMPT = new Map([
+  // Deliberately empty. `package-lock.json` is NOT exempt: it is tracked, it is
+  // ours by extension, and `*.json text eol=lf` in `.gitattributes` already
+  // declares it LF, so a CRLF in it is a real defect rather than a tool's
+  // prerogative. It is scanned like anything else now that coverage is computed
+  // rather than listed.
+  //
+  // An entry added here must be a path and a reason, e.g.
+  //   ["some/file.bin", "binary; checked by <other guard>"],
+  // and the reason is what a future reader needs in order to judge whether the
+  // exemption is still right.
+]);
+
+if (TRACKED_ONLY) {
+  const unscanned = [];
+  for (const relPath of [...TRACKED_ONLY].sort()) {
+    if (SCANNED.has(relPath)) continue;
+    if (EXEMPT.has(relPath)) continue;
+    // Files under a skipped directory are out of scope by policy, not by
+    // omission: they are build output or vendored dependencies.
+    if (SKIP_DIRS.has(relPath.split("/")[0])) continue;
+    unscanned.push(relPath);
+  }
+
+  if (unscanned.length) {
+    console.error(
+      `\n✖ COVERAGE GAP: ${unscanned.length} tracked file(s) are neither scanned nor exempted.\n`,
+    );
+    console.error("  This audit just reported on the files it did read. These it never opened,");
+    console.error("  so it cannot vouch for their line endings or encoding:\n");
+    for (const p of unscanned.slice(0, 40)) console.error(`  ${p}`);
+    if (unscanned.length > 40) console.error(`  ... and ${unscanned.length - 40} more`);
+    console.error("\n  Either the file belongs in the scan, or it belongs in EXEMPT in this");
+    console.error("  file with a reason. Do not silence this by widening SKIP_DIRS.\n");
+    process.exit(1);
+  }
+}
+
 console.log(`${files} file(s) scanned`);
+if (TRACKED_ONLY) {
+  console.log(`  coverage: all ${TRACKED_ONLY.size} tracked file(s) scanned or exempted`);
+}
 if (problems.length) {
   console.log(`\n${problems.length} problem(s):`);
   for (const p of problems.slice(0, 40)) console.log("  " + p);

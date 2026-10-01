@@ -34,6 +34,7 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { execFileSync } from "node:child_process";
 import { KNOWN_TRACKS, ROOT, buildPhase, findPhaseFiles } from "./build-content.mjs";
 
 // ---------------------------------------------------------------------------
@@ -127,6 +128,34 @@ const CLAIMS = [
       /#\s*(\d[\d,]*)\s+checks\b/gi,
     ],
   },
+  {
+    label: "files the encoding audit scanned",
+    expected: null, // filled in below by running the encoding audit
+    patterns: [
+      // "encoding clean across 226 files", "no mojibake (226 files)".
+      //
+      // ONE pattern, and it is case-insensitive because the two lines in the corpus
+      // that state this figure disagree about how to spell the noun: HANDOVER writes
+      // "encoding clean across 226 files" and CHECKPOINT writes "Encoding - LF, UTF-8
+      // no BOM, no tabs, no mojibake (226 files)". A case-sensitive anchor matched
+      // HANDOVER's line and silently skipped CHECKPOINT's -- which is how a wrong
+      // number survived inside a region this guard already inspects.
+      //
+      // The gap between `encoding` and the number is `[^.\n]*?` rather than a fixed
+      // distance, so it spans an em dash, a comma or a parenthetical without needing
+      // a second pattern. A first attempt added one for the parenthetical and the two
+      // patterns both matched the same single number, so CHECKPOINT's line was
+      // reported TWICE for one defect. The report now dedupes on what the reader is
+      // shown, and the pattern count went back to one so the double match cannot recur.
+      //
+      // The cost of the single pattern is that a line stating this figure WITHOUT
+      // naming the audit would not be checked. That is the right way round: a bare
+      // `\((\d+) files\)` would also match CHECKPOINT's "1,597 Markdown table rows"
+      // paragraph and ROADMAP's "94 authored Markdown files", which are different
+      // metrics this guard does not measure.
+      /\bencoding\b[^.\n]*?(\d[\d,]*)\s+files\b/gi,
+    ],
+  },
 ];
 
 // The `npm test` step count is read from the suite itself rather than hardcoded,
@@ -139,8 +168,53 @@ function measureChecks() {
   return steps.length;
 }
 
+/**
+ * How many files the encoding audit actually opened.
+ *
+ * Added after this guard's third scope error. Its claim list covered the corpus
+ * counts and the `npm test` step count, and two documents stated "encoding clean
+ * across 226 files" -- inside regions this file already inspects, neither matching
+ * a HISTORY exemption -- while the audit reported 228. The guard looked at those
+ * lines and had no pattern that could match them.
+ *
+ * The figure is read by RUNNING the audit rather than by re-deriving it, for the
+ * same reason the step count comes from `check-all.mjs`: a second implementation
+ * of the same measurement is a second thing that can be wrong. This is also the
+ * number that makes the encoding audit's own coverage assertion legible, since it
+ * prints the same figure next to the tracked-file total.
+ */
+function measureEncodingFiles() {
+  const readCount = (out) => {
+    const m = String(out).match(/^(\d[\d,]*) file\(s\) scanned$/m);
+    return m ? Number(m[1].replace(/,/g, "")) : null;
+  };
+
+  let out;
+  try {
+    out = execFileSync("node", [join(ROOT, "learning-site", "scripts", "audit-encoding.mjs")], {
+      cwd: ROOT,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      maxBuffer: 1 << 28,
+    });
+  } catch (e) {
+    // The audit prints its count BEFORE any problems and then exits 1, so the
+    // figure is in `e.stdout` rather than in the return value. Reading it from a
+    // failing run is deliberate: this guard asks "how many files does the audit
+    // cover", and that question has the same answer whether or not the audit is
+    // currently happy.
+    out = e?.stdout ?? "";
+  }
+  // Null when the figure cannot be read at all. It is a documentation number
+  // rather than a gate, so an unreadable count leaves the claim unchecked instead
+  // of guessing -- and a real encoding failure is that audit's job to report, not
+  // this one's.
+  return readCount(out);
+}
+
 for (const c of CLAIMS) {
   if (c.label === "`npm test` checks") c.expected = measureChecks();
+  if (c.label === "files the encoding audit scanned") c.expected = measureEncodingFiles();
 }
 
 // ---------------------------------------------------------------------------
@@ -201,6 +275,15 @@ const DOCS = [
 const NOT_A_TOTAL = [
   { doc: "README.md", match: /foundations\/\s+\d+\s+phases/, why: "a per-track breakdown table, not the corpus total" },
   { doc: "CHECKPOINT.md", match: /\d+\s+questions per written track/, why: "the capstone's questions-per-track setting, not the quiz total" },
+  // CHECKPOINT.md's own header records that the "tool rows" figure was DROPPED
+  // rather than updated, and then deliberately talks about other file-shaped
+  // numbers nearby -- "1,597 Markdown table rows", "94 authored Markdown files".
+  // Those are different metrics from the encoding audit's file count, and the
+  // parenthetical pattern would otherwise read them as claims about it. Each is
+  // named rather than matched by keyword so the next reader can judge the call.
+  { doc: "CHECKPOINT.md", match: /\d[\d,]*\s+Markdown table rows/, why: "table rows across the corpus, not files the encoding audit opens" },
+  { doc: "ROADMAP.md", match: /\d[\d,]*\s+authored Markdown files/, why: "the count of content FILES, not the encoding audit's coverage" },
+  { doc: "CHECKPOINT.md", match: /\d[\d,]*\s+authored Markdown files/, why: "the count of content FILES, not the encoding audit's coverage" },
 ];
 
 // A line that reads as a record of a past event, used only as a second net inside
@@ -277,6 +360,10 @@ for (const doc of DOCS) {
               stated,
               expected: claim.expected,
               text: line.trim(),
+              // Recorded so the report can name which pattern fired, which is what
+              // makes a double report on one line diagnosable rather than merely
+              // annoying. See the comment on this claim's patterns.
+              pattern: String(pattern),
             });
           }
         }
@@ -292,8 +379,21 @@ for (const doc of DOCS) {
 console.log(`doc-count audit: ${checked.length} claim(s) checked against the corpus`);
 
 if (problems.length) {
-  console.log(`\n${problems.length} stale claim(s):\n`);
-  for (const p of problems) {
+  // One line can match two patterns -- see the comment on the encoding claim's
+  // patterns, where a parenthetical form and a prose form both match one number.
+  // The patterns still run separately, because that is how a new claim FORM gets
+  // covered; but the report has to dedupe on what the reader is shown, or a single
+  // wrong number is announced twice and the second copy reads like a second defect.
+  const shown = new Set();
+  const unique = problems.filter((p) => {
+    const key = `${p.doc}:${p.line}:${p.label}:${p.stated}`;
+    if (shown.has(key)) return false;
+    shown.add(key);
+    return true;
+  });
+
+  console.log(`\n${unique.length} stale claim(s):\n`);
+  for (const p of unique) {
     console.log(`  ${p.doc}:${p.line}  says ${p.stated}, corpus has ${p.expected}  (${p.label})`);
     console.log(`    ${p.text}\n`);
   }

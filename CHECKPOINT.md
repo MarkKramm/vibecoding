@@ -135,7 +135,7 @@ disabled guard is worse than none.
 - Field shapes against what the renderers consume
 - Projection reads — no component reads a field its projection lacks
 - Inline markdown, lesson-block coverage, search (all against the real corpus)
-- Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (226 files)
+- Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (229 files, all tracked files scanned)
 - CSS wiring — every JSX class has a rule, every token is defined
 - **Accessibility** — 60 assertions across 6 views: contrast, accessible names, focus visibility,
   and keyboard reachability by control *kind*

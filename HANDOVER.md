@@ -18,7 +18,7 @@ is clean and no scratch files remain in the repo root.** Ten commits this sessio
 | | |
 |---|---|
 | Corpus | **69 phases**, 10 tracks · 237,082 lesson words · 1,121 checklist · 573 quiz · **965** practice · 0 minted from position · 276 glossary terms |
-| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` all **exit 0**; encoding clean across **226 files** |
+| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` all **exit 0**; encoding clean across **229 files**, which is every tracked file — the audit now asserts that rather than trusting its own list |
 | Suite | `npm test` **23/23** on a verified-free port, with the browser checks genuinely executing |
 | Sync | `git rev-list --left-right --count origin/main...HEAD` → `0 0`, tree clean |
 | Live site | **Working.** `markkramm.github.io/vibecoding/` serves `/vibecoding/assets/...` and the 389 KB bundle loads |
