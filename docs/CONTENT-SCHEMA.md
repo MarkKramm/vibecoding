@@ -230,23 +230,36 @@ Two rules the parser keeps:
 
 #### The character *gain* is expected, and is not duplication
 
-The audit reports two numbers. **Loss is the invariant that matters and must be 0.** It also reports a **gain**: characters the AST carries that the stripped source does not. At 31 phases this is **11,104** characters, and it is **expected synthesis, not a bug**. Investigated 2026-09-18; the finding:
+The audit reports two numbers. **Loss is the invariant that matters and must be 0.** It also reports a **gain**: characters the AST carries that the stripped source does not. Across all 69 phases this is **24,002** characters, and it is **expected synthesis, not a bug**.
 
-The comparison is a **character multiset** (whitespace excluded). `stripMarkup` in the audit removes inline markup from the *source* side — `` `code` `` → `code`, `**bold**` → `bold`. But `astToPlainText` pushes `block.text` **verbatim**, and per the rule above the parser deliberately carries inline markup through as raw text. So the two sides are compared with an asymmetry: markup is stripped from one and retained by the other.
+**Why there is a gain at all.** The comparison is a **character multiset** (whitespace excluded). `stripMarkup` in the audit removes inline markup from the *source* side — `` `code` `` → `code`, `**bold**` → `bold`. But `astToPlainText` pushes `block.text` **verbatim**, and per the rule above the parser deliberately carries inline markup through as raw text. So the two sides are compared with an asymmetry: markup is stripped from one and retained by the other.
 
-Measured breakdown of the 11,104 gain:
+Measured breakdown of the 24,002 gain:
 
-| Character | Count | Source of the gain |
-|---|---|---|
-| `*` | 9,128 | Emphasis markers retained in AST text |
-| `` ` `` | 1,158 | Inline-code markers retained in AST text |
-| `-`, `\|`, `#`, digits | ~800 | List markers, table pipes, heading anchors |
+| Character | Count | Share | Source of the gain |
+|---|---|---|---|
+| `*` | 19,918 | 83.0% | Emphasis markers retained in AST text |
+| `` ` `` | 2,242 | 9.3% | Inline-code markers retained in AST text |
+| `-` | 421 | 1.8% | List markers retained in AST text |
+| `\|` | 177 | 0.7% | Table pipes retained in AST text |
+| `#` | 120 | 0.5% | Heading markers retained in AST text |
+| everything else | ~380 | 1.7% | Digits and punctuation from the same markers |
 
-**92% is explained by `*` and backtick alone.** Confirmed by re-running the comparison with inline markup normalised on *both* sides: the gain collapses **11,104 → 819**, leaving only structural synthesis.
+**92.3% is explained by `*` and backtick alone.** Confirmed by re-running the comparison with inline markup normalised on *both* sides: the gain collapses **24,002 → 884**, leaving only structural synthesis.
 
-The distribution also rules out duplication: gain is **never zero** across 31 lessons, is tightly bounded at **0.79%–2.48% of source (median 1.68%)**, and scales with source size with no outliers. A duplication bug would produce a bimodal spread concentrated in a few files; this does not.
+The distribution also rules out duplication: gain is **never zero** across 69 lessons, spans **0.79%–4.03% of source (median 1.86%)**, and scales with source size. A duplication bug would produce a bimodal spread concentrated in a few files; this does not.
 
-**Therefore:** gain is a fixed function of inline-markup density, and should be read as a **trend indicator**, not a pass/fail gate. A sudden jump well above ~2.5% of source in one lesson is worth investigating; the raw number growing as content is authored is not. Only **loss > 0** fails the audit.
+**Therefore:** gain is a fixed function of inline-markup density, and should be read as a **trend indicator**, not a pass/fail gate. Only **loss > 0** fails the audit.
+
+**Do not use a percentage threshold to decide whether gain is suspicious.** An earlier version of this guidance said a jump above ~2.5% of source in one lesson was worth investigating, on the evidence of a 31-phase corpus whose maximum was 2.48%. That threshold has since been reached by **13 of 69 lessons**, and **7 of those 13 have a residual of exactly 0** — after inline markup is normalised on both sides, they contribute nothing but markup density. A threshold that fires on a fifth of a correct corpus trains you to ignore it, and the failure is silent: you stop looking at the number that would have caught a real duplication bug.
+
+The check that does discriminate is the **residual**, not the ratio:
+
+> Re-run the comparison with inline markup normalised on **both** sides. Any lesson with a **residual above a couple of hundred characters** is worth reading; the current maximum is 138.
+
+That is a measurement rather than a threshold, because it removes the asymmetry that causes the gain in the first place. `node scripts/audit-lesson-ast.mjs --verbose` prints per-lesson block counts, loss and gain, which is the starting point for either number.
+
+> These figures were re-measured 2026-10-02 at 69 phases. The original investigation, at 31 phases, recorded 11,104 gain and a residual of 819; the proportion (`*` and backtick) is unchanged, and the growth tracks the corpus. Both are preserved in `HANDOVER.md` §7.2, which is a record of that investigation and must not be rewritten.
 
 ## Output: generated JSON
 

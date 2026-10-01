@@ -39,7 +39,7 @@ It ships as a React site that reads compiled JSON from hand-authored Markdown.
 ## The shape of it
 
 ```
-ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (66 files, 22,506 lines)
+ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (69 files, 23,560 lines)
         |
         |  scripts/build-content.mjs
         v

@@ -435,7 +435,7 @@ Audit status:
 | Audit | Status |
 |---|---|
 | `build-content.mjs --check` | ✅ exit 0 |
-| `audit-lesson-ast.mjs` | ✅ exit 0 — 31 lessons, **0 character loss**, 11,104 character gain (now understood — see §7.2) |
+| `audit-lesson-ast.mjs` | ✅ exit 0 — 31 lessons, **0 character loss**, 11,104 character gain (now understood — see §7.2; both figures re-measured 2026-10-02 at 69 lessons as 0 loss / 24,002 gain, see the update note there) |
 | `audit-quiz.mjs` | ✅ **exit 0 — all positions balanced** (fixed in Stage A, §7.1) |
 
 ### Phase files on disk, by track
@@ -1334,6 +1334,29 @@ Get-Content $f | ForEach-Object {
 **Why it is not duplication:** gain is never zero across 31 lessons, is tightly bounded at **0.79%–2.48% of source (median 1.68%)**, and scales with source size with no outliers (largest single file: 606 chars, 2.3%). A duplication bug produces a bimodal spread concentrated in a few files; this is uniform.
 
 **Consequence for future work:** treat gain as a **trend indicator, not a gate**. A sudden jump above ~2.5% of source *in one lesson* is worth investigating; the raw total growing as content is authored is expected. **Only `loss > 0` fails the audit.** This is now documented in `docs/CONTENT-SCHEMA.md` under "The lesson region".
+
+> **Update 2026-10-02 — the 2.5% advice above is superseded; the figures above are not.** Everything
+> above is left as written because it is the record of what was measured on 2026-09-18 at 31 phases,
+> and the conclusion it reached still holds: loss is the invariant, gain is a function of
+> inline-markup density, and it is not duplication. Re-measured at 69 phases the gain is **24,002**
+> with the `*`-and-backtick share unchanged at **92.3%**, and loss is still **0**.
+>
+> What did not survive is the **threshold**. This section's guidance was derived from a corpus whose
+> maximum was 2.48%, so "above ~2.5%" looked like a signal. At 69 phases **13 of 69 lessons exceed
+> it**, and **7 of those 13 have a residual of exactly 0** — nothing but markup density. A threshold
+> that fires on a fifth of a correct corpus is worse than no threshold, because it teaches you to
+> stop reading the one number that would catch a genuine duplication bug.
+>
+> The replacement is a **measurement, not a percentage**: normalise inline markup on *both* sides and
+> look at the **residual**, whose current maximum across all 69 lessons is **138 characters**.
+> `docs/CONTENT-SCHEMA.md` now carries this, and the reasoning is written there in full.
+>
+> One methodology note worth keeping, because it produced a wrong answer first: the comparison runs
+> against the **`## Lesson:` section only**, not the whole phase file. A probe that used the whole
+> file reported a gain of 51,911 — the extra 27,909 was front matter, the other thirteen sections and
+> the authored IDs, none of which the parser ever sees. A figure measured by a second implementation
+> of a guard's logic is a second thing that can be wrong, which is the same rule
+> `audit-doc-counts.mjs` follows when it reads the check count from `check-all.mjs`.
 
 ### 7.3 ✅ RESOLVED — Git commit made, and two CRLF files fixed
 

@@ -32,7 +32,7 @@
 // The list below is short and explicit for that reason, and every pattern is
 // matched against real sentences in the three files rather than guessed.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { execFileSync } from "node:child_process";
 import { KNOWN_TRACKS, ROOT, buildPhase, findPhaseFiles } from "./build-content.mjs";
@@ -129,6 +129,59 @@ const CLAIMS = [
     ],
   },
   {
+    // The four figures below are ANCHORED ON THE PHRASE THAT NAMES THE QUANTITY,
+    // not on the bare noun. A first attempt used `/\b(\d+) lines\b/` and
+    // `/\((\d+) files\b/` and reported 8 stale claims on a correct corpus:
+    //
+    //   - `25,395 lines across 94 authored Markdown files` is the AUTHORED total,
+    //     not the phase-file total, and is checked by its own claim.
+    //   - `1,740 lines` (ROADMAP:168, 221) is the size of code deleted in D-008.
+    //     Nothing on disk can confirm or refute it — the files are gone.
+    //   - `(229 files, all tracked files scanned)` is the encoding audit's
+    //     coverage, checked by the claim above.
+    //
+    // That is the guard's own stated reason for existing: a pattern broader than
+    // the claim it serves turns "prose goes stale" into "the guard is noise", and a
+    // noisy guard is deleted. A narrow pattern that misses a future rephrasing is
+    // the better failure, and the comment names the phrases so a rephrase is a
+    // one-line update rather than a silent loss of coverage.
+    label: "phase files on disk",
+    expected: null, // filled in below from the filesystem
+    patterns: [
+      // "(66 files, 22,506 lines)" — CHECKPOINT.md's pipeline diagram, where the
+      // count sits in a parenthesised pair and the second half names lines.
+      /\(\s*(\d[\d,]*)\s+files\s*,\s*[\d,]+\s+lines\s*\)/gi,
+    ],
+  },
+  {
+    label: "non-empty lines in the phase files",
+    expected: null, // filled in below from the filesystem
+    patterns: [
+      // "(..., 22,506 lines)" — the diagram's second half.
+      /\(\s*[\d,]+\s+files\s*,\s*(\d[\d,]*)\s+lines\s*\)/gi,
+      // "23,560 lines in the phase files" — the phrase that names the scope.
+      /\b(\d[\d,]*)\s+lines\s+in\s+the\s+phase\s+files\b/gi,
+    ],
+  },
+  {
+    label: "authored Markdown files",
+    expected: null, // filled in below from the filesystem
+    patterns: [
+      // "25,395 lines across 94 authored Markdown files" — ROADMAP:14, README:8,
+      // and CHECKPOINT's header. The count of CONTENT files, which includes the
+      // ten `00-overview.md` and ten `checklist-master.md` files.
+      /\b(\d[\d,]*)\s+authored\s+Markdown\s+files\b/gi,
+    ],
+  },
+  {
+    label: "non-empty lines across all authored Markdown",
+    expected: null, // filled in below from the filesystem
+    patterns: [
+      // "25,395 lines across 94 authored Markdown files" — the leading figure.
+      /\b(\d[\d,]*)\s+lines\s+across\s+\d[\d,]*\s+authored\s+Markdown\s+files\b/gi,
+    ],
+  },
+  {
     label: "files the encoding audit scanned",
     expected: null, // filled in below by running the encoding audit
     patterns: [
@@ -160,6 +213,51 @@ const CLAIMS = [
 
 // The `npm test` step count is read from the suite itself rather than hardcoded,
 // for the same reason the corpus counts are parsed: one source of truth.
+/**
+ * Source size of `ai-roadmaps/`, measured the way the documents state it.
+ *
+ * Added after `CHECKPOINT.md:42` carried `(66 files, 22,506 lines)` against a
+ * corpus of 69 phase files and 23,560 lines — inside the `## What this is` region
+ * this file already inspects, and with no pattern that could match it, because
+ * "66 files" is not the word `phases`. Proved by injection rather than by reading:
+ * changing 66 to 61 left this audit at exit 0.
+ *
+ * "Lines" means NON-EMPTY lines, and that is not a free choice. `ROADMAP.md:14`
+ * states 25,395 lines across 94 authored Markdown files and 23,560 in the phase
+ * files; counting every line including blanks gives 37,516 and 34,852, and counting
+ * whitespace-stripped lines gives yet another pair. Only the non-empty definition
+ * reproduces both figures already in the docs, which is the evidence that it is the
+ * one the documents mean. It is stated here because a reader comparing by hand will
+ * otherwise get a different answer and think the guard is wrong.
+ *
+ * Files are counted from the filesystem rather than from `git ls-files`, because
+ * these documents are describing what the content pipeline reads, and the pipeline
+ * reads the working tree.
+ */
+function measureSourceSize() {
+  const walk = (dir, out = []) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, entry.name);
+      if (entry.isDirectory()) walk(p, out);
+      else if (entry.name.endsWith(".md")) out.push(p);
+    }
+    return out;
+  };
+
+  const all = walk(join(ROOT, "ai-roadmaps"));
+  const phaseFiles = all.filter((f) => /\d+-phase-.*\.md$/.test(f));
+
+  const nonEmptyLines = (f) =>
+    readFileSync(f, "utf8").split("\n").filter((l) => l !== "").length;
+
+  return {
+    files: phaseFiles.length,
+    lines: phaseFiles.reduce((n, f) => n + nonEmptyLines(f), 0),
+    authoredFiles: all.length,
+    authoredLines: all.reduce((n, f) => n + nonEmptyLines(f), 0),
+  };
+}
+
 function measureChecks() {
   const src = readFileSync(join(ROOT, "learning-site", "scripts", "check-all.mjs"), "utf8");
   // The steps are pushed as objects with a `name`. Counting them is the only
@@ -212,9 +310,15 @@ function measureEncodingFiles() {
   return readCount(out);
 }
 
+const SOURCE = measureSourceSize();
+
 for (const c of CLAIMS) {
   if (c.label === "`npm test` checks") c.expected = measureChecks();
   if (c.label === "files the encoding audit scanned") c.expected = measureEncodingFiles();
+  if (c.label === "phase files on disk") c.expected = SOURCE.files;
+  if (c.label === "non-empty lines in the phase files") c.expected = SOURCE.lines;
+  if (c.label === "authored Markdown files") c.expected = SOURCE.authoredFiles;
+  if (c.label === "non-empty lines across all authored Markdown") c.expected = SOURCE.authoredLines;
 }
 
 // ---------------------------------------------------------------------------
