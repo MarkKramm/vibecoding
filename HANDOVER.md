@@ -1,6 +1,6 @@
 # HANDOVER — Vibecoding / AI Era Learning Site
 
-**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-29 (fourth pause)**.
+**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-29 (fourth pause), state re-verified 2026-10-02**.
 **Purpose:** Everything a fresh session needs to resume this project without re-deriving anything.
 **Current repo root:** the clone you are reading this in. (This copy: `C:\Users\zaman\Desktop\Projects\Learning\vibecoding`, as of 2026-09-29. The repo has moved machines more than once, so **do not treat any absolute path in this file as durable** — run commands from the repo root instead.)
 **Historical repo root in old logs:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`.
@@ -8,17 +8,24 @@
 
 ---
 
-## START HERE — current handoff (2026-09-29, fourth pause)
+## START HERE — current handoff (2026-09-29, fourth pause; state refreshed 2026-10-02)
 
-**State: SAFE. Everything from the 2026-09-29 session is COMMITTED and PUSHED; the working tree
-is clean and no scratch files remain in the repo root.** Ten commits this session, tip `a381ec8`.
+**State: SAFE. Everything is COMMITTED and PUSHED; the working tree is clean and no scratch files
+remain in the repo root.** This section was written at the fourth pause (ten commits, tip
+`a381ec8`); three commits landed on 2026-10-02, tip **`c78e1a7`**. The measured table below was
+re-verified at that tip and is current. What those three commits changed is in `CHANGELOG.md` under
+`## Unreleased` — in short: the encoding audit now asserts its own file coverage, the AST gain
+threshold was retired in favour of a measurement, the volatile figures were checked against primary
+sources, and the doc-count guard's own coverage was audited, which found a dead region and five stale
+quiz counts. The long-form engineering lessons from that work are in this file; the volume figures
+predating it were not re-derived.
 
 **Measured at this pause** — verify rather than trust, but these were green:
 
 | | |
 |---|---|
 | Corpus | **69 phases**, 10 tracks · 237,082 lesson words · 1,121 checklist · 573 quiz · **965** practice · 0 minted from position · 276 glossary terms |
-| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` all **exit 0**; encoding clean across **229 files**, which is every tracked file — the audit now asserts that rather than trusting its own list |
+| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` / **`doc-counts`** all **exit 0**; encoding clean across **229 files**, which is every tracked file — the audit now asserts that rather than trusting its own list; `doc-counts` checks **34 claims** and asserts every declared region matches something |
 | Suite | `npm test` **23/23** on a verified-free port, with the browser checks genuinely executing |
 | Sync | `git rev-list --left-right --count origin/main...HEAD` → `0 0`, tree clean |
 | Live site | **Working.** `markkramm.github.io/vibecoding/` serves `/vibecoding/assets/...` and the 389 KB bundle loads |
@@ -2367,6 +2374,24 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
     **Finally, the guard caught its own introduction.** Adding the check as `npm test` step 23 made ROADMAP's just-corrected "runs 22 checks" stale within the same commit, and the guard failed the CI gate sequence on the first run. Two things were then added: the number was fixed, and the `**23/23**` ratio form in `HANDOVER.md` — a count spelled a second way, which I had corrected by hand and the guard could not see — got its own pattern, proved live by injecting `99/99` and confirming it was caught. **A count can be written in more than one shape, and the shapes that already exist in the corpus are the ones worth covering.**
 
     **The generalisation:** a guard over prose needs a *scope*, not a blocklist, and the scope is a claim about which sentences are present-tense. Get that wrong in the broad direction and the guard is deleted; wrong in the narrow direction and it silently passes. Both were tested here deliberately, in both directions, before the guard was trusted.
+
+74. **A GUARD PASSING IS NOT THE SAME CLAIM AS A GUARD COVERING — AND THE DIFFERENCE IS FOUND BY ASKING WHAT IT NEVER LOOKED AT.**
+    Recorded 2026-10-02.
+
+    Lesson 73 built the doc-count guard and proved it could *fail* by injection. Injection proves a check works. It does **not** prove the check has anything to do with, which is a different question and the one that was still open.
+
+    The question that answers it was taken from `audit-encoding.mjs`: not "do my checks pass" but **"is there something my checks never look at"**. Concretely — extract every number inside the guard's own declared current-state regions and ask which ones no pattern could reach. Four defects, all silent:
+
+    - **A declared region matched nothing.** `## Still open` was anchored to `(?=^## Neither)`, and CHECKPOINT.md has no heading by that name. It had *never* matched, so the whole section went unchecked while the guard reported a healthy claim count. **A region that matches nothing is indistinguishable from a passing run in the output**, so every declared region is now asserted to match something.
+    - **The quiz pattern required the noun immediately after the number**, so an adjective or a hyphen defeated it. Five stale `555`s sat against a corpus of 573, including "across all 555", which has **no noun at all** — unreachable by any noun-anchored pattern, so it rides the `across all <N>` form the tracks and file claims already use.
+    - **Two documents were never in scope**, one of them `learning-site/docs/VERIFICATION.md`, which is the file a reader opens to ask *what has actually been verified*. Bringing it into scope immediately found three more stale numbers. **A document nobody declares is a document nobody checks**, and that reads as tidiness rather than as a hole.
+    - **Line-granular filters swallow sibling claims.** `NOT_A_TOTAL` took down a live `573` alongside the exempt capstone phrase on the same line. Exemptions now blank only their own span. `HISTORY` has the same blind spot and is recorded as a known limitation rather than engineered around, because unlike an exemption its match is not the span holding the number.
+
+    **The near-miss is the part worth keeping.** The hyphenated pattern read as coverage in the source and matched **nothing**, because the corpus says `573-question`, singular. An injection of `561-question` caught it. Without that proof the guard would have shipped green while sitting directly on top of two real stale sites — **a pattern that looks like coverage and is not** is worse than an absent one, because it buys confidence. The first attempt at proving the dead-region assertion also failed silently, because the injection never reached disk; the injected bytes are now asserted on disk before the verdict is read.
+
+    **And one number that looked stale was not.** `442 corpus rows` had the same shape as the rest, but `audit-free-toolkit.mjs` reports 442 rows and 243 distinct tools today. Measuring before editing is what stopped a correct figure being "corrected" into a wrong one — lesson 68's ninth appearance, and the reason the first instinct to edit is the dangerous one.
+
+    **The generalisation:** a guard's scope is a claim about the world, and it is worth exactly as much as its weakest part. Proving checks fail is cheap and proves little; enumerating what the checks never touched is the part that finds things. Do both — and do the second one *after* the guard looks finished, because that is when everyone stops looking.
 
 
 

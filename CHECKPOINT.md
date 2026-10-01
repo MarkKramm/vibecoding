@@ -323,13 +323,24 @@ passed over twice — do not start it without being asked again.
   `markkramm.github.io/vibecoding/`, open the **tallest** phase (Agents 10), scroll to the
   bottom, and tap the last checklist item — that is the specific interaction a headless run once
   reported as clicking successfully while doing nothing.
-- **P2 — volatile facts are unverified.** Free tiers, pricing and model availability are dated
-  in the content but not re-checked. ⚠️ **This used to say the reason was that `web_search`
-  returns HTTP 402. That is no longer true** (corrected 2026-10-01; verified by an actual call,
-  see the network policy in `AGENTS.md`). The real reason is now budget discipline — the
-  account's per-call cost cannot be observed from inside a session, so the position is
-  *unknown* rather than known-bad. `docs/SEARCH-REQUESTS.md` holds the list; it needs a human
-  to paste it into a web chat, or a deliberately budgeted run of targeted searches.
+- **P2 — volatile facts: the checkable ones are now checked; the rest is still open.** ⚠️ This item
+  used to say the reason was that `web_search` returns HTTP 402, which stopped being true
+  (corrected 2026-10-01, verified by an actual call — see the network policy in `AGENTS.md`).
+  **A pass was run 2026-10-02** and it closed most of what it could:
+  - Every dated claim stating a **concrete figure** was checked against primary source. Six were
+    checkable; **five held verbatim** — MCP `2026-07-28` still current, OpenAI Batch still 50% with a
+    24-hour window, the ~$13/developer/day enterprise figure still quoted as-is, and agent teams
+    still ~7x in plan mode. The sixth had **gained a second carve-out tier** and was corrected.
+  - The **remaining ~110 dated lines were deliberately not re-read.** They say "as of 2026-09, this
+    changes", which is a *promise not to rely on the figure* rather than a claim. Verifying those
+    would report 100% confirmed and mean nothing. **No date was advanced** anywhere except the claim
+    actually re-read, because a date is a statement about what was checked.
+  - Recorded in `docs/VERIFIED-FACTS.md` §2.4 with a per-claim verdict, so the next pass starts from
+    evidence rather than redoing it.
+  - **Still open, and it needs a human:** no tool in a session reports balance or per-call cost, so
+    whether verification is affordable here is *unknown* rather than known-bad. That one question is
+    what gates re-checking prices on a schedule. `docs/SEARCH-REQUESTS.md` holds the unanswered
+    research requests, which are a separate list and still need pasting into a web chat.
 
 ---
 
