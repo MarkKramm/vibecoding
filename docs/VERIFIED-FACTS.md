@@ -197,6 +197,47 @@ re-run against.
 
 Colab and Kaggle GPU allocations (GPU model, weekly hours, session length) change without notice and vary by region and account. **Never quote a specific quota as fact.** Describe the *constraint structure* — sessions are time-limited, GPUs are not guaranteed, checkpoints matter — and tell the reader to check the current docs.
 
+### 2.4 Pricing and protocol figures — re-checked 2026-10-02, five of six held
+
+A pass over every dated claim in the corpus that states a **concrete figure** — a price, a multiplier,
+a version string, a per-developer cost — found six that a source could actually settle. The scope
+was chosen deliberately: most of the corpus's 116 dated lines say "as of 2026-09, this changes",
+which is a *promise not to rely on the figure*, and there is nothing in such a sentence to verify.
+A verification pass over those would report 100% confirmed and mean nothing.
+
+| Claim | Where | Verdict |
+|---|---|---|
+| MCP `2026-07-28` is the **current** protocol version | `agents/07:168` | **Holds.** The versioning page still names `2026-07-28` as current, and describes `2025-11-25` and earlier as handshake-based — so the phase's stateful-vs-stateless contrast is still the right one. |
+| Anthropic cache multipliers `1.25x` / `2x` write and `0.1x` read | `cost/01:293` | **Holds**, and has **gained a second exception tier** — see below. |
+| Anthropic reads are `0.025x` on two of its newest models | `cost/01:293` | **Holds but incomplete.** Now `0.025x` on Fable 5.1 and Mythos 5.1, **and** `0.05x` on Opus 5.5. Corrected. |
+| OpenAI Batch: **50% discount**, **24-hour** completion window | `cost/01:303` | **Holds, verbatim.** The page states 50% cost discount, each batch completes within 24 hours, and `completion_window` can only be `24h`. |
+| Enterprise agentic cost: **~$13/developer/active day**, **$150-250/month**, **under $30 for 90% of users** | `agents/10:285` | **Holds, verbatim**, quoted from `costs.md` read 2026-09-29 and still present. |
+| Agent teams: **~7x** standard-session tokens when teammates run in plan mode | `agents/10:284` | **Holds, verbatim.** Same page: "approximately 7x more tokens than standard sessions when teammates run in plan mode". The lesson's caveat against generalising it is correct and still necessary. |
+
+**The one correction, and why it is worth more than a correction.** `cost/01` taught that "a
+per-provider multiplier has quietly become a per-model one" on the strength of a *single* `0.025x`
+exception across two models. There are now **two exception tiers across three models**, and the
+**minimum cacheable prefix has drifted the same way** — `512`, `1,024`, `2,048` or `4,096` tokens
+depending on the model. So the lesson's own claim was *understating* the evidence available to it,
+and the silent-failure mode doubled: a prefix that caches on one model and is silently not cached
+on another costs full input price with no error to show for it.
+
+**The output:input multiple is now uniformly 5x, not 3-5x.** Every active model on Anthropic's
+pricing table is exactly 5x (`$2`/`$10`, `$5`/`$25`, `$10`/`$50`). `cost/01:139` says the multiple
+"commonly sits around three to five times", which is not falsified — 5x is inside its range — but
+the bottom of the range is no longer observed on this provider. **The lesson was left alone**,
+because it explicitly instructs the reader not to carry the number out, and revising a range
+toward a single observed value would strengthen the very habit the sentence is written to break.
+
+> **Two lessons about the pass itself.** First, five of six figures held, which is the *expected*
+> result for content that was verified against primary sources a month ago and states its date —
+> it is not evidence that verification is unnecessary. The one that drifted is the one whose source
+> is a **pricing table** rather than a specification, and pricing tables get edited per-model while
+> specs get edited per-version. That is a reason to re-check prices *more* often, not less.
+> Second, **no date was advanced anywhere except the claim actually re-read.** The other 110 dated
+> lines say `2026-09` and still should: they were not re-read, and a date is a statement about what
+> was checked, so bumping it to look current would convert a true record into a false one.
+
 ---
 
 ## 3. Verified citations

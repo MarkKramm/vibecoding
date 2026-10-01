@@ -10,6 +10,52 @@ The full commit history is the authoritative record: `git log --oneline`.
 
 ## Unreleased
 
+### ROADMAP P1, done: the volatile facts were re-checked against primary sources, and five of six concrete figures still held
+
+- **The scope was drawn by what a source can settle, not by what is dated.** 116 lines across the
+  corpus carry a date and a volatility marker; most say "as of 2026-09, this changes", which is a
+  *promise not to rely on the figure*. Verifying those would report 100% confirmed and mean
+  nothing. Narrowing to dated claims that state a **concrete figure** left six that a source could
+  actually decide.
+- **Confirmed verbatim:** MCP `2026-07-28` is still the current protocol version, with
+  `2025-11-25` and earlier still handshake-based; OpenAI Batch is still a 50% discount with a
+  24-hour window and `completion_window` fixed at `24h`; the enterprise figure of ~$13 per
+  developer per active day, $150-250 per month, under $30 for 90% of users is still quoted as-is in
+  `costs.md`; and agent teams are still "approximately 7x more tokens than standard sessions when
+  teammates run in plan mode". The lessons' own caveats against generalising the last two are
+  correct and were kept.
+- **One correction, and it strengthens the lesson rather than weakening it.** `cost/01` argued that
+  "a per-provider multiplier has quietly become a per-model one" on the strength of one `0.025x`
+  exception across two models. There are now **two exception tiers across three models** — `0.025x`
+  on Fable 5.1 and Mythos 5.1, `0.05x` on Opus 5.5 — and the **minimum cacheable prefix has drifted
+  the same way**, to `512`/`1,024`/`2,048`/`4,096` by model. The lesson was understating the
+  evidence available to it, and the silent-failure mode doubled: a prefix that caches on one model
+  and is silently not cached on another costs full input price with no error to show for it.
+- **`cost/01:139`'s "three to five times" output multiple was deliberately NOT narrowed.** Every
+  active model is now exactly 5x, so the bottom of the stated range is unobserved on this provider —
+  but 5x is inside the range, so the claim is not falsified, and the sentence's whole instruction is
+  *do not carry this number out*. Editing a range toward a single observed value would reinforce the
+  habit it exists to break. Recorded in `docs/VERIFIED-FACTS.md` §2.4 rather than changed.
+- **No date was advanced anywhere except the claim actually re-read.** The other 110 dated lines
+  still say `2026-09`, because a date is a statement about what was checked. Bumping them to look
+  current would convert a true record into a false one — the failure mode this whole pass exists to
+  catch, committed in the opposite direction.
+- **The figure that drifted is the one sourced from a pricing table rather than a spec**, because
+  pricing tables are edited per-model and specs per-version. That is an argument for re-checking
+  prices more often, not less.
+
+### The new doc-count guard caught its own author: a content edit that split a paragraph moved the corpus by one line
+
+- Adding the correction above split one paragraph into two, so the phase files went from 23,560 to
+  **23,561** non-empty lines. `audit-doc-counts.mjs` — whose four source-size claims landed in the
+  previous commit — failed on `ROADMAP.md:15` and `CHECKPOINT.md:42` in the same run, naming both
+  the stated and the actual figure.
+- That is the guard working as designed on its first real content edit after landing, and it is the
+  strongest available evidence that the claims were worth adding: the previous session could prove
+  they *fail* by injection, but could not show one firing unprompted on a real edit.
+- Both documents were corrected to 23,561. No guard was touched, and no pattern was widened to make
+  the number match — the same rule `AGENTS.md` states about the encoding audit.
+
 ### The mojibake table matched character TRIPLES, so a corrupted em dash sat in `HANDOVER.md` undetected — matching the bounded prefix instead found six more
 
 - **`HANDOVER.md:1856` contained a real `U+00E2 U+20AC U+0022` sequence and the guard called that file
