@@ -117,7 +117,7 @@ From `learning-site/`:
 | `npm run dev` | rebuild content, then start the dev server on **5173** |
 | `npm run build` | rebuild content, then bundle into `dist/` |
 | `npm run preview` | serve `dist/` on **4173** |
-| `npm test` | **21 checks**; 19 offline plus 2 preview/browser checks that skip if no server answers |
+| `npm test` | **23 checks**; 21 offline plus 2 preview/browser checks that skip if no server answers |
 | `npm run check` | the three content-contract guards only |
 | `npm run test:browser` | browser checks; **needs a running server** |
 
@@ -148,7 +148,7 @@ node scripts/build-content.mjs --check; echo "exit=$?"
 cd learning-site && npm test
 ```
 
-Runs 21 checks in order. Nineteen run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. Check 14 rebuilds the app bundle so those two browser checks cannot read a stale `dist/` — see the FIXED section below. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
+Runs 23 checks in order. Twenty-one run without a server; the rendered accessibility audit and all-phase sweep use the production preview on port 4173 and explicitly skip if it is unavailable. Check 14 rebuilds the app bundle so those two browser checks cannot read a stale `dist/` — see the FIXED section below. For full coverage, build first and start `npm run preview` in another terminal before `npm test`.
 
 #### ✅ FIXED 2026-09-29 — `npm test` now rebuilds the app bundle (21 checks)
 

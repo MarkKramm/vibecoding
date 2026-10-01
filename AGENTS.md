@@ -161,6 +161,8 @@ node scripts/audit-quiz.mjs
 node scripts/audit-lesson-ast.mjs
 node learning-site/scripts/audit-arithmetic.mjs
 node learning-site/scripts/audit-encoding.mjs
+node scripts/audit-free-toolkit.mjs
+node scripts/audit-doc-counts.mjs
 ```
 
 ### Check the exit code, not the output

@@ -251,7 +251,7 @@ For the stated goal — building real skill, and being able to show it:
 3. **Build the three portfolio pieces** the career track specifies, and put them on GitHub.
 4. **The queued assessment features are now implemented:** per-track results surface on the dashboard, with a balanced rotating capstone and a resumable comprehensive mode. Keep their tests and result storage in sync if the quiz corpus changes.
 5. **The site is one of them.** It is a real, deployed, CI-verified application with a content
-   pipeline, 11 guards and a test suite — and it renders a curriculum that is itself
+   pipeline, 14 guards and a test suite — and it renders a curriculum that is itself
    machine-verified. That is a legitimate thing to show someone.
 
 The remaining engineering work above makes the project **better verified**, not more

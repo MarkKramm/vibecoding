@@ -119,6 +119,12 @@ const CLAIMS = [
       // caught by hand rather than by this file. A count can be spelled more than
       // one way and the forms that already exist are the ones worth covering.
       /`npm test`\s+\*\*(\d[\d,]*)\/\d+\*\*/gi,
+      // A shell-comment form: "npm test   # 20 checks; 2 need a preview".
+      // Added after CHECKPOINT.md:114 kept a stale 20 through a whole pass,
+      // because the two patterns above only matched prose. A bare `\d+ checks`
+      // would fire on two dozen historical lines in HANDOVER.md, so this is
+      // anchored to the `#` that makes it a current-state annotation.
+      /#\s*(\d[\d,]*)\s+checks\b/gi,
     ],
   },
 ];
@@ -170,6 +176,10 @@ const DOCS = [
       /^## Ways to test yourself[\s\S]*?(?=^## What is verified)/m,
       /^## What is verified[\s\S]*?(?=^## The defect)/m,
       /^## Still open[\s\S]*?(?=^## Neither)/m,
+      // The command reference. Its annotations are current-state by definition --
+      // a reader copies from here -- and one kept a stale "20 checks" through a
+      // whole reconciliation pass because it was outside every region.
+      /^## Commands[\s\S]*?(?=^## )/m,
     ],
   },
 

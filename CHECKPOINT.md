@@ -111,11 +111,11 @@ cd learning-site
 npm run dev          # content rebuild + dev server on 5173
 npm run build        # content rebuild + bundle to dist/
 npm run preview      # serve dist/ on 4173
-npm test             # 20 checks; 2 need a preview server or skip
+npm test             # 23 checks; 2 need a preview server or skip
 npm run test:browser # needs a running server
 ```
 
-⚠️ Exactly two of the 20 `npm test` steps — `accessibility (rendered page)` and `every phase renders (browser,
+⚠️ Exactly two of the 23 `npm test` steps — `accessibility (rendered page)` and `every phase renders (browser,
 all phases)` — need `npm run preview` on 4173. They **skip with a loud notice rather than failing**
 when no server answers, because a guard that fails for an unrelated reason gets disabled, and a
 disabled guard is worse than none.
