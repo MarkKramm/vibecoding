@@ -19,8 +19,9 @@
 // Run: node scripts/audit-encoding.mjs
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join, extname } from "node:path";
+import { join, extname, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { execFileSync } from "node:child_process";
 
 const SITE = fileURLToPath(new URL("..", import.meta.url));
 const REPO = join(SITE, "..");
@@ -106,8 +107,44 @@ const isOurs = (p) => extname(p) === "" || EXTS.has(extname(p));
 const EXTS = new Set([".js", ".jsx", ".mjs", ".css", ".html", ".json", ".md", ".yml", ".yaml", ".txt", ".toml"]);
 const SKIP_DIRS = new Set(["node_modules", "dist", ".git", "generated"]);
 
+// TRACKED-ONLY CHECK, added 2026-10-01. A file this repository does not own is not
+// this repository's problem.
+//
+// The guard walks the filesystem, so it opened every file that happened to sit in
+// the tree -- including per-machine files that are deliberately untracked, such as
+// a local `opencode.json` naming one person's provider and model. A local config
+// written with CRLF made this audit exit 1, which reads as a content defect and is
+// not one: the red suite was caused by a file no contributor is expected to have.
+//
+// This does NOT weaken the rule it protects. The comment above records that the
+// guard exists to catch "anything checked into the repo", and every file git
+// tracks is still opened -- enumerated root files included. What is skipped is
+// precisely the set git is already ignoring, which is the set that can differ per
+// machine. A tracked file with CRLF still fails, which is the property that matters.
+//
+// Falls back to scanning everything if git is unavailable, so a checkout without
+// git behaves as before rather than silently checking nothing -- a guard that
+// quietly narrows its own coverage is the failure mode this file's history is made
+// of.
+const TRACKED_ONLY = (() => {
+  try {
+    const out = execFileSync("git", ["ls-files", "-z"], { cwd: REPO, encoding: "utf8", maxBuffer: 1 << 28 });
+    const set = new Set(out.split("\0").filter(Boolean).map((p) => p.split("/").join(sep)));
+    return set.size > 0 ? set : null;
+  } catch {
+    return null;
+  }
+})();
+
 const problems = [];
 let files = 0;
+
+// Paths are compared relative to the repo root, because that is the form
+// `git ls-files` prints and the form that survives a checkout on another machine.
+function isTracked(p) {
+  if (!TRACKED_ONLY) return true;
+  return TRACKED_ONLY.has(relative(REPO, p));
+}
 
 function walk(p) {
   let st;
@@ -118,6 +155,7 @@ function walk(p) {
   }
   if (st.isFile()) {
     if (!isOurs(p)) return;
+    if (!isTracked(p)) return;
     check(p);
     return;
   }
@@ -127,7 +165,7 @@ function walk(p) {
       walk(join(p, e.name));
     } else {
       const child = join(p, e.name);
-      if (isOurs(child)) check(child);
+      if (isOurs(child) && isTracked(child)) check(child);
     }
   }
 }
@@ -285,7 +323,14 @@ for (const p of SCAN) walk(p);
 // The root pass. `check()` is called DIRECTLY rather than through `walk()` so the
 // extension filter cannot skip a root file: the whole point of enumerating the
 // root is that nothing there is exempt.
-for (const f of ROOT_FILES) check(f);
+//
+// The tracked-file filter still applies, and it is the only exemption in this
+// pass -- see the note on TRACKED_ONLY. `opencode.json` is why: a root file that
+// names one person's provider and model, deliberately untracked, and written with
+// CRLF by the tool that generates it. Before 2026-10-01 it failed this audit.
+for (const f of ROOT_FILES) {
+  if (isTracked(f)) check(f);
+}
 
 console.log(`${files} file(s) scanned`);
 if (problems.length) {

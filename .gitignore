@@ -53,5 +53,17 @@ scratch/
 tmp/
 *.tmp
 
+# Local OpenCode harness config. Per-machine: it names the provider, the model and
+# the environment variable holding the key, so committing it would pin every other
+# contributor to one person's setup.
+#
+# It is ignored for a second reason too. The encoding audit walks the filesystem
+# rather than `git ls-files`, so a local config written with CRLF used to make
+# `audit-encoding.mjs` exit 1 -- a red suite caused by a file that is not part of
+# the project. That audit now skips untracked files (2026-10-01), so this line is
+# no longer load-bearing for the suite; it stays because pinning one person's
+# provider and model is reason enough on its own.
+opencode.json
+
 # Screenshots from ad-hoc visual checks. Regenerate, never commit.
 shots/

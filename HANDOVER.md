@@ -46,9 +46,11 @@ requests are closed**; the twelfth asks for numbers no vendor publishes, which i
    Full procedure in `WORKFLOW.md` Trap 3.
 2. **The sweep's per-phase character count is a load-timing artifact, not a completeness
    measure** (lesson 61). Do not chase a small change in it, and do not trust two agreeing runs.
-3. **`audit-a11y.mjs` has no page-identity preflight** (lesson 62). Pointed at another app it
-   reports confident accessibility failures about software you never shipped. `verify-site.mjs`
-   got this fix in lesson 57; the a11y audit never did. **This is the open engineering thread.**
+3. **`audit-a11y.mjs` now HAS a page-identity preflight** (lesson 62). It did not until
+   `7a83b73`, and pointed at another app it reported confident accessibility failures about
+   software you never shipped. `verify-site.mjs` got this fix in lesson 57; the a11y audit got
+   it later. **This thread is closed** — if you see a note elsewhere calling it open, that note
+   is stale.
 
 **Still needs the human, and nothing else is blocked on it:** the mobile P0 phone test, and a
 web-tool cost check. `gh auth login` is **no longer needed** — the user read CI status from the
@@ -1024,16 +1026,25 @@ every single call. It is now `(phase.checklist || []).every(...)`, matching the
 `track.phases || []` style used two lines above it. The call site carries a comment
 explaining both the fix and why the fallback must not be read as "this now works".
 
-#### Genuine defect found while auditing, NOT fixed
+#### Genuine defect found while auditing — FIXED since, in `d0eb0da`
 
-`App.jsx` calls `useEnergyMode()` and `useTimeBudget()` and prints both values in the footer
-(line 305), but **neither value is passed to any page** — `energy` and `budget` appear
-nowhere in `Dashboard.jsx`. With `EnergyModeSelector` and `TimeBudgetSelector` both
-unreachable, the reader can never change either setting, and even if they could it would
-change nothing. The footer advertises two controls that do not exist. This is a
-reader-facing confusion of the same kind D-008 already fixed for the backup labels, and it
-was left alone here because fixing it means changing `App.jsx` and `Dashboard.jsx`, which
-is outside a documentation task.
+**⚠️ This entry used to end "NOT fixed", and that became false.** `App.jsx` called
+`useEnergyMode()` and `useTimeBudget()` and printed both values in the footer, while **neither
+value reached any page** — `energy` and `budget` appeared nowhere in `Dashboard.jsx`. With
+`EnergyModeSelector` and `TimeBudgetSelector` both unreachable, the reader could never change
+either setting, and even if they could it would have changed nothing. The footer advertised two
+controls that did not exist.
+
+**It was fixed the day after this was written, and the paragraph above was not updated.**
+`App.jsx` now removes the line entirely, with a comment at the site explaining why, and
+`lib/transfer.js` keeps both storage keys registered with a comment explaining that an old
+backup may still carry them. Verified 2026-10-01: `useEnergyMode` and `useTimeBudget` appear
+only in that comment and in `transfer.js` — no live call remains.
+
+**Kept as a record, corrected, rather than deleted**, because the mistake it now documents is
+different and cheaper to repeat: a "found, not fixed" note is a claim with an expiry date, and
+**nobody re-reads their own backlog when the fix lands.** If you write one, put the fix's
+location next to it or accept that it will lie.
 
 ---
 
@@ -1449,6 +1460,13 @@ Also verified: Contextual Retrieval (Anthropic engineering blog, 19 Sep 2024) �
 > 65 phases, and `web_search` returns HTTP 402 (see §0.1).** A stale step list is worse than
 > no step list, because it is the first thing a new session reads and it is confident.
 > Steps that were completed are gone; what remains is what is actually still open.
+>
+> ⚠️ **Corrected 2026-10-01, and the correction is the same lesson twice.** The line above
+> claimed `web_search` returns HTTP 402. It does not — it was verified working on 2026-09-29
+> and again on 2026-10-01. **This banner was written to replace a stale section and became
+> stale itself within two days**, which is worth keeping visible: *the sentence that replaces a
+> stale claim is a claim too.* Cite the mechanism or give a date, so the next reader knows
+> which part to distrust.
 
 ### Exam feature — IMPLEMENTED, UNCOMMITTED (2026-09-19) — SHIPPED LONG AGO, kept as history
 
@@ -2287,6 +2305,26 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
     Two costs beyond the wasted reasoning. Long-term caching of those chunks is defeated on every deploy for no reason, and "did this deploy change anything?" is unanswerable by comparing filenames, which is a genuinely useful thing to be able to ask.
 
     **Not fixed, deliberately, and the reason is recorded so it is a decision rather than an oversight.** Removing or pinning `generatedAt` touches the data contract the site renders, and no UI is known to display it. The fix is probably to drop the field or derive it from the newest content mtime, but that is a change to what the build emits, and it should be done deliberately with the projections checked rather than opportunistically while chasing a deploy. Recorded here as a known limitation with a known cause.
+
+71. **A BACKLOG ENTRY IS A CLAIM WITH AN EXPIRY DATE, AND NOBODY RE-READS THE BACKLOG WHEN THE FIX LANDS.**
+    Found 2026-10-01, during a documentation reconciliation pass.
+
+    **Two items were documented as open and had both been fixed, one of them the day before the note was written.** `HANDOVER.md` called the missing `audit-a11y.mjs` preflight "the open engineering thread" — it was closed in `7a83b73`. The same file recorded the `useEnergyMode`/`useTimeBudget` footer defect as "Genuine defect found while auditing, **NOT fixed**" — it was fixed in `d0eb0da` on 2026-09-28, and the note was written on 2026-09-29. `CHECKPOINT.md`'s P2 gave a reason for not re-checking volatile facts (`web_search` returns HTTP 402) that had stopped being true.
+
+    **The failure mode is asymmetric and that is why it persists.** A stale "fixed" claim is harmless — you verify and find it done. A stale *"not fixed"* claim costs a session its first hour: an agent reads the handover, believes the defect is live, and either re-fixes it or plans around it. **The backlog is the one document nobody audits, because it is the document you consult instead of auditing.**
+
+    **The rule, cheap to follow:** write the fix's location next to the claim, or a date. `NOT fixed (as of 2026-09-29)` tells a future reader to check. `NOT fixed` reads as fact and is the sentence that rots.
+
+72. **A GUARD THAT WALKS THE FILESYSTEM FAILS ON FILES THE PROJECT DOES NOT OWN.**
+    Found 2026-10-01, as a red suite that had nothing to do with the change being made.
+
+    `audit-encoding.mjs` walks the tree and treats every root file as fair game — a design chosen deliberately, because naming files one by one had already missed six root Markdown files. But the walk does not consult git, so it opened `opencode.json`: a per-machine harness config, deliberately untracked, written with CRLF by the tool that generates it. **The audit exited 1 while reporting a genuine CRLF in a file no contributor is expected to have.** Six other guards passed. The failure read as a content defect and was not one.
+
+    **The fix distinguishes "in the tree" from "in the repo"**, which is the distinction the guard's own comment already intended ("anything checked into the repo is fair game"). It builds a tracked set from `git ls-files -z` once and skips anything absent — so 227 files are still scanned, and **a tracked file with CRLF still fails.** That second half is the whole test: it was verified by injecting CRLF into a tracked file and confirming exit 1, then restoring byte-exactly. **A guard change that only proves the new pass path is not evidence the guard still works.**
+
+    **The fallback is deliberate too.** If `git ls-files` throws, the set is `null` and everything is scanned — a checkout without git behaves as before. The tempting alternative, treating a failure as "scan nothing", would narrow the guard silently, which is the exact failure this file's history is a list of.
+
+    **Corollary worth keeping:** a suite check whose input set is decided by the filesystem is testing the machine, not the repository. Same shape as lesson 65's page-identity preflight, one level down — there, a check inspected the wrong *app*; here, it inspects the wrong *tree*.
 
 
 

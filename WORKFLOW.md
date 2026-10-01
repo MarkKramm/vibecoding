@@ -315,7 +315,11 @@ If you hand work to an agent, bound it. Every brief in this project includes:
 
 - **"do not spawn subagents"** — an unbounded agent parallelises by default and multiplies cost
 - **a call budget** (~60–70)
-- **a zero-network instruction** — `web_search` returns HTTP 402; the balance is negative
+- **a zero-network instruction** — ⚠️ **corrected 2026-10-01: `web_search` does NOT return
+  HTTP 402.** It works (verified by an actual call). The balance is unobservable from inside a
+  session, so the brief should say *the budget is unknown; prefer offline work and treat any
+  web call as metered*, not that search is broken. An agent told search is broken will skip a
+  check it could have made.
 - **"create no other file; use inline `node -e`"** — a subagent's scratch script was once swept
   into a commit, and another left six `__dbg*.mjs` files behind
 - **"never regex a prose file"** — a find-and-replace consumed the `### ` prefix and destroyed

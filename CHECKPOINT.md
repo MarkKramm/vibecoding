@@ -324,8 +324,12 @@ passed over twice — do not start it without being asked again.
   bottom, and tap the last checklist item — that is the specific interaction a headless run once
   reported as clicking successfully while doing nothing.
 - **P2 — volatile facts are unverified.** Free tiers, pricing and model availability are dated
-  in the content but not re-checked, because `web_search` returns HTTP 402 on this account.
-  `docs/SEARCH-REQUESTS.md` holds the list; it needs a human to paste it into a web chat.
+  in the content but not re-checked. ⚠️ **This used to say the reason was that `web_search`
+  returns HTTP 402. That is no longer true** (corrected 2026-10-01; verified by an actual call,
+  see the network policy in `AGENTS.md`). The real reason is now budget discipline — the
+  account's per-call cost cannot be observed from inside a session, so the position is
+  *unknown* rather than known-bad. `docs/SEARCH-REQUESTS.md` holds the list; it needs a human
+  to paste it into a web chat, or a deliberately budgeted run of targeted searches.
 
 ---
 

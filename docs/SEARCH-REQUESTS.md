@@ -44,18 +44,28 @@ never paste the agent's one:
 
 ## Protocol for the agent (this file only — never paste)
 
-**Why search is off.** `web_search` is **deliberately OFF** on this machine, by the user's
-decision on 2026-09-19. The provider is correctly configured and it *works* — it was fixed
-earlier and answered real queries. It is off because **the DeepSeek account balance went
-negative** during a research subagent run. A 402 (Insufficient Balance) is what a search now
-returns.
+**Why search is off, updated 2026-10-01.** `web_search` is **deliberately OFF** on this machine,
+by the user's decision on 2026-09-19. The provider is correctly configured and it *works*.
+
+⚠️ **This section used to say "a 402 (Insufficient Balance) is what a search now returns." That
+stopped being true and the claim is corrected here.** On 2026-09-29 the tools were verified
+working (`AGENTS.md`, network policy) and on 2026-10-01 `web_search` was called again and
+returned real results, not an error. **The balance is not the reason any more.** The rule that
+keeps search off is now a **cost-discipline** rule, not a technical one: nobody can observe
+per-call cost from inside a session, so the budget position is unknown rather than known-bad.
+The old text is preserved in the "why the relay kept failing" section above, where it is a
+*record* of what happened in September and should not be rewritten.
 
 **This is a budget decision, not a defect.** Do not "fix" it by re-enabling search, and do
 not diagnose the configuration — the configuration is right.
 
-**What still works, and is free.** Only `web_search` routed through DeepSeek:
+**What works, and when to use which:**
 
-- `web_fetch` — a separate `http` provider. Use it freely on any URL you already know.
+- `web_search` — **works**, but treat it as metered. Prefer a targeted search to a broad one,
+  and prefer not to call it when the answer is already in the repo.
+- `web_fetch` — a separate `http` provider. Use it freely on any URL you already know. This
+  remains the *preferred* tool: search finds an identifier, fetch confirms the document says
+  what the snippet implied, and the second step is the one that catches a wrong citation.
 - `grep`, `glob`, `read`, `pwsh` — local, no network at all.
 
 **So the rule is: fetch if you know the URL, ask the human only if you do not.** Strictly
@@ -72,7 +82,9 @@ with an independent context. Do not repeat the confident "years of use" claim.
 **Rules for the agent:**
 - **Never paste this file into a chat.** Update `RELAY-PASTE.md` instead.
 - Only ask what `web_fetch` genuinely cannot reach. If a URL is known or guessable, fetch it.
-- **Do not call `web_search`.** It is off by decision and will return 402.
+- **Do not call `web_search` casually.** It works (see the corrected note above), but the
+  account's per-call cost is unobservable from inside a session, so it is treated as metered.
+  Fetch if you know the URL; search only to find an identifier you cannot guess.
 - Number every request. One question per item, answerable by a single search.
 - State the claim being checked so the human can see why it matters.
 - Never treat an answer as verified until it names a source. No URL means it is a lead.
