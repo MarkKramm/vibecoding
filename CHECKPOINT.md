@@ -87,7 +87,7 @@ Cost 7, Vibecoding Craft 8, Safety & Career 5, Career 4.
 
 ## Ways to test yourself
 
-The 555 questions are available through five distinct modes:
+The 573 questions are available through five distinct modes:
 
 | Mode | Coverage | Graded? | Persistence |
 |---|---|---|---|
@@ -141,7 +141,7 @@ disabled guard is worse than none.
   and keyboard reachability by control *kind*
 - **Unparseable task lines** — an authored task id the parser could not read is a build error, so
   a task can no longer be silently absent from the page while every guard exits 0
-- **Every one of the 66 phases renders** — opened in a real browser, not sampled
+- **Every one of the 69 phases renders** — opened in a real browser, not sampled
 - **Mixed practice sets** — sampling, filtering, the no-score contract, and the question
   shape the *app* sees rather than the one the file stores
 - **Reachability** — every module under `src/` is reachable from `main.jsx`

@@ -18,7 +18,7 @@
  *   node scripts/build-content.mjs --check   # build and report, no writes
  */
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, rmSync, realpathSync } from 'node:fs';
 import { join, dirname, basename, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -1275,7 +1275,7 @@ export function buildPhase(filePath, trackId, seenPhaseIds, seenItemIds, errors)
 }
 
 /** Find every `NN-phase-*.md` file in a track folder, ordered by numeric prefix. */
-function findPhaseFiles(dir) {
+export function findPhaseFiles(dir) {
   if (!statSync(dir, { throwIfNoEntry: false })?.isDirectory()) return [];
   return readdirSync(dir)
     .filter((name) => /^\d+-phase-.*\.md$/.test(name))
@@ -1493,4 +1493,17 @@ function main() {
   }
 }
 
-main();
+// Run only when executed directly, never on import.
+//
+// Until 2026-10-01 this was a bare `main()`, which was correct while nothing
+// imported this file. `scripts/audit-doc-counts.mjs` now does, because it must
+// count the corpus with the SAME parsers that build the site rather than a second
+// implementation that can drift -- and an unguarded call meant merely importing
+// this module wrote the generated bundle and printed a build report as a side
+// effect of a check.
+//
+// The comparison is against the resolved path rather than a filename, so a caller
+// that symlinks or wraps the script cannot accidentally re-enable the effect.
+if (process.argv[1] && fileURLToPath(import.meta.url) === realpathSync(process.argv[1])) {
+  main();
+}

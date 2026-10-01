@@ -19,7 +19,7 @@ is clean and no scratch files remain in the repo root.** Ten commits this sessio
 |---|---|
 | Corpus | **69 phases**, 10 tracks · 237,082 lesson words · 1,121 checklist · 573 quiz · **965** practice · 0 minted from position · 276 glossary terms |
 | Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` all **exit 0**; encoding clean across **226 files** |
-| Suite | `npm test` **22/22** on a verified-free port, with the browser checks genuinely executing |
+| Suite | `npm test` **23/23** on a verified-free port, with the browser checks genuinely executing |
 | Sync | `git rev-list --left-right --count origin/main...HEAD` → `0 0`, tree clean |
 | Live site | **Working.** `markkramm.github.io/vibecoding/` serves `/vibecoding/assets/...` and the 389 KB bundle loads |
 
@@ -59,8 +59,10 @@ blocker.
 
 **✅ The live site was a blank page and is now fixed** (`089ddfe`, then `d2e520c`). It served
 absolute `/assets/...` URLs, so every asset 404'd, the bundle never ran and `#root` stayed empty —
-while all 21 checks passed, because they all run against a preview served from `/` where those
-paths are correct. The subtle part, and the reason a first fix did not hold: **`npm test` step 14
+while all 21 checks the suite then had passed, because they all run against a preview served from
+`/` where those paths are correct. (The suite has 22 checks today; 21 is the number that was true
+when this happened, and it is left as written for that reason.) The subtle part, and the reason a
+first fix did not hold: **`npm test` step 14
 is `vite build`, and it runs without `VITE_BASE`**, so it silently replaced the correctly-based
 artifact between the check and the upload. A guard's *position* is part of its correctness — see
 lesson 69. Lesson 70 records a related trap: generated JSON embeds a build timestamp, so chunk
@@ -2325,6 +2327,23 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
     **The fallback is deliberate too.** If `git ls-files` throws, the set is `null` and everything is scanned — a checkout without git behaves as before. The tempting alternative, treating a failure as "scan nothing", would narrow the guard silently, which is the exact failure this file's history is a list of.
 
     **Corollary worth keeping:** a suite check whose input set is decided by the filesystem is testing the machine, not the repository. Same shape as lesson 65's page-identity preflight, one level down — there, a check inspected the wrong *app*; here, it inspects the wrong *tree*.
+
+73. **THE FIX FOR A DRIFTING NUMBER IS A GUARD THAT READS IT BACK — AND THE FIRST VERSION OF THAT GUARD WILL CRY WOLF.**
+    Recorded 2026-10-01, `scripts/audit-doc-counts.mjs`.
+
+    `ROADMAP.md` opens with "written to be **honest rather than flattering**" and by this date claimed **66 phases, 555 quiz questions, 903 practice tasks and 20 checks** against a corpus of **69, 573, 965 and 22**. `CHECKPOINT.md`, `README.md` and `HANDOVER.md` had drifted too. The same file already contained the diagnosis and the prescription at line 128: *"Prose that states a number will go stale; the only durable fix is a guard that reads the number back."* And item 3 of that file had been marked **DONE** with the note "all exist and now carry current counts". **The document that identified the problem was itself an instance of it**, which is the whole reason this is a guard now and not another round of hand-correction.
+
+    **The guard reads the counts from the same parsers that build the site**, importing `buildPhase` and `findPhaseFiles`, because a second counting implementation is a second thing that can be wrong — and two sources of truth drifting apart is the failure this project repeats most. That required exporting `findPhaseFiles` and, more importantly, guarding `main()` behind a direct-execution check: importing the module had been running the entire content build and writing the generated bundle as a side effect of a *check*. Verified by importing it and confirming no build report appears, and by running both CLI modes to confirm the guard did not silence the tool.
+
+    **The first version reported 65 stale claims, and almost all of them were correct.** `HANDOVER.md` is 2,000+ lines of lessons narrating past states — "42 phases", "63 phases", "an all-zero histogram across 549 questions" — every one of which is *right as history* and must never be updated. A guard that reports 65 problems on a correct corpus is a guard that gets deleted within the week.
+
+    **The number 65 was evidence about the query, not the corpus** — lesson 68 again, and the eighth instance. The fix was structural: each document now **declares where its current-state claims live**, and anything outside those regions is narration and is not inspected. A keyword blocklist would have grown forever and still missed the next phrasing. After scoping, the guard checks 17 claims and reported exactly 11 real problems, each of which I then fixed.
+
+    **Two false positives and one false negative had to be removed by hand, and the false negative is the instructive one.** `README.md`'s per-track table ("foundations/ 9 phases") and `CHECKPOINT.md`'s capstone setting ("10 questions per written track") are not corpus totals; both got explicit, named exemptions with a stated reason so a future reader can judge whether the exemption still applies. The false negative was `CHECKPOINT.md:90`, which sat in a current-state section my region list had missed — found only by checking the guard's output against a hand search rather than trusting the "✓ passed" line. **A guard's scope error looks exactly like success.**
+
+    **Finally, the guard caught its own introduction.** Adding the check as `npm test` step 23 made ROADMAP's just-corrected "runs 22 checks" stale within the same commit, and the guard failed the CI gate sequence on the first run. Two things were then added: the number was fixed, and the `**23/23**` ratio form in `HANDOVER.md` — a count spelled a second way, which I had corrected by hand and the guard could not see — got its own pattern, proved live by injecting `99/99` and confirming it was caught. **A count can be written in more than one shape, and the shapes that already exist in the corpus are the ones worth covering.**
+
+    **The generalisation:** a guard over prose needs a *scope*, not a blocklist, and the scope is a claim about which sentences are present-tense. Get that wrong in the broad direction and the guard is deleted; wrong in the narrow direction and it silently passes. Both were tested here deliberately, in both directions, before the guard was trusted.
 
 
 

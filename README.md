@@ -5,7 +5,7 @@
 A structured, self-paced curriculum for learning how modern AI systems actually work, how to
 build with them without shipping things you cannot verify, and how to get hired doing it.
 
-**66 phases across 10 tracks · 555 quiz questions · 24,295 lines across 91 authored Markdown
+**69 phases across 10 tracks · 573 quiz questions · 25,395 lines across 94 authored Markdown
 files · written for a $0 budget.**
 
 Written for someone starting from beginner-to-intermediate, working remotely, with no

@@ -11,14 +11,21 @@ project, which is why this one names its own uncertainty.
 
 ## Where the project is now
 
-**The curriculum is complete.** 66 phases across 10 tracks, 24,295 lines across 91 authored Markdown
-files (22,506 lines in the phase files), 555 quiz questions, 903 practice tasks, and 1,076 checklist
+**The curriculum is complete.** 69 phases across 10 tracks, 25,395 lines across 94 authored Markdown
+files (23,560 lines in the phase files), 573 quiz questions, 965 practice tasks, and 1,121 checklist
 items. Every phase passes a machine-verified 14-section contract.
+
+> The counts in this paragraph are checked by `scripts/audit-doc-counts.mjs`, which reads them back
+> from the same parsers that build the site and fails the suite if they disagree. This sentence
+> exists because the paragraph above was wrong for months: it claimed 66 phases, 555 quiz questions
+> and 903 practice tasks, and item 3 further down this document had already been marked DONE with
+> the note "all now carry current counts". Prose that states a number will go stale; a guard that
+> reads it back is the only fix that has held.
 
 **The site works and is deployed.** Live at **https://markkramm.github.io/vibecoding/**, built
 and published by GitHub Actions, with CI green.
 
-**Verification is real.** `npm test` runs 20 checks, including offline guards and two browser checks
+**Verification is real.** `npm test` runs 23 checks, including offline guards and two browser checks
 (accessibility and a sweep of **every phase**) when a production preview is available. The
 accessibility audit covers 60 assertions across six views; separate browser checks verify quiz
 correctness and track rendering. Every guard has been proved capable of failing.
@@ -238,9 +245,9 @@ There is a `docs/SEARCH-REQUESTS.md` accumulating the specific questions that ne
 
 For the stated goal — building real skill, and being able to show it:
 
-1. **The curriculum is already there.** 66 phases is more than enough; more content is not the
+1. **The curriculum is already there.** 69 phases is more than enough; more content is not the
    bottleneck.
-2. **Work the tasks.** 903 practice tasks exist. Reading them is not the same as doing them.
+2. **Work the tasks.** 965 practice tasks exist. Reading them is not the same as doing them.
 3. **Build the three portfolio pieces** the career track specifies, and put them on GitHub.
 4. **The queued assessment features are now implemented:** per-track results surface on the dashboard, with a balanced rotating capstone and a resumable comprehensive mode. Keep their tests and result storage in sync if the quiz corpus changes.
 5. **The site is one of them.** It is a real, deployed, CI-verified application with a content
