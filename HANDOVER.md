@@ -8,17 +8,37 @@
 
 ---
 
-## START HERE — current handoff (2026-09-29, fourth pause; state refreshed 2026-10-02)
+## START HERE — current handoff (2026-10-03, fifth pause)
 
-**State: SAFE. Everything is COMMITTED and PUSHED; the working tree is clean and no scratch files
-remain in the repo root.** This section was written at the fourth pause (ten commits, tip
-`a381ec8`); three commits landed on 2026-10-02, tip **`c78e1a7`**. The measured table below was
-re-verified at that tip and is current. What those three commits changed is in `CHANGELOG.md` under
-`## Unreleased` — in short: the encoding audit now asserts its own file coverage, the AST gain
-threshold was retired in favour of a measurement, the volatile figures were checked against primary
-sources, and the doc-count guard's own coverage was audited, which found a dead region and five stale
-quiz counts. The long-form engineering lessons from that work are in this file; the volume figures
-predating it were not re-derived.
+**State: SAFE. Everything is COMMITTED and PUSHED, the working tree is clean, no scratch files remain
+in the repo root, and CI plus the Pages deploy are green at the tip.** Tip is **`5d8a260`**.
+
+**Read this paragraph before anything else, because it is the answer to "why did a clean tree have two
+red guards?"** This checkout had never been verified on this machine. The first run of
+`audit-encoding.mjs` here failed with a coverage gap on **all fifteen tracked root files**, because the
+guard classified them with `Dirent.isFile()`, which returns false for every regular file on this
+filesystem — so `ROOT_FILES` was empty and the audit reported clean over files it had never opened.
+`audit-doc-counts.mjs` was pure cascade: it reads that file count *from* the encoding audit. Both are
+fixed, and both fixes were proved by injection rather than by reading the code. **The lesson is lesson
+75: a check that depends on a facility the platform may decline to provide carries an untested failure
+mode, and testing it on one machine does not test it.** If a future session finds a guard mysteriously
+blind, check *this* class of cause first.
+
+Two more defects came out of that verification: the accessibility audit's search live-region check
+was **flaky** (a fixed `sleep(1800)` against a lazily imported 393 kB chunk — lesson 76, and the same
+file already documented that bug 600 lines earlier), and the repo genuinely contained **mojibake** in
+`docs/SEARCH-REQUESTS.md`, in a family the guard's table could not represent because every entry
+anchored on a three-byte lead and an emoji is four bytes (lesson 77). Three documents also told a fresh
+session to do things that were finished or impossible. Detail in `CHANGELOG.md` under `## Unreleased`.
+
+**The measured table below was re-verified at this tip on this machine**, which is the first time that
+has been true of two different machines for the same commit. All seven guards exit 0, `npm test` is
+23/23 with both browser checks genuinely executing (nothing skipped), and the live site returns HTTP
+200.
+
+**What still needs the human, and nothing else is blocked on it:** the mobile P0 phone test and the
+web-tool cost check. `gh` is **not installed** on this machine, so CI is read from the Actions tab in
+a browser — that is sufficient and is not a blocker.
 
 **Measured at this pause** — verify rather than trust, but these were green:
 
