@@ -403,6 +403,36 @@ async function evalJs(expression) {
   return r.result?.result?.value;
 }
 
+/**
+ * Wait until a JS expression is truthy, or the deadline passes.
+ *
+ * Returns `{ ok, elapsed }`. `elapsed` is reported to the caller so a wait that is
+ * running close to its deadline is VISIBLE in the output rather than looking like a
+ * fixed cost — which is the only way a marginal timing assumption gets noticed before
+ * it becomes a flaky failure.
+ *
+ * WHY THIS EXISTS. `reload()` below already learned this lesson for the app shell, in
+ * a comment that names the disease: waiting a fixed 1800 ms "was a race". The same file
+ * then did it again, 600 lines later, at the search live region — and that one shipped
+ * as a FLAKY audit rather than an occasional false alarm nobody could explain. Measured
+ * 2026-10-03: the same command against the same build exited 1 on one run ("NO
+ * role="status" region after a query ran") and 0 on the next two, and the diff between
+ * the failing and passing runs was exactly the three assertions inside that one branch.
+ *
+ * An `{ __err }` result counts as NOT ok. `evalJs` returns that object when the
+ * expression throws, and it is truthy — treating it as success would turn a broken
+ * probe into a passing one, which is the confusion this file exists to prevent.
+ */
+async function waitFor(expression, timeoutMs, pollMs = 100) {
+  const started = Date.now();
+  for (;;) {
+    const v = await evalJs(expression);
+    if (v && !v.__err) return { ok: true, elapsed: Date.now() - started };
+    if (Date.now() - started >= timeoutMs) return { ok: false, elapsed: Date.now() - started };
+    await sleep(pollMs);
+  }
+}
+
 async function key(k, code, keyCode) {
   for (const type of ["keyDown", "keyUp"]) {
     await send("Input.dispatchKeyEvent", {
@@ -1097,7 +1127,38 @@ if (!await showView("Search")) {
   `;
 
   const ran = await evalJs(runQuery("reranking"));
-  await sleep(1800);
+
+  // ⚠️ THIS WAS `await sleep(1800)`, AND A HARD BUDGET WAS THE WRONG QUESTION.
+  //
+  // What is certain, because it was measured: `Search.jsx` renders the live region
+  // only when `status === "ready" && query`, and `status` does not become ready until
+  // the LAZILY IMPORTED search index chunk resolves (`search-*.js`, ~393 kB). The
+  // region therefore genuinely does NOT exist immediately after a submit — an
+  // instrumented run reads `loading: true`, zero `[role=status]`, at +1 ms, and sees
+  // the region mount between +100 ms and +330 ms across six runs. The old check read
+  // the DOM once, at 1800 ms, and when that read landed in the window it reported a
+  // confident accessibility defect: "the result count is announced to nobody".
+  //
+  // The app was never wrong, and the audit said so itself one line later on the very
+  // same run: the region UPDATES with the result set, asserted by reading the selector
+  // it had just called absent. A region cannot update with text it does not contain.
+  // Believe the part that passed; question the part that failed.
+  //
+  // ⚠️ **Unverified: WHY the two observed failures needed longer than 1800 ms.** Six
+  // instrumented runs did not reproduce it — the index mounted in 100–330 ms every
+  // time — and `performance.timeOrigin` was identical before and after the submit, so
+  // the page did not reload, which rules out the navigation theory. Contention on a
+  // loaded machine would explain it and is unconfirmed. It does not change the fix:
+  // nothing in the page bounds how long that import takes, so a check holding a hard
+  // 1800 ms budget for it is wrong whether or not the slow case reproduces here. Wait
+  // for the CONDITION, then say how long the wait was.
+  //
+  // 8 s is generous and still bounded: a genuinely missing region now fails more
+  // slowly than it used to, which is the right trade for a check that must not cry
+  // wolf. The elapsed time is reported, so a wait approaching the deadline is visible
+  // in the output instead of resurfacing later as an unexplained flake.
+  const live = await waitFor("document.querySelectorAll('[role=status]').length > 0", 8000);
+  note(`search: live region ${live.ok ? "present" : "STILL ABSENT"} ${live.elapsed}ms after submit`);
 
   if (ran !== "submitted") {
     bad(`search: could not run a query (${ran}) — the live region is unverified`);
@@ -1115,7 +1176,19 @@ if (!await showView("Search")) {
     `);
 
     if (!after || after.count === 0) {
-      bad('search: NO role="status" region after a query ran — the result count is announced to nobody');
+      // Name the state that distinguishes "has not arrived yet" from "never comes".
+      const st = await evalJs(`(() => {
+        const t = document.body.textContent;
+        return {
+          loading: /Building the index/.test(t),
+          error: (t.match(/Search is unavailable[^)]*/) || [null])[0],
+        };
+      })()`);
+      bad(
+        `search: NO role="status" region ${live.elapsed}ms after a query ran — the result count is announced to nobody` +
+          (st?.loading ? " (the index chunk was still loading when the deadline passed)" : "") +
+          (st?.error ? ` (page reported: ${st.error})` : "")
+      );
     } else {
       if (after.live.every((v) => v === "polite")) {
         ok(`search: result count is in a live region after the query (aria-live=${after.live.join(",")})`);
@@ -1137,11 +1210,21 @@ if (!await showView("Search")) {
     // The second half, which is what makes the region trustworthy rather than
     // merely present: it must CHANGE when the result set changes. A region that
     // renders once and never updates announces the first query only.
+    //
+    // Also a poll rather than a fixed wait, for the same reason: the condition here is
+    // "the text changed", which is exactly the thing a sleep cannot promise. Waiting
+    // for the CHANGE is both faster in the common case and immune to a slow machine,
+    // where a fixed 1500 ms was the same race wearing a different hat.
     const ran2 = await evalJs(runQuery("zzzqqqxyznotaword"));
-    await sleep(1500);
+    const prevText = (after && after.texts && after.texts[0]) || null;
+    const changed = await waitFor(
+      `[...document.querySelectorAll('[role=status]')].map((e) => e.textContent.trim())[0] !== ${JSON.stringify(prevText)}`,
+      8000
+    );
     if (ran2 === "submitted") {
       const after2 = await evalJs(`[...document.querySelectorAll('[role=status]')].map((e) => e.textContent.trim())`);
-      if (Array.isArray(after2) && after2.length && after2[0] && after2[0] !== (after.texts || [])[0]) {
+      note(`search: live region text changed within ${changed.elapsed}ms of the second query`);
+      if (changed.ok && Array.isArray(after2) && after2.length && after2[0] && after2[0] !== prevText) {
         ok(`search: the region UPDATES with the result set ("${after2[0].slice(0, 70)}")`);
       } else {
         bad(`search: the region did not change after a second, different query — ${JSON.stringify(after2)}`);

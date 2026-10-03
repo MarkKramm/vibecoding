@@ -10,6 +10,94 @@ The full commit history is the authoritative record: `git log --oneline`.
 
 ## Unreleased
 
+### The encoding audit was blind on this machine: `Dirent.isFile()` returned false for every root file, so its own coverage assertion caught a hole it had been built to close
+
+The suite was **red at a clean tree** while `CHECKPOINT.md` and `HANDOVER.md` both stated that all
+seven guards exit 0. The docs were reporting a measurement taken on a *different machine*.
+
+- **`✖ COVERAGE GAP: 15 tracked file(s) are neither scanned nor exempted`** — every tracked file in
+  the repo root, including `AGENTS.md`, `README.md` and `.gitignore`. The root pass enumerated the
+  directory and kept `e.isFile()`; on this filesystem `readdirSync(..., { withFileTypes: true })`
+  returns correct dirents for directories and `UNKNOWN` for **every regular file**, so `ROOT_FILES`
+  came out **empty** and the audit reported clean over fifteen files it had never opened.
+  `statSync().isFile()` is correct on the same paths, which is why `walk()` kept working and why this
+  was the only `Dirent.isFile()` in the codebase — all six other walkers already used `statSync`.
+- **The coverage assertion added on 2026-10-01 caught it on its first run on new ground**, which is
+  the case for having it. A lone CR injected into `SETUP.md`, asserted present on disk, made the
+  audit exit 1 naming `SETUP.md:242`; `learning-site/src/main.jsx` was named in the same run as a
+  control. Both files were restored byte-exactly against a SHA-256 taken first. All fifteen root
+  files are clean and the count is back to **229 scanned**.
+- **`audit-doc-counts.mjs` failed as pure cascade** — it reads that 229 from the encoding audit, and
+  the audit exits 1, so the number was `null`. Two red guards, one cause; the second one was reading
+  the first.
+
+### The a11y audit was flaky because a check read the DOM once at a fixed 1800 ms, and the page's search index is a lazy 393 kB import
+
+`npm test` reported 23/23 with the browser checks executing — and running the accessibility audit
+standalone against the same build exited 1 on one run and 0 on the next two. `✖ search: NO
+role="status" region after a query ran — the result count is announced to nobody`, with the diff
+between a failing and a passing run being *exactly* the three assertions in that one branch.
+
+- **The audit contradicted itself one line later on the same run**, asserting the region UPDATES by
+  reading the selector it had just called absent. A region cannot update with text it does not
+  contain. The app was never wrong.
+- **Mechanism, measured:** `Search.jsx` renders the live region only when `status === "ready" &&
+  query`, and `status` waits on a lazily imported 393 kB chunk. Instrumented: `loading: true` and
+  zero `[role=status]` at **+1 ms**, region mounting at **+100–330 ms** across six runs. So the
+  element genuinely does not exist immediately after submit, and a single read at a fixed offset is
+  asserting that it does.
+- **Fixed by waiting on the condition** — a bounded `waitFor(expr, 8000)` that reports the elapsed
+  time, so a wait nearing its deadline is visible instead of resurfacing as a mystery, and names the
+  state that separates *has not arrived* from *never comes*. The fail path was proved by forcing the
+  deadline to 1 ms, which lands in the measured window: exit 1, with the new diagnostic.
+- **Why the slow case is still unexplained, recorded as such:** two runs needed more than 1800 ms and
+  six instrumented runs did not reproduce it; `performance.timeOrigin` was unchanged either side of
+  the submit, ruling out a page reload. Marked **Unverified** in the guard rather than smoothed into a
+  cause. The fix does not depend on the answer — nothing in the page bounds that import.
+- `reload()` in the same file had already learned this lesson and its comment names the disease:
+  *"waiting a fixed 1800 ms was a race"*. The same file did it again 600 lines away.
+
+### The encoding audit had no entry for four-byte mojibake, and the corpus already contained one
+
+`docs/SEARCH-REQUESTS.md` — the record of three relay attempts that failed because a file addressed
+the wrong reader — carried a **real emoji stored as its own misread characters**:
+`U+00F0 U+0178 U+2018 U+2030` is `F0 9F A7 89` rendered through a single-byte codepage. Every guard
+reported clean.
+
+- **The table could not have caught it.** All eleven entries anchor on the misread form of a
+  **three**-byte lead byte (`E2`, `C3`, `C2` → U+00E2, U+00C3, U+00C2). A **four**-byte character
+  leads with `F0`–`F4` → **U+00F0–U+00F4**, and no entry mentioned them. The table had grown one real
+  failure at a time, so it had never been asked what a complete family looks like.
+- **The family closes as a rule, not a list:** a misrendered four-byte character is a **run of four
+  adjacent high characters with no space between them**, true of every codepage that can do the
+  damage. The lead alone proves nothing — U+00F0 (eth) is Icelandic, U+00F1 (n-tilde) is Spanish — so
+  the pattern requires two further characters drawn from the set that is not letters in any
+  Latin-script language.
+- **Measured both ways before being trusted:** eleven legitimate strings (Spanish, Catalan,
+  Icelandic, Portuguese, French, Vietnamese, currency and copyright symbols) give **zero** false
+  positives; the pattern catches the real sequence plus six synthetic variants across four leads and
+  three codepages. Injection asserted on disk before the verdict was read, and the audit named the
+  exact codepoints.
+- **One hole left open deliberately:** a MacRoman misread can put *letters* after the lead (U+00F0
+  followed by two U+00D8), and catching it would flag ordinary Spanish. Recorded as a known limit in
+  the guard, because a guard that cries wolf on ordinary text gets deleted.
+- **Nearly dismissed as my own console lying**, which `AGENTS.md` names as the standing trap. Counting
+  the codepoints is what established that the file was wrong and the console was right.
+
+### Three documents told a fresh session to do things that were finished or impossible
+
+- **`docs/SEARCH-REQUESTS.md` opened with "TO RELAY: paste `docs/RELAY-PASTE.md`"** — and that file's
+  own first line said **SUPERSEDED — do not paste**, since the round it was written for had closed.
+  The same defect as the three failed relays it documents: an instruction aimed at the reader that
+  no longer matched the world. Nothing needs pasting; the header now says so and points at the
+  answers.
+- **`AGENTS.md` told an agent to "update `PASTE-THIS.txt` by hand to match its `### Queue:` section"** —
+  and `PASTE-THIS.txt` has no `### Queue:` section. The queue lives in `SEARCH-REQUESTS.md`, and the
+  paste file has been marked **DO NOT PASTE** since 2026-09-29. Three wrong things in one sentence:
+  a file to edit, an anchor inside it that does not exist, and an edit its own first line forbids.
+- It also described the two paste files as hand-maintained siblings to keep in step; they are now
+  historical and their own headers say **do not re-synchronise them**.
+
 ### The doc-count guard declared a region that matched nothing, and two documents were never declared at all — five stale quiz counts were sitting in plain sight
 
 The encoding audit was found covering 228 of 229 tracked files while reporting itself clean, so

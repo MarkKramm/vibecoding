@@ -73,9 +73,36 @@ const REPO = join(SITE, "..");
 // bypassed for these, because that filter is exactly what would skip a future
 // `Makefile` or `CODEOWNERS` -- the same gap with one more turn of the wheel.
 // Nothing has to be added here when a root file appears; that is the point.
+//
+// ⚠️ THE FILE/DIRECTORY TEST IS `statSync`, NOT `Dirent.isFile()`, AND THAT IS NOT
+// INTERCHANGEABLE. Found 2026-10-03, on the first run on a new machine: this filter
+// was `.filter((e) => e.isFile())`, `Dirent.isFile()` returned FALSE for all fifteen
+// tracked root files, `ROOT_FILES` came out EMPTY, and the audit reported clean over
+// a set of files it had not opened -- the exact defect the coverage assertion at the
+// bottom exists to catch, reintroduced through a different line.
+//
+// The cause is the filesystem, not the code. `readdirSync(REPO, { withFileTypes: true })`
+// here returns correct dirents for directories and UNKNOWN for every regular file, and
+// `Dirent.isFile()` is false for UNKNOWN. `statSync().isFile()` on the same paths is
+// correct. Every other walker in this repository already used `statSync` -- which is
+// why they kept working while this one did not -- and this was the only `Dirent.isFile()`
+// in the codebase.
+//
+// It passed CI on the machine it was written on, which is the lesson: the defect was
+// never a defect *there*, so no amount of re-running it there would have found this.
+// A guard that depends on a facility the platform may decline to provide is a guard
+// with an untested failure mode. Assert the property you want (a file is a file) with
+// the primitive that answers it everywhere, and let the coverage assertion below
+// confirm the result rather than trusting the enumeration.
+//
+// Proven by injection, not by reading: a lone CR was written into `SETUP.md`, ASSERTED
+// present on disk, and the audit exited 1 naming that file and line -- before this fix,
+// with `SETUP.md` in the root set, it exited 0. The bytes were then restored and the
+// restore verified against git.
 const ROOT_FILES = readdirSync(REPO, { withFileTypes: true })
-  .filter((e) => e.isFile())
-  .map((e) => join(REPO, e.name));
+  .filter((e) => !e.isDirectory())
+  .map((e) => join(REPO, e.name))
+  .filter((p) => statSync(p, { throwIfNoEntry: false })?.isFile());
 
 // Source text we own. Generated JSON is excluded on purpose: it is a build
 // artifact, regenerated from the Markdown, so checking it here would only
@@ -294,6 +321,52 @@ const MOJIBAKE_ALT = [
 // entry at the same position by PATTERN LENGTH rather than by array order.
 const ALL_MOJIBAKE = [...MOJIBAKE, ...MOJIBAKE_ALT];
 
+// ── THE 4-BYTE FAMILY, AND THE ONLY GAP THIS AUDIT HAD ────────────────────────
+// Found 2026-10-03, in `docs/SEARCH-REQUESTS.md`: its header carried a real emoji whose
+// bytes had been misread once and stored AS the misread characters — U+00F0 U+0178
+// U+2018 U+2030, which is F0 9F A7 89 rendered through a single-byte codepage. Every
+// table above is blind to it, and so was this audit, which reported clean.
+//
+// The reason is structural rather than an oversight in the tables: every entry starts
+// with the misread form of a THREE-byte lead byte (E2, C3, C2 → â, Ã, Â). A FOUR-byte
+// character — any emoji, and anything else outside the BMP — has a lead byte of F0–F4,
+// which misreads to ð, ñ, ò, ó, ô, and no table here mentioned any of them.
+//
+// A bare ð is Icelandic and a bare ñ is Spanish and a bare ó is Catalan, so the LEAD
+// proves nothing on its own; that is the same trap the â entries record, and it is why
+// the pattern below requires TWO further characters from the set that only appears when
+// continuation bytes are read as one-byte codepage characters. Real prose does not put a
+// symbol, quote or control code immediately after ð, ñ, ò, ó or ô — "año" and "ó—" are
+// ordinary text and neither matches, because one continues with a LETTER and the other
+// with a single character.
+//
+// A RUN OF THREE is the tell, and it is exact: a four-byte character misread yields four
+// adjacent high characters with no space between them, so requiring at least three keeps
+// a legitimate "ó—" out while catching every member of the family regardless of which
+// codepage did the damage. The range also covers the C1 controls, which no authored file
+// should contain at all.
+//
+// Written as \u escapes rather than as the characters themselves, for the reason the rest
+// of this file is built from codepoints: this file is inside its own scan, so a literal
+// would make the audit report itself and invite an exemption for its own filename — a
+// file the check then cannot police.
+//
+// ⚠️ KNOWN LIMIT, stated rather than engineered around. A MacRoman misread can put
+// LETTERS after the lead -- F0 D8 D8 renders as "ðØØ" -- and those are excluded on
+// purpose, because admitting letters here would flag "año", "niño" and "coração", which
+// are ordinary text in a corpus that contains them. Measured against eleven such strings
+// (Spanish, Catalan, Icelandic, Portuguese, French, Vietnamese, currency and copyright
+// symbols) this pattern produces zero false positives, and it catches the real instance
+// plus six synthetic variants. The residual hole is narrow and deliberate: a guard that
+// cries wolf on Spanish gets deleted, and a deleted guard catches nothing at all.
+const MOJIBAKE_4BYTE = new RegExp(
+  "[\\u00f0-\\u00f4][" +
+    "\\u0080-\\u00bf\\u0152\\u0153\\u0160\\u0161\\u0178\\u017d\\u017e\\u0192\\u02c6\\u02dc" +
+    "\\u2013\\u2014\\u2018\\u2019\\u201a\\u201c\\u201d\\u201e\\u2020\\u2021\\u2022\\u2026" +
+    "\\u2030\\u2039\\u203a\\u20ac\\u2122" +
+    "]{2,}"
+);
+
 // ── WHY THIS TABLE IS LONGER THAN IT LOOKS ───────────────────────────────────
 // Every extra entry was added in response to a variant ACTUALLY FOUND in the
 // corpus, not guessed in advance. `foundations/01-phase-what-a-model-is.md`
@@ -422,6 +495,12 @@ function check(file) {
       if (!best) break;
       problems.push(`${rel}:${i + 1}: mojibake ${best[1]}`);
       from = bestAt + best[0].length;
+    }
+    if (MOJIBAKE_4BYTE.test(lines[i])) {
+      const m = lines[i].match(MOJIBAKE_4BYTE);
+      problems.push(
+        `${rel}:${i + 1}: mojibake 4-byte UTF-8 (emoji or other non-BMP character) misread as a single-byte codepage — "${m[0]}" (U+${[...m[0]].map((c) => c.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")).join(" U+")})`
+      );
     }
     if (lines[i].includes("\t")) {
       problems.push(`${rel}:${i + 1}: contains a tab character`);

@@ -2393,8 +2393,67 @@ At `C:\Users\zaman\Desktop\CSKramm\CS Roadmap`:
 
     **The generalisation:** a guard's scope is a claim about the world, and it is worth exactly as much as its weakest part. Proving checks fail is cheap and proves little; enumerating what the checks never touched is the part that finds things. Do both — and do the second one *after* the guard looks finished, because that is when everyone stops looking.
 
+75. **A GUARD CAN BE CORRECT ON THE MACHINE THAT WROTE IT AND BLIND ON THE NEXT ONE — AND THE FAILURE LOOKS LIKE A PASS.**
+    Found 2026-10-03, on the first run of this checkout. Two guards were red, at a clean tree, while `CHECKPOINT.md` and this file both stated that all seven exit 0. The docs were not merely optimistic; they were reporting a measurement taken on a different machine.
 
+    `audit-encoding.mjs` is supposed to read every tracked file. Its coverage assertion — added 2026-10-01 precisely to stop this class of silence — opened with:
 
+    > `✖ COVERAGE GAP: 15 tracked file(s) are neither scanned nor exempted`
+
+    All fifteen tracked files in the repo root. The root pass enumerates the directory and keeps `e.isFile()`:
+
+    ```js
+    const ROOT_FILES = readdirSync(REPO, { withFileTypes: true })
+      .filter((e) => e.isFile())
+    ```
+
+    On this filesystem `readdirSync(..., { withFileTypes: true })` returns correct dirents for **directories** and `UNKNOWN` for **every regular file**, and `Dirent.isFile()` is false for `UNKNOWN`. So `ROOT_FILES` was **empty**, the root pass read nothing, and the guard reported clean over the fifteen files it had not opened. `statSync().isFile()` on the same paths is correct — which is why `walk()` kept working, and why **this was the only `Dirent.isFile()` in the codebase**: all six other walkers already used `statSync`. A one-token difference between two spellings of the same question, in one line out of thirty.
+
+    **Three things make this worth more than the fix.**
+
+    - **It was never broken where it was written.** The claim "encoding clean across 229 files, every tracked file scanned" was measured where the dirents resolved. No amount of re-running it there would ever have found this. **A check that depends on a facility the platform may decline to provide carries an untested failure mode, and testing it on one machine does not test it.**
+    - **The fix that was supposed to prevent it is what caught it.** Lesson 74's question — *what does this check never look at?* — had been answered by an assertion six weeks ago, and the assertion fired on its first outing on new ground. Coverage assertions do not need to be re-audited by hand; they need to exist.
+    - **The cascade was diagnostic.** `audit-doc-counts.mjs` also failed, on two claims about the encoding file count, because it *reads that number from the audit* — and the audit exits 1, so the number was `null`. One root cause, two red guards, and the second one was pure downstream. **When two guards fail at once, check whether one is reading the other before investigating two bugs.**
+
+    Proven by injection in both directions: a lone CR written into `SETUP.md`, asserted present on disk, made the audit exit 1 naming `SETUP.md:242` — the control, `learning-site/src/main.jsx`, was named in the same run — and both files were restored byte-exactly against a SHA-256 taken beforehand. All fifteen root files are clean; the corpus count is back to 229 scanned.
+
+    **The generalisation:** `Dirent.isFile()` and `statSync().isFile()` look like the same question and are not the same guarantee, and *which* one you used is invisible in review. Ask what the platform declined to give you, and prefer the assertion that a thing is what you need over the enumeration that was supposed to find it.
+
+76. **A FIXED TIME BUDGET INSIDE A GUARD IS A PASS/FAIL DECISION THE PAGE HAS NOT MADE YET — AND A CHECK THAT REPORTS A DEFECT WHEN ITS OWN BUDGET WAS TOO SMALL IS WORSE THAN NO CHECK.**
+    Found 2026-10-03, while verifying lesson 75's fix, and it is the same shape as lesson 69 seen from the timing side.
+
+    `audit-a11y.mjs` step 7 submitted a real search query and then read the DOM **once, after `sleep(1800)`**. It failed on one run and passed on the next two, against the same build, with no code change in between: `✖ search: NO role="status" region after a query ran — the result count is announced to nobody`. Two of four runs, and the diff between a failing and a passing run was *exactly* the three assertions inside that one branch.
+
+    **The audit contradicted itself one line later, on the same run:** `✓ search: the region UPDATES with the result set`, asserted by reading the very selector it had just called absent. A region cannot update with text it does not contain. That single line is the tell, and it generalises past this bug — **believe the part that passed; question the part that failed.**
+
+    The mechanism is real and measured: `Search.jsx` renders the live region only when `status === "ready" && query`, and `status` waits on a **lazily imported 393 kB search-index chunk**. An instrumented run reads `loading: true`, zero `[role=status]`, at **+1 ms** after submit, and the region mounting at **+100 ms to +330 ms** across six runs. So the element genuinely does not exist immediately after the submit — a single read at a fixed offset is asserting that it does.
+
+    **And the interesting part is what I could not confirm.** Two runs needed more than 1800 ms and six instrumented runs never reproduced it; `performance.timeOrigin` was identical either side of the submit, so the page did not reload, which kills the navigation theory I had settled on. Contention on a loaded machine would explain it and is unconfirmed, so it is recorded as **Unverified** in the guard rather than smoothed into a cause. **The fix does not depend on the answer**, which is the point: nothing in the page bounds how long that import takes, so a guard holding a hard 1800 ms budget for it is wrong whether or not the slow case reproduces here.
+
+    The fix is a bounded `waitFor(expression, 8000)` — wait for the **condition**, report the elapsed time in the output so a wait nearing its deadline is visible rather than surfacing later as a mystery, and name the state that distinguishes *has not arrived* from *never comes* (`the index chunk was still loading when the deadline passed`). The fail path was proved by forcing the deadline to 1 ms, which lands squarely in the measured window: exit 1, with the new diagnostic. **A guard change that only proves the new pass path is not evidence the guard still works** — lesson 72, and the reason the second proof is the one that counts.
+
+    **The file had already learned this and applied it 600 lines away.** `reload()` waits for `#root` to have children rather than sleeping, and its comment names the disease: *"waiting a fixed 1800 ms was a race"*. The same file did it again at the search live region, and there it surfaced as an intermittent failure nobody could explain rather than as a bug with a citation. **A lesson applied in one place and not the next is a lesson the codebase has not learned.**
+
+    **The generalisation:** a guard should wait on a predicate, never on a duration it did not choose — and where a fixed wait is genuinely unavoidable, say so in the comment with the measurement that justifies the number, because the next reader cannot tell a justified sleep from an inherited one.
+
+77. **A GARBAGE-DETECTOR ONLY KNOWS THE GARBAGE IT HAS SEEN — AND "WE CHECK ENCODING" IS NOT A CLAIM ABOUT WHICH BYTES.**
+    Found 2026-10-03, while editing `docs/SEARCH-REQUESTS.md`, and found by accident in the most literal way available: the character I was reading was not the character the file held.
+
+    `docs/SEARCH-REQUESTS.md` is the repository's record of **three relay attempts that failed because the file addressed the wrong reader**. Its own header carried a **real emoji whose bytes had been misread once and stored as the misread characters** — `U+00F0 U+0178 U+2018 U+2030`, which is `F0 9F A7 89` rendered through a single-byte codepage. The irony is exact: the file documenting a document that lied to its reader was lying in its own first line, and every guard reported clean.
+
+    `audit-encoding.mjs` had eleven mojibake entries and could not see it, for a structural reason rather than carelessness: **every entry is anchored on the misread form of a THREE-byte lead byte** — `E2`, `C3`, `C2` become U+00E2, U+00C3, U+00C2. A **four**-byte character — any emoji, anything outside the BMP — has a lead byte of `F0`–`F4`, which misreads to **U+00F0 through U+00F4**, and **not one entry mentioned any of them**. The table had been extended, entry by entry, each time a real instance was found; it had never been asked what a *complete* family looks like.
+
+    The same lesson the file already records about its own tables applies one level up. Its header says a mojibake table "grows by finding real damage" — true, and precisely why it had a hole: **a table grown only by damage never learns the families it has not been damaged by yet.** The bounded case is knowable here, and worth writing down: a misrendered four-byte character yields a **run of four adjacent high characters with no space between them**, and that is true of every codepage that can do the damage, so the family closes in one pattern rather than one entry per victim.
+
+    Two constraints made the pattern safe rather than noisy. **The lead alone proves nothing** — U+00F0 (eth) is Icelandic, U+00F1 (n-tilde) is Spanish, U+00F3 (o-acute) is Catalan, which is the same trap the U+00E2 entries record and the reason the euro sign is part of those patterns. And **letters must stay out of the continuation set**, because admitting them flags Spanish words for "year" and "child", all of which are in this corpus. The pattern is therefore `lead + two continuations drawn from the characters that are not letters in any Latin-script language`, which cannot match real prose.
+
+    Measured before it was trusted, both ways, because lesson 76 was fresh: **eleven legitimate strings** — Spanish, Catalan, Icelandic, Portuguese, French, Vietnamese, currency and copyright symbols — produce **zero** false positives, and the pattern catches the real sequence plus six synthetic variants across four different leads and three codepages. The injection wrote the exact codepoints, **asserted them present on disk before reading the verdict**, and the audit named them: `docs/SEARCH-REQUESTS.md:947: mojibake 4-byte UTF-8 ... (U+00F0 U+0178 U+2018 U+2030)`.
+
+    **One hole remains open, deliberately.** A MacRoman misread can place *letters* after the lead (U+00F0 followed by two U+00D8), and catching it would mean flagging Spanish. That is recorded in the guard as a known limit with the reasoning attached, because **a guard that cries wolf on ordinary text gets deleted, and a deleted guard catches nothing.**
+
+    **And the catch is the transferable part.** I was editing that line for an unrelated reason — the header told a fresh session to paste a file whose own first line says do not paste — and nearly dismissed the odd characters as my own console lying, which is the mistake `AGENTS.md` warns about by name. **Count the codepoints; do not trust the rendering.** The file was wrong, the console was right, and the only reason I checked is that the project's own rule said the console might be the liar.
+
+    **The generalisation:** when a detector's table was grown one real failure at a time, the honest question is which *family* it has never seen — and the answer is usually describable as a rule rather than as a list.
 
 ---
 

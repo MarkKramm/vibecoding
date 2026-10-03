@@ -237,15 +237,22 @@ than a deep-path guess — `https://code.claude.com/docs/llms.txt` for Claude Co
 equivalent docs root elsewhere. Following one link out of the previous page is usually cheaper
 than reasoning about what a path probably is.
 
-If a fact still needs verifying, append the question to `docs/SEARCH-REQUESTS.md`, then update
-`PASTE-THIS.txt` by hand to match its `### Queue:` section.
+If a fact still needs verifying, append it to the **`### Queue:`** section of
+`docs/SEARCH-REQUESTS.md`, which is the only queue in this repository.
 
-> ⚠️ **`PASTE-THIS.txt` is hand-maintained, and nothing generates it.** An earlier version of this
-> file said "regenerate `PASTE-THIS.txt`", which names an operation no script performs — and the
-> two files then drifted, so the paste file no longer opened with the template's own wording.
-> `docs/RELAY-PASTE.md` and `PASTE-THIS.txt` are hand-maintained siblings that must be kept in
-> step by hand. They agree on the **count** (12) and have disagreed on **wording**; the wording in
-> `PASTE-THIS.txt` is the one to paste.
+> ⚠️ **Nothing needs pasting, and this paragraph used to say otherwise.** It read "then
+> update `PASTE-THIS.txt` by hand to match its `### Queue:` section" — and **`PASTE-THIS.txt`
+> has no `### Queue:` section.** The queue lives in `SEARCH-REQUESTS.md`; the paste file has
+> been marked **DO NOT PASTE** since 2026-09-29, when all twelve research questions closed.
+> So the instruction named a file, pointed at an anchor inside it that does not exist, and
+> asked for an edit to a document whose own first line forbids it. **Three wrong things in one
+> sentence, each of which reads as reasonable in isolation.**
+>
+> `docs/RELAY-PASTE.md` and `PASTE-THIS.txt` were hand-maintained siblings, kept in step by
+> hand, and **both are now historical.** They are kept because they record what was asked; per
+> `RELAY-PASTE.md`'s own header, **do not re-synchronise them — there is nothing left to
+> synchronise.** A new question goes in the queue and is answered by fetching a known URL, or
+> by a targeted search. Nothing is relayed by hand any more.
 
 ---
 

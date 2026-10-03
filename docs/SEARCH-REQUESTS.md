@@ -1,13 +1,25 @@
 # SEARCH REQUESTS
 
-> ## ðŸ‘‰ TO RELAY: paste [`docs/RELAY-PASTE.md`](RELAY-PASTE.md) — that file only.
+> ## ✅ NOTHING NEEDS PASTING — the relay is finished (closed 2026-09-29)
 >
-> **Do not paste this file.** It contains agent-facing protocol and internal bookkeeping,
-> and it used to be pasted whole — which failed **three times in a row**, for reasons now
-> understood and recorded below under "Why the relay kept failing".
+> **Do not paste `RELAY-PASTE.md`, and do not paste this file.** All twelve questions are
+> answered; the answers and their source URLs are in the per-request tables below, with the
+> findings in `RESEARCH-*-2026-09-29.md`. Where a remainder is marked unclosable, that is the
+> finding rather than a gap: it asks for numbers **no vendor publishes**.
 >
-> `RELAY-PASTE.md` is a self-contained block written **for the web chat**, containing the
-> questions and nothing else. Paste that. Bring the reply back under "ANSWERS" here.
+> ⚠️ **This header used to say "TO RELAY: paste `docs/RELAY-PASTE.md` — that file only."**
+> That was written when `web_search` was believed unavailable, and it survived the round it
+> was written for. By the time it was true, the file it pointed at had been marked
+> **SUPERSEDED — do not paste** in its own first line, so the instruction sent a fresh
+> session to paste a document that refused to be pasted. **That is the same defect as the
+> three failed relays recorded below**, where a file aimed at the agent was read by the web
+> chat as aimed at itself. An instruction to paste is only safe while there is something to
+> paste; afterwards it is a trap with a friendly voice.
+>
+> **This file no longer exists to be pasted.** It is the agent-side record: protocol, the
+> queue, per-request status and the landing zone for answers. A genuinely new question goes
+> in **"Queue:"** below with a source requirement, and is answered by `web_fetch` on a known
+> URL or a targeted `web_search` — not relayed by hand. See the network policy in `AGENTS.md`.
 
 ---
 
