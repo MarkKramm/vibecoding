@@ -5,7 +5,7 @@
 A structured, self-paced curriculum for learning how modern AI systems actually work, how to
 build with them without shipping things you cannot verify, and how to get hired doing it.
 
-**72 phases across 10 tracks · 591 quiz questions · 26,214 lines across 97 authored Markdown
+**74 phases across 10 tracks · 603 quiz questions · 26,831 lines across 99 authored Markdown
 files · written for a $0 budget.**
 
 Written for someone starting from beginner-to-intermediate, working remotely, with no
@@ -41,16 +41,16 @@ it would actually add and whether it is worth buying — usually it is not.
 
 | Track | Phases | What it covers |
 |---|---:|---|
-| **Foundations** | 9 | What a model is, tokens, attention, sampling, embeddings, reading output, vision |
-| **Model Internals** | 6 | Inference anatomy, transformers, KV cache, quantization, serving |
+| **Foundations** | 10 | What a model is, tokens, attention, sampling, embeddings, reading output, vision, audio and voice |
+| **Model Internals** | 8 | Inference anatomy, transformers, KV cache, quantization, serving, reasoning budgets, diffusion and generated media |
 | **Prompting** | 7 | Prompt anatomy, few-shot, reasoning, structured output, failure modes |
 | **Retrieval & RAG** | 7 | Why retrieval, chunking, vector search, reranking, evaluation, debugging |
-| **Agents & Tools** | 7 | Agent loops, tool calling, subagents, memory, human-in-the-loop, MCP |
+| **Agents & Tools** | 10 | Agent loops, tool calling, subagents, memory, human-in-the-loop, MCP, skills and harness configuration, parallel agents at scale |
 | **Finetuning & Evals** | 6 | When to finetune, LoRA/PEFT, datasets, evaluation, distillation, running evals |
 | **Cost & Efficiency** | 7 | Token economics, caching, batching, routing, monitoring, local vs API |
-| **Vibecoding Craft** | 8 | Specification, reading generated code, tests as contract, debugging, shipping |
+| **Vibecoding Craft** | 9 | Specification, reading generated code, tests as contract, debugging, shipping, working in a codebase you did not write |
 | **Safety & Ethics** | 5 | How models go wrong, security and privacy, alignment, using AI honestly |
-| **Career & Getting Hired** | 4 | What employers want, portfolio, proof of skill, interviewing and first 90 days |
+| **Career & Getting Hired** | 5 | What employers want, portfolio, proof of skill, interviewing and first 90 days, getting into the pipeline |
 
 Tracks are designed to be read in order, but each phase stands alone and states its
 prerequisites. Assessment modes include one complete exam per track, a rotating balanced
@@ -162,13 +162,13 @@ All 10 tracks are written. This is a complete first pass, not a finished product
 - **The live page was observed by the project owner on 2026-09-18**, and the check found the
   Reference-view rendering defect documented below and in `CHECKPOINT.md`. We did not independently
   re-check the live URL during this repository audit.
-- The exhaustive comprehensive exam covers the current 591-question corpus and persists its
+- The exhaustive comprehensive exam covers the current 603-question corpus and persists its
   in-progress question order and selections locally so it can resume. It intentionally stores no
   question text or answer key, and active sessions are intentionally not exported in backups.
 - A number of volatile facts — free-tier terms, context-window sizes, model availability —
   are dated rather than continuously verified, because verifying them requires network
   access this project budgets carefully. Each is stamped with its date.
-- Browser verification includes an automated sweep of all 72 phases, but visual checks on a real
+- Browser verification includes an automated sweep of all 74 phases, but visual checks on a real
   mobile device have not been done; only emulated viewports in a headless browser were checked.
 - An automated accessibility audit runs against a rendered production preview as part of
   `npm test`. It covers six views, but does not test modal focus trapping, phase-detail pages,

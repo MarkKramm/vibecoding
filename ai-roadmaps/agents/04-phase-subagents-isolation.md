@@ -199,7 +199,7 @@ The child was instructed to write the summary and then state its confidence in e
 
 > **Medium:** The "200:1" exploration-to-return ratio. I am treating this as given, but it is a reported industry figure, not a measured constant; I cannot verify it, its source, or the task conditions under which it was observed. Ratios will vary widely by task, and I would not present it as a general law.
 
-> **Medium:** That context isolation is "the primary reason" … This is plausible and consistent with the stated facts, but it is a strong causal claim that likely also involves other factors (parallelism, specialization, validation between agents).
+> **Medium:** That context isolation is "the primary reason" ... This is plausible and consistent with the stated facts, but it is a strong causal claim that likely also involves other factors (parallelism, specialization, validation between agents).
 
 **Why this is a better demonstration than plain failure.** The expected result was that the child would assert both fabrications as fact. It did something more realistic and more dangerous:
 

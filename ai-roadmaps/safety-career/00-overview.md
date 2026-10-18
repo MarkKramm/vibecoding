@@ -33,7 +33,7 @@ No paid tool is required. Nothing in this track costs money, and the security pr
 | # | Phase | Status | What it will establish |
 |---|---|---|---|
 | 1 | How Models Go Wrong | Written | A builder's taxonomy: hallucination, sycophancy, representational harm, failure to know what it does not know, and distributional shift. For each: mechanism, how it shows up, how to detect it, and what mitigation works |
-| 2 | Security, Privacy and Data | Written | Indirect prompt injection taken seriously, instruction hierarchy as a mitigation rather than a guarantee, provider retention and training terms, secrets management, and the Philippine Data Privacy Act as a real obligation |
+| 2 | Security, Privacy and Data | Written | Indirect prompt injection taken seriously, instruction hierarchy as a mitigation rather than a guarantee, provider retention and training terms, secrets management, and the Philippine Data Privacy Act as a real obligation — including the four duties the schema decides: erasure, retention and de-identification, cross-border accountability, and automated-decision disclosure |
 | 3 | Alignment, Capability and Honest Limits | Written | What alignment means technically, RLHF and why the KL penalty exists, Constitutional AI, reward hacking, and — most importantly — how not to over-claim about your own results |
 | 4 | Using AI Honestly | Written | What is actually cheating versus efficient use, the "could I explain, debug and extend this myself?" test, skill atrophy, and a personal policy you write for yourself |
 | 5 | Career in the AI Era | Written | What differentiates people now that generation is cheap, the durable-versus-volatile distinction applied to skills, how to keep learning without drowning, and an honest self-assessment |
@@ -49,6 +49,10 @@ No paid tool is required. Nothing in this track costs money, and the security pr
 - Describe indirect prompt injection concretely, and design a system with defence in depth rather than a prompt instruction.
 - Explain what instruction hierarchy does and does not guarantee.
 - Identify what personal data your project handles, and state the Philippine Data Privacy Act obligations that follow.
+- Say what a deletion request actually requires of your system, and what you would have to admit you cannot delete once the data has already been sent to a provider.
+- Explain why pseudonymisation buys very little for free text, and what control replaces it.
+- Explain why cross-border processing is conditioned rather than prohibited, and who remains accountable for it.
+- Describe the automated-decision disclosure duty, and keep the record that makes a decision describable at all.
 - Handle a secret correctly: never commit it, keep it in the environment, and rotate it on exposure — including knowing that git history keeps what you deleted.
 - Explain RLHF and why the KL penalty exists, and describe reward hacking with a concrete example.
 - **Distinguish measured results from extrapolation in your own writing**, which is the single most credibility-building habit this track teaches.

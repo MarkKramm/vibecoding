@@ -1,6 +1,6 @@
 # Career & Getting Hired — Track Overview
 
-> **Status: complete.** All four phases are written and available now.
+> **Status: complete.** All five phases are written and available now.
 
 ## What this track is for
 
@@ -37,8 +37,9 @@ Nothing here costs money. Portfolio hosting, publishing and open-source contribu
 | 2 | A Portfolio That Proves Something | Written | What makes a project legible, the writeup template, making it runnable, what to leave out, and the "could I defend this in an interview?" test |
 | 3 | Proof of Skill Without a Job | Written | Open-source contribution, writing in public, building for a real user, reproducing a paper, and why evidence of judgement is scarce and therefore valuable |
 | 4 | Interviewing and Your First 90 Days | Written | What AI-role interviews actually test, using AI tools in a take-home without hiding it, and a concrete dated plan for your first three months |
+| 5 | Getting Into the Pipeline | Written | How roles actually reach you, why almost every published hiring statistic is unverifiable, how your document meets a machine before a person, referrals as an information problem, and building the only dataset that answers the question for your situation — your own |
 
-**Read them in order.** Phase 1 tells you what is being asked for, Phase 2 builds the artifact, Phase 3 builds the evidence when nobody has hired you, and Phase 4 is the practical end — the interview and the plan for after it.
+**Read them in order.** Phase 1 tells you what is being asked for, Phase 2 builds the artifact, Phase 3 builds the evidence when nobody has hired you, and Phase 4 is the practical end — the interview and the plan for after it. Phase 5 is the one that runs *alongside* the search rather than after it, because its instrument is a log of what you actually sent, and a log only becomes useful once it has entries.
 
 ## What you will be able to do at the end
 
@@ -55,12 +56,19 @@ Nothing here costs money. Portfolio hosting, publishing and open-source contribu
 - Build something for one real user.
 - Explain your own past projects under questioning, including their limitations.
 - Produce a dated ninety-day plan that starts the day you are hired.
+- Tell a checkable claim about hiring from an unverifiable one, and decline to repeat the second.
+- Keep a dated log of applications with the channel each role arrived through, and state your own response rate with its denominator.
+- Test your own application document for machine-parseability, and fix what a parser would silently drop.
+- Read a job post as a specification, separating hard filters from preferences from boilerplate.
+- Tell a wording gap from a real one, and refuse to close a real one with vocabulary.
+- Build a referral from work you have already published rather than asking a stranger for a favour.
+- Ask for a compensation range early, and know what a first role is for besides the number.
 
 ## Roughly how long it takes
 
-**4 phases, about 4–5 weeks at five sessions a week** — **but the portfolio work runs alongside everything else**, and that is the point.
+**5 phases, about 6–7 weeks at five sessions a week** — **but the portfolio work runs alongside everything else, and so does the pipeline log**, and that is the point.
 
-Read the track in four or five weeks. Act on Phase 2 across the whole curriculum. If you are job-hunting now, the job-search material in Phases 1 and 4 is actionable immediately.
+Read the track in six or seven weeks. Act on Phase 2 across the whole curriculum. If you are job-hunting now, the job-search material in Phases 1, 4 and 5 is actionable immediately — and Phase 5 is the one to open first, because its log only starts returning anything once it has entries in it.
 
 ## What being on a $0 budget costs you here
 

@@ -38,8 +38,9 @@ No paid tool is required. The memory arithmetic in Phases 3 and 4 is done on pap
 | 5 | Serving, Batching, and Throughput | 1 week | How real deployments serve many requests at once, and the latency-versus-throughput trade |
 | 6 | The Model Landscape and Scaling | 1 week | Why models differ, what scale buys, and how to read a model card without being misled |
 | 7 | Reasoning Models and Thinking Budgets | 1 week | Where reasoning tokens go, how to measure them, and choosing effort from the task rather than the model's reputation |
+| 8 | Diffusion and Generated Media | 1 week | The second generative mechanism, and why media is billed by the pixel and the second rather than by the sentence |
 
-**Read Phases 1 through 3 in order** — they build one argument about where time and memory actually go. Phases 4, 5 and 6 can be read in any order after Phase 3, and Phases 6 and 7 are the most volatile.
+**Read Phases 1 through 3 in order** — they build one argument about where time and memory actually go. Phases 4, 5 and 6 can be read in any order after Phase 3. Phases 6, 7 and 8 are the most volatile, and Phase 8 is the one that corrects an assumption the rest of the track rests on, so read it before you trust any media-cost estimate.
 
 ## What you will be able to do at the end
 
@@ -51,10 +52,12 @@ No paid tool is required. The memory arithmetic in Phases 3 and 4 is done on pap
 - Read a model card and identify which claims are measured, which are marketing, and which are simply not comparable to another model's numbers.
 - Explain why batching improves throughput and can worsen latency, and why continuous batching changes the picture.
 - Read the reasoning-token count out of a usage object and choose an effort level from the task, rather than assuming that more thinking means a better answer.
+- Convert a media unit into tokens using a provider's published rate, and say why a generated image is priced by its resolution rather than by the length of your prompt.
+- Explain how iterative denoising produces an image, and why the same prompt twice gives you two different pictures.
 
 ## Roughly how long it takes
 
-**7 phases, about 9–10 weeks at five sessions a week.** Two of the seven phases are two-week reads, and they are the ones that carry the core argument.
+**8 phases, about 10–11 weeks at five sessions a week.** Two of the eight phases are two-week reads, and they are the ones that carry the core argument.
 
 At one hour a day, plan on twelve to thirteen weeks. This is the slowest track in the curriculum per phase, and that is deliberate rather than a defect.
 
@@ -69,6 +72,7 @@ Less than you would expect, and the honest limits are specific.
 1. **Large-scale serving behaviour.** Continuous batching and paged attention are properties of serving frameworks under concurrent load. You can read about them and reason about them, but you cannot reproduce a production workload on free hardware. The honest substitute is a local server with a handful of concurrent requests, which shows the shape of the effect even at toy scale.
 2. **Frontier-scale models.** You will not run a very large model locally. This does not block the track, because the arithmetic that predicts *why* you cannot is exactly the thing being taught.
 3. **Breadth of comparison.** Free tiers give you one or two model families, so cross-model comparisons are limited. The concepts transfer; the specific numbers do not.
+4. **Video generation.** Phase 8's image and audio arithmetic is fully reproducible at zero cost, because a local model exposes the steps, guidance and seed that a hosted endpoint hides. A ten-second video clip is not: it needs infrastructure no laptop has, so that part of the phase is done from published rates rather than from your own measurement, and the phase says so.
 
 Being free narrows the *scale of experiments*, not the *depth of understanding*. The mechanism is the same at 1B parameters as at 400B.
 

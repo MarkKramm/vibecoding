@@ -1,6 +1,6 @@
 # HANDOVER — Vibecoding / AI Era Learning Site
 
-**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-10-18 (sixth pause), state re-verified 2026-10-18**.
+**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-10-18 (seventh pause), state re-verified 2026-10-18**.
 **Purpose:** Everything a fresh session needs to resume this project without re-deriving anything.
 **Current repo root:** the clone you are reading this in. (This copy: `C:\Users\zaman\Desktop\Projects\Learning\vibecoding`, as of 2026-09-29. The repo has moved machines more than once, so **do not treat any absolute path in this file as durable** — run commands from the repo root instead.)
 **Historical repo root in old logs:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`.
@@ -8,7 +8,78 @@
 
 ---
 
-## START HERE — current handoff (2026-10-18, sixth pause)
+## START HERE — current handoff (2026-10-18, seventh pause)
+
+**State: everything is COMMITTED; the tree is clean, all seven content guards exit 0, and
+`check-all.mjs` passes 23/23. At the moment of writing, `origin/main` may be one or two commits behind
+this checkout — run `git log --oneline origin/main..HEAD` rather than trusting a literal here, because
+a file cannot name the commit that contains it.**
+
+**What changed this pause: two phases written, one extended, and two of the three recommendations
+reduced in scope after re-testing.** That last part is the most useful thing to carry forward.
+
+- `model-internals/08-phase-diffusion-and-generated-media.md` — new; its phase id is
+  `intern-08-diffusion-and-generated-media`.
+- `career/05-phase-getting-into-the-pipeline.md` — new; its phase id is
+  `cr-05-getting-into-the-pipeline`.
+- `safety-career/02-phase-security-privacy-and-data.md` — **extended, not duplicated**: a new
+  **Part 6 — The four duties your schema decides** was inserted and the old Part 6 became Part 7.
+- The pre-existing HEAD-named commit from earlier in this pause is `6345850` — the track-`short`
+  alignment plus the two new front-matter guards. It is an ancestor of this text, not the text.
+
+**The gap scan's own method was the story. "Privacy is a gap" was wrong.** `safety-career/02` already
+carries a full RA 10173 reading and `vibecoding/08` carries the task set that applies it — the
+abbreviation scan (`pii`, `gdpr`, `redact`) said otherwise only because the corpus writes full phrases
+and Philippine-statute vocabulary. **"Hiring mechanics is a gap" was half wrong**: `career/04` already
+covers take-homes and negotiation in depth, so `career/05` was scoped to the top of the funnel instead.
+Generation was the one candidate that survived synonym testing, and it is the only one that was a gap
+at full strength. Two of three recommendations revised is the normal outcome of a word-boundary scan,
+not an unusual one — **re-test every candidate under the vocabulary the corpus actually uses before
+calling it a gap.**
+
+**The generation phase corrects an assumption this repository has been making since the Cost track.**
+Media *is* metered in tokens, but at a **published exchange rate from the size of the output**: 1,120
+output tokens per 1024×1024 image, 1,680 at 2048², 3,780 at 4096², 5,792 per second of 720p video, 25
+per second of audio (Gemini API pricing, read **2026-10**). The honest statement is therefore not
+"media is not billed in tokens" but "**the token count is set by pixels and seconds rather than by your
+prompt**", which inverts the prompt-shortening instinct every other phase teaches. The phase's worked
+example — a ten-second clip is about fifty-two images by tokens and about thirty by money, because the
+per-token rates differ by modality — is the reason it says to quote both numbers and say which one you
+mean.
+
+**Two new guards, and both were proved by injection rather than by reading the code.** A phase id must
+open with its track's `short`, and `deliverable` must live under `portfolio/<track-folder>/`. Adding
+the id check is what exposed the mismatch it exists to catch: `KNOWN_TRACKS` declared
+`vibe`/`safe`/`career` while the corpus's ids said `vb`/`sc`/`cr`. **The corpus won and the config
+changed**, because a phase id keys a reader's saved progress and is therefore permanent.
+
+**A third trap this pause found, and it is still open: `audit-doc-counts.mjs` cannot see a claim that
+wraps across a line break.** `README.md`'s totals block and `ROADMAP.md`'s both wrap mid-phrase, so
+`authored Markdown files` and `checklist items` never matched their patterns and four stale figures —
+97 files, 26,214 lines, 1,183 checklist, 297 glossary terms — sat inside a region the guard nominally
+inspects. They were found by hand and fixed. **Either unwrap those two paragraphs or widen the patterns
+before trusting that guard's silence on them.** CHECKPOINT.md's own totals paragraph has the same
+shape.
+
+**Also fixed while passing through, and stale for longer than this pause:** `README.md`'s track table
+said Foundations 9, Model Internals 6, Agents 7, Vibecoding 8, Career 4 (true values 10, 8, 10, 9, 5),
+and `CHECKPOINT.md`'s per-track line agreed with the wrong version. Neither is guard-checked.
+
+**A third guard was added, and it exists because the rule was stated and unenforced.** `AGENTS.md`
+forbids the U+2026 ellipsis character in authored content — the heading requires three literal dots —
+and nothing checked it outside that one heading. A hand scan found exactly one violation, in
+`agents/04-phase-subagents-isolation.md`, sitting inside a quoted model output and green through every
+guard run since it was written. The check now lives in `audit-encoding.mjs`, **scoped to
+`ai-roadmaps/`**, and was proved by injection: a U+2026 written into a phase file makes the audit exit
+1 and name the file and its line number, and the file was then restored byte-identically (sha256
+check, empty `git diff`). It is scoped deliberately — the repository's own documentation uses that
+character in prose and always has, so a tree-wide rule would fail twenty-four pre-existing lines and
+turn a small fix into an unrelated rewrite.
+
+**Not done, and it needs a human:** the push, the CI run, and a look at the live page after it. Nothing
+in this pause was verified in a browser.
+
+## START HERE — sixth pause (2026-10-18, historical)
 
 **State: SAFE. Everything is COMMITTED and PUSHED, the working tree is clean, no scratch files remain
 in the repo root, and CI plus the Pages deploy are green.** The corpus work described here landed in
@@ -56,8 +127,8 @@ a browser — that is sufficient and is not a blocker.
 
 | | |
 |---|---|
-| Corpus | **72 phases**, 10 tracks · 244,175 lesson words · 1,183 checklist · 591 quiz · **1,014** practice · 0 minted from position · 297 glossary terms |
-| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` / **`doc-counts`** all **exit 0**; encoding clean across **232 files**, which is every tracked file — the audit now asserts that rather than trusting its own list; `doc-counts` checks **34 claims** and asserts every declared region matches something |
+| Corpus | **74 phases**, 10 tracks · 250,537 lesson words · 1,228 checklist · 603 quiz · **1,044** practice · 0 minted from position · 314 glossary terms |
+| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` / **`doc-counts`** all **exit 0**; encoding clean across **234 files**, which is every tracked file — the audit now asserts that rather than trusting its own list; `doc-counts` checks **34 claims** and asserts every declared region matches something |
 | Suite | `npm test` **23/23** on a verified-free port, with the browser checks genuinely executing |
 | Sync | `git rev-list --left-right --count origin/main...HEAD` → `0 0`, tree clean |
 | Live site | **Working.** `markkramm.github.io/vibecoding/` serves `/vibecoding/assets/...` and the 389 KB bundle loads |

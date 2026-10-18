@@ -506,6 +506,34 @@ function check(file) {
       problems.push(`${rel}:${i + 1}: contains a tab character`);
     }
   }
+
+  // U+2026 IN THE CONTENT CORPUS, added 2026-10-18.
+  //
+  // `AGENTS.md` states the rule absolutely for authored content: "Never an ellipsis
+  // character ... — the heading requires three literal dots". Nothing enforced it.
+  // The phase contract catches the ONE place it would break a build
+  // (`## You're ready to move on when...`), and an ellipsis anywhere in a lesson body
+  // is invisible to every guard in this repository. Found by hand on 2026-10-18:
+  // `agents/04-phase-subagents-isolation.md` line 202 carried one inside a quoted
+  // model output, and it had survived every green run.
+  //
+  // Written as an escape rather than a literal, per this file's own convention: a
+  // literal here would put the offending character in a file this audit scans.
+  //
+  // Scoped to `ai-roadmaps/` deliberately. `README.md`, `HANDOVER.md`,
+  // `docs/CONTENT-SCHEMA.md` and `learning-site/docs/VERIFICATION.md` use U+2026 in
+  // prose and always have, and the rule is written for authored content rather than
+  // for the repository's own documentation. Widening it to the whole tree would fail
+  // twenty-four pre-existing lines and force an unrelated rewrite; this covers the
+  // place where the rule is a contract. If you widen it, do it as its own change with
+  // its own decision recorded, not as a side effect of a content edit.
+  if (rel.startsWith("ai-roadmaps/")) {
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes("\u2026")) {
+        problems.push(`${rel}:${i + 1}: U+2026 ellipsis character in the content corpus (the heading requires three ASCII dots)`);
+      }
+    }
+  }
 }
 
 for (const p of SCAN) walk(p);

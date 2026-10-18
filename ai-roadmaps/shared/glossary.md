@@ -92,6 +92,13 @@ Every term this curriculum introduces, defined in one sentence and organised by 
 - **Interleaved thinking** — reasoning between tool calls during a task, not only before the first response token.
 - **Reasoning summary** — an optional, sometimes empty summary of a model's reasoning; it is not the reasoning, and its absence does not mean the model did not think.
 - **Thought signature** — an opaque or encrypted representation of reasoning that a model passes back to itself for continuity, which you cannot read.
+- **Diffusion model** — a generative model that produces output by starting from noise and removing it iteratively rather than by emitting tokens one at a time; each step is a full pass through the network, so one output costs many calls.
+- **Denoising** — the model-trained direction of a process whose forward direction is adding noise; generation applies that prediction repeatedly to a pure-noise starting point.
+- **Sampling steps** — the number of denoising iterations used to produce one output; cost and latency are linear in the count while quality plateaus, which makes the right setting the lowest one that passes your bar.
+- **Guidance** — a setting that pushes each denoising step toward the prompt rather than toward a plausible image; higher follows the prompt more literally and looks less natural, so it is a trade rather than a direction of improvement.
+- **Latent space** — the compressed representation a media model denoises in, produced by an encoder and turned back into pixels by a decoder; iterating there is far cheaper per step, and whatever the compression discards cannot be restored by more steps.
+- **Seed** — the starting noise for a media generation; a fixed seed makes a run repeatable on the same model version with the same settings, and a changed seed gives another sample from the same distribution.
+- **Media token rate** — a provider's published conversion from a unit of media to tokens, such as output tokens per image at a given resolution or per second of video; the price per token differs by modality, so a token count is a proxy for cost rather than a measure of it.
 
 ## Prompting
 
@@ -318,6 +325,10 @@ Every term this curriculum introduces, defined in one sentence and organised by 
 - **Attribution and disclosure** — being clear about what you made and what a tool made, which norms are still forming around.
 - **Skill atrophy** — the competences that weaken when you never do the work yourself, such as debugging without hints.
 - **Disclosure norm** — the emerging expectation about saying when AI was used.
+- **Pseudonymisation** — replacing identifying fields with tokens held separately so that a record no longer permits identification on its own; RA 10173 §11(f) makes the *form* of the data what the retention duty applies to, which is why it matters, and why it fails on free text where identifiers are incidental and everywhere.
+- **Right to erasure** — under RA 10173 §16(e), the right to suspend, withdraw or order the blocking, removal or destruction of personal information, triggered when it is incomplete, outdated, false, unlawfully obtained, used for unauthorised purposes, or no longer necessary.
+- **Cross-border transfer** — sending personal information to a processor in another jurisdiction; under §21 accountability travels with the data, so it is conditioned by an arrangement rather than prohibited, and the controller remains responsible.
+- **Automated-decision disclosure** — the §16(c)(6) right to be informed about automated processes that will be the sole basis for a decision significantly affecting the data subject; it is a disclosure duty rather than a prohibition, and the privacy obligation most specific to AI systems.
 
 ## Career and getting hired
 
@@ -336,3 +347,9 @@ Every term this curriculum introduces, defined in one sentence and organised by 
 - **Contractor versus employee** — the two main engagement forms for remote work, with different tax and payment consequences.
 - **Title inflation** — job titles claiming more than the role delivers, which is why you read the post for what it actually requires.
 - **Ninety-day plan** — a dated plan for your first three months in a role, written before you start.
+- **Referral** — a recommendation from someone inside an organisation; its value is informational, because it transfers a reduction in uncertainty about a candidate that a document cannot supply, which is why a stranger cannot give you one.
+- **Inbound** — the channel where someone with a problem contacts you because they read something you published, so the conversation begins with them already knowing one specific thing about you.
+- **Response rate** — responses divided by attempts, computed per channel and stated with its denominator; at small samples it is noise rather than a result, which is why the threshold for acting on it is set in advance.
+- **Wording gap** — a requirement your evidence already meets but describes in different vocabulary, fixed by rewriting; the contrast is a real gap, which no wording closes and only work does.
+- **Applicant tracking system** — software that receives, stores and parses applications into structured fields; you cannot tell from the outside which employers run one or how well it copes, but a parse failure is silent, which is what makes a boringly parseable document worth its one-off cost.
+- **Boilerplate** — the paragraphs about mission, funding and culture that appear unchanged across a company's postings and predict nothing about the role.
