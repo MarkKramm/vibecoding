@@ -1,6 +1,6 @@
 # HANDOVER — Vibecoding / AI Era Learning Site
 
-**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-09-29 (fourth pause), state re-verified 2026-10-02**.
+**Written:** 2026-09-18 — historical narrative retained below; **current pickup instructions updated 2026-10-18 (sixth pause), state re-verified 2026-10-18**.
 **Purpose:** Everything a fresh session needs to resume this project without re-deriving anything.
 **Current repo root:** the clone you are reading this in. (This copy: `C:\Users\zaman\Desktop\Projects\Learning\vibecoding`, as of 2026-09-29. The repo has moved machines more than once, so **do not treat any absolute path in this file as durable** — run commands from the repo root instead.)
 **Historical repo root in old logs:** `C:\Users\zaman\Desktop\CSKramm\Vibecoding`.
@@ -8,10 +8,22 @@
 
 ---
 
-## START HERE — current handoff (2026-10-03, fifth pause)
+## START HERE — current handoff (2026-10-18, sixth pause)
 
 **State: SAFE. Everything is COMMITTED and PUSHED, the working tree is clean, no scratch files remain
-in the repo root, and CI plus the Pages deploy are green at the tip.** Tip is **`5d8a260`**.
+in the repo root, and CI plus the Pages deploy are green.** The corpus work described here landed in
+**`c009568`**; run `git rev-parse HEAD` for the exact tip rather than trusting a literal in this file,
+which cannot name the commit that contains it.
+
+**What changed this pause: three phases were added, and every corpus total with them.** A
+word-boundary scan of the whole corpus (the method recorded under "Previous handoff (2026-09-28)")
+found three areas the string counts had hidden, and all three are now written:
+`vibecoding/09-phase-working-in-a-codebase-you-didnt-write.md`,
+`model-internals/07-phase-reasoning-models-and-thinking-budgets.md` and
+`foundations/10-phase-audio-and-voice.md`. The counts that moved are in the "Measured at this pause"
+table below and in `README.md`, `ROADMAP.md` and `CHECKPOINT.md`. The reasoning-model and audio phases
+carry volatile provider specifics read from documentation on 2026-10 and marked as dated rather than
+asserted.
 
 **Read this paragraph before anything else, because it is the answer to "why did a clean tree have two
 red guards?"** This checkout had never been verified on this machine. The first run of
