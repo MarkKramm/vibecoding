@@ -20,7 +20,7 @@ Every phase file begins with YAML between `---` delimiters at the very top.
 
 ```yaml
 ---
-id: ai-03-tokens-and-context        # stable, unique, never reused
+id: found-03-tokens-and-context      # stable, unique, never reused; must open with the track's short id
 track: foundations                  # one of the track ids in KNOWN_TRACKS
 phase: 3                            # numeric phase index
 order: 30                           # sort key; phase * 10
@@ -28,7 +28,7 @@ title: Tokens and Context
 duration: 2 weeks
 duration_weeks: 2
 energy_mix: [low, normal]
-deliverable: portfolio/ai/03-token-budget.md
+deliverable: portfolio/foundations/03-tokens-and-context.md
 exit_criteria: >
   You can estimate the token cost of a prompt, explain why the same sentence
   costs different amounts in different languages, and choose a context strategy
@@ -42,7 +42,7 @@ Field notes:
 - **`track`** must be one of the ids in `KNOWN_TRACKS` in [`scripts/build-content.mjs`](../scripts/build-content.mjs). A phase naming an unknown track **fails the build** rather than being dropped, because the track's own JSON is only emitted for a key that already exists — a typo would otherwise produce a phase that renders nowhere and is reported by nothing.
 - **`order`** is `phase * 10` by convention, leaving room to insert phases later without renumbering.
 - **`energy_mix`** lists which of `low` / `normal` / `high` energy modes a phase's tasks suit. Used by the site's daily-task picker.
-- **`deliverable`** mirrors the `## Deliverable / proof of work` section's target path.
+- **`deliverable`** mirrors the `## Deliverable / proof of work` section's target path. Its shape is fixed: `portfolio/<track-folder>/<NN>-<slug>.md`, where `track-folder` is the phase's own folder under `ai-roadmaps/` and `NN` is the phase's two-digit number. The build fails a value that does not match, because this is the one front-matter string a reader is told to act on — a wrong path misdirects every reader of that phase rather than one parser.
 - **`exit_criteria`** mirrors `## You're ready to move on when…`. It is duplicated into front-matter because the dashboard shows the exit criteria of the phase you are working through without opening the lesson.
 
 ### Checklist task IDs
@@ -50,12 +50,12 @@ Field notes:
 Each `- [ ]` line under `## Checklist` gets a trailing HTML comment with a stable ID:
 
 ```markdown
-- [ ] I can explain what a token is without saying "a word". <!-- id: ai-03-c01 energy: low -->
-- [ ] I can estimate a prompt's token count within 20%. <!-- id: ai-03-c02 energy: normal -->
-- [ ] I can compute the KV cache size for a given model configuration. <!-- id: ai-03-c03 energy: high -->
+- [ ] I can explain what a token is without saying "a word". <!-- id: found-03-c01 energy: low -->
+- [ ] I can estimate a prompt's token count within 20%. <!-- id: found-03-c02 energy: normal -->
+- [ ] I can compute the KV cache size for a given model configuration. <!-- id: found-03-c03 energy: high -->
 ```
 
-- **ID format:** `<track>-<phase>-c<NN>`, zero-padded, sequential within the phase. Track is the track's short id, phase is the two-digit number from the filename. For example `found-03-c01`, `vibe-02-c04`.
+- **ID format:** `<track-short>-<phase>-c<NN>`, zero-padded, sequential within the phase. `track-short` is the `short` field of the phase's own track in `KNOWN_TRACKS` — `found`, `intern`, `prompt`, `rag`, `agent`, `ft`, `cost`, `vb`, `sc`, `cr` — and the build **fails a phase whose `id` opens with anything else**, so `vb-02-c04` is valid and `vibe-02-c04` is not. `phase` is the two-digit number from the filename. For example `found-03-c01`, `vb-02-c04`.
 - **IDs never change.** Adding a task appends a new ID. Removing a task retires its ID but does not renumber it.
 - IDs must be **globally unique**, not merely unique within a phase — the build fails on a duplicate. The site treats an ID as the identity of a task, so a collision across two phases would make progress on one appear against the other.
 - The `energy:` hint is optional in the raw file. When present, the site's low-energy mode only offers `energy: low` tasks.

@@ -84,19 +84,27 @@ export const KNOWN_TRACKS = {
   },
   vibecoding: {
     label: 'Vibecoding Craft',
-    short: 'vibe',
+    // `vb`, not `vibe`. This field is the prefix the folder's phase ids actually
+    // use (and the one every task, checklist and quiz id inherits). A phase id is
+    // permanent — a reader's saved answers are keyed on it — so the config follows
+    // the content here rather than the other way round: renaming the ids to match a
+    // prettier short would orphan real progress. The build now fails a phase whose
+    // id does not open with this value, so the two cannot drift apart again.
+    short: 'vb',
     folder: 'vibecoding',
     blurb: 'Building real software with AI agents without being fooled.',
   },
   'safety-career': {
     label: 'Safety & Ethics',
-    short: 'safe',
+    // `sc` for the same reason as `vb` above: the content uses it, and content wins.
+    short: 'sc',
     folder: 'safety-career',
     blurb: 'Alignment, misuse, privacy, and using these tools honestly.',
   },
   career: {
     label: 'Career & Getting Hired',
-    short: 'career',
+    // `cr`, not `career`, for the reason given at `vb` above.
+    short: 'cr',
     folder: 'career',
     blurb: 'Turning the skill into work: proof, portfolio, and the job hunt.',
   },
@@ -1004,6 +1012,24 @@ export function buildPhase(filePath, trackId, seenPhaseIds, seenItemIds, errors)
       errors.add(rel, 1, `duplicate phase id "${fm.id}" — ids are the identity of a phase, so a collision makes two phases share progress`);
     }
     seenPhaseIds.add(fm.id);
+
+    // The prefix is not decoration. An id is what a reader's saved progress is
+    // keyed on, so an id that opens with the wrong short is permanent by the time
+    // anyone notices: renaming it orphans real checklist ticks and task answers.
+    // Nothing checked this, and docs/CONTENT-SCHEMA.md itself gave `vibe-02-c04`
+    // as the example while the vibecoding track's short id is `vb`.
+    const expectedIdPrefix = track?.short;
+    if (expectedIdPrefix && !fm.id.startsWith(`${expectedIdPrefix}-`)) {
+      errors.add(rel, 1, `phase id "${fm.id}" does not start with "${expectedIdPrefix}-", which is the short id of the "${trackId}" track. An id is permanent — a reader's checklist ticks and task answers are stored against it — so a non-conforming prefix cannot be cheaply corrected later. See KNOWN_TRACKS in scripts/build-content.mjs.`);
+    }
+  }
+
+  // Same class of defect, and equally unenforced until now: the deliverable path
+  // is the one front-matter string a reader is told to act on, so a wrong value
+  // misdirects every reader of that phase. The docs shipped
+  // `portfolio/ai/03-token-budget.md` as their example.
+  if (fm.deliverable && !fm.deliverable.startsWith(`portfolio/${trackId}/`)) {
+    errors.add(rel, 1, `deliverable "${fm.deliverable}" must live under "portfolio/${trackId}/" — the path is what the reader is told to create, and every other phase in this folder follows that convention. Expected shape: portfolio/${trackId}/<NN>-<slug>.md`);
   }
 
   const phaseNum = Number(fm.phase);
