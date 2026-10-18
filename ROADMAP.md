@@ -11,9 +11,7 @@ project, which is why this one names its own uncertainty.
 
 ## Where the project is now
 
-**The curriculum is complete.** 74 phases across 10 tracks, 26,831 lines across 99 authored Markdown
-files (24,935 lines in the phase files), 603 quiz questions, 1,044 practice tasks, and 1,228 checklist
-items. Every phase passes a machine-verified 14-section contract.
+**The curriculum is complete.** 74 phases across 10 tracks, 26,831 lines across 99 authored Markdown files (24,935 lines in the phase files), 603 quiz questions, 1,044 practice tasks, and 1,228 checklist items. Every phase passes a machine-verified 14-section contract.
 
 > The counts in this paragraph are checked by `scripts/audit-doc-counts.mjs`, which reads them back
 > from the same parsers that build the site and fails the suite if they disagree. This sentence

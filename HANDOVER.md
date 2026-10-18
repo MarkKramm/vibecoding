@@ -53,13 +53,13 @@ the id check is what exposed the mismatch it exists to catch: `KNOWN_TRACKS` dec
 `vibe`/`safe`/`career` while the corpus's ids said `vb`/`sc`/`cr`. **The corpus won and the config
 changed**, because a phase id keys a reader's saved progress and is therefore permanent.
 
-**A third trap this pause found, and it is still open: `audit-doc-counts.mjs` cannot see a claim that
-wraps across a line break.** `README.md`'s totals block and `ROADMAP.md`'s both wrap mid-phrase, so
-`authored Markdown files` and `checklist items` never matched their patterns and four stale figures —
-97 files, 26,214 lines, 1,183 checklist, 297 glossary terms — sat inside a region the guard nominally
-inspects. They were found by hand and fixed. **Either unwrap those two paragraphs or widen the patterns
-before trusting that guard's silence on them.** CHECKPOINT.md's own totals paragraph has the same
-shape.
+**Resolved this pass: the wrapped totals paragraphs.** `README.md`'s totals block and `ROADMAP.md`'s
+both wrapped mid-phrase, so `authored Markdown files` and `checklist items` never matched their
+patterns and four stale figures — 97 files, 26,214 lines, 1,183 checklist, 297 glossary terms — sat
+inside a region the guard nominally inspects. They were found by hand and fixed in the seventh pause.
+The totals paragraphs are now unwrapped onto single lines, so `audit-doc-counts.mjs` reads them: the
+claim count rose from 34 to 37 and all pass. CHECKPOINT.md's own totals paragraph was already on one
+line, so it needed no change. The guard itself was not widened; the prose was.
 
 **Also fixed while passing through, and stale for longer than this pause:** `README.md`'s track table
 said Foundations 9, Model Internals 6, Agents 7, Vibecoding 8, Career 4 (true values 10, 8, 10, 9, 5),

@@ -416,10 +416,11 @@ and tab characters, and reports **file and line**. The mojibake patterns are bui
 from character codes rather than written as literals, so the audit file contains
 no mojibake of its own and needs no self-exemption.
 
-**One honest gap:** no CI workflow exists yet (there is no `.github/` directory),
-so none of this runs automatically. Everything is run by hand. Wiring `npm test`
-and `audit-encoding.mjs` into CI is the highest-value unchecked item on this
-project.
+**CI is now wired.** `.github/workflows/ci.yml` runs the content-integrity guards
+and `npm test` on every push and pull request, and `.github/workflows/pages.yml`
+builds and deploys. The remaining gap is that the two browser-dependent checks in
+`npm test` skip when no preview is up, so a push still does not exercise a rendered
+page; those need a preview server in CI if they are to gate a deploy.
 
 `audit-encoding.mjs` is already the **fourth** step of `npm test` →
 `check-all.mjs`, so it does run whenever the suite does — but only because a human
