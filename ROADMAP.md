@@ -11,8 +11,8 @@ project, which is why this one names its own uncertainty.
 
 ## Where the project is now
 
-**The curriculum is complete.** 69 phases across 10 tracks, 25,395 lines across 94 authored Markdown
-files (23,561 lines in the phase files), 573 quiz questions, 965 practice tasks, and 1,121 checklist
+**The curriculum is complete.** 72 phases across 10 tracks, 26,214 lines across 97 authored Markdown
+files (24,379 lines in the phase files), 591 quiz questions, 1,014 practice tasks, and 1,183 checklist
 items. Every phase passes a machine-verified 14-section contract.
 
 > The counts in this paragraph are checked by `scripts/audit-doc-counts.mjs`, which reads them back
@@ -102,8 +102,8 @@ components through `react-dom/server` with esbuild transforming JSX in memory �
 dependency, no test framework, as planned.
 
 It covers `ToolCard` URL handling (including every placeholder spelling and non-string value,
-plus a sweep over all 442 corpus rows), `PhaseCard` against the real light projection and its
-degradation behaviour, and `Quiz` normalisation against all 573 real questions.
+plus a sweep over all 466 corpus rows), `PhaseCard` against the real light projection and its
+degradation behaviour, and `Quiz` normalisation against all 591 real questions.
 
 **It found a real defect before it was finished**: my earlier em-dash fix was a *blocklist*, and
 two tool rows carried the prose `"in this repository"` in the URL column. The parser now
@@ -204,7 +204,7 @@ was supposed to enable.
 
 ### ✅ Mixed practice sets — DONE
 
-A Practice view samples questions across a whole track or across all 573, shuffles them, and
+A Practice view samples questions across a whole track or across all 591, shuffles them, and
 reports which to revisit — no score, per the no-shame rule. It is the one arrangement a per-phase
 quiz structurally cannot offer, and for a reader studying alone it is the only way to tell *"I
 know this"* from *"I just read this"*.
@@ -245,9 +245,9 @@ There is a `docs/SEARCH-REQUESTS.md` accumulating the specific questions that ne
 
 For the stated goal — building real skill, and being able to show it:
 
-1. **The curriculum is already there.** 69 phases is more than enough; more content is not the
+1. **The curriculum is already there.** 72 phases is more than enough; more content is not the
    bottleneck.
-2. **Work the tasks.** 965 practice tasks exist. Reading them is not the same as doing them.
+2. **Work the tasks.** 1,014 practice tasks exist. Reading them is not the same as doing them.
 3. **Build the three portfolio pieces** the career track specifies, and put them on GitHub.
 4. **The queued assessment features are now implemented:** per-track results surface on the dashboard, with a balanced rotating capstone and a resumable comprehensive mode. Keep their tests and result storage in sync if the quiz corpus changes.
 5. **The site is one of them.** It is a real, deployed, CI-verified application with a content

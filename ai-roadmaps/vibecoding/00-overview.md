@@ -1,6 +1,6 @@
 # Vibecoding Craft — Track Overview
 
-> **Status: complete.** All eight phases of this track are written. The track is the one the project is named after, and every phase carries dated and flagged volatile claims, with `**Unverified**` markers where a claim could not be confirmed from a primary source.
+> **Status: complete.** All nine phases of this track are written. The track is the one the project is named after, and every phase carries dated and flagged volatile claims, with `**Unverified**` markers where a claim could not be confirmed from a primary source.
 
 ## What this track is for
 
@@ -42,8 +42,9 @@ The right preparation is Prompting plus some real programming practice, in any l
 | 6 | Managing Context in a Coding Session | Written | Why long sessions degrade, externalising state to files, and when to reset rather than continue |
 | 7 | Working With Coding Agents | Written | Bounded tasks, reviewing diffs rather than summaries, committing before a run, and spotting scope creep |
 | 8 | Shipping What You Build | Written | Security review of generated code, dependency hygiene, licences, disclosure, and maintainability |
+| 9 | Working in a Codebase You Didn't Write | Written | Orientation before editing: mapping an unfamiliar repository, briefing an agent with that map, small reversible commits, and reviewing a diff that is not yours |
 
-**Read them in order.** Phases 2, 3 and 4 are the load-bearing trio — specify, read, test — and everything after them assumes those three. Phase 8 is the one that turns a project into something you can publish and defend.
+**Read them in order.** Phases 2, 3 and 4 are the load-bearing trio — specify, read, test — and everything after them assumes those three. Phase 8 is the one that turns a project into something you can publish and defend, and Phase 9 is the one that carries all of it into a codebase you did not write, which is where most of it will actually be used.
 
 ## What you will be able to do at the end
 
@@ -58,13 +59,15 @@ The right preparation is Prompting plus some real programming practice, in any l
 - Give an agent a bounded task and review the diff rather than the summary.
 - Commit before an agent run so you can revert.
 - Review generated code for the real risks: secrets, missing authorization, injection, dependency supply chain.
+- Orient in a repository you did not write, and say where a change belongs before writing it.
+- Brief an agent with that map, and review its diff rather than its summary.
 - Write an honest README and a writeup that states what your project does not do.
 
 ## Roughly how long it takes
 
-**8 phases, about 9 weeks at five sessions a week** once the phases are written.
+**9 phases, about 10 weeks at five sessions a week.**
 
-At one hour a day, plan on twelve to thirteen weeks. This track is practice-heavy by design; the reading is short and the iteration is not.
+At one hour a day, plan on thirteen to fourteen weeks. This track is practice-heavy by design; the reading is short and the iteration is not.
 
 ## What being on a $0 budget costs you here
 

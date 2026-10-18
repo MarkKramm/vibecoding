@@ -37,8 +37,9 @@ No paid tool is required. The memory arithmetic in Phases 3 and 4 is done on pap
 | 4 | Quantization and Precision | 1 week | Numeric precision, what quantization trades away, and why a 4-bit model is not simply "worse" |
 | 5 | Serving, Batching, and Throughput | 1 week | How real deployments serve many requests at once, and the latency-versus-throughput trade |
 | 6 | The Model Landscape and Scaling | 1 week | Why models differ, what scale buys, and how to read a model card without being misled |
+| 7 | Reasoning Models and Thinking Budgets | 1 week | Where reasoning tokens go, how to measure them, and choosing effort from the task rather than the model's reputation |
 
-**Read Phases 1 through 3 in order** — they build one argument about where time and memory actually go. Phases 4, 5 and 6 can be read in any order after Phase 3, and Phase 6 is the most volatile.
+**Read Phases 1 through 3 in order** — they build one argument about where time and memory actually go. Phases 4, 5 and 6 can be read in any order after Phase 3, and Phases 6 and 7 are the most volatile.
 
 ## What you will be able to do at the end
 
@@ -49,12 +50,13 @@ No paid tool is required. The memory arithmetic in Phases 3 and 4 is done on pap
 - Describe what quantization trades away and choose a precision for a given constraint.
 - Read a model card and identify which claims are measured, which are marketing, and which are simply not comparable to another model's numbers.
 - Explain why batching improves throughput and can worsen latency, and why continuous batching changes the picture.
+- Read the reasoning-token count out of a usage object and choose an effort level from the task, rather than assuming that more thinking means a better answer.
 
 ## Roughly how long it takes
 
-**6 phases, about 8–9 weeks at five sessions a week.** Two of the six phases are two-week reads, and they are the ones that carry the core argument.
+**7 phases, about 9–10 weeks at five sessions a week.** Two of the seven phases are two-week reads, and they are the ones that carry the core argument.
 
-At one hour a day, plan on eleven to twelve weeks. This is the slowest track in the curriculum per phase, and that is deliberate rather than a defect.
+At one hour a day, plan on twelve to thirteen weeks. This is the slowest track in the curriculum per phase, and that is deliberate rather than a defect.
 
 ## What being on a $0 budget costs you here
 

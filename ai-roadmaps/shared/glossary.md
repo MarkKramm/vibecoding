@@ -51,6 +51,13 @@ Every term this curriculum introduces, defined in one sentence and organised by 
 - **Tokenizer vocabulary size** — how many distinct tokens the tokenizer recognises; it affects how finely text is split.
 - **Multilingual tokenization penalty** — the extra tokens non-English text consumes, so Tagalog prompts cost more and fit less than the same content in English.
 - **Token budget** — a deliberate allowance of tokens for a task, which is how cost and context are kept under control.
+- **Audio stream** — audio delivered continuously in frames rather than as one finished file, which is why a pipeline must decide for itself where an utterance ends.
+- **Endpointing** — deciding that a speaker has finished, usually from a pause in the signal; it is a policy choice the pipeline invents, not a boundary present in the audio.
+- **Voice activity detection (VAD)** — detecting whether a frame contains speech at all, which is what endpointing and interruption handling are built on.
+- **Barge-in** — letting a user interrupt the assistant mid-sentence, which requires the system to listen while it speaks.
+- **Speech-to-speech model** — a model that takes audio in and returns audio out within a single session, with no text stage in between.
+- **Chained voice agent** — a voice pipeline of speech-to-text, then a text model, then speech generation, which keeps text in the middle for inspection at the cost of latency and tone.
+- **Time to first audio** — how long before the user hears the first syllable, which is the number that decides whether a spoken reply feels responsive.
 
 ## Model Internals
 
@@ -77,6 +84,14 @@ Every term this curriculum introduces, defined in one sentence and organised by 
 - **Model card** — the document describing what a model is, what it was trained on, and what it should not be used for.
 - **Open-weight model** — a model whose parameters you can download and run yourself, as opposed to one available only through an API.
 - **Base model versus instruct model** — an instruct model has been tuned to follow instructions; a base model has only been trained to continue text.
+- **Reasoning token** — a token a model generates as internal working before its visible answer, billed at the output rate and counted against the same output limit as that answer.
+- **Test-time compute** — spending more computation at inference, by generating more reasoning tokens, to improve an answer on tasks that benefit from steps.
+- **Thinking budget** — a limit on how much a model may reason before answering; older APIs took a token count and current ones take an effort level.
+- **Effort level** — a named setting such as low, medium or high that controls how hard a model works before answering, as distinct from how large it is.
+- **Adaptive thinking** — a mode where the model decides whether and how much to reason per request, rather than being given a fixed budget.
+- **Interleaved thinking** — reasoning between tool calls during a task, not only before the first response token.
+- **Reasoning summary** — an optional, sometimes empty summary of a model's reasoning; it is not the reasoning, and its absence does not mean the model did not think.
+- **Thought signature** — an opaque or encrypted representation of reasoning that a model passes back to itself for continuity, which you cannot read.
 
 ## Prompting
 
@@ -273,6 +288,12 @@ Every term this curriculum introduces, defined in one sentence and organised by 
 - **Secret** — a credential that must never be committed, because git history keeps what you deleted.
 - **Supply chain** — the dependencies your project pulls in, which generated code may choose badly or maliciously.
 - **Dependency hygiene** — checking that what you depend on is maintained, licensed and actually needed.
+- **Brownfield codebase** — an existing codebase you did not write, as opposed to a greenfield project you start from nothing.
+- **Orientation** — building a map of an unfamiliar codebase before changing it: the entry point, one traced path, the seam and the conventions found in the code.
+- **Seam** — the boundary where a new change plugs into existing code, such as a route registration or a service function.
+- **Pull request** — a proposed set of changes offered for review before it is merged.
+- **Commit message** — the statement of why a change was made, which is what a future reader, and a bisect, rely on.
+- **Technical debt** — a deliberate trade-off in a codebase that has not been repaid, as distinct from code you merely dislike.
 
 ## Safety and ethics
 

@@ -38,8 +38,9 @@ No paid tool is needed at any point in this track. Where a phase names a hosted 
 | 7 | Reading Model Outputs Critically | 1 week | Logprobs, confidence, and how to tell fluent output from grounded output |
 | 8 | Your First API Call | 1 week | Making a request in code, controlling the parameters, and counting what it costs |
 | 9 | Multimodal and Vision | 1 week | Sending images, what seeing costs, and which visual tasks fail predictably |
+| 10 | Audio and Voice | 1 week | Audio as a stream, what endpointing decides, splitting a conversation's delay, and the obligations a transcript creates |
 
-**Read them in order.** Phases 3 through 6 each depend on the one before. Phase 8 and Phase 9 are deliberately last because they are where the abstractions become something you can run and measure — Phase 9 assumes the working API call from Phase 8.
+**Read them in order.** Phases 3 through 6 each depend on the one before. Phase 8 and Phase 9 are deliberately last because they are where the abstractions become something you can run and measure — Phase 9 assumes the working API call from Phase 8, and Phase 10 assumes the same call while changing the modality from a document you send to a stream you must segment.
 
 ## What you will be able to do at the end
 
@@ -52,13 +53,14 @@ Not "understand tokens" — those are the things you will actually be able to do
 - Compute cosine similarity between two embeddings and interpret the number.
 - Make a working API call from Python, read the response object, and account for the tokens it consumed.
 - Send an image to a model, predict its token cost before sending it, and name which visual tasks will fail before you test them.
+- Run audio through a recognition and synthesis pipeline, split a conversation's delay into its stages, and cost it per minute of conversation rather than per call.
 - State, for any behaviour you observe, **which mechanism produces it**.
 
 ## Roughly how long it takes
 
-**9 phases, about 9–11 weeks at five sessions a week.** Phase 1 is the longest single read in the whole curriculum; do not let that set your expectation for the rest. Phases 3, 4 and 6 are the ones people revisit, and revisiting is normal rather than a sign of trouble.
+**10 phases, about 10–12 weeks at five sessions a week.** Phase 1 is the longest single read in the whole curriculum; do not let that set your expectation for the rest. Phases 3, 4 and 6 are the ones people revisit, and revisiting is normal rather than a sign of trouble.
 
-At one hour a day, plan on twelve weeks. The material does not compress well below that, because the practice tasks are where the understanding actually forms.
+At one hour a day, plan on thirteen weeks. The material does not compress well below that, because the practice tasks are where the understanding actually forms.
 
 ## What being on a $0 budget costs you here
 
