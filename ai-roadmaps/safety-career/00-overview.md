@@ -1,6 +1,6 @@
 # Safety & Ethics — Track Overview
 
-> **Status: complete.** All five phases are written and available now.
+> **Status: complete.** All nine phases are written and available now.
 
 ## What this track is for
 
@@ -18,7 +18,7 @@ And it closes with honesty: how to use these tools without misrepresenting your 
 
 That said, its practical phases land harder after you have built something. Phase 4's framework for honest AI use is much more useful once you have used AI heavily for a few weeks and felt the temptation to accept code you did not understand.
 
-You need **no programming background** for Phases 1, 3 and 4. Phases 2 and 5 are more concrete if you have written some code and handled a credential.
+You need **no programming background** for Phases 1, 3 and 4. Phases 2, 6, 8 and 9 are more concrete if you have written some code and handled a credential; Phases 5 and 7 are writing-led.
 
 ## What you need before starting
 
@@ -37,6 +37,10 @@ No paid tool is required. Nothing in this track costs money, and the security pr
 | 3 | Alignment, Capability and Honest Limits | Written | What alignment means technically, RLHF and why the KL penalty exists, Constitutional AI, reward hacking, and — most importantly — how not to over-claim about your own results |
 | 4 | Using AI Honestly | Written | What is actually cheating versus efficient use, the "could I explain, debug and extend this myself?" test, skill atrophy, and a personal policy you write for yourself |
 | 5 | Career in the AI Era | Written | What differentiates people now that generation is cheap, the durable-versus-volatile distinction applied to skills, how to keep learning without drowning, and an honest self-assessment |
+| 6 | Red-Teaming and Adversarial Evaluation | Written | Threat modelling for LLM systems, direct and indirect prompt injection, jailbreaks, data extraction, attack success rates, and re-testing a mitigation |
+| 7 | AI Governance, Compliance and Model Cards | Written | EU AI Act risk tiers, provider vs. deployer duties, Article 50 transparency, model cards and system cards, and a compliance memo with a "does not apply" section |
+| 8 | Provenance, Watermarking and Content Credentials | Written | C2PA content credentials, visible and invisible watermarking, detectors and their error modes, metadata stripping, and the limits of provenance claims |
+| 9 | Supply-Chain Security for AI Systems | Written | Packages, model weights, datasets and tool servers; package hallucination and typosquatting; `pickle` vs. `safetensors`; SBOMs and dependency scanning |
 
 **Read them in order.** Phase 1 establishes the failure modes, Phase 2 the security and privacy frame, Phase 3 the wider debate, and Phases 4 and 5 turn all of it inward onto your own practice.
 
@@ -59,12 +63,16 @@ No paid tool is required. Nothing in this track costs money, and the security pr
 - Apply the "could I explain, debug and extend this myself?" test to work you have produced with AI.
 - State which competences weaken if you never do the work yourself.
 - Write a personal policy for your own AI use, in your own words.
+- Write a threat model, run a red team against your own system, and record what succeeded.
+- Place a system in an EU AI Act risk tier and write a model card with out-of-scope uses.
+- Explain what a content credential proves and what it does not.
+- List the five nodes of an AI supply chain and generate an SBOM for a project.
 
 ## Roughly how long it takes
 
-**5 phases, about 5–6 weeks at five sessions a week** once the phases are written.
+**9 phases, about 9–11 weeks at five sessions a week** once the phases are written.
 
-At one hour a day, plan on eight weeks. Phases 1 and 3 are the substantial reads; 4 and 5 are shorter and more personal.
+At one hour a day, plan on about fourteen weeks. Phases 1 and 3 are the substantial reads; 4 and 5 are shorter and more personal; 6 and 9 are the most hands-on; 7 and 8 are document- and evidence-led.
 
 ## What being on a $0 budget costs you here
 

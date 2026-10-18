@@ -127,8 +127,8 @@ a browser — that is sufficient and is not a blocker.
 
 | | |
 |---|---|
-| Corpus | **74 phases**, 10 tracks · 250,537 lesson words · 1,228 checklist · 603 quiz · **1,044** practice · 0 minted from position · 314 glossary terms |
-| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` / **`doc-counts`** all **exit 0**; encoding clean across **234 files**, which is every tracked file — the audit now asserts that rather than trusting its own list; `doc-counts` checks **34 claims** and asserts every declared region matches something |
+| Corpus | **78 phases**, 10 tracks · 253,235 lesson words · 1,260 checklist · 627 quiz · **1,084** practice · 0 minted from position · 330 glossary terms |
+| Guards | `build-content` / `quiz` / `ast` / `free-toolkit` / `arithmetic` / `encoding` / **`doc-counts`** all **exit 0**; encoding clean across **238 files**, which is every tracked file — the audit now asserts that rather than trusting its own list; `doc-counts` checks **37 claims** and asserts every declared region matches something |
 | Suite | `npm test` **23/23** on a verified-free port, with the browser checks genuinely executing |
 | Sync | `git rev-list --left-right --count origin/main...HEAD` → `0 0`, tree clean |
 | Live site | **Working.** `markkramm.github.io/vibecoding/` serves `/vibecoding/assets/...` and the 389 KB bundle loads |

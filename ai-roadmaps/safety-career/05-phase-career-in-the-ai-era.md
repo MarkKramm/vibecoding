@@ -269,7 +269,7 @@ All of that is the **Career track**, which begins at `ai-roadmaps/career/00-over
 
 Read that track **now** rather than after you finish everything else, and the reason is practical rather than motivational. Its Phase 2 portfolio discipline tells you what evidence to accumulate *while* you are still learning, and evidence accumulated in the ordinary course of work is nearly free. Evidence reconstructed afterwards, from memory, is expensive and worse — you will have lost the failure details that make a writeup credible, which are exactly the details an interviewer wants.
 
-One last note, and it is the honest summary of this track's value. Finishing five phases of Safety & Ethics does not make you employable, and nothing in these pages has promised that. What it does is make your claims checkable, your reasoning explicit, and your limits stated — and in a market where generated confidence is abundant and free, **a person whose statements can be checked is a scarce thing.** That is the asset. The Career track is where you learn to spend it.
+One last note, and it is the honest summary of this track's value. Finishing nine phases of Safety & Ethics does not make you employable, and nothing in these pages has promised that. What it does is make your claims checkable, your reasoning explicit, and your limits stated — and in a market where generated confidence is abundant and free, **a person whose statements can be checked is a scarce thing.** That is the asset. The Career track is where you learn to spend it.
 
 ## Hands-on practice tasks
 

@@ -2,7 +2,7 @@
 
 This is the **track-level** checklist. Phase checklists live inside the phase files. These items should be true of you **when the whole track is done** — capabilities and commitments that require several phases together.
 
-> **Status note.** This track is **not started**: none of its five phases are written yet. This checklist is the **target**, published now so you can see what the track is aiming at. Several items cannot be ticked until the phases that teach them exist, and an unticked box here is not a failure.
+> **Status note.** This track is **complete**: all nine phases are written and available. This checklist is the **track-level target**, published so you can see what the whole track is aiming at. Several items require several phases together, and an unticked box is not a failure.
 
 **Tick only what you can actually do, or have actually committed to.** Rule 6 of the study rules: your own words, or it did not happen. This is the one track where several items are **dispositions rather than skills** — you cannot read your way to honesty about your own work, and a ticked box on an item you have not genuinely adopted is exactly the failure this track exists to prevent.
 
@@ -60,6 +60,37 @@ This is the **track-level** checklist. Phase checklists live inside the phase fi
 - [ ] I know how to keep learning without drowning: few high-signal sources, mechanisms rather than leaderboards, a monthly cadence rather than daily. <!-- id: safe-master-c33 energy: normal -->
 - [ ] I have made an honest self-assessment of where I actually stand, and written it down. <!-- id: safe-master-c34 energy: high -->
 - [ ] I can state that the learning phase is complete and that I am ready — without overstating it. <!-- id: safe-master-c35 energy: high -->
+
+---
+
+## Attacking your own system
+
+- [ ] I can write a four-line threat model naming assets, attackers, entry points and impact. <!-- id: safe-master-c36 energy: high -->
+- [ ] I have run injection, jailbreak and data-extraction probes against a system I own or may test. <!-- id: safe-master-c37 energy: high -->
+- [ ] I record attack success rate and cost, not just a pass or fail. <!-- id: safe-master-c38 energy: normal -->
+- [ ] I have applied a mitigation and re-tested the same attacks. <!-- id: safe-master-c39 energy: high -->
+- [ ] I never test a system I have no permission to test. <!-- id: safe-master-c40 energy: normal -->
+
+## Documenting obligations honestly
+
+- [ ] I can place a system in an EU AI Act risk tier and defend the placement from the definitions. <!-- id: safe-master-c41 energy: high -->
+- [ ] I can distinguish a provider's duties from a deployer's. <!-- id: safe-master-c42 energy: normal -->
+- [ ] I have written a model card with real limitations and out-of-scope uses. <!-- id: safe-master-c43 energy: high -->
+- [ ] Every governance claim I make carries a date and a source. <!-- id: safe-master-c44 energy: normal -->
+
+## Saying what provenance proves
+
+- [ ] I can separate provenance metadata, a watermark and a detector. <!-- id: safe-master-c45 energy: normal -->
+- [ ] I can say what a content credential does **not** prove. <!-- id: safe-master-c46 energy: normal -->
+- [ ] I have attached, verified and then stripped a content credential. <!-- id: safe-master-c47 energy: high -->
+- [ ] I state the limits of detection rather than presenting it as proof. <!-- id: safe-master-c48 energy: normal -->
+
+## Trusting the chain deliberately
+
+- [ ] I can name the nodes of an AI supply chain, including weights and tool servers. <!-- id: safe-master-c49 energy: normal -->
+- [ ] I check that a suggested package exists and who publishes it before installing. <!-- id: safe-master-c50 energy: normal -->
+- [ ] I can explain the `pickle` code-execution risk and when to prefer `safetensors`. <!-- id: safe-master-c51 energy: normal -->
+- [ ] I have generated an SBOM and can say what it cannot see. <!-- id: safe-master-c52 energy: high -->
 
 ---
 

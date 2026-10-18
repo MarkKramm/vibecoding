@@ -5,7 +5,7 @@
 A structured, self-paced curriculum for learning how modern AI systems actually work, how to
 build with them without shipping things you cannot verify, and how to get hired doing it.
 
-**74 phases across 10 tracks · 603 quiz questions · 26,831 lines across 99 authored Markdown files · written for a $0 budget.**
+**78 phases across 10 tracks · 627 quiz questions · 27,517 lines across 103 authored Markdown files · written for a $0 budget.**
 
 Written for someone starting from beginner-to-intermediate, working remotely, with no
 professional network and no budget. Every phase is designed to be completed with free tools.
@@ -48,7 +48,7 @@ it would actually add and whether it is worth buying — usually it is not.
 | **Finetuning & Evals** | 6 | When to finetune, LoRA/PEFT, datasets, evaluation, distillation, running evals |
 | **Cost & Efficiency** | 7 | Token economics, caching, batching, routing, monitoring, local vs API |
 | **Vibecoding Craft** | 9 | Specification, reading generated code, tests as contract, debugging, shipping, working in a codebase you did not write |
-| **Safety & Ethics** | 5 | How models go wrong, security and privacy, alignment, using AI honestly |
+| **Safety & Ethics** | 9 | How models go wrong, security and privacy, alignment, using AI honestly, red-teaming, governance, provenance and supply-chain risk |
 | **Career & Getting Hired** | 5 | What employers want, portfolio, proof of skill, interviewing and first 90 days, getting into the pipeline |
 
 Tracks are designed to be read in order, but each phase stands alone and states its
@@ -123,15 +123,15 @@ a broken phase file cannot reach the live site.
 ```
 ai-roadmaps/                 the curriculum — Markdown is the source of truth
   foundations/               10 phases
-  model-internals/           7
+  model-internals/           8
   prompting/                 7
   rag/                       7
   agents/                    10
   finetuning/                6
   cost/                      7
   vibecoding/                9
-  safety-career/             5
-  career/                    4
+  safety-career/             9
+  career/                    5
   shared/                    study rules, cross-track references
 
 scripts/                     content build + integrity guards
@@ -161,13 +161,13 @@ All 10 tracks are written. This is a complete first pass, not a finished product
 - **The live page was observed by the project owner on 2026-09-18**, and the check found the
   Reference-view rendering defect documented below and in `CHECKPOINT.md`. We did not independently
   re-check the live URL during this repository audit.
-- The exhaustive comprehensive exam covers the current 603-question corpus and persists its
+- The exhaustive comprehensive exam covers the current 627-question corpus and persists its
   in-progress question order and selections locally so it can resume. It intentionally stores no
   question text or answer key, and active sessions are intentionally not exported in backups.
 - A number of volatile facts — free-tier terms, context-window sizes, model availability —
   are dated rather than continuously verified, because verifying them requires network
   access this project budgets carefully. Each is stamped with its date.
-- Browser verification includes an automated sweep of all 74 phases, but visual checks on a real
+- Browser verification includes an automated sweep of all 78 phases, but visual checks on a real
   mobile device have not been done; only emulated viewports in a headless browser were checked.
 - An automated accessibility audit runs against a rendered production preview as part of
   `npm test`. It covers six views, but does not test modal focus trapping, phase-detail pages,

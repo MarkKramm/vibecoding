@@ -28,16 +28,16 @@ Every phase in every track is completable **without spending money**. Where a pa
 
 | # | Track | Folder | What it is for | Phases |
 |---|---|---|---|---|
-| 1 | **Foundations** | [`foundations/`](foundations/) | The vocabulary and mental models everything else assumes: what a model is, tokens, context, attention, sampling, vision | 9 |
-| 2 | **Model Internals** | [`model-internals/`](model-internals/) | How inference actually works and what it costs: architecture, KV cache, quantization, serving, the model landscape | 6 |
+| 1 | **Foundations** | [`foundations/`](foundations/) | The vocabulary and mental models everything else assumes: what a model is, tokens, context, attention, sampling, vision | 10 |
+| 2 | **Model Internals** | [`model-internals/`](model-internals/) | How inference actually works and what it costs: architecture, KV cache, quantization, serving, the model landscape | 8 |
 | 3 | **Prompting** | [`prompting/`](prompting/) | Getting what you want on purpose: instruction design, reasoning techniques, structured output, context engineering | 7 |
 | 4 | **Retrieval & RAG** | [`rag/`](rag/) | Giving a model knowledge it was not trained on: chunking, embeddings, vector search, hybrid retrieval, reranking, evaluation | 7 |
 | 5 | **Agents & Tools** | [`agents/`](agents/) | Models that act: function calling, the agent loop, multi-agent systems, MCP, sandboxing, agent evaluation, and **the harness you configure around the agent** | 10 |
 | 6 | **Finetuning & Evals** | [`finetuning/`](finetuning/) | Changing the model versus changing the prompt, and measuring whether either helped: LoRA, datasets, LLM-as-judge, regression suites | 6 |
 | 7 | **Cost & Efficiency** | [`cost/`](cost/) | Maximising capability per peso: token economics, prompt caching, batching, model routing, provider strategy, local models, **and the zero-budget playbook** | 7 |
-| 8 | **Vibecoding Craft** | [`vibecoding/`](vibecoding/) | Building real software with AI agents: context management, verification, review, debugging AI-written code, shipping | 8 |
-| 9 | **Safety & Ethics** | [`safety-career/`](safety-career/) | Alignment, misuse, bias, privacy, security, and using these tools honestly | 5 |
-| 10 | **Career & Getting Hired** | [`career/`](career/) | Turning the skill into work: what employers actually want, a portfolio that proves judgement, evidence without a job, interviewing and your first 90 days | 4 |
+| 8 | **Vibecoding Craft** | [`vibecoding/`](vibecoding/) | Building real software with AI agents: context management, verification, review, debugging AI-written code, shipping | 9 |
+| 9 | **Safety & Ethics** | [`safety-career/`](safety-career/) | Alignment, misuse, bias, privacy, security, governance, provenance, supply-chain risk, and using these tools honestly | 9 |
+| 10 | **Career & Getting Hired** | [`career/`](career/) | Turning the skill into work: what employers actually want, a portfolio that proves judgement, evidence without a job, interviewing and your first 90 days | 5 |
 | | **Shared** | [`shared/`](shared/) | Cross-cutting documents: study rules, free resource list, weekly tracker, glossary | — |
 
 > **On the two newest tracks.** `cost/07` exists because free access is the constraint most learners actually face, and it deserves one place that answers "I have nothing to spend — what is my workflow?" The **Career** track exists because skill and employability are not the same thing: the rest of the curriculum builds the capability, and these four phases build the *evidence* of it. The Career track is the intended finish line.
@@ -91,7 +91,7 @@ Every phase in every track is completable **without spending money**. Where a pa
                                          │
                              ┌───────────▼──────────┐
                              │ 9. SAFETY & ETHICS   │
-                             │ (5) the wider frame  │
+                             │ (9) the wider frame  │
                              └───────────┬──────────┘
                                          │
                              ┌───────────▼──────────┐
@@ -187,7 +187,7 @@ The rhythm assumes **5 days, not 7**. A plan that requires every day is a plan t
     ├── finetuning/            # 00-overview + 6 phases + checklist
     ├── cost/                  # 00-overview + 7 phases + checklist
     ├── vibecoding/            # 00-overview + 8 phases + checklist
-    ├── safety-career/         # 00-overview + 5 phases + checklist
+    ├── safety-career/         # 00-overview + 9 phases + checklist
     ├── career/                # 00-overview + 4 phases + checklist
     └── shared/                # Study rules, free resources, weekly tracker, glossary
 ```

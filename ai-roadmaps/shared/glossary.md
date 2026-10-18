@@ -330,6 +330,23 @@ Every term this curriculum introduces, defined in one sentence and organised by 
 - **Cross-border transfer** — sending personal information to a processor in another jurisdiction; under §21 accountability travels with the data, so it is conditioned by an arrangement rather than prohibited, and the controller remains responsible.
 - **Automated-decision disclosure** — the §16(c)(6) right to be informed about automated processes that will be the sole basis for a decision significantly affecting the data subject; it is a disclosure duty rather than a prohibition, and the privacy obligation most specific to AI systems.
 
+- **Red team** — a systematic attempt to make a system fail the way an adversary would, run only against a system you own or are permitted to test.
+- **Threat model** — a named list of assets, attackers, entry points and impacts that decides what a red-team result means.
+- **Attack success rate** — the fraction of attempts that achieved the attacker's goal, reported alongside the cost of each attempt.
+- **Indirect prompt injection** — instructions injected through content the system reads, such as a retrieved document or a tool result, rather than through the user's own message.
+- **Jailbreak** — an input that gets a model to bypass a restriction its operator intended to enforce.
+- **Data-extraction attack** — probing a system to recover training data, system prompts or other material it was not meant to reveal.
+- **Guardrail** — a control wrapped around a model's input or output; it catches known patterns and is not a boundary against novel ones.
+- **Model card** — a short document stating a system's intended use, evaluation evidence, limitations and out-of-scope uses.
+- **EU AI Act risk tier** — the risk band a system falls into (unacceptable, high, limited or minimal), which decides the obligations that follow.
+- **Article 50 transparency** — the EU AI Act provision requiring, among other things, that providers of generative systems mark synthetic audio, image, video and text in a machine-readable way.
+- **Content credential** — a provenance record attached to a file, of which C2PA is the leading format; it is a chain of custody for the file, not a truth claim about its content.
+- **Watermark** — a signal embedded in content to mark it; it shows that a mark was embedded, not who embedded it or why.
+- **AI-content detector** — a probabilistic classifier estimating whether content was generated, with false positives, false negatives and accuracy that drifts as models change.
+- **SBOM (software bill of materials)** — an inventory of a build's declared components and versions, which deliberately excludes anything fetched at runtime.
+- **Package hallucination** — a model inventing a plausible package name that does not exist, which an attacker can then register.
+- **Safetensors** — a weights format that stores tensors without permitting code execution on load, unlike pickle.
+
 ## Career and getting hired
 
 - **Judgement** — telling plausible from correct, which is the skill that became scarce as generation became cheap.

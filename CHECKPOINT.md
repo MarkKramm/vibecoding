@@ -10,9 +10,9 @@ current checkout; rerun the checks before relying on them.
 GitHub Pages was reported unreachable during the 2026-09-18 checkpoint. This is a historical
 service observation, not verified current status; check the live URL before diagnosing deployment.
 
-**Corpus totals in this file are current as of 2026-10-18** (74 phases, following three harness
-phases, a five-task visibility fix, three content phases added in one pass, and two more added since):
-**74 phases**, 603 quiz questions, 1,044 practice tasks, 1,228 checklist items. The previous header
+**Corpus totals in this file are current as of 2026-10-18** (78 phases, following three harness
+phases, a five-task visibility fix, three content phases added in one pass, and six more added since):
+**78 phases**, 627 quiz questions, 1,084 practice tasks, 1,260 checklist items. The previous header
 also carried **442 tool rows**; that figure has been **dropped rather than updated**, because no
 script in this repository computes it and the narrow definition it used (tool and resource tables
 only, excluding quiz options and comparison tables) is not recoverable from the tooling. The one
@@ -27,7 +27,7 @@ current corpus, and rewriting them would destroy the history they exist to prese
 ## What this is
 
 A free, self-paced curriculum for learning how modern AI systems work and how to get hired
-building with them. **74 phases across 10 tracks**, written for someone with a **$0 budget**
+building with them. **78 phases across 10 tracks**, written for someone with a **$0 budget**
 starting from beginner-to-intermediate.
 
 It ships as a React site that reads compiled JSON from hand-authored Markdown.
@@ -40,7 +40,7 @@ It ships as a React site that reads compiled JSON from hand-authored Markdown.
 ## The shape of it
 
 ```
-ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (74 files, 24,935 lines)
+ai-roadmaps/*/NN-phase-*.md      <- SOURCE OF TRUTH (78 files, 25,575 lines)
         |
         |  scripts/build-content.mjs
         v
@@ -88,7 +88,7 @@ Cost 7, Vibecoding Craft 9, Safety & Career 5, Career 5.
 
 ## Ways to test yourself
 
-The 603 questions are available through five distinct modes:
+The 627 questions are available through five distinct modes:
 
 | Mode | Coverage | Graded? | Persistence |
 |---|---|---|---|
@@ -132,17 +132,17 @@ disabled guard is worse than none.
 **Verified:**
 
 - Content contract — 14 sections, fixed order and spelling, authored ids, quiz structure
-- All 603 quiz questions: one correct option, a `**Why:**` line, a valid `energy`
+- All 627 quiz questions: one correct option, a `**Why:**` line, a valid `energy`
 - Field shapes against what the renderers consume
 - Projection reads — no component reads a field its projection lacks
 - Inline markdown, lesson-block coverage, search (all against the real corpus)
-- Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (234 files, all tracked files scanned)
+- Encoding — LF, UTF-8 no BOM, no tabs, no mojibake (238 files, all tracked files scanned)
 - CSS wiring — every JSX class has a rule, every token is defined
 - **Accessibility** — 60 assertions across 6 views: contrast, accessible names, focus visibility,
   and keyboard reachability by control *kind*
 - **Unparseable task lines** — an authored task id the parser could not read is a build error, so
   a task can no longer be silently absent from the page while every guard exits 0
-- **Every one of the 74 phases renders** — opened in a real browser, not sampled
+- **Every one of the 78 phases renders** — opened in a real browser, not sampled
 - **Mixed practice sets** — sampling, filtering, the no-score contract, and the question
   shape the *app* sees rather than the one the file stores
 - **Reachability** — every module under `src/` is reachable from `main.jsx`
@@ -301,12 +301,12 @@ checks here; it catches a class they structurally cannot.
 
 ## Exam feature decision - decided 2026-09-19, shipped 2026-09-28
 
-The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 603 current questions, and track-exam result summaries on the dashboard.
+The agreed scope is a rotating balanced capstone (10 questions per written track, prioritizing unseen IDs), a separate untimed/resumable comprehensive exam over all 627 current questions, and track-exam result summaries on the dashboard.
 
 **Resolved 2026-09-28:** the implementation above was committed and shipped long ago; this
 paragraph is the dated record of the decision, not a pending task. The instruction to "verify
 and refresh this snapshot after the implementation is committed" was discharged. The corpus has
-since grown to **74 phases / 603 quiz questions** — see the totals at the top of this file.
+since grown to **78 phases / 627 quiz questions** — see the totals at the top of this file.
 
 Deliberately **not** queued: the share-link (progress in a URL fragment). It was offered and
 passed over twice — do not start it without being asked again.
