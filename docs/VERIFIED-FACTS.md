@@ -403,3 +403,8 @@ Anthropic's own official documentation now uses the term **"context rot"** in it
 **One closing principle, which is the reason this file exists at all:**
 
 > **Teach the relationship, not the number.** A lesson built on "the KV cache is N GB" is wrong on a schedule you do not control. A lesson built on "here is how to compute it, and here is why GQA makes it smaller" is still correct when the model it was written about no longer exists.
+
+## Pass 2026-10-18 - provider rates re-checked
+
+- Gemini media exchange rates (intern-08): 1,120 output tokens per 1024x1024 image, 1,680 at 2048x2048, 3,780 at 4096x4096, 5,792 per second of 720p video, 25 per second of audio. Verified against https://ai.google.dev/gemini-api/docs/pricing on 2026-10-18. Held.
+- Anthropic data residency: regional/multi-region endpoints carry a 10% premium (1.1x) on Claude 4.5+; US-only inference via inference_geo=us is 1.1x. Verified against https://platform.claude.com/docs/en/about-claude/pricing on 2026-10-18. Held. FedRAMP-specific claim in safety-career/02 was not confirmed by that page and remains dated/unverified.
